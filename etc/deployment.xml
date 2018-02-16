@@ -1,0 +1,458 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<rcmanager>
+
+ <generalInformation>
+  <editor path="kate" dock="false" />
+  <timeouts fixed="1000.0" blink="300.0" />
+  <clicks switch="2.0" interval="400.0" />
+  <graph alpha="80.0" active="true" scale="200.0" />
+  <graphTiming idletime="1000.0" focustime="500.0" fasttime="10.0" fastperiod="2000.0" />
+  <simulation hookes="0.07" springlength="0.5" friction="0.4" step="0.5" fieldforce="20000.0" />
+ </generalInformation>
+
+ <node alias="viriatoPanel" endpoint="commonbehavior:tcp -p 3333">
+  <dependence alias="IS" />
+  <dependence alias="trajectory2d" />
+  <dependence alias="laser" />
+  <dependence alias="rgbd" />
+  <dependence alias="speech" />
+  <dependence alias="base" />
+  <!-- <dependence alias="comJoint" /> -->
+  <workingDir path="/home/robocomp/" />
+  <upCommand command="rcremote localhost viriatoPanel /home/robocomp/robocomp/components/robocomp-viriato/components/viriatoPanel python src/viriatoPanel.py --Ice.Config=/home/robocomp/robocomp/components/robocomp-viriato/etc/panel.conf" />
+  <downCommand command="pkill -9 -f viriatoPanel.py" />
+  <configFile path="xxx" />
+  <xpos value="-10.4796692367" />
+  <ypos value="254.264288909" />
+  <radius value="10.0" />
+  <color value="#AAAAAA" />
+ </node>
+
+ <node alias="oracleAgent" endpoint="objectoracle:tcp -h 10.0.30.11 -p 4000">
+  <dependence alias="IS" />
+  <dependence alias="rgbd" />
+  <dependence alias="semantics" />
+  <dependence alias="camera" />
+  <dependence alias="executive" />
+  <workingDir path="/home/robocomp/" />
+  <upCommand command="rcremote 10.0.30.11 oracleAgent /home/robocomp/robocomp/components/robocomp-viriato/components/oracleAgent ./bin/oracleAgent --Ice.Config=/home/robocomp/robocomp/components/robocomp-viriato/etc/oracleAgent.conf" />
+  <downCommand command="rcremote 10.0.30.11 X /home/robocomp/robocomp/components/robocomp-viriato/components/oracleAgent killall -9 oracleAgent" />
+  <configFile path="kate  /home/robocomp/robocomp/components/robocomp-viriato/etc/oracleAgent.conf" />
+   <xpos value="-137.419144251" />
+  <ypos value="-74.2062201369" />
+  <radius value="10.0" />
+  <color value="#33FF33" />
+ </node>
+
+ <node alias="semantics" endpoint="semanticsimilarity:tcp -h 10.0.30.22 -p 10500">
+  <dependence alias="IS" />
+  <workingDir path="/home/robocomp/" />
+  <upCommand command="rcremote 10.0.30.22 semanticSimilarity /home/robocomp/robocomp/components/prp/components/semanticSimilarity python src/semanticSimilarity.py /home/robocomp/robocomp/components/robocomp-viriato/etc/semanticSimilarity.conf" />
+  <downCommand command="rcremote 10.0.30.22 pkill -9 -f semanticSimilarity.py" />
+  <configFile path="kate /home/robocomp/robocomp/components/prp/components/semanticSimilarity/etc/config" />
+  <xpos value="-49.8058951575" />
+  <ypos value="42.6745514225" />
+  <radius value="10.0" />
+  <color value="#33FF33" />
+ </node>
+ 
+  <node alias="camera" endpoint="commonbehavior:tcp -h 10.0.30.11 -p 12247">
+   <workingDir path="/home/robocomp/" />
+  <upCommand command="rcremote 10.0.30.11 CameraV4l /home/robocomp/robocomp/components/robocomp-robolab/components/cameraV4lComp
+ ./bin/CameraV4l --Ice.Config=/home/robocomp/robocomp/components/robocomp-viriato/etc/camera.conf" />
+  <downCommand command="rcremote 10.0.30.11 X /home/robocomp/robocomp/components/robocomp-robolab/components/cameraV4lComp killall -9 CameraV4l" />
+  <configFile path="kate  /home/robocomp/robocomp/components/robocomp-viriato/etc/camera.conf" />
+  <xpos value="-107.375073902" />
+  <ypos value="-0.223081701317" />
+  <radius value="10.0" />
+  <color value="#33FF33" />
+ </node>
+
+ <node alias="executive" endpoint="agmexecutive:tcp -h 10.0.30.22 -p 10198">
+  <dependence alias="IS" />
+  <workingDir path="/home/robocomp/" />
+  <upCommand command="rcremote 10.0.30.22 AGMExecutive /home/robocomp/AGM/tools/AGMExecutive_robocomp python AGMExecutive_robocomp.py /home/robocomp/robocomp/components/robocomp-viriato/etc/executiveAUTONOMY.conf" />
+  <downCommand command="ssh robolab@10.0.30.22 pkill -9 -f AGMExecutive_robocomp.py" />
+  <configFile path="xxx" />
+  <xpos value="12.147260719" />
+  <ypos value="-152.554632846" />
+  <radius value="10.0" />
+  <color value="#33FF33" />
+ </node>
+
+ <node alias="ik" endpoint="inversekinematics:tcp -h 10.0.30.11 -p 10240">
+  <dependence alias="comJoint" />
+  <workingDir path="/home/robocomp/" />
+  <upCommand command="rcremote 10.0.30.11 ik /home/robocomp/robocomp/components/robocomp-viriato/components/inversekinematics/ ./bin/inversekinematics --Ice.Config=/home/robocomp/robocomp/components/robocomp-viriato/etc/inversekinematics.conf" />
+  <downCommand command="ssh robolab@10.0.30.11 killall -9 inversekinematics" />
+  <configFile path="kate /home/robocomp/robocomp/components/robocomp-viriato/etc/inversekinematics.conf" />
+  <xpos value="127.216439015" />
+  <ypos value="70.2190415999" />
+  <radius value="10.0" />
+  <color value="#FF3333" />
+ </node>
+
+ <node alias="gik" endpoint="inversekinematics:tcp -h 10.0.30.11 -p 10241">
+  <dependence alias="comJoint" />
+  <dependence alias="ik" />
+  <dependence alias="rgbd" />
+  <workingDir path="/home/robocomp/" />
+  <upCommand command="rcremote 10.0.30.11 GIK /home/robocomp/robocomp/components/robocomp-viriato/components/ikGraphGenerator/ ./bin/ikGraphGenerator /home/robocomp/robocomp/components/robocomp-viriato/etc/ikg.conf" />
+  <downCommand command="ssh robolab@10.0.30.11 killall -9 ikGraphGenerator" />
+  <configFile path="xxx" />
+  <xpos value="126.848108113" />
+  <ypos value="10.4924216786" />
+  <radius value="10.0" />
+  <color value="#FF3333" />
+ </node>
+
+ <node alias="april" endpoint="commonbehavior:tcp -h 10.0.30.33 -p 14358">
+  <dependence alias="rgbd" />
+  <dependence alias="IS" />
+  <workingDir path="/home/robocomp/" />
+  <upCommand command="rcremote 10.0.30.33 aprl /home/robocomp/robocomp/components/robocomp-robolab/components/apriltagsComp ./bin/apriltagscomp --Ice.Config=/home/robocomp/robocomp/components/robocomp-viriato/etc/apriltags.conf" />
+  <downCommand command="rcremote 10.0.30.33 X / killall -9 apriltagscomp" />
+  <configFile path="kate /home/robocomp/robocomp/components/robocomp-viriato/etc/primesense.conf" />
+  <xpos value="17.3055956295" />
+  <ypos value="4.3788765126" />
+  <radius value="10.0" />
+  <color value="#3333FF" />
+ </node>
+
+ <node alias="humanA" endpoint="agmcommonbehavior:tcp -h 10.0.30.22 -p 10333">
+  <dependence alias="IS" />
+  <dependence alias="winKinect" />
+  <workingDir path="/home/robocomp/" />
+  <upCommand command="rcremote 10.0.30.22 humanComp /home/robocomp/robocomp/components/robocomp-viriato/components/humanAgent ./bin/humanComp /home/robocomp/robocomp/components/robocomp-viriato/etc/hriAgent.conf" />
+  <downCommand command="ssh robolab@10.0.30.22 killall -9 humanComp" />
+  <configFile path="kate /home/robocomp/robocomp/components/robocomp-viriato/etc/hriAgent.conf" />
+  <xpos value="112.274963147" />
+  <ypos value="-120.057341618" />
+  <radius value="10.0" />
+  <color value="#33FF33" />
+ </node>
+
+ <node alias="humanFakeA" endpoint="agmcommonbehavior:tcp -h localhost -p 10210">
+  <dependence alias="executive" />
+  <workingDir path="/home/robocomp/" />
+  <upCommand command="rcremote localhost humanFakeA /home/robocomp/robocomp/components/robocomp-viriato/components/fakeHumanAgent ./bin/fakeHumanAgent /home/robocomp/robocomp/components/robocomp-viriato/etc/humanFake.conf" />
+  <downCommand command="killall -9 fakeHumanAgent" />
+  <configFile path="/home/robocomp/robocomp/components/robocomp-viriato/etc/humanFake.conf" />
+  <xpos value="118.285111289" />
+  <ypos value="-258.889280618" />
+  <radius value="10.0" />
+  <color value="#33FF33" />
+ </node>
+
+ <node alias="objectA" endpoint="agmcommonbehavior:tcp -h 10.0.30.22 -p 10331">
+  <dependence alias="april" />
+  <dependence alias="objOracle" />
+  <dependence alias="objD" />
+  <workingDir path="/home/robocomp/" />
+  <upCommand command="rcremote 10.0.30.22 objAgnt /home/robocomp/robocomp/components/robocomp-viriato/components/objectagent ./bin/objectagent /home/robocomp/robocomp/components/robocomp-viriato/etc/objectAgent.conf" />
+  <downCommand command="ssh robolab@10.0.30.22 killall -9 objectagent" />
+  <configFile path="kate /home/robocomp/robocomp/components/robocomp-viriato/etc/objectAgent.conf" />
+  <xpos value="-25.7366163139" />
+  <ypos value="-76.1224240939" />
+  <radius value="10.0" />
+  <color value="#33FF33" />
+ </node>
+
+ <node alias="objD" endpoint="objectdetection:tcp -h 10.0.30.22 -p 12333 ">
+  <dependence alias="IS" />
+  <dependence alias="rgbd" />
+  <workingDir path="/home/robocomp/" />
+  <upCommand command="rcremote 10.0.30.22 objectD /home/robocomp/robocomp/components/prp/components/objectDetection ./bin/objectDetectionComp /home/robocomp/robocomp/components/robocomp-viriato/etc/objectDetection.conf" />
+  <downCommand command="ssh robolab@10.0.30.22 killall -9 objectDetectionComp" />
+  <configFile path="kate /home/robocomp/robocomp/components/prp/components/objectDetection/etc/config" />
+  <xpos value="-29.8980630883" />
+  <ypos value="-0.947597809873" />
+  <radius value="10.0" />
+  <color value="#33FF33" />
+ </node>
+
+ <node alias="rgbd" endpoint="rgbd:tcp -h 10.0.30.33 -p 10096">
+  <dependence alias="comJoint" />
+  <workingDir path="/home/robocomp/" />
+  <upCommand command="rcremote 10.0.30.33 rgbd /home/robocomp/robocomp/components/robocomp-robolab/components/openni2PCL bin/openNI2pcl --Ice.Config=/home/robocomp/robocomp/components/robocomp-viriato/etc/primesense.conf" />
+  <downCommand command="rcremote 10.0.30.33 X / killall -9 openNI2Comp" />
+  <configFile path="kate /home/robocomp/robocomp/components/robocomp-viriato/etc/primesense.conf" />
+  <xpos value="37.5501435586" />
+  <ypos value="71.4721038837" />
+  <radius value="10.0" />
+  <color value="#3333FF" />
+ </node>
+
+ <node alias="dunker" endpoint="jointmotor:tcp -h 10.0.30.22 -p 10066">
+  <workingDir path="/home/robocomp/" />
+  <upCommand command="rcremote 10.0.30.22 dnkr /home/robocomp/robocomp/components/robocomp-robolab/components/dunkermotorenComp/ ./bin/dunkermotorenComp --Ice.Config=/home/robocomp/robocomp/components/robocomp-viriato/etc/dunker.conf" />
+  <downCommand command="ssh robolab@10.0.30.22 killall -9 dunkermotorenComp" />
+  <configFile path="kate /home/robocomp/robocomp/components/robocomp-viriato/etc/ursus.conf" />
+  <xpos value="-160.708565857" />
+  <ypos value="182.381225886" />
+  <radius value="10.0" />
+  <color value="#33FF33" />
+ </node>
+
+ <node alias="IS" endpoint="IceStorm/TopicManager:default -h 10.0.30.11 -p 9999">
+  <workingDir path="/home/robocomp/robocomp/components/robocomp-viriato/etc/" />
+  <upCommand command="rcremote 10.0.30.11 IS /home/robocomp/robocomp/components/robocomp-viriato/etc/ rcnode" />
+  <downCommand command="ssh robolab@10.0.30.11 killall -9 icebox" />
+  <configFile path="kate /home/robocomp/robocomp/components/robocomp-viriato/etc/ursus.conf" />
+  <xpos value="-25.8301911866" />
+  <ypos value="106.028452594" />
+  <radius value="10.0" />
+  <color value="#FF3333" />
+ </node>
+
+ <node alias="dynamixel" endpoint="jointmotor:tcp -h 10.0.30.11 -p 10068">
+  <workingDir path="/home/robocomp/" />
+  <upCommand command="rcremote 10.0.30.11 dyxl /home/robocomp/robocomp/components/robocomp-robolab/components/dynamixelComp/ ./bin/dynamixelComp --Ice.Config=/home/robocomp/robocomp/components/robocomp-viriato/etc/dynamixel.conf" />
+  <downCommand command="rcremote 10.0.30.11 X / killall -9 dynamixelComp" />
+  <configFile path="kate /home/robocomp/robocomp/components/robocomp-viriato/etc/dynamixel.conf" />
+  <xpos value="30.6265592041" />
+  <ypos value="183.512143803" />
+  <radius value="10.0" />
+  <color value="#FF3333" />
+ </node>
+
+ <node alias="winKinect" endpoint="mskrgbd:tcp -h 10.0.30.44 -p 10000">
+  <workingDir path="/home/robocomp/" />
+  <upCommand command="" />
+  <downCommand command="" />
+  <configFile path="" />
+  <xpos value="188.955359067" />
+  <ypos value="-106.27209523" />
+  <radius value="10.0" />
+  <color value="#FF3333" />
+ </node>
+
+ <node alias="schunk" endpoint="jointmotor:tcp -h 10.0.30.44 -p 10067">
+  <workingDir path="/home/robocomp/" />
+  <upCommand command="" />
+  <downCommand command="" />
+  <configFile path="" />
+  <xpos value="120.653503379" />
+  <ypos value="132.000575547" />
+  <radius value="10.0" />
+  <color value="#FF3333" />
+ </node>
+
+ <node alias="comJoint" endpoint="jointmotor:tcp -h 10.0.30.11 -p 20000">
+  <dependence alias="dynamixel" />
+  <dependence alias="schunk" />
+  <workingDir path="/home/robocomp/" />
+  <upCommand command="rcremote 10.0.30.11 cj /home/robocomp/robocomp/components/robocomp-viriato/components/ursusCommonJoint ./bin/ursuscommonjointcomp --Ice.Config=/home/robocomp/robocomp/components/robocomp-viriato/etc/commonjoint.conf" />
+  <downCommand command="rcremote 10.0.30.11 X / killall -9 ursuscommonjointcomp" />
+  <configFile path="kate /home/robocomp/robocomp/components/robocomp-viriato/etc/commonjoint.conf" />
+  <xpos value="82.6780334895" />
+  <ypos value="112.42629924" />
+  <radius value="10.0" />
+  <color value="#FF3333" />
+ </node>
+
+ <node alias="base" endpoint="omnirobot:tcp -h 10.0.30.11 -p 12238">
+  <dependence alias="dunker" />
+  <workingDir path="/home/robocomp/" />
+  <upCommand command="rcremote 10.0.30.11 base /home/robocomp/robocomp/components/robocomp-viriato/components/baseursus/ ./bin/baseursuscomp --Ice.Config=/home/robocomp/robocomp/components/robocomp-viriato/etc/base.conf" />
+  <downCommand command="ssh robolab@10.0.30.11 killall -9 baseursuscomp" />
+  <configFile path="kate /home/robocomp/robocomp/components/robocomp-viriato/etc/ursus.conf" />
+  <xpos value="-135.637300564" />
+  <ypos value="112.334466517" />
+  <radius value="10.0" />
+  <color value="#FF3333" />
+ </node>
+
+ <node alias="js" endpoint="joystick:tcp -h 10.0.30.33 -p 10002">
+  <dependence alias="base" />
+  <workingDir path="/home/robocomp/" />
+  <upCommand command="rcremote 10.0.30.33 jstck /home/robocomp/robocomp/components/robocomp-robolab/components/joystickOmniComp/ ./bin/joystickOmniComp --Ice.Config=/home/robocomp/robocomp/components/robocomp-viriato/etc/joystick.conf" />
+  <downCommand command="ssh robolab@10.0.30.33 killall -9 joystickOmniComp" />
+  <configFile path="kate /home/robocomp/robocomp/components/robocomp-viriato/etc/ursus.conf" />
+  <xpos value="-203.128974676" />
+  <ypos value="130.698212377" />
+  <radius value="10.0" />
+  <color value="#FF3333" />
+ </node>
+
+ <node alias="jsLocal" endpoint="joystick:tcp -h localhost -p 10002">
+  <dependence alias="base" />
+  <workingDir path="/home/robocomp/" />
+  <upCommand command="rcremote localhost jstck /home/robocomp/robocomp/components/robocomp-robolab/components/joystickOmniComp/ ./bin/joystickOmniComp --Ice.Config=/home/robocomp/robocomp/components/robocomp-viriato/etc/joystick.conf" />
+  <downCommand command="killall -9 joystickOmniComp" />
+  <configFile path="kate /home/robocomp/robocomp/components/robocomp-viriato/etc/ursus.conf" />
+  <xpos value="-192.416851445" />
+  <ypos value="83.7373683574" />
+  <radius value="10.0" />
+  <color value="#FF3333" />
+ </node>
+
+ <node alias="laser" endpoint="laser:tcp -h 10.0.30.33 -p 10003">
+  <workingDir path="/home/robocomp/" />
+  <upCommand command="rcremote 10.0.30.33 lsr /home/robocomp/robocomp/components/robocomp-robolab/components/hokuyoComp/ ./bin/hokuyo --Ice.Config=/home/robocomp/robocomp/components/robocomp-viriato/etc/laser.conf" />
+  <downCommand command="rcremote 10.0.30.33 X / killall -9 hokuyo" />
+  <configFile path="kate /home/robocomp/robocomp/components/robocomp-viriato/etc/laser.conf" />
+  <xpos value="-51.3938063614" />
+  <ypos value="153.237056304" />
+  <radius value="10.0" />
+  <color value="#3333FF" />
+ </node>
+
+ <node alias="trajectory2d" endpoint="trajectoryrobot2d:tcp -h 10.0.30.33 -p 19204">
+  <dependence alias="base" />
+  <dependence alias="laser" />
+  <dependence alias="slam" />
+  <workingDir path="/home/robocomp/" />
+  <upCommand command="rcremote 10.0.30.33 trajectory2d /home/robocomp/robocomp/components/robocomp-viriato/components/trajectoryrobot2d ./bin/trajectoryrobot2d --Ice.Config=/home/robocomp/robocomp/components/robocomp-viriato/etc/trajectoryrobot2d.conf" />
+  <downCommand command="rcremote 10.0.30.33 X / killall -9 trajectoryrobot2d" />
+  <configFile path="/home/robocomp/robocomp/components/robocomp-viriato/etc/trajectoryrobot2d.conf" />
+  <xpos value="-167.419144251" />
+  <ypos value="-34.2062201369" />
+  <radius value="10.0" />
+  <color value="#3333FF" />
+ </node>
+
+ <node alias="localizationA" endpoint="commonbehavior:tcp -h 10.0.30.22 -p 14351">
+  <dependence alias="executive" />
+  <dependence alias="base" />
+  <dependence alias="slam" />
+  <workingDir path="/home/robocomp/" />
+  <upCommand command="rcremote 10.0.30.22 localizationAgnt /home/robocomp/robocomp/components/robocomp-viriato/components/localizationAgent ./bin/localizationAgent --Ice.Config=/home/robocomp/robocomp/components/robocomp-viriato/etc/localizationAgent.conf" />
+  <downCommand command="rcremote 10.0.30.22 X / killall -9 localizationAgent" />
+  <configFile path="/home/robocomp/robocomp/components/robocomp-viriato/etc/localizationAgent.conf" />
+  <xpos value="-82.3352289854" />
+  <ypos value="-118.63411925" />
+  <radius value="10.0" />
+  <color value="#33FF33" />
+ </node>
+
+ <node alias="mission2" endpoint="commonbehavior:tcp -h localhost -p 11247">
+  <dependence alias="executive" />
+  <dependence alias="navigA" />
+  <dependence alias="localizationA" />
+  <dependence alias="dialogA" />
+  <dependence alias="ppcptnA" />
+  <dependence alias="objectA" />
+  <dependence alias="graspingA" />
+  <workingDir path="/home/robocomp/" />
+  <upCommand command="rcremote localhost mission /home/robocomp/AGM/tools/agmmission ./bin/agmmission /home/robocomp/robocomp/components/robocomp-viriato/etc/mission.conf" />
+  <downCommand command="killall -9 agmmission" />
+  <configFile path="kate /home/robocomp/robocomp/components/robocomp-viriato/etc/mission.conf" />
+  <xpos value="9.20395434212" />
+  <ypos value="-199.74866478" />
+  <radius value="10.0" />
+  <color value="#AAAAAA" />
+ </node>
+
+ <node alias="mission" endpoint="commonbehavior:tcp -h localhost -p 11247">
+  <dependence alias="executive" />
+  <workingDir path="/home/robocomp/" />
+  <upCommand command="rcremote localhost mission /home/robocomp/ agmmission /home/robocomp/robocomp/components/robocomp-viriato/etc/mission.conf" />
+  <downCommand command="killall -9 agmmission" />
+  <configFile path="kate /home/robocomp/robocomp/components/robocomp-viriato/etc/mission.conf" />
+  <xpos value="-85.8500602298" />
+  <ypos value="-239.333666022" />
+  <radius value="10.0" />
+  <color value="#AAAAAA" />
+ </node>
+
+ <node alias="telegram" endpoint="commonbehavior:tcp -h 10.0.30.11 -p 10022">
+  <dependence alias="executive" />
+  <workingDir path="/home/robocomp/" />
+  <upCommand command="rcremote 10.0.30.11 telegram /home/robocomp/robocomp/components/robocomp-viriato/components/telegrammission/ python src/telegrammission.py --Ice.Config=/home/robocomp/robocomp/components/robocomp-viriato/etc/telegrammission.conf" />
+  <downCommand command="ssh robolab@10.0.30.11 pkill -9 -f telegrammission.py" />
+  <configFile path="/home/robocomp/robocomp/components/robocomp-ursus/etc/config" />
+  <xpos value="166.916501614" />
+  <ypos value="-207.202031162" />
+  <radius value="10.0" />
+  <color value="#FF3333" />
+ </node>
+
+ <node alias="speech" endpoint="commonbehavior:tcp -h 10.0.30.11 -p 10021">
+  <workingDir path="/home/robocomp/" />
+  <upCommand command="rcremote 10.0.30.11 speechComp /home/robocomp/robocomp/components/robocomp-robolab/components/speechComp/ python src/speechComp.py --Ice.Config=etc/config" />
+  <downCommand command="ssh robolab@10.0.30.11 pkill -9 -f speechComp.py" />
+  <configFile path="/home/robocomp/robocomp/components/robocomp-ursus/etc/config" />
+  <xpos value="183.526821252" />
+  <ypos value="143.109282202" />
+  <radius value="10.0" />
+  <color value="#FF3333" />
+ </node>
+
+ <node alias="dialogA" endpoint="agmcommonbehavior:tcp -h 10.0.30.22 -p 10334">
+  <dependence alias="speech" />
+  <workingDir path="/home/robocomp/" />
+  <upCommand command="rcremote 10.0.30.22 dialogA /home/robocomp/robocomp/components/robocomp-viriato/components/dialogAgent ./bin/dialogagent /home/robocomp/robocomp/components/robocomp-viriato/etc/dialogagent.conf" />
+  <downCommand command="ssh robolab@10.0.30.22 killall -9 dialogagent" />
+  <configFile path="kate /home/robocomp/robocomp/components/robocomp-viriato/etc/dialog.conf" />
+  <xpos value="158.376625386" />
+  <ypos value="-161.628602503" />
+  <radius value="10.0" />
+  <color value="#33FF33" />
+ </node>
+
+ <node alias="graspingA" endpoint="agmcommonbehavior:tcp -h 10.0.30.22 -p 10332">
+  <dependence alias="gik" />
+  <workingDir path="/home/robocomp/" />
+  <upCommand command="rcremote 10.0.30.22 graspingAgnt /home/robocomp/robocomp/components/robocomp-viriato/components/graspingAgent ./bin/graspingComp /home/robocomp/robocomp/components/robocomp-viriato/etc/graspingAgent.conf" />
+  <downCommand command="ssh robolab@10.0.30.22 killall -9 graspingComp" />
+  <configFile path="kate /home/robocomp/robocomp/components/robocomp-viriato/etc/graspingAgent.conf" />
+  <xpos value="48.347449566" />
+  <ypos value="-78.2052339676" />
+  <radius value="10.0" />
+  <color value="#33FF33" />
+ </node>
+
+ <node alias="ppcptnA" endpoint="agmcommonbehavior:tcp -h 10.0.30.22 -p 10335">
+  <dependence alias="IS" />
+  <dependence alias="comJoint" />
+  <workingDir path="/home/robocomp/" />
+  <upCommand command="rcremote 10.0.30.22 ppcptnAg /home/robocomp/robocomp/components/robocomp-viriato/components/proprioceptionAgent ./bin/proprioceptionAgent /home/robocomp/robocomp/components/robocomp-viriato/etc/proprioceptionAgent.conf" />
+  <downCommand command="ssh robolab@10.0.30.22 killall -9 proprioceptionAgent" />
+  <configFile path="kate /home/robocomp/robocomp/components/robocomp-viriato/etc/proprioceptionAgent.conf" />
+  <xpos value="-124.464377995" />
+  <ypos value="-154.064811886" />
+  <radius value="10.0" />
+  <color value="#33FF33" />
+ </node>
+
+ <node alias="navigA" endpoint="agmcommonbehavior:tcp -h 10.0.30.22 -p 10330">
+  <dependence alias="trajectory2d" />
+  <workingDir path="/home/robocomp/" />
+  <upCommand command="rcremote 10.0.30.22 navAgnt /home/robocomp/robocomp/components/robocomp-viriato/components/navigationAgent ./bin/navigationAgent /home/robocomp/robocomp/components/robocomp-viriato/etc/navigationAgent.conf" />
+  <downCommand command="ssh robolab@10.0.30.22 killall -9 navigationAgent gdb" />
+  <configFile path="kate /home/robocomp/robocomp/components/robocomp-viriato/etc/navigationAgent.conf" />
+  <xpos value="-145.54359869" />
+  <ypos value="-197.766423955" />
+  <radius value="10.0" />
+  <color value="#33FF33" />
+ </node>
+
+ <node alias="logger" endpoint="commonbehavior:tcp -p 12070">
+  <dependence alias="IS" />
+  <workingDir path="/home/robocomp/" />
+  <upCommand command="rcremote 10.0.30.11 rclogger /home/robocomp/ rclogger" />
+  <downCommand command="ssh robolab@10.0.30.11 killall -9 rclogger" />
+  <configFile path="" />
+  <xpos value="125.203465144" />
+  <ypos value="226.086265073" />
+  <radius value="10.0" />
+  <color value="#FF3333" />
+ </node>
+
+ <node alias="slam" endpoint="commonbehavior:tcp -h 10.0.30.11 -p 11059">
+  <dependence alias="laser" />
+  <dependence alias="base" />
+  <dependence alias="IS" />
+  <workingDir path="/home/robocomp/" />
+  <upCommand command="rcremote 10.0.30.11 gmapping /home/robocomp/robocomp/components/robocomp-robolab/experimental/gmappingComp ./bin/gmappingComp /home/robocomp/robocomp/components/robocomp-viriato/etc/gmapping.conf" />
+  <downCommand command="ssh robolab@10.0.30.11 killall -9 gmappingComp" />
+  <configFile path="kate /home/robocomp/robocomp/components/robocomp-robolab/experimental/CGR/etc/config" />
+  <xpos value="-68.0924759715" />
+  <ypos value="86.8035956679" />
+  <radius value="10.0" />
+  <color value="#FF3333" />
+ </node>
+
+</rcmanager>
