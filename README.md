@@ -14,6 +14,9 @@ The leds on the right indicate the status of the robot in terms of charge.
 
 
 ### Setting up the operating system for the robot
- * Make sure that the *udev* rules have been installed and that the user that is going to run the robot's components is in the group *dialout*. See rules file: *files/777-VIRIATO.rules*. 
+ * Include the user that is going to run the robot's components is in the group *dialout*. Logout and log back in.
+ * Make sure that the *udev* rules files have been installed (copy file *files/777-VIRIATO.rules* to *etc/udev/rules.d/*) and restart the *udev* service.
+ * Run *files/setDevices1.sh* every time you plug/un-plug the Viriato's USB connectors to reset the config files. Bare in mind that although UDEV creates the /dev/viriatoctl and /dev/viriatonrg files, the component must use the actual device files. This scripts makes sure that the files are properly set up.
+ * The motor controllers' API can be found in https://www.roboteq.com/index.php/docman/motor-controllers-documents-and-files/nxtgen-downloads-1/application-programming-interface/8-linux-api/file
 
 ### Deploying components
