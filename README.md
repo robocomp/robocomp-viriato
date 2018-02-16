@@ -12,4 +12,8 @@ To turn on the platform the red and black buttons must be pressed simultaneously
 
 The leds on the right indicate the status of the robot in terms of charge.
 
+
+### Setting up the operating system for the robot
+ * Make sure that the *udev* rules have been installed and that the user that is going to run the robot's components is in the group *dialout*. See rules file: *files/777-VIRIATO.rules*. 
+
 ### Deploying components
