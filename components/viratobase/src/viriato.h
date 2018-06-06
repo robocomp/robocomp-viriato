@@ -23,19 +23,16 @@ using namespace std;
 class Viriato
 {
 public:
-    Viriato();
-    ~Viriato();
-    void setVelocity(float x, float z, float angle);
-    void setVelocity(float V1, float V2, float V3, float V4);
-	
-	void getVelocity(float V1, float V2, float V3, float V4);
+	Viriato(std::string port);
+	~Viriato();
+	void setVelocity(float V1, float V2, float V3, float V4, float &rV1, float &rV2, float &rV3, float &rV4);
 
 private:
-    QMutex *mutex;
-    int status;
-    RoboteqDevice device;
-    int PrevVD, VD, PrevVTheta, VTheta, V1, V2, V3, V4;
-    float ThetaD45, AUX_VD, AUX_Th,FR,LR,ThetaD, PrevThetaD;
+	QMutex *mutex;
+	int status;
+	RoboteqDevice device;
+	int PrevVD, VD, PrevVTheta, VTheta, V1, V2, V3, V4;
+	float ThetaD45, AUX_VD, AUX_Th,FR,LR,ThetaD, PrevThetaD;
 
 };
 

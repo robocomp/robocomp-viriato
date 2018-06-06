@@ -23,9 +23,23 @@
 */
 SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
 {
-	printf("viriato: initializing communication with the robot...");
+}
+
+/**
+* \brief Default destructor
+*/
+SpecificWorker::~SpecificWorker()
+{
+	delete viriato;
+}
+
+bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
+{
+	QMutexLocker locker(mutex);
+
+	printf("viriato: initializing communication with the robot (stale connection might indicate port misconfiguration)...");
 	fflush(stdout);
-	viriato = new Viriato();
+	viriato = new Viriato(params["ViriatoBase.Port"].value);
 	printf(". done!\n");
 	
 	wheelVels = QVec::vec4(0,0,0,0);
@@ -47,19 +61,7 @@ SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
 	corrBackPose->addChild(corrNewPose);
 	
 	printf("viriato: successfully initialized\n");
-}
 
-/**
-* \brief Default destructor
-*/
-SpecificWorker::~SpecificWorker()
-{
-	delete viriato;
-}
-
-bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
-{
-	QMutexLocker locker(mutex);
 
 	// YEP: OMNI-DIRECTIONAL ROBOTS: Abstract: All the robots introduced in chapter 7, with the exception of syncro-drive vehicles...
 	// NOPE: http://cdn.intechopen.com/pdfs-wm/465.pdf
@@ -106,74 +108,46 @@ bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 	M_vels_2_wheels = M_vels_2_wheels.operator*(1./(R)); // 1/R instead of 1/(2*pi*R) because we use rads/s instead of rev/s
 	M_vels_2_wheels.print("M_vels_2_wheels");
 	
-	timer.start(Period);
+	timer.start(0);
+	
 	return true;
 }
 
 void SpecificWorker::compute()
 {
+	printf("compute\n");
 	setWheels(wheelVels);
 	computeOdometry(false);
+	usleep(10000);
 }
 
-
-double SpecificWorker::getElapsedSeconds(bool clear)
-{
-	static timeval *a = new timeval;
-	static timeval *b = new timeval;
-	static bool first = true;
-	
-	if (first)
-	{
-		first = false;
-		gettimeofday(a, NULL);
-		gettimeofday(b, NULL);
-		return 0.;
-	}
-	if (clear)
-	{
-		*a = *b;
-	}
-
-	gettimeofday(b, NULL);
-	double ret = (double(b->tv_sec)-double(a->tv_sec)) + (double(b->tv_usec)-double(a->tv_usec))/1000000.;
-
-	return ret;
-}
 
 void SpecificWorker::computeOdometry(bool forced)
 {
 	QMutexLocker locker(mutex);
-	const double elapsedTime = getElapsedSeconds();
-	
-	if (forced or elapsedTime > 0.08)
-	{
-		getElapsedSeconds(true);
-		QVec newP;
-		QVec wheelsInc = wheelVels.operator*(elapsedTime);
-		QVec deltaPos = M_wheels_2_vels * wheelsInc;
 
-		// Raw odometry
-		innermodel->updateTransformValues("newPose",     deltaPos(1), 0, deltaPos(0),       0,       deltaPos(2), 0);
-		newP = innermodel->transform("root", "newPose");
-		innermodel->updateTransformValues("backPose",        newP(0), 0,     newP(2),       0, angle+deltaPos(2), 0);
-		innermodel->updateTransformValues("newPose",               0, 0,           0,       0,                 0, 0);
-		x = newP(0);
-		z = newP(2);
-		angle += deltaPos(2);
-
-		// Corrected odometry
-		innermodel->updateTransformValues("corrNewPose",    deltaPos(1), 0, deltaPos(0),    0,       deltaPos(2), 0);
-		newP = innermodel->transform("root", "corrNewPose");
-		innermodel->updateTransformValues("corrBackPose",       newP(0), 0,     newP(2),    0, corrAngle+deltaPos(2), 0);
-		innermodel->updateTransformValues("corrNewPose",              0, 0,           0,    0,                 0, 0);
-		corrX = newP(0);
-		corrZ = newP(2);
-		corrAngle += deltaPos(2);
-	}
+	static QVec previousWheelsPos = wheelsPos;
+	QVec deltaPos = M_wheels_2_vels * (wheelsPos-previousWheelsPos);
+	previousWheelsPos = wheelsPos;
 	
-	float V1, V2, V3, V4;
-	viriato->getVelocity(V1, V2, V3, V4);
+	QVec newP;
+	// Raw odometry
+	innermodel->updateTransformValues("newPose",     deltaPos(1), 0, deltaPos(0),       0,       deltaPos(2), 0);
+	newP = innermodel->transform("root", "newPose");
+	innermodel->updateTransformValues("backPose",        newP(0), 0,     newP(2),       0, angle+deltaPos(2), 0);
+	innermodel->updateTransformValues("newPose",               0, 0,           0,       0,                 0, 0);
+	x = newP(0);
+	z = newP(2);
+	angle += deltaPos(2);
+
+	// Corrected odometry
+	innermodel->updateTransformValues("corrNewPose",    deltaPos(1), 0, deltaPos(0),    0,       deltaPos(2), 0);
+	newP = innermodel->transform("root", "corrNewPose");
+	innermodel->updateTransformValues("corrBackPose",       newP(0), 0,     newP(2),    0, corrAngle+deltaPos(2), 0);
+	innermodel->updateTransformValues("corrNewPose",              0, 0,           0,    0,                 0, 0);
+	corrX = newP(0);
+	corrZ = newP(2);
+	corrAngle += deltaPos(2);
 }
 
 
@@ -250,7 +224,10 @@ void SpecificWorker::setWheels(QVec wheelVels_)
 	double rps2rpm = 60./(2.*M_PI);
 	double encoderFactor = 71.0/8.0;
 	QVec f = wheelVels_.operator*(rps2rpm * encoderFactor);
-	viriato->setVelocity(f(0), -f(1), f(2), -f(3));
+	
+	float r1,r2,r3,r4;
+	viriato->setVelocity(f(0), -f(1), f(2), -f(3), r1, r2, r3, r4);
+	wheelsPos = QVec::vec4(r1, -r2, r3, -r4).operator/(rps2rpm * encoderFactor);
 }
 
 

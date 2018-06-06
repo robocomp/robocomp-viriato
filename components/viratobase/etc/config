@@ -6,6 +6,7 @@ OmniRobot.Endpoints=tcp -p 10004
 
 
 
+ViriatoBase.Port=/dev/ttyUSB0
 ViriatoBase.WheelRadius=76.2
 ViriatoBase.DistAxes=380.
 ViriatoBase.AxesLength=422.

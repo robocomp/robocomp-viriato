@@ -99,6 +99,9 @@ void SpecificMonitor::readConfig(RoboCompCommonBehavior::ParameterList &params )
 	configGetString("", "ViriatoBase.AxesLength", aux.value, "422.");
 	params["ViriatoBase.AxesLength"] = aux;
 
+	aux.editable = true;
+	configGetString("", "ViriatoBase.Port", aux.value, "/dev/ttyUSB0");
+	params["ViriatoBase.Port"] = aux;
 }
 
 //comprueba que los parametros sean correctos y los transforma a la estructura del worker

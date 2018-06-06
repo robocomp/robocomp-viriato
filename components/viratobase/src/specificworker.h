@@ -56,7 +56,7 @@ private:
 	QMat M_wheels_2_vels;
 	QMat M_vels_2_wheels;
 	// Odometry control
-	QVec wheelVels;
+	QVec wheelVels, wheelsPos;
 	float angle, x, z;
 	float corrAngle, corrX, corrZ;
 	InnerModel *innermodel;
@@ -68,7 +68,6 @@ public slots:
 
 private:
 	Viriato *viriato;
-	double getElapsedSeconds(bool clear = false);
 };
 
 #endif
