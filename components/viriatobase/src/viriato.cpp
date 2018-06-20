@@ -36,7 +36,7 @@ void Viriato::setVelocity(float V1, float V2, float V3, float V4, float &rV1, fl
 	rV2 = V2i;
 	rV3 = V3i;
 	rV4 = V4i;
-	cout << "Got: " << V1i << " " << V2i << " " << V3i << " " << V4i << "\n";
+// 	cout << "Got: " << V1i << " " << V2i << " " << V3i << " " << V4i << "\n";
 }
 
 

@@ -1,8 +1,8 @@
-CommonBehavior.Endpoints=tcp -p 20004
+CommonBehavior.Endpoints=tcp -p 3244
 
 
 # Endpoints for implemented interfaces
-OmniRobot.Endpoints=tcp -p 10004
+OmniRobot.Endpoints=tcp -p 12238
 
 
 

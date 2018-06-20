@@ -63,8 +63,7 @@ bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 	printf("viriato: successfully initialized\n");
 
 
-	// YEP: OMNI-DIRECTIONAL ROBOTS: Abstract: All the robots introduced in chapter 7, with the exception of syncro-drive vehicles...
-	// NOPE: http://cdn.intechopen.com/pdfs-wm/465.pdf
+	// YEP: OMNI-DIRECTIONAL ROBOTS: https://link.springer.com/chapter/10.1007/978-3-540-70534-5_9
 	R  = QString::fromStdString(params["ViriatoBase.WheelRadius"].value).toFloat(); 
 	l1 = QString::fromStdString(params["ViriatoBase.DistAxes"].value   ).toFloat();
 	l2 = QString::fromStdString(params["ViriatoBase.AxesLength"].value ).toFloat();
@@ -73,16 +72,16 @@ bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 	printf("r:  %f\n", R);
 
 	// inverse kinematics matrix
-	const float ill = 1. / (2.*(l1 + l2));
+	const float ill = 0.5 / (l1 + l2);
 	M_wheels_2_vels = QMat(3, 4);
-	M_wheels_2_vels(0,0) = +1./4.;
-	M_wheels_2_vels(0,1) = +1./4.;
-	M_wheels_2_vels(0,2) = +1./4.;
-	M_wheels_2_vels(0,3) = +1./4.;
-	M_wheels_2_vels(1,0) = +1./4.;
-	M_wheels_2_vels(1,1) = -1./4.;
-	M_wheels_2_vels(1,2) = -1./4.;
-	M_wheels_2_vels(1,3) = +1./4.;
+	M_wheels_2_vels(0,0) = +1/4.;
+	M_wheels_2_vels(0,1) = +1/4.;
+	M_wheels_2_vels(0,2) = +1/4.;
+	M_wheels_2_vels(0,3) = +1/4.;
+	M_wheels_2_vels(1,0) = +1/4.;
+	M_wheels_2_vels(1,1) = -1/4.;
+	M_wheels_2_vels(1,2) = -1/4.;
+	M_wheels_2_vels(1,3) = +1/4.;
 	M_wheels_2_vels(2,0) = +ill;
 	M_wheels_2_vels(2,1) = -ill;
 	M_wheels_2_vels(2,2) = +ill;
@@ -91,16 +90,16 @@ bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 	M_wheels_2_vels.print("M_wheels_2_vels");
 
 	// forward kinematics matrix
-	const float ll = (l1 + l2)/2.;
+	const float ll = 0.5*(l1 + l2);
 	M_vels_2_wheels = QMat(4,3);
 	M_vels_2_wheels(0,0) = +1.;
 	M_vels_2_wheels(1,0) = +1.;
 	M_vels_2_wheels(2,0) = +1.;
 	M_vels_2_wheels(3,0) = +1.;
-	M_vels_2_wheels(0,1) = +1.;
-	M_vels_2_wheels(1,1) = -1.;
-	M_vels_2_wheels(2,1) = -1.;
-	M_vels_2_wheels(3,1) = +1.;
+	M_vels_2_wheels(0,1) = -1.;
+	M_vels_2_wheels(1,1) = +1.;
+	M_vels_2_wheels(2,1) = +1.;
+	M_vels_2_wheels(3,1) = -1.;
 	M_vels_2_wheels(0,2) = +ll; // In contrast with the paper this code is based on, the
 	M_vels_2_wheels(1,2) = -ll; // third column of the matrix is inverted because we use
 	M_vels_2_wheels(2,2) = +ll; // the left-hand rule for angles.
@@ -115,7 +114,7 @@ bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 
 void SpecificWorker::compute()
 {
-	printf("compute\n");
+// 	printf("compute\n");
 	setWheels(wheelVels);
 	computeOdometry(false);
 	usleep(10000);
@@ -127,7 +126,10 @@ void SpecificWorker::computeOdometry(bool forced)
 	QMutexLocker locker(mutex);
 
 	static QVec previousWheelsPos = wheelsPos;
-	QVec deltaPos = M_wheels_2_vels * (wheelsPos-previousWheelsPos);
+	QVec deltaWheels = (wheelsPos-previousWheelsPos).operator*(0.912*0.912/M_PIl);
+	QVec deltaPos = M_wheels_2_vels * deltaWheels;
+
+	deltaPos(1) *= -1;
 	previousWheelsPos = wheelsPos;
 	
 	QVec newP;
@@ -213,7 +215,9 @@ void SpecificWorker::setSpeedBase(const float advx, const float advz, const floa
 	computeOdometry(true);
 	QMutexLocker locker(mutex);
 	const QVec v = QVec::vec3(advz, advx, rotv);
+// 	v.print("v");
 	const QVec wheels = M_vels_2_wheels * v;
+// 	wheels.print("wheels");
 	setWheels(wheels);
 }
 
@@ -224,10 +228,12 @@ void SpecificWorker::setWheels(QVec wheelVels_)
 	double rps2rpm = 60./(2.*M_PI);
 	double encoderFactor = 71.0/8.0;
 	QVec f = wheelVels_.operator*(rps2rpm * encoderFactor);
+	f = f.operator*(1./0.912);
 	
 	float r1,r2,r3,r4;
-	viriato->setVelocity(f(0), -f(1), f(2), -f(3), r1, r2, r3, r4);
-	wheelsPos = QVec::vec4(r1, -r2, r3, -r4).operator/(rps2rpm * encoderFactor);
+	viriato->setVelocity(    -f(0),   +f(1),   -f(2),   +f(3), r1, r2, r3, r4);
+	wheelsPos = QVec::vec4(  -r1,     +r2,     -r3,     +r4).operator/(rps2rpm * encoderFactor);
+// 	wheelsPos.print("wheelsPos");
 }
 
 
