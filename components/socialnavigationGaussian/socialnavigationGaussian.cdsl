@@ -1,0 +1,11 @@
+import "SocialNavigationGaussian.idsl";
+
+Component socialnavigationGaussian
+{
+	Communications
+	{
+		implements SocialNavigationGaussian;
+	};
+	language python;
+};
+

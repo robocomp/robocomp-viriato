@@ -1,0 +1,48 @@
+#
+# P R O V I D E D    E N D P O I N T S
+#
+AGMCommonBehavior.Endpoints=tcp -p 10330
+CommonBehavior.Endpoints=tcp -p 11330
+AGMExecutiveTopicTopic.Endpoints=tcp -p 12330
+TrajectoryRobot2D.Endpoints=tcp -p 12204
+#
+# R E M O T E    P R O X I E S
+#
+TopicManager.Proxy=IceStorm/TopicManager:default -h localhost -p 9999
+InnerModelManagerProxy = innermodelmanager:tcp -h localhost -p 11175
+SocialNavigationGaussianProxy = socialnavigationgaussian:tcp -h localhost -p 20020
+#global
+#TrajectoryRobot2DProxy = trajectoryrobot2d:tcp -h localhost -p 12204
+#local
+TrajectoryRobot2DProxy = trajectoryrobot2d:tcp -h localhost -p 19204
+OmniRobotProxy = omnirobot:tcp -h localhost -p 12238
+AGMExecutiveProxy = agmexecutive:tcp -h localhost -p 10198
+
+#NavigationAgent.InnerModel=/home/robocomp/robocomp/components/robocomp-ursus-rockin/files/makeMeCoffee/simulation.xml
+
+NavigationAgent.ArrivalTolerance = 20
+
+NavigationAgent.MaxZSpeed = 350.5
+NavigationAgent.MaxXSpeed = 150
+NavigationAgent.MaxRotationSpeed = 0.3
+
+NavigationAgent.RobotXWidth = 500
+NavigationAgent.RobotZLong = 500
+NavigationAgent.RobotRadius = 300
+
+NavigationAgent.MinControllerPeriod = 100
+
+NavigationAgent.PlannerGraphPoints = 500
+NavigationAgent.PlannerGraphNeighbours = 20
+NavigationAgent.PlannerGraphMaxDistanceToSearch = 2500 #mm
+
+NavigationAgent.ExcludedObjectsInCollisionCheck = floor_plane, gualzru_mesh, personbot_mesh
+
+##############LABORATORIO############
+NavigationAgent.OuterRegionLeft = -1500
+NavigationAgent.OuterRegionRight = 200
+NavigationAgent.OuterRegionBottom = -5000
+NavigationAgent.OuterRegionTop = 5000
+
+NavigationAgent.MinimunDetectableRotation = 0.03			# to accept a new target
+NavigationAgent.MinimunDetectableTranslation = 7 			# to accept a new target

@@ -1,0 +1,10 @@
+
+components/faceTracking/\.idea/
+
+components/fakeHumanAgent/\.idea/
+
+components/humanAgent/\.idea/
+
+components/SocialNavigationAgent/\.idea/
+
+components/socialnavigationGaussian/\.idea/

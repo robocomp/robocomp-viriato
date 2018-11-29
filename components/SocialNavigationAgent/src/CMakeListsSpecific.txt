@@ -1,0 +1,23 @@
+
+SET(LIBS ${LIBS} -lagm)
+# Sources set
+SET ( SOURCES
+  specificworker.cpp
+  specificmonitor.cpp
+  pathfinder.cpp
+  currenttarget.cpp
+  road.cpp
+  sampler.cpp
+  innerviewer.cpp
+  drawroad.cpp
+  pathplanner.cpp
+  projector.cpp
+  linesimplifier/simplifyPath.cpp
+  controller.cpp
+  actionexecution.cpp
+  socialrules.cpp
+)
+
+ADD_DEFINITIONS( -g -std=c++17)
+INCLUDE_DIRECTORIES( /usr/include/libxml2 )
+SET (LIBS ${LIBS} -L/usr/local/lib/ pthread osg osgViewer osgDB fcl  )

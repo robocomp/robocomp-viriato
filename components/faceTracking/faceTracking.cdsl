@@ -1,0 +1,13 @@
+import "HumanTracker.idsl";
+
+Component faceTracking
+{
+	Communications
+	{
+		requires HumanTracker;
+	};
+	
+	language Python;
+	gui Qt(QWidget);
+};
+

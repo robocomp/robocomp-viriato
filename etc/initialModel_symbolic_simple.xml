@@ -1,0 +1,70 @@
+<AGMModel>
+
+	<symbol id="100" type="world">
+		<attribute key="imType" value="transform" />
+		<attribute key="imName" value="world" />
+	</symbol>
+	<symbol id="1" type="robot">
+		<attribute key="imType" value="transform" />
+		<attribute key="imName" value="robot" />
+	</symbol>
+	<symbol id="2" type="status" > </symbol>
+	<link src="1" dst="2" label="hasStatus" > </link>
+
+
+	<symbol id="3" type="room">
+		<attribute key="imType" value="transform" />
+		<attribute key="imName" value="room_3" />
+		<attribute key="x" value="8000" />
+		<attribute key="z" value="-2000" />
+	</symbol>
+	<symbol id="4" type="roomSt"> </symbol>
+	<link src="3" dst="4" label="room" > </link>
+	<link src="1" dst="3" label="know" > </link>
+	<link src="1" dst="3" label="in" > </link>
+
+	<symbol id="3000" type="object_interaction">
+		<attribute key="imType" value="transform" />
+		<attribute key="imName" value="board" />
+		<attribute key="interaction" value="10" />
+	</symbol>
+	<symbol id="3001" type="objectSt" > </symbol>
+	<symbol id="3002" type="objectSt">
+		<attribute key="imType" value="transform" />
+	</symbol>
+	<link src="3000" dst="3002" label="reachPosition" > </link>
+	<link src="3000" dst="3001" label="explored" > </link>
+	<link src="3000" dst="3" label="in"  > </link>
+	<link src="3000" dst="3001" label="hasStatus" > </link>
+	<link src="3000" dst="3001" label="noReach" > </link>
+	<link src="3000" dst="3001" label="reachable" > </link>
+
+	<link src="3000" dst="3001" label="interacting" > </link>
+
+	<link src="1" dst="3000" label="know" > </link>
+	<link src="3000" dst="3001" label="board" > </link>
+
+	<link src="3" dst="1" label="RT" >
+		<linkAttribute key="x" value="0" />
+		<linkAttribute key="y" value="0" />
+		<linkAttribute key="z" value="0" />
+		<linkAttribute key="rx" value="0" />
+		<linkAttribute key="ry" value="0" />
+		<linkAttribute key="rz" value="0" />
+	</link>
+	
+	<symbol id="32" type="camera_astra">
+	<attribute key="imType" value="transform" />
+	<attribute key="imName" value="astraRGBD" />
+	</symbol>
+	<link src="1" dst="32" label="know" > </link>
+	<link src="32" dst="3" label="in" > </link>
+	<symbol id="33" type="objectSt"> </symbol>
+	<symbol id="34" type="objectSt">
+		<attribute key="imType" value="transform" />
+		<attribute key="imName" value="astraRGBD_reachPos" />
+	</symbol>
+	
+
+
+</AGMModel>
