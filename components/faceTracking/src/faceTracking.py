@@ -106,20 +106,20 @@ if __name__ == '__main__':
 	for i in ic.getProperties():
 		parameters[str(i)] = str(ic.getProperties().getProperty(i))
 
-	# Remote object connection for HumanTracker
+	# Remote object connection for RGBD
 	try:
-		proxyString = ic.getProperties().getProperty('HumanTrackerProxy')
+		proxyString = ic.getProperties().getProperty('RGBDProxy')
 		try:
 			basePrx = ic.stringToProxy(proxyString)
-			humantracker_proxy = HumanTrackerPrx.checkedCast(basePrx)
-			mprx["HumanTrackerProxy"] = humantracker_proxy
+			rgbd_proxy = RGBDPrx.checkedCast(basePrx)
+			mprx["RGBDProxy"] = rgbd_proxy
 		except Ice.Exception:
-			print 'Cannot connect to the remote object (HumanTracker)', proxyString
+			print 'Cannot connect to the remote object (RGBD)', proxyString
 			#traceback.print_exc()
 			status = 1
 	except Ice.Exception, e:
 		print e
-		print 'Cannot get HumanTrackerProxy property.'
+		print 'Cannot get RGBDProxy property.'
 		status = 1
 
 	if status == 0:

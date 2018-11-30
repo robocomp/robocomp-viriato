@@ -42,18 +42,42 @@ except:
 	print 'SLICE_PATH environment variable was not exported. Using only the default paths'
 	pass
 
-ice_HumanTracker = False
+ice_RGBD = False
 for p in icePaths:
-	if os.path.isfile(p+'/HumanTracker.ice'):
+	if os.path.isfile(p+'/RGBD.ice'):
 		preStr = "-I/opt/robocomp/interfaces/ -I"+ROBOCOMP+"/interfaces/ " + additionalPathStr + " --all "+p+'/'
-		wholeStr = preStr+"HumanTracker.ice"
+		wholeStr = preStr+"RGBD.ice"
 		Ice.loadSlice(wholeStr)
-		ice_HumanTracker = True
+		ice_RGBD = True
 		break
-if not ice_HumanTracker:
-	print 'Couln\'t load HumanTracker'
+if not ice_RGBD:
+	print 'Couln\'t load RGBD'
 	sys.exit(-1)
-from RoboCompHumanTracker import *
+from RoboCompRGBD import *
+ice_JointMotor = False
+for p in icePaths:
+	if os.path.isfile(p+'/JointMotor.ice'):
+		preStr = "-I/opt/robocomp/interfaces/ -I"+ROBOCOMP+"/interfaces/ " + additionalPathStr + " --all "+p+'/'
+		wholeStr = preStr+"JointMotor.ice"
+		Ice.loadSlice(wholeStr)
+		ice_JointMotor = True
+		break
+if not ice_JointMotor:
+	print 'Couln\'t load JointMotor'
+	sys.exit(-1)
+from RoboCompJointMotor import *
+ice_GenericBase = False
+for p in icePaths:
+	if os.path.isfile(p+'/GenericBase.ice'):
+		preStr = "-I/opt/robocomp/interfaces/ -I"+ROBOCOMP+"/interfaces/ " + additionalPathStr + " --all "+p+'/'
+		wholeStr = preStr+"GenericBase.ice"
+		Ice.loadSlice(wholeStr)
+		ice_GenericBase = True
+		break
+if not ice_GenericBase:
+	print 'Couln\'t load GenericBase'
+	sys.exit(-1)
+from RoboCompGenericBase import *
 
 
 
@@ -66,7 +90,7 @@ class GenericWorker(QtCore.QObject):
 		super(GenericWorker, self).__init__()
 
 
-		self.humantracker_proxy = mprx["HumanTrackerProxy"]
+		self.rgbd_proxy = mprx["RGBDProxy"]
 
 
 		self.mutex = QtCore.QMutex(QtCore.QMutex.Recursive)
