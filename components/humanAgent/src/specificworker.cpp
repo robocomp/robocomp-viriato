@@ -339,7 +339,6 @@ bool SpecificWorker::getPoseRot (jointListType list, Pose3D &personpose) {
             if (j.size() == 3)
             {
                 QVec jointinworld = innerModel->transform("world", QVec::vec3(-j[0],0,j[2]), "camera_astra");
-                innerModel->transform
 //				qDebug()<<" Found "<<QString::fromStdString(idjoint) <<" x = " << jointinworld.x()<<  " z = " << jointinworld.z() ;
 				newposex += jointinworld.x();
 				newposez += jointinworld.z();

@@ -37,9 +37,9 @@
 
  <node alias="laser" endpoint="laser:tcp -h localhost -p 10003">
   <workingDir path="/home/robocomp/" />
-  <upCommand command="rcremote localhost rgbd /home/robocomp/robocomp/components/robocomp-araceli/etcSim rcis simulation.xml -f 100" />
+  <upCommand command="rcremote localhost rgbd /home/robocomp/robocomp/components/robocomp-viriato/etcSim rcis simulation.xml -f 100" />
   <downCommand command="killall -9 rcis" />
-  <configFile path="rcremote localhost configs /home/robocomp/robocomp/components/robocomp-araceli/etcSim kate simulation.xml" />
+  <configFile path="rcremote localhost configs /home/robocomp/robocomp/components/robocomp-viriato/etcSim kate simulation.xml" />
   <xpos value="-58.4646681749" />
   <ypos value="165.374688364" />
   <radius value="10.0" />
@@ -60,9 +60,9 @@
 
  <node alias="base" endpoint="omnirobot:tcp -h localhost -p 12238">
   <workingDir path="/home/robocomp/" />
-  <upCommand command="rcremote localhost rgbd /home/robocomp/robocomp/components/robocomp-araceli/etcSim rcis simulation.xml -f 100" />
+  <upCommand command="rcremote localhost rgbd /home/robocomp/robocomp/components/robocomp-viriato/etcSim rcis simulation.xml -f 100" />
   <downCommand command="killall -9 rcis" />
-  <configFile path="rcremote localhost configs /home/robocomp/robocomp/components/robocomp-araceli/etcSim kate simulation.xml" />
+  <configFile path="rcremote localhost configs /home/robocomp/robocomp/components/robocomp-viriato/etcSim kate simulation.xml" />
   <xpos value="-116.350970747" />
   <ypos value="164.639174274" />
   <radius value="10.0" />
@@ -83,7 +83,7 @@
  <node alias="executive" endpoint="agmexecutive:tcp -h localhost -p 10198">
   <dependence alias="storm" />
   <workingDir path="/home/robocomp/" />
-  <upCommand command="rcremote localhost AGMExecutive /home/robocomp/AGM/tools/AGMExecutive_robocomp python AGMExecutive_robocomp.py /home/robocomp/robocomp/components/robocomp-araceli/etcSim/executiveAUTONOMY.conf" />
+  <upCommand command="rcremote localhost AGMExecutive /home/robocomp/AGM/tools/AGMExecutive_robocomp python AGMExecutive_robocomp.py /home/robocomp/robocomp/components/robocomp-viriato/etcSim/executiveAUTONOMY.conf" />
   <downCommand command="pkill -9 -f AGMExecutive_robocomp.py" />
   <configFile path="xxx" />
   <xpos value="-8.22150957623" />
@@ -123,9 +123,9 @@
   <dependence alias="socialnavigG" />
   <dependence alias="base" />
   <workingDir path="/home/robocomp/" />
-  <upCommand command="rcremote localhost socialnavAgnt /home/robocomp/robocomp/components/robocomp-araceli/components/SocialNavigationAgent ./bin/SocialNavigationAgent /home/robocomp/robocomp/components/robocomp-araceli/etcSim/socialnavigationAgent.conf" />
+  <upCommand command="rcremote localhost socialnavAgnt /home/robocomp/robocomp/components/robocomp-viriato/components/SocialNavigationAgent ./bin/SocialNavigationAgent /home/robocomp/robocomp/components/robocomp-viriato/etcSim/socialnavigationAgent.conf" />
   <downCommand command="killall -9 SocialNavigationAgent" />
-  <configFile path="/home/robocomp/robocomp/components/robocomp-araceli/etcSim/socialnavigationAgent.conf" />
+  <configFile path="/home/robocomp/robocomp/components/robocomp-viriato/etcSim/socialnavigationAgent.conf" />
   <xpos value="-271.097569307" />
   <ypos value="20.5106363282" />
   <radius value="10.0" />
@@ -134,9 +134,9 @@
 
  <node alias="socialnavigG" endpoint="socialnavigationgaussian:tcp -h localhost -p 20020">
   <workingDir path="/home/robocomp/" />
-  <upCommand command="rcremote localhost socialnavGauss /home/robocomp/robocomp/components/robocomp-araceli/components/socialnavigationGaussian python src/socialnavigationGaussian.py etc/config" />
+  <upCommand command="rcremote localhost socialnavGauss /home/robocomp/robocomp/components/robocomp-viriato/components/socialnavigationGaussian python src/socialnavigationGaussian.py etc/config" />
   <downCommand command="pkill -9 -f socialnavigationGaussian.py"/>
-<configFile path="/home/robocomp/robocomp/components/robocomp-araceli/etcSim/socialnavigationGaussian.conf" />
+<configFile path="/home/robocomp/robocomp/components/robocomp-viriato/etcSim/socialnavigationGaussian.conf" />
   <xpos value="-171.097569307" />
   <ypos value="20.5106363282" />
   <radius value="10.0" />
@@ -147,9 +147,9 @@
   <dependence alias="executive" />
   <dependence alias="astraRGBD" />
   <workingDir path="/home/robocomp/" />
-  <upCommand command="rcremote localhost humanAgent /home/robocomp/robocomp/components/robocomp-araceli/components/humanAgent ./bin/humanAgent /home/robocomp/robocomp/components/robocomp-araceli/etcSim/humanAgent.conf" />
+  <upCommand command="rcremote localhost humanAgent /home/robocomp/robocomp/components/robocomp-viriato/components/humanAgent ./bin/humanAgent /home/robocomp/robocomp/components/robocomp-viriato/etcSim/humanAgent.conf" />
   <downCommand command="killall -9 humanAgent" />
-  <configFile path="/home/robocomp/robocomp/components/robocomp-araceli/etcSim/humanAgent.conf" />
+  <configFile path="/home/robocomp/robocomp/components/robocomp-viriato/etcSim/humanAgent.conf" />
   <xpos value="121.097569307" />
   <ypos value="20.5106363282" />
   <radius value="10.0" />
@@ -158,9 +158,9 @@
 
  <node alias="astraRGBD" endpoint="humantracker:tcp -h localhost -p 11666"> 
   <workingDir path="/home/robocomp/" />
-  <upCommand command="rcremote localhost astraRGBD /home/robocomp/robocomp/components/robocomp-robolab/components/astraRGBD ./bin/astraRGBD /home/robocomp/robocomp/components/robocomp-araceli/etcSim/astraRGBD.conf" />
+  <upCommand command="rcremote localhost astraRGBD /home/robocomp/robocomp/components/robocomp-robolab/components/astraRGBD ./bin/astraRGBD /home/robocomp/robocomp/components/robocomp-viriato/etcSim/astraRGBD.conf" />
   <downCommand command="killall -9 astraRGBD" />
-  <configFile path="/home/robocomp/robocomp/components/robocomp-araceli/etcSim/astraRGBD.conf" />
+  <configFile path="/home/robocomp/robocomp/components/robocomp-viriato/etcSim/astraRGBD.conf" />
   <xpos value="121.097569307" />
   <ypos value="100.5106363282" />
   <radius value="10.0" />
@@ -172,9 +172,9 @@
   <dependence alias="executive" />
  <dependence alias="base" />
   <workingDir path="/home/robocomp/" />
-  <upCommand command="rcremote localhost humanFakeA /home/robocomp/robocomp/components/robocomp-araceli/components/fakeHumanAgent ./bin/fakeHumanAgent /home/robocomp/robocomp/components/robocomp-araceli/etcSim/humanFake.conf" />
+  <upCommand command="rcremote localhost humanFakeA /home/robocomp/robocomp/components/robocomp-viriato/components/fakeHumanAgent ./bin/fakeHumanAgent /home/robocomp/robocomp/components/robocomp-viriato/etcSim/humanFake.conf" />
   <downCommand command="killall -9 fakeHumanAgent" />
-  <configFile path="/home/robocomp/robocomp/components/robocomp-araceli/etcSim/humanFake.conf" />
+  <configFile path="/home/robocomp/robocomp/components/robocomp-viriato/etcSim/humanFake.conf" />
   <xpos value="-250.9789855056" />
   <ypos value="-240.5106363282" />
   <radius value="10.0" />
