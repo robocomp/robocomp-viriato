@@ -36,14 +36,17 @@ class SpecificWorker(GenericWorker):
 
 
 		# initialize the video stream and allow the camera sensor to warmup
-		print("[INFO] starting video stream...")
-		vs = VideoStream(src=0).start()
-		time.sleep(2.0)
-
+		# print("[INFO] starting video stream...")
+		# vs = VideoStream(src=0).start()
+		# time.sleep(2.0)
 
 		# read the next frame from the video stream and resize it
-		frame = vs.read()
-		frame = imutils.resize(frame, width=400)
+		# frame = vs.read()
+		# frame = imutils.resize(frame, width=400)
+
+		color,_, _, _ = self.rgbd_proxy.getData()
+		frame = np.fromstring(color, dtype=np.uint8)
+		frame = frame.reshape(480, 640, 3)
 
 		# if the frame dimensions are None, grab them
 		if self.width is None or self.height is None:
