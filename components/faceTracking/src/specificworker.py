@@ -2,7 +2,7 @@ import sys, os, traceback, time
 import imutils
 import time
 import cv2
-from pyimagesearch.centroidtracker import CentroidTracker
+import centroidtracker as CentroidTracker
 from imutils.video import VideoStream
 import numpy as np
 from PySide import QtGui, QtCore
@@ -10,63 +10,59 @@ from genericworker import *
 
 
 class SpecificWorker(GenericWorker):
-
-
 	def __init__(self, proxy_map):
 		super(SpecificWorker, self).__init__(proxy_map)
 		self.timer.timeout.connect(self.compute)
 		self.Period = 2000
 		self.timer.start(self.Period)
+		self.model = ''
+		self.prototxt = ''
+		self.confidence = 0.5
+		self.ct = CentroidTracker()
+		self.width = None
+		self.height = None
+		self.net = None
 
 	def setParams(self, params):
+		self.model = params['model']
+		self.prototxt = params['prototxt']
 
+		self.net = cv2.dnn.readNetFromCaffe(self.prototxt, self.model)
 		return True
 
 	@QtCore.Slot()
 	def compute(self):
 		print 'SpecificWorker.compute...'
 
-		prototxt = 'deploy.prototxt'
-		model = 'res10_300x300_ssd_iter_140000.caffemodel'
-		confidence = 0.5
-
-		# initialize our centroid tracker and frame dimensions
-		ct = CentroidTracker()
-		(H, W) = (None, None)
-
-		# load our serialized model from disk
-		print("[INFO] loading model...")
-		net = cv2.dnn.readNetFromCaffe(prototxt, model)
 
 		# initialize the video stream and allow the camera sensor to warmup
 		print("[INFO] starting video stream...")
 		vs = VideoStream(src=0).start()
 		time.sleep(2.0)
 
-		print ("Todo bien")
 
 		# read the next frame from the video stream and resize it
 		frame = vs.read()
 		frame = imutils.resize(frame, width=400)
 
 		# if the frame dimensions are None, grab them
-		if W is None or H is None:
-			(H, W) = frame.shape[:2]
+		if self.width is None or self.height is None:
+			(self.width, self.height) = frame.shape[:2]
 
 		# construct a blob from the frame, pass it through the network,
 		# obtain our output predictions, and initialize the list of
 		# bounding box rectangles
-		blob = cv2.dnn.blobFromImage(frame, 1.0, (W, H),
+		blob = cv2.dnn.blobFromImage(frame, 1.0, (self.width, self.height),
 									 (104.0, 177.0, 123.0))
-		net.setInput(blob)
-		detections = net.forward()
+		self.net.setInput(blob)
+		detections = self.net.forward()
 		rects = []
 
 		# loop over the detections
 		for i in range(0, detections.shape[2]):
 			# filter out weak detections by ensuring the predicted
 			# probability is greater than a minimum threshold
-			if detections[0, 0, i, 2] > confidence:
+			if detections[0, 0, i, 2] > self.confidence:
 				# compute the (x, y)-coordinates of the bounding box for
 				# the object, then update the bounding box rectangles list
 				box = detections[0, 0, i, 3:7] * np.array([W, H, W, H])
@@ -80,7 +76,7 @@ class SpecificWorker(GenericWorker):
 
 		# update our centroid tracker using the computed set of bounding
 		# box rectangles
-		objects = ct.update(rects)
+		objects = self.ct.update(rects)
 
 		# loop over the tracked objects
 		for (objectID, centroid) in objects.items():

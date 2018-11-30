@@ -1,6 +1,5 @@
 # Proxies for required interfaces
-HumanTrackerProxy = humantracker:tcp -h localhost -p 0
-
+HumanTrackerProxy = humantracker:tcp -h localhost -p 11666
 
 
 # This property is used by the clients to connect to IceStorm.
@@ -12,5 +11,9 @@ Ice.Trace.Network=0
 Ice.Trace.Protocol=0
 Ice.ACM.Client=10
 Ice.ACM.Server=10
+
+model=/home/robolab/robocomp/components/robocomp-viriato/components/faceTracking/src/res10_300x300_ssd_iter_140000.caffemodel
+prototxt=/home/robolab/robocomp/components/robocomp-viriato/components/faceTracking/src/deploy.prototxt
+
 
 
