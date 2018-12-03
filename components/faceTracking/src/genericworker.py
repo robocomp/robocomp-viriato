@@ -78,8 +78,21 @@ if not ice_GenericBase:
 	print 'Couln\'t load GenericBase'
 	sys.exit(-1)
 from RoboCompGenericBase import *
+ice_FaceTracking = False
+for p in icePaths:
+	if os.path.isfile(p+'/FaceTracking.ice'):
+		preStr = "-I/opt/robocomp/interfaces/ -I"+ROBOCOMP+"/interfaces/ " + additionalPathStr + " --all "+p+'/'
+		wholeStr = preStr+"FaceTracking.ice"
+		Ice.loadSlice(wholeStr)
+		ice_FaceTracking = True
+		break
+if not ice_FaceTracking:
+	print 'Couln\'t load FaceTracking'
+	sys.exit(-1)
+from RoboCompFaceTracking import *
 
 
+from facetrackingI import *
 
 
 class GenericWorker(QtCore.QObject):

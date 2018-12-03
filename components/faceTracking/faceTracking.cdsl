@@ -1,10 +1,12 @@
 import "RGBD.idsl";
+import "FaceTracking.idsl";
 
 Component faceTracking
 {
 	Communications
 	{
 		requires RGBD;
+		implements FaceTracking;
 	};
 	
 	language Python;
