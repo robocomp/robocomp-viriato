@@ -120,7 +120,7 @@
 
  <node alias="socialnavigA" endpoint="agmcommonbehavior:tcp -h localhost -p 10330">
   <!--<dependence alias="executive" />-->
-  <dependence alias="socialnavigG" />
+  <!--<dependence alias="socialnavigG" />-->
   <dependence alias="base" />
   <workingDir path="/home/robocomp/" />
   <upCommand command="rcremote localhost socialnavAgnt /home/robocomp/robocomp/components/robocomp-viriato/components/SocialNavigationAgent ./bin/SocialNavigationAgent /home/robocomp/robocomp/components/robocomp-viriato/etcSim/socialnavigationAgent.conf" />
