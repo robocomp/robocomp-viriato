@@ -60,6 +60,17 @@ public:
     bool first = true;
     bool position_correct = false;
     bool rotation_correct = false;
+    //----------------- intento de relacionar cara con esqueleto -----------------------//
+	typedef map <int,int> jointface; //mapa que relaciona los id procedentes del esqueleto con los de la cara
+	typedef map <int,int> facegeneric; // rel cara con id generico de humanAgent
+
+	jointface IDjointface;
+	facegeneric IDfacegeneric;
+
+	int IDgeneric = 0;
+    bool backwards = false;
+
+    //----------------------------------------------//
 
     SpecificWorker(MapPrx& mprx);
 	~SpecificWorker();

@@ -252,6 +252,8 @@ void SpecificWorker::getDataFromAstra()
 {
     list_id.clear();
     list_psymbol.clear();
+
+
     try
     {
         PersonList users;
@@ -260,43 +262,89 @@ void SpecificWorker::getDataFromAstra()
         if(users.size()== 0)
         return;
 
-        for (auto p:users)
+        //hay alguna persona
+        for (auto p:users) //para insertar persona en el modelo tiene que haber cara y cabeza
 		{
+            int idperson = -1;
+
 			Pose3D personpose;
-			auto id = p.first;
+			auto id = p.first; //id esqueleto
 
-			joint pointindepth = {};
-			if ( humantracker_proxy->getJointDepthPosition(id, "Head", pointindepth))
+            auto faces = facetracking_proxy-> getFaces(); //obtenemos las caras
+
+            if (IDjointface.find(id) == IDjointface.end()) //Buscamos en el mapa si el id del esqueleto ya está relacionado con la cara. Si NO:
+            {
+                joint pointindepth = {};
+                if ( !(humantracker_proxy->getJointDepthPosition(id, "Head", pointindepth))) //obtenemos la posicion de la cabeza en profundidad
+                {
+					qDebug()<<"No hay cabeza";
+                    break;
+                }
+
+
+                for (auto f:faces)
+                {
+                    if (f.tracking)
+                    {
+                        auto rect = QRect(f.boundingbox.posx, f.boundingbox.posy, f.boundingbox.width,f.boundingbox.height ); //para cada cara comprobamos si la cabeza esta contenida en el bounding box de la cara
+                        if (rect.contains(QPoint(pointindepth[0],pointindepth[1]))) //Si es asi
+                        {
+                            if (!(IDfacegeneric.find(f.id) == IDfacegeneric.end())) //Buscamos en el mapa si el id de la cara ya esta relacionaada con el generico. Si es asi:
+                            {
+                                IDjointface[id] = f.id; //Relacionamos el id del joint con el de la cara
+                            }
+
+                            else //Si no esta
+                            {
+                                IDfacegeneric[f.id] = IDgeneric; //relacionamos id cara con id generico
+                                IDjointface[id] = f.id; //relacionamos id joint con id cara
+                                idperson = IDgeneric; //el id de la persona sera el id generico
+								IDgeneric++; //aumentamos en uno el id generico para que no coincidan
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+
+			else //el id ya está registrado accedemos al id generico
 			{
-				qDebug()<<"PROFUNDIDAD "<<pointindepth[0]<<" "<<pointindepth[1];
-			}
-			else
-				qDebug()<<"No hay cabeza";
+				int idface = IDjointface[id];
+				idperson = IDfacegeneric[idface];
 
+				for (auto fcs : faces) //si la cara no esta trackeada puede que este de espaldas
+				{
+				    if((fcs.id == idface) and !fcs.tracking)
+				    {
+				    	backwards = true;
+                        break;
+                    }
+
+				}
+			}
+
+			if (idperson == -1)
+            	return;
 
 			jointListType joints_person = p.second.joints;
 
 			if (!getPoseRot(joints_person, personpose))
-			{
 				return;
-			}
 
-			if ( humans_in_world.find(id) == humans_in_world.end() ) //not found
+			if ( humans_in_world.find(idperson) == humans_in_world.end() ) //not found
 			{
 				if(position_correct) //Solo incluyo en AGM si la posición se ha calculado correctamente
-					includeInAGM(id, personpose);
+					includeInAGM(idperson, personpose);
 			}
 			else // found
 			{
-					movePersonInAGM(id,personpose);
+					movePersonInAGM(idperson,personpose);
 			}
 
-			humans_in_world[id] = personpose;
+			humans_in_world[idperson] = personpose;
+
+            backwards = false;
 		}
-
-
-
-
 
         ///////////////////////////
 //        if ((list_psymbol.size() == 2) and (!enlace))
@@ -330,6 +378,7 @@ void SpecificWorker::getDataFromAstra()
     catch(...)
     {
     }
+
 
 }
 
@@ -413,22 +462,27 @@ bool SpecificWorker::getPoseRot (jointListType list, Pose3D &personpose) {
 
 		personpose.ry = 3.1415926535 - (atan2(joint_left.z()-joint_right.z(),joint_left.x() - joint_right.x()));
 
-		rotation_correct = true;
+
+        if (backwards) //puede que este de espaldas.CAMBIAR SI NO ESTA LA CARA LO PONE DE ESPALDAS SI O SI
+            personpose.ry = 1.57;
+
+        //cambiar esto, solo vale para una cierta posición de la cámara
+        rotation_correct = true;
     }
 
-
-    //cambiar esto, solo vale para una cierta posición de la cámara
-	if (leftsh and !rightsh)
-	    //angulo de la camara - pi/2
-		personpose.ry = 0;
-	if (!leftsh and rightsh)
-        //angulo de la camara + pi/2
-	    personpose.ry = 3.1415926535;
-
-//	qDebug()<<"-----------------------------------------------------------------------";
-
-
-	/////////////////////////////////////////////////////////////////////////////////////
+//
+//	if (leftsh and !rightsh)
+//	{
+//        personpose.ry = 0;
+//        rotation_correct = true;
+//    }
+//    //angulo de la camara - pi/2
+//    if (!leftsh and rightsh)
+//	{
+//        personpose.ry = 3.1415926535;
+//        rotation_correct = true;
+//    }
+    //angulo de la camara + pi/2
 
 	return true;
 }
@@ -436,20 +490,6 @@ bool SpecificWorker::getPoseRot (jointListType list, Pose3D &personpose) {
 void SpecificWorker::compute()
 {
 	QMutexLocker locker(mutex);
-
-
-    auto faces = facetracking_proxy-> getFaces();
-
-	for (auto f:faces)
-	{
-//		qDebug()<<"ID" <<f.id;
-//		if (f.tracking)
-//		    qDebug()<<"Tracking";
-//        else qDebug()<<"Lost";
-//
-//		qDebug()<<"Centro cara" <<f.centroid.x <<" " <<f.centroid.y;
-		qDebug()<<"Bounding box. POS X "<<  f.boundingbox.posx << " POS Y "<<f.boundingbox.posy <<" width "<< f.boundingbox.width<<" Height "<<f.boundingbox.height;
-	}
 
 	getDataFromAstra();
 

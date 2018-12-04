@@ -18,7 +18,7 @@ class SpecificWorker(GenericWorker):
 		self.timer.start(self.Period)
 		self.model = ''
 		self.prototxt = ''
-		self.confidence = 0.7
+		self.confidence = 0.5
 		self.ct = CentroidTracker()
 		self.net = None
 		self.faces = None
