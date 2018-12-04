@@ -1,0 +1,54 @@
+<innerModel>
+	<transform id="world">
+		
+		<!-- FLOOR -->
+		<transform id="floor" tx="2000" tz="2000" ty="0">
+			<plane id="floor_plane" ny="1" size="8000,5000,10" texture="#eebb77" />
+		</transform>
+	
+		
+		<transform id="room_3">
+
+			<!-- ROOM A -->
+			<transform id="pared0" tx="-2000" tz="2000" ty="950" >
+				<plane id="muro0" nx="-500" nz="0" size="5000,1900,9"  texture="#880000" />
+			</transform>
+
+			<transform id="pared1" tx="2000" tz="4500" ty="950" >
+				<plane id="muro1" nx="0" nz="5000" size="8000,1900,9"  texture="#880000" />
+			</transform> 
+
+			<transform id="pared2" tx="6000" tz="2000" ty="950" >
+				<plane id="muro2" nx="5000" nz="0" size="5000,1900,9"  texture="#880000" />
+			</transform>
+		
+			<transform id="pared3" tx="2000" tz="-500" ty="950" >
+				<plane id="muro3" nx="0" nz="-5000" size="8000,1900,9"  texture="#880000" />
+			</transform>
+			
+			<!-- PIN BOARD -->
+			<transform id="board" tx="2000" tz="4400" ty="1200" ry="3.141516"> 
+				<mesh id="board_mesh" file="/home/robocomp/robocomp/components/robocomp-araceli/models/board.3DS" 					
+				scale="7,7,7" rx="1.57" rz="3.141516" collide="1" />
+			</transform>	
+			
+
+			<transform id="camera_astra" tx="-2000" tz="2000" ty="925" ry="1.570799947" > 
+				<mesh id="astraRGBD_mesh" file="/home/robocomp/robocomp/files/osgModels/basics/cube2.3ds" 
+				scale="200,200,200"  collide="1" />
+			</transform>
+
+
+			<!-- TABLE D MESA REDONDA DEL COMEDOR>
+			<transform id="tableD" tx="1500" tz="1767" ty="730" >
+				
+				<mesh id="tableD_mesh" file="/home/robocomp/robocomp/files/osgModels/basics/cylinder.3ds" scale="600,600,20" 						rx="1.570799947" collide="1"/>
+				<transform id="rwreewreet" ty="-365" >
+					<mesh id="tableD_mesh2" file="/home/robocomp/robocomp/files/osgModels/basics/cylinder.3ds" scale="600,600,360" 						rx="1.570799947" collide="1"/>
+				</transform>
+			</transform>-->
+
+		</transform>
+		
+	</transform>
+</innerModel>

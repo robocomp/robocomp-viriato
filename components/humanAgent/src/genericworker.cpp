@@ -28,6 +28,7 @@ QObject()
 #endif
 
 {
+	facetracking_proxy = (*(FaceTrackingPrx*)mprx["FaceTrackingProxy"]);
 	humantracker_proxy = (*(HumanTrackerPrx*)mprx["HumanTrackerProxy"]);
 	agmexecutive_proxy = (*(AGMExecutivePrx*)mprx["AGMExecutiveProxy"]);
 

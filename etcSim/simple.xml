@@ -143,8 +143,9 @@
   <color value="#33FF33" />
  </node>
 
- <node alias="humanAgent" endpoint="agmcommonbehavior:tcp -h localhost -p 11217">
+ <node alias="humanAgent" endpoint="agmcommonbehavior:tcp -h localhost -p 10217">
   <dependence alias="executive" />
+  <dependence alias="faceTracking" />
   <dependence alias="astraRGBD" />
   <workingDir path="/home/robocomp/" />
   <upCommand command="rcremote localhost humanAgent /home/robocomp/robocomp/components/robocomp-viriato/components/humanAgent ./bin/humanAgent /home/robocomp/robocomp/components/robocomp-viriato/etcSim/humanAgent.conf" />
@@ -168,7 +169,7 @@
  </node>
 
  
-  <node alias="faceTracking"  endpoint="agmcommonbehavior:tcp -h localhost -p 11318">
+  <node alias="faceTracking"  endpoint=" facetracking:tcp -h localhost -p 12666">
   <workingDir path="/home/robocomp/" />
   <dependence alias="astraRGBD" />
   <upCommand command="rcremote localhost faceTracking /home/robocomp/robocomp/components/robocomp-viriato/components/faceTracking python src/faceTracking.py /home/robocomp/robocomp/components/robocomp-viriato/etcSim/faceTracking.conf" />

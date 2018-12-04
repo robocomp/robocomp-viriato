@@ -1,0 +1,69 @@
+<innermodel>
+	<transform id="world" tx="2000" ty="0" tz="2000"  rx="0" ry="0" rz="0">
+		<transform id="floor" tx="2000" ty="0" tz="2000"  rx="0" ry="0" rz="0">
+			<plane id="floor_plane" texture="#eebb77" size="8000,5000,10" repeat="1000" nx="0" ny="1" nz="0" px="0" py="0" pz="0" collide="0" />
+		</transform>
+		<transform id="room_3" tx="0" ty="0" tz="0"  rx="0" ry="0" rz="0">
+			<transform id="robot" tx="0" ty="0" tz="0"  rx="0" ry="0" rz="0">
+				<transform id="laserPose" tx="0" ty="370" tz="230"  rx="0" ry="0" rz="0">
+					<laser id="laser" port="10003" min="100" max="30000" measures="100" angle="4.199999809" ifconfig="" />
+				</transform>
+				<transform id="monitor_pose" tx="0" ty="1155" tz="70"  rx="0" ry="0" rz="0">
+					<plane id="monitor_mesh" texture="#222266" size="340,270,80" repeat="1000" nx="0" ny="0" nz="-1" px="0" py="0" pz="0" collide="1" />
+				</transform>
+				<transform id="back_caja_pose" tx="0" ty="400" tz="-200"  rx="0" ry="0" rz="0">
+					<plane id="back_caja_mesh" texture="#662222" size="350,250,150" repeat="1000" nx="0" ny="0" nz="1" px="0" py="0" pz="0" collide="1" />
+				</transform>
+				<transform id="front_caja_pose" tx="0" ty="450" tz="150"  rx="0" ry="0" rz="0">
+					<plane id="front_caja_mesh" texture="#662222" size="350,100,350" repeat="1000" nx="0" ny="0" nz="1" px="0" py="0" pz="0" collide="1" />
+				</transform>
+				<plane id="base_mesh" texture="#666666" size="540,275,540" repeat="1000" nx="0" ny="0" nz="-1" px="0" py="137.5" pz="0" collide="1" />
+				<mesh id="barrahombro" file="/home/robocomp/robocomp/files/osgModels/robexarm/barrahombro.3ds" scale="1000,1000,1000" tx="-150" ty="1180" tz="30" rx="0" ry="-1.570799947" rz="0" collide="1" />
+				<mesh id="barracolumna" file="/home/robocomp/robocomp/files/osgModels/basics/cube.3ds" scale="40,500,30" tx="0" ty="700" tz="15" rx="0" ry="0" rz="0" collide="1" />
+				<transform id="base_bodypost" tx="0" ty="1388" tz="0"  rx="0" ry="0" rz="0">
+					<transform id="rgbdHumanPose" tx="0" ty="-98" tz="65"  rx="0" ry="0" rz="0">
+						<rgbd id="rgbdHuman" width="640" height="480" focal="600" port="0" ifconfig="" noise="0" />
+						<mesh id="sensorHumanRGBD" file="/home/robocomp/robocomp/components/robocomp-ursus-rockin/files/makeMeCoffee/cube.3ds" scale="100,21,30" tx="0" ty="0" tz="0" rx="0" ry="0" rz="0" collide="1" />
+					</transform>
+					<transform id="head_z_offset" tx="0" ty="0" tz="120"  rx="0" ry="0" rz="0">
+						<joint id="head_yaw_joint" port="10068" axis="y" home="0" min="-1" max="1" tx="0" ty="0" tz="0" rx="0" ry="0" rz="0">
+							<mesh id="head_base_mesh" file="/home/robocomp/robocomp/files/osgModels/basics/cylinder.3ds" scale="25,25,47.5" tx="0" ty="47.5" tz="0" rx="1.570799947" ry="0" rz="0" collide="1" />
+							<transform id="head_rot_tilt_pose" tx="0" ty="74" tz="0"  rx="0" ry="0" rz="0">
+								<joint id="head_pitch_joint" port="10068" axis="x" home="0" min="-1" max="1" tx="0" ty="0" tz="0" rx="0" ry="0" rz="0">
+									<mesh id="head_center_mesh2" file="/home/robocomp/robocomp/files/osgModels/basics/cylinder.3ds" scale="35,35,35" tx="0" ty="0" tz="0" rx="0" ry="1.570799947" rz="0" collide="1" />
+									<transform id="rgbd_transform0" tx="0" ty="50" tz="0"  rx="0" ry="0" rz="0">
+										<transform id="rgbd_transform" tx="0" ty="0" tz="10"  rx="0" ry="0" rz="0">
+											<rgbd id="rgbd" width="640" height="480" focal="540" port="10096" ifconfig="10068,12238" noise="0" />
+										</transform>
+										<transform id="camera_transform" tx="0" ty="0" tz="30"  rx="-0.200000003" ry="0.01999999955" rz="0">
+											<camera id="camera" width="1280" height="720" focal="810" />
+										</transform>
+										<mesh id="sensorRGBD" file="/home/robocomp/robocomp/files/osgModels/basics/cube2.3ds" scale="100,21,30" tx="0" ty="0" tz="0" rx="0" ry="0" rz="0" collide="1" />
+									</transform>
+								</joint>
+							</transform>
+						</joint>
+					</transform>
+				</transform>
+			</transform>
+			<transform id="pared0" tx="-2000" ty="950" tz="2000"  rx="0" ry="0" rz="0">
+				<plane id="muro0" texture="#880000" size="5000,1900,9" repeat="1000" nx="-500" ny="0" nz="0" px="0" py="0" pz="0" collide="0" />
+			</transform>
+			<transform id="pared1" tx="2000" ty="950" tz="4500"  rx="0" ry="0" rz="0">
+				<plane id="muro1" texture="#880000" size="8000,1900,9" repeat="1000" nx="0" ny="0" nz="5000" px="0" py="0" pz="0" collide="0" />
+			</transform>
+			<transform id="pared2" tx="6000" ty="950" tz="2000"  rx="0" ry="0" rz="0">
+				<plane id="muro2" texture="#880000" size="5000,1900,9" repeat="1000" nx="5000" ny="0" nz="0" px="0" py="0" pz="0" collide="0" />
+			</transform>
+			<transform id="pared3" tx="2000" ty="950" tz="-500"  rx="0" ry="0" rz="0">
+				<plane id="muro3" texture="#880000" size="8000,1900,9" repeat="1000" nx="0" ny="0" nz="-5000" px="0" py="0" pz="0" collide="0" />
+			</transform>
+			<transform id="board" tx="2000" ty="1200" tz="4400"  rx="0" ry="3.141520023" rz="0">
+				<mesh id="board_mesh" file="/home/robocomp/robocomp/components/robocomp-araceli/models/board.3DS" scale="7,7,7" tx="0" ty="0" tz="0" rx="1.570000052" ry="0" rz="3.141520023" collide="1" />
+			</transform>
+			<transform id="camera_astra" tx="-2000" ty="925" tz="2000"  rx="0" ry="1.570799947" rz="0">
+				<mesh id="astraRGBD_mesh" file="/home/robocomp/robocomp/files/osgModels/basics/cube2.3ds" scale="200,200,200" tx="0" ty="0" tz="0" rx="0" ry="0" rz="0" collide="1" />
+			</transform>
+		</transform>
+	</transform>
+</innermodel>

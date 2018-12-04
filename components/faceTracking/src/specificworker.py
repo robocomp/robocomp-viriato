@@ -64,7 +64,6 @@ class SpecificWorker(GenericWorker):
 				bounding_boxes.append(qr)
 
 				rects.append(box.astype("int"))
-				print(time.ctime(),rects)
 
 		objects = self.ct.update(rects)
 
@@ -80,7 +79,9 @@ class SpecificWorker(GenericWorker):
 					face.tracking = True
 					bbox = Box()
 					(bbox.posx, bbox.posy, bbox.width,bbox.height) = qrects.getRect()
-					face.bounding_box = bbox
+
+
+					face.boundingbox = bbox
 					tracking = True
 					break
 

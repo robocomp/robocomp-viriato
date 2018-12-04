@@ -257,61 +257,73 @@ void SpecificWorker::getDataFromAstra()
         PersonList users;
         humantracker_proxy-> getUsersList(users);
 
-        if(users.size()!= 0)
-        {
-            for (auto p:users)
-            {
-                Pose3D personpose;
-                auto id = p.first;
+        if(users.size()== 0)
+        return;
 
+        for (auto p:users)
+		{
+			Pose3D personpose;
+			auto id = p.first;
 
-				jointListType joints_person = p.second.joints;
-
-				if (!getPoseRot(joints_person, personpose))
-				{
-				    return;
-				}
-
-				if ( humans_in_world.find(id) == humans_in_world.end() ) //not found
-				{
-					if(position_correct) //Solo incluyo en AGM si la posición se ha calculado correctamente
-						includeInAGM(id, personpose);
-				}
-				else // found
-				{
-                        movePersonInAGM(id,personpose);
-				}
-
-				humans_in_world[id] = personpose;
+			joint pointindepth = {};
+			if ( humantracker_proxy->getJointDepthPosition(id, "Head", pointindepth))
+			{
+				qDebug()<<"PROFUNDIDAD "<<pointindepth[0]<<" "<<pointindepth[1];
 			}
-        }
+			else
+				qDebug()<<"No hay cabeza";
+
+
+			jointListType joints_person = p.second.joints;
+
+			if (!getPoseRot(joints_person, personpose))
+			{
+				return;
+			}
+
+			if ( humans_in_world.find(id) == humans_in_world.end() ) //not found
+			{
+				if(position_correct) //Solo incluyo en AGM si la posición se ha calculado correctamente
+					includeInAGM(id, personpose);
+			}
+			else // found
+			{
+					movePersonInAGM(id,personpose);
+			}
+
+			humans_in_world[id] = personpose;
+		}
+
+
+
+
 
         ///////////////////////////
-        if ((list_psymbol.size() == 2) and (!enlace))
-        {
-            AGMModel::SPtr newModel(new AGMModel(worldModel));
-
-            try
-            {
-                newModel->addEdgeByIdentifiers(list_psymbol[0],list_psymbol[1], "interacting");
-                qDebug()<<"SE AÑADE EL ENLACE";
-            }
-            catch(...)
-            {
-                qDebug()<<"EXISTE EL ENLACE";
-            }
-
-            try
-            {
-                sendModificationProposal(worldModel,newModel);
-                enlace = true;
-            }
-            catch(...)
-            {
-                std::cout<<"No se puede actualizar worldModel"<<std::endl;
-            }
-
-        }
+//        if ((list_psymbol.size() == 2) and (!enlace))
+//        {
+//            AGMModel::SPtr newModel(new AGMModel(worldModel));
+//
+//            try
+//            {
+//                newModel->addEdgeByIdentifiers(list_psymbol[0],list_psymbol[1], "interacting");
+//                qDebug()<<"SE AÑADE EL ENLACE";
+//            }
+//            catch(...)
+//            {
+//                qDebug()<<"EXISTE EL ENLACE";
+//            }
+//
+//            try
+//            {
+//                sendModificationProposal(worldModel,newModel);
+//                enlace = true;
+//            }
+//            catch(...)
+//            {
+//                std::cout<<"No se puede actualizar worldModel"<<std::endl;
+//            }
+//
+//        }
     }
 
 
@@ -425,7 +437,21 @@ void SpecificWorker::compute()
 {
 	QMutexLocker locker(mutex);
 
-    getDataFromAstra();
+
+    auto faces = facetracking_proxy-> getFaces();
+
+	for (auto f:faces)
+	{
+//		qDebug()<<"ID" <<f.id;
+//		if (f.tracking)
+//		    qDebug()<<"Tracking";
+//        else qDebug()<<"Lost";
+//
+//		qDebug()<<"Centro cara" <<f.centroid.x <<" " <<f.centroid.y;
+		qDebug()<<"Bounding box. POS X "<<  f.boundingbox.posx << " POS Y "<<f.boundingbox.posy <<" width "<< f.boundingbox.width<<" Height "<<f.boundingbox.height;
+	}
+
+	getDataFromAstra();
 
 //#ifdef USE_QTGUI
 //    if (innerModelViewer) innerModelViewer->update();
