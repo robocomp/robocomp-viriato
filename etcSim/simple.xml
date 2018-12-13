@@ -168,7 +168,7 @@
  </node>
 
  
-  <node alias="faceTracking"  endpoint="agmcommonbehavior:tcp -h localhost -p 11318">
+  <node alias="faceTracking"  endpoint="facetracking:tcp -h localhost -p 12666">
   <workingDir path="/home/robocomp/" />
   <dependence alias="astraRGBD" />
   <upCommand command="rcremote localhost faceTracking /home/robocomp/robocomp/components/robocomp-viriato/components/faceTracking python src/faceTracking.py /home/robocomp/robocomp/components/robocomp-viriato/etcSim/faceTracking.conf" />

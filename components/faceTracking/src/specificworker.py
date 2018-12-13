@@ -25,10 +25,13 @@ class SpecificWorker(GenericWorker):
 
 
 	def setParams(self, params):
+		print ("---1---")
 		self.model = params['model']
+		print ("---2---")
 		self.prototxt = params['prototxt']
-
+		print ("---3---")
 		self.net = cv2.dnn.readNetFromCaffe(self.prototxt, self.model)
+		print ("---4---")
 		return True
 
 	@QtCore.Slot()
