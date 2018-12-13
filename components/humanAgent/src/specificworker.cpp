@@ -463,8 +463,8 @@ bool SpecificWorker::getPoseRot (jointListType list, Pose3D &personpose) {
 		personpose.ry = 3.1415926535 - (atan2(joint_left.z()-joint_right.z(),joint_left.x() - joint_right.x()));
 
 
-        if (backwards) //puede que este de espaldas.CAMBIAR SI NO ESTA LA CARA LO PONE DE ESPALDAS SI O SI
-            personpose.ry = 1.57;
+//        if (backwards) //puede que este de espaldas.CAMBIAR SI NO ESTA LA CARA LO PONE DE ESPALDAS SI O SI
+//            personpose.ry = 1.57;
 
         //cambiar esto, solo vale para una cierta posición de la cámara
         rotation_correct = true;
