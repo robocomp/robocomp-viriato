@@ -87,13 +87,13 @@ bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList paramsL)
 	try
 	{		
 		RoboCompAGMWorldModel::World w = agmexecutive_proxy->getModel();
-		structuralChange(w);
+		AGMExecutiveTopic_structuralChange(w);
 		// Initializing PathFinder
 		pathfinder.initialize(innerModel, viewer, configparams, laser_proxy, omnirobot_proxy);
 		// Initializing SocialRules
 		socialrules.initialize(socialnavigationgaussian_proxy, agmexecutive_proxy, mutex, &pathfinder, worldModel, innerModel);
-	
-		structuralChange(w);
+
+		AGMExecutiveTopic_structuralChange(w);
 		rDebug2(("Leaving Structural Change"));
 	}		
 	catch(...)
@@ -106,9 +106,6 @@ bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList paramsL)
 
 	qLog::getInstance()->setProxy("both", logger_proxy);
 	rDebug2(("NavigationAgent started"));
-
-	Period = 200;
-	timer.start(Period);
 	
 	//Proxies for actionExecution
 	//aE.logger_proxy = logger_proxy;
@@ -120,6 +117,14 @@ bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList paramsL)
 	
 	return true;
 }
+
+void SpecificWorker::initialize(int period)
+{
+	std::cout << "Initialize worker" << std::endl;
+	this->Period = period;
+	timer.start(Period);
+}
+
 
 /**
  * \brief Check if persons are included in the AGM. 
@@ -147,12 +152,13 @@ void SpecificWorker::compute() {
 //		std::cout << ex << std::endl;
 //	}
 
-	pathfinder.run(); //projector is comentated because the social navigation cant acceded to the laser if the astraRGBD is working
+	pathfinder.run(); //projector is comented because the social navigation cant acceded to the laser if the astraRGBD is working
 	//update viewer
 //	QVec robotpos = innerModel->transformS6D("world", robotname);
 //	viewer->ts_updateTransformValues(QString::fromStdString(robotname), robotpos);
-	viewer->run();
 
+    viewer->run();
+ 
 
 // 	qDebug()<<"Update actionEx";
 // 	aE.Update(action,params);
@@ -304,7 +310,7 @@ void SpecificWorker::checkHumanBlock()
 	previous_affordanceslist = pId_affblocking;
 }
 
-float SpecificWorker::go(const TargetPose &target)
+float SpecificWorker::TrajectoryRobot2D_go(const TargetPose &target)
 {
 	if (target.doRotation)
 	{
@@ -321,7 +327,7 @@ float SpecificWorker::go(const TargetPose &target)
 // AGENT RELATED
 // *****************************************************************************************
 
-bool SpecificWorker::activateAgent(const ParameterMap& prs)
+bool SpecificWorker::AGMCommonBehavior_activateAgent(const ParameterMap& prs)
 {
 	bool activated = false;
 	printf("<<activateAgent\n");
@@ -342,12 +348,12 @@ bool SpecificWorker::activateAgent(const ParameterMap& prs)
 	return true;
 }
 
-bool SpecificWorker::deactivateAgent()
+bool SpecificWorker::AGMCommonBehavior_deactivateAgent()
 {
 	return deactivate();
 }
 
-StateStruct SpecificWorker::getAgentState()
+StateStruct SpecificWorker::AGMCommonBehavior_getAgentState()
 {
 	StateStruct s;
 	if (isActive())
@@ -362,27 +368,27 @@ StateStruct SpecificWorker::getAgentState()
 	return s;
 }
 
-ParameterMap SpecificWorker::getAgentParameters()
+ParameterMap SpecificWorker::AGMCommonBehavior_getAgentParameters()
 {
 	return params;
 }
 
-bool SpecificWorker::setAgentParameters(const ParameterMap& prs)
+bool SpecificWorker::AGMCommonBehavior_setAgentParameters(const ParameterMap& prs)
 {
 	bool activated = false;
 	return setParametersAndPossibleActivation(prs, activated);
 }
 
-void SpecificWorker::killAgent()
+void SpecificWorker::AGMCommonBehavior_killAgent()
 {
 }
 
-Ice::Int SpecificWorker::uptimeAgent()
+Ice::Int SpecificWorker::AGMCommonBehavior_uptimeAgent()
 {
 	return 0;
 }
 
-bool SpecificWorker::reloadConfigAgent()
+bool SpecificWorker::AGMCommonBehavior_reloadConfigAgent()
 {
 	return true;
 }
@@ -390,7 +396,7 @@ bool SpecificWorker::reloadConfigAgent()
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void SpecificWorker::structuralChange(const RoboCompAGMWorldModel::World& modification)
+void SpecificWorker::AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldModel::World& modification)
 {
 	qDebug()<<"StructuralChange";
 	QMutexLocker l(mutex);
@@ -416,14 +422,14 @@ void SpecificWorker::structuralChange(const RoboCompAGMWorldModel::World& modifi
 }
 
 
-void SpecificWorker::symbolUpdated(const RoboCompAGMWorldModel::Node& modification)
+void SpecificWorker::AGMExecutiveTopic_symbolUpdated(const RoboCompAGMWorldModel::Node& modification)
 {
 	qDebug()<<"symbolUpdated";
 	QMutexLocker l(mutex);
 	AGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);
 }
 
-void SpecificWorker::symbolsUpdated(const RoboCompAGMWorldModel::NodeSequence &modifications)
+void SpecificWorker::AGMExecutiveTopic_symbolsUpdated(const RoboCompAGMWorldModel::NodeSequence &modifications)
 {
 	//qDebug()<<"symbolsUpdated";
 	QMutexLocker l(mutex);
@@ -433,7 +439,7 @@ void SpecificWorker::symbolsUpdated(const RoboCompAGMWorldModel::NodeSequence &m
 }
 
 
-void SpecificWorker::edgesUpdated(const RoboCompAGMWorldModel::EdgeSequence &modifications)
+void SpecificWorker::AGMExecutiveTopic_edgesUpdated(const RoboCompAGMWorldModel::EdgeSequence &modifications)
 {
 // 	qDebug()<<"edgesUpdated";
 	changepos=true;
@@ -473,7 +479,7 @@ void SpecificWorker::edgesUpdated(const RoboCompAGMWorldModel::EdgeSequence &mod
 /**
  * \brief ACTUALIZACION DEL ENLACE EN INNERMODEL
  */ 
-void SpecificWorker::edgeUpdated(const RoboCompAGMWorldModel::Edge& modification)
+void SpecificWorker::AGMExecutiveTopic_edgeUpdated(const RoboCompAGMWorldModel::Edge& modification)
 {
  	qDebug() << "edgeUpdated";
 	changepos = true;

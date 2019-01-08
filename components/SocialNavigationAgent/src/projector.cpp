@@ -80,7 +80,7 @@ void Projector::initialize( const InnerPtr &innerModel_,
 void Projector::update(Road &road)
 {
 	RoboCompLaser::TLaserData laserData;
-	try{ laserData  = laser_proxy->getLaserData();} catch(const Ice::Exception &e){std::cout << e.what() << std::endl;};
+	try{ laserData  = laser_proxy->getLaserData();} catch(const Ice::Exception &e){std::cout <<"SHIT" <<e.what() << std::endl;};
 	update(road, laserData, polyline, 0);
 
 }	
@@ -91,7 +91,7 @@ void Projector::run(std::function<Road&()> getRoad, std::function<void()> releas
 	RoboCompLaser::TLaserData laserData;
 	while(true)
 	{
-		try{ laserData  = laser_proxy->getLaserData();} catch(const Ice::Exception &e){std::cout << e.what() << std::endl;};
+		try{ laserData  = laser_proxy->getLaserData();} catch(const Ice::Exception &e){std::cout <<"SHIT" <<e.what() << std::endl;};
 		Road &road = getRoad();
 			update(road, laserData, polyline, 0);
 		releaseRoad();
@@ -301,7 +301,7 @@ bool Projector::checkVisiblePoints(Road &road, const RoboCompLaser::TLaserData &
 	for (auto &ld : laserData)
 	{
 		//wd = innerModel->getNode<InnerModelLaser>("laser")->laserTo("world", ld.dist, ld.angle);
-		wd = innerModel->getNode<InnerModelLaser>("laser")->laserTo("world", ld.dist, ld.angle);
+		wd = innerModel->getNode<InnerModelLaser>(QString("laser"))->laserTo(QString("world"), ld.dist, ld.angle);
 		points.push_back(Point(wd.x(), wd.z()));
 	}
 	res = simPath.simplifyWithRDP(points, 70);  ///PARAMS
@@ -484,13 +484,13 @@ void Projector::computeDistanceField(WayPoint &ball, const RoboCompLaser::TLaser
 	ball.minDistHasChanged = false;
 
 	QVec c = ball.pos;
-	c[1] = innerModel->getNode("laser")->getTr()[1]; //Put the y coordinate to laser height so norm() works allright
+	c[1] = innerModel->getNode(QString("laser"))->getTr()[1]; //Put the y coordinate to laser height so norm() works allright
 	int index = -1;
 
 	for (uint i = 0; i < laserData.size(); i++)
 	{
 		//QVec l = innerModel->laserTo("world", "laser", laserData[i].dist, laserData[i].angle);
-		QVec l = innerModel->getNode<InnerModelLaser>("laser")->laserTo("world", laserData[i].dist, laserData[i].angle);
+		QVec l = innerModel->getNode<InnerModelLaser>(QString("laser"))->laserTo(QString("world"), laserData[i].dist, laserData[i].angle);
 
 		float dist = (l - c).norm2();
 
@@ -515,7 +515,7 @@ void Projector::computeDistanceField(WayPoint &ball, const RoboCompLaser::TLaser
 	}
 
 	//QVec lw = innerModel->laserTo("world", "laser", laserData[index].dist, laserData[index].angle);
-	QVec lw = innerModel->getNode<InnerModelLaser>("laser")->laserTo("world", laserData[index].dist, laserData[index].angle);
+	QVec lw = innerModel->getNode<InnerModelLaser>(QString("laser"))->laserTo(QString("world"), laserData[index].dist, laserData[index].angle);
 	ball.minDistPoint = (lw - c).normalize();
 
 	//correct minDist to take into account the size of the robot in the ball.minDistPoint direction. For now let's suposse it is a ball
@@ -541,7 +541,7 @@ void Projector::computeDistanceField(WayPoint &ball, const RoboCompLaser::TLaser
 	QVec wd;
 	for( auto &ld : laserData)
 	{
-		wd = innerModel->getNode<InnerModelLaser>("laser")->laserTo("world", ld.dist, ld.angle);
+		wd = innerModel->getNode<InnerModelLaser>(QString("laser"))->laserTo(QString("world"), ld.dist, ld.angle);
 		points.push_back(Point(wd.x(), wd.z()));
 	}
 	res = simPath.simplifyWithRDP(points, 70);

@@ -207,7 +207,7 @@ class SpecificWorker(GenericWorker):
         return True
 
     #
-    # getPolyline
+    # getPersonalSPace
     #
     def getPersonalSpace(self, persons, h, dibujar):
 

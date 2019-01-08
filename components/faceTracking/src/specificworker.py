@@ -25,18 +25,15 @@ class SpecificWorker(GenericWorker):
 
 
 	def setParams(self, params):
-		print ("---1---")
 		self.model = params['model']
-		print ("---2---")
 		self.prototxt = params['prototxt']
-		print ("---3---")
 		self.net = cv2.dnn.readNetFromCaffe(self.prototxt, self.model)
-		print ("---4---")
+		
 		return True
 
 	@QtCore.Slot()
 	def compute(self):
-
+        
 		color,_, _, _ = self.rgbd_proxy.getData()
 		frame = np.fromstring(color, dtype=np.uint8)
 		frame = np.reshape(frame,(480, 640, 3))

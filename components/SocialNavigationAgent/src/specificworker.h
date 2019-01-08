@@ -75,44 +75,38 @@ public:
 	///////////////////////////////////////////////////////////////////////////
 	/// SERVANTS
 	//////////////////////////////////////////////////////////////////////////
-	bool activateAgent(const ParameterMap& prs);
-	bool deactivateAgent();
-	StateStruct getAgentState();
-	ParameterMap getAgentParameters();
-	bool setAgentParameters(const ParameterMap& prs);
-	void  killAgent();
-	Ice::Int uptimeAgent();
-	bool reloadConfigAgent();
+		bool AGMCommonBehavior_reloadConfigAgent();
+	bool AGMCommonBehavior_activateAgent(const ParameterMap &prs);
+	bool AGMCommonBehavior_setAgentParameters(const ParameterMap &prs);
+	ParameterMap AGMCommonBehavior_getAgentParameters();
+	void AGMCommonBehavior_killAgent();
+	int AGMCommonBehavior_uptimeAgent();
+	bool AGMCommonBehavior_deactivateAgent();
+	StateStruct AGMCommonBehavior_getAgentState();
+	NavState TrajectoryRobot2D_getState(){ return pathfinder.getState(); };;
+	float TrajectoryRobot2D_goBackwards(const TargetPose &target){return 0.0;};
+	void TrajectoryRobot2D_stop(){};
+	void TrajectoryRobot2D_setHumanSpace(const PolyLineList &polyList){};
+	float TrajectoryRobot2D_goReferenced(const TargetPose &target, const float xRef, const float zRef, const float threshold){return 0;};
+	float TrajectoryRobot2D_changeTarget(const TargetPose &target){return 0.0;};
+	float TrajectoryRobot2D_go(const TargetPose &target);
+	void TrajectoryRobot2D_mapBasedTarget(const NavigationParameterMap &parameters){};
+	void AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldModel::World &w);
+	void AGMExecutiveTopic_edgesUpdated(const RoboCompAGMWorldModel::EdgeSequence &modifications);
+	void AGMExecutiveTopic_edgeUpdated(const RoboCompAGMWorldModel::Edge &modification);
+	void AGMExecutiveTopic_symbolUpdated(const RoboCompAGMWorldModel::Node &modification);
+	void AGMExecutiveTopic_symbolsUpdated(const RoboCompAGMWorldModel::NodeSequence &modifications);
 
-	void  structuralChange(const RoboCompAGMWorldModel::World & modification);
-	void  symbolUpdated(const RoboCompAGMWorldModel::Node& modification);
-	void  symbolsUpdated(const RoboCompAGMWorldModel::NodeSequence & modification);
-	void  edgeUpdated(const RoboCompAGMWorldModel::Edge& modification);
-	void edgesUpdated(const RoboCompAGMWorldModel::EdgeSequence &modifications);
-
-	//double agaussian(SNGPerson person, float x, float y);
-
-	NavState getState(){ return pathfinder.getState(); };
-
-	void setHumanSpace(const PolyLineList &polyList){};
 	void checkHumanBlock();
 	vector <int32_t> previous_blockinglist = {};
 	vector <int32_t> previous_softblockinglist = {};
-    vector <int32_t> previous_affordanceslist = {};
-
-	//Trajectory
-	float goBackwards(const TargetPose &target){return 0.0;};
-	void stop(){};
-	float goReferenced(const TargetPose &target, const float xRef, const float zRef, const float threshold){return 0;};
-	float changeTarget(const TargetPose &target){return 0.0;};
-	void mapBasedTarget(const NavigationParameterMap &parameters){};
-	float go(const TargetPose &target);
-	//float go(const TargetPose &target){pathfinder.go(target.x, -target.z);  return 0.0;};
+    	vector <int32_t> previous_affordanceslist = {};
 
 
 
 public slots:
  	void compute();
+	void initialize(int period);
 	//void readTrajState();
 // 	SNGPolylineSeq gauss(bool draw=true);
 // 	void changevalue(int value);

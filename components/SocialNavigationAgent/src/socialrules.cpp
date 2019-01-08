@@ -12,7 +12,7 @@ void SocialRules::initialize(SocialNavigationGaussianPrx socialnavigationgaussia
 
 {
 	qDebug()<<__FUNCTION__;
-	
+
 	socialnavigationgaussian_proxy = socialnavigationgaussian_proxy_;
 	agmexecutive_proxy = agmexecutive_proxy_;
 	mux = mutex_;
@@ -40,7 +40,7 @@ void SocialRules::checkNewPersonInModel(AGMModel::SPtr worldModel_)
 	idselected->clear();
 	pSymbolId.clear();
 	//Check if the person is in the model
- 	for (uint i=1; i < 500; i++)
+ 	for (uint i=0; i < 50; i++)
 	{
 		std::string name = "person" + std::to_string(i);
 		int idx = 0;
@@ -55,7 +55,6 @@ void SocialRules::checkNewPersonInModel(AGMModel::SPtr worldModel_)
 			}
 		}
 	}
-	
 
 	if (!pSymbolId.empty())
 	{
@@ -168,7 +167,7 @@ void SocialRules::checkMovement()
                 //person.vel=str2float(edgeRT.attributes["velocity"]);
                 person.vel = 0;
 
-//			    qDebug()<<"POSICION PERSONA "<< person.x <<" " <<person.z <<" " <<person.angle;
+			    qDebug()<<"POSICION PERSONA "<< person.x <<" " <<person.z <<" " <<person.angle;
 				persons.push_back(person);
 				totalpersons.push_back(person);
 				
@@ -272,6 +271,7 @@ SNGPolylineSeq SocialRules::ApplySocialRules()
 			objectblock_seq.push_back(s);
 
 	}
+
 	pathfinder->innerModelChanged(innerModel, totalpersons, intimate_seq, personal_seq, social_seq, object_seq,objectblock_seq);
 
 

@@ -30,41 +30,41 @@ TrajectoryRobot2DI::~TrajectoryRobot2DI()
 
 NavState TrajectoryRobot2DI::getState(const Ice::Current&)
 {
-	return worker->getState();
+	return worker->TrajectoryRobot2D_getState();
 }
 
 float TrajectoryRobot2DI::goBackwards(const TargetPose  &target, const Ice::Current&)
 {
-	return worker->goBackwards(target);
+	return worker->TrajectoryRobot2D_goBackwards(target);
 }
 
 void TrajectoryRobot2DI::stop(const Ice::Current&)
 {
-	worker->stop();
+	worker->TrajectoryRobot2D_stop();
 }
 
 void TrajectoryRobot2DI::setHumanSpace(const PolyLineList  &polyList, const Ice::Current&)
 {
-	worker->setHumanSpace(polyList);
+	worker->TrajectoryRobot2D_setHumanSpace(polyList);
 }
 
 float TrajectoryRobot2DI::goReferenced(const TargetPose  &target, const float  xRef, const float  zRef, const float  threshold, const Ice::Current&)
 {
-	return worker->goReferenced(target, xRef, zRef, threshold);
+	return worker->TrajectoryRobot2D_goReferenced(target, xRef, zRef, threshold);
 }
 
 float TrajectoryRobot2DI::changeTarget(const TargetPose  &target, const Ice::Current&)
 {
-	return worker->changeTarget(target);
+	return worker->TrajectoryRobot2D_changeTarget(target);
 }
 
 float TrajectoryRobot2DI::go(const TargetPose  &target, const Ice::Current&)
 {
-	return worker->go(target);
+	return worker->TrajectoryRobot2D_go(target);
 }
 
 void TrajectoryRobot2DI::mapBasedTarget(const NavigationParameterMap  &parameters, const Ice::Current&)
 {
-	worker->mapBasedTarget(parameters);
+	worker->TrajectoryRobot2D_mapBasedTarget(parameters);
 }
 

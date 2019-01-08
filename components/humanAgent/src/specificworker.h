@@ -61,11 +61,11 @@ public:
     bool position_correct = false;
     bool rotation_correct = false;
     //----------------- intento de relacionar cara con esqueleto -----------------------//
-	typedef map <int,int> jointface; //mapa que relaciona los id procedentes del esqueleto con los de la cara
-	typedef map <int,int> facegeneric; // rel cara con id generico de humanAgent
+	typedef map <int,int> relID;
 
-	jointface IDjointface;
-	facegeneric IDfacegeneric;
+	relID IDjointface; //mapa que relaciona los id procedentes del esqueleto con los de la cara
+	relID IDfacegeneric;// rel cara con id generico de humanAgent
+	relID IDjointgeneric;//rel id joint con id generico
 
 	int IDgeneric = 0;
     bool backwards = false;

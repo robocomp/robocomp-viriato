@@ -602,7 +602,7 @@ void PathPlanner::modifyCost(SNGPolylineSeq personal, SNGPolylineSeq social, SNG
 void PathPlanner::modifyGraph(SNGPolylineSeq intimate, SNGPolylineSeq personal, SNGPolylineSeq social, SNGPolylineSeq object, SNGPolylineSeq objectsblocking)
 {
 
-//	qDebug()<<__FUNCTION__;
+	qDebug()<<__FUNCTION__;
 	polylines_block = intimate;
 	polylines_softblock = personal;
     polylines_aff = objectsblocking;

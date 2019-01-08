@@ -17,6 +17,7 @@ SocialNavigationGaussianProxy = socialnavigationgaussian:tcp -h localhost -p 200
 TrajectoryRobot2DProxy = trajectoryrobot2d:tcp -h localhost -p 19204
 OmniRobotProxy = omnirobot:tcp -h localhost -p 12238
 AGMExecutiveProxy = agmexecutive:tcp -h localhost -p 10198
+LaserProxy = laser:tcp -h localhost -p 10003
 
 #NavigationAgent.InnerModel=/home/robocomp/robocomp/components/robocomp-ursus-rockin/files/makeMeCoffee/simulation.xml
 
