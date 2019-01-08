@@ -22,18 +22,17 @@ SET ( SOURCES
   $ENV{ROBOCOMP}/classes/qlog/qlog.cpp
   main.cpp
   genericmonitor.cpp
-  specificmonitor.cpp
   commonbehaviorI.cpp
   genericworker.cpp
-  specificworker.cpp
   agmcommonbehaviorI.cpp
   agmexecutivetopicI.cpp
-        )
+)
+
 
 
 #ROBOCOMP
 ROBOCOMP_INITIALIZE( $ENV{ROBOCOMP}/ )
-ROBOCOMP_WRAP_ICE( CommonBehavior HumanTracker  AGMExecutive AGMWorldModel Planning AGMCommonBehavior )
+ROBOCOMP_WRAP_ICE( CommonBehavior HumanTracker  FaceTracking  AGMExecutive AGMWorldModel Planning AGMCommonBehavior )
 SET (EXECUTABLE_OUTPUT_PATH ${RC_COMPONENT_DEVEL_PATH}/bin)
 
 # Qt4

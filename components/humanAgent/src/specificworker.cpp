@@ -252,72 +252,170 @@ void SpecificWorker::getDataFromAstra()
 {
     list_id.clear();
     list_psymbol.clear();
+
     try
     {
         PersonList users;
         humantracker_proxy-> getUsersList(users);
+        bool facefound = true;
 
-        if(users.size()!= 0)
-        {
-            for (auto p:users)
+        if(users.size()== 0)
+            return;
+
+        //hay alguna persona
+        for (auto p:users) //para insertar persona en el modelo tiene que haber cara y cabeza
+		{
+            int idperson = -1;
+
+			Pose3D personpose;
+			auto idjoint = p.first; //id esqueleto
+
+            auto faces = facetracking_proxy-> getFaces(); //obtenemos las caras
+
+            if (IDjointface.find(idjoint) == IDjointface.end()) //Buscamos en el mapa si el id del esqueleto ya está relacionado con la cara. Si NO:
             {
-                Pose3D personpose;
-                auto id = p.first;
+                joint pointindepth = {};
 
+                if ( !(humantracker_proxy->getJointDepthPosition(idjoint, "Head", pointindepth))) //obtenemos la posicion de la cabeza en profundidad
+                {
+                    qDebug()<<"No hay cabeza";
+                    break;
+                }
 
-				jointListType joints_person = p.second.joints;
+                for (auto f:faces)
+                {
+                    if (f.tracking)
+                    {
+                        auto rect = QRect(f.boundingbox.posx, f.boundingbox.posy, f.boundingbox.width,f.boundingbox.height ); //para cada cara comprobamos si la cabeza esta contenida en el bounding box de la cara
+                        if (rect.contains(QPoint(pointindepth[0],pointindepth[1]))) //Si es asi
+                        {
+                            if (IDfacegeneric.find(f.id) != IDfacegeneric.end()) //Buscamos en el mapa si el id de la cara ya esta relacionaada con el generico. Si es asi:
+                            {
+                                IDjointface[idjoint] = f.id; //Relacionamos el id del joint con el de la cara
+                            }
 
-				if (!getPoseRot(joints_person, personpose))
+                            else //Si no esta
+                            {
+                                //Antes de asignar generico a cara ,comprobamos si los joints ya tienen generico
+                                if (IDjointgeneric.find(idjoint) == IDjointgeneric.end()) //Si no hay jointgeneric
+                                {
+                                    IDfacegeneric[f.id] = IDgeneric; //relacionamos id cara con id generico
+                                    IDjointface[idjoint] = f.id; //relacionamos id joint con id cara
+
+                                    IDjointgeneric[idjoint] = IDgeneric; //rel joint con generic
+
+                                    idperson = IDgeneric; //el id de la persona sera el id generico
+                                    IDgeneric++; //aumentamos en uno el id generico para que no coincidan
+                                }
+
+                                else
+                                {
+                                    IDfacegeneric[f.id] = IDjointgeneric[idjoint];
+                                    IDjointface[idjoint] = f.id;
+                                    idperson = IDjointgeneric[idjoint];
+                                }
+                            }
+
+                            break;
+                        }
+                    }
+                    else if (IDfacegeneric.find(f.id) == IDfacegeneric.end())     //Se comprueba si el id de la cara está ya registrado aunque no esté siendo trackeada
+                        facefound = false;
+
+                }
+
+                if ((faces.size() == 0) or !facefound) //insertar a la persona en el modelo con id person = id generic relacionando joint con generic
+                {
+                    //NO HAY CARAS
+                    if (IDjointgeneric.find(idjoint) == IDjointgeneric.end())
+                    {
+                        IDjointgeneric[idjoint] = IDgeneric;
+                        idperson = IDgeneric;
+                        IDgeneric++;
+                        backwards = true;
+                    }
+
+                    else //ya existe la relacion joint-generic
+                        idperson = IDjointgeneric[idjoint];
+
+                }
+                facefound = true;
+            }
+
+			else //el id ya está registrado accedemos al id generico
+			{
+				int idface = IDjointface[idjoint];
+				idperson = IDfacegeneric[idface];
+
+				for (auto fcs : faces) //si la cara no esta trackeada puede que este de espaldas
 				{
-				    return;
-				}
+				    if((fcs.id == idface) and !fcs.tracking)
+				    {
+				    	backwards = true;
+                        break;
+                    }
 
-				if ( humans_in_world.find(id) == humans_in_world.end() ) //not found
-				{
-					if(position_correct) //Solo incluyo en AGM si la posición se ha calculado correctamente
-						includeInAGM(id, personpose);
 				}
-				else // found
-				{
-                        movePersonInAGM(id,personpose);
-				}
-
-				humans_in_world[id] = personpose;
 			}
-        }
+
+			if (idperson == -1)
+            	return;
+
+			//Una vez que se tiene el id de la persona se calcula su posición y rotación
+
+			jointListType joints_person = p.second.joints;
+
+			if (!getPoseRot(joints_person, personpose))
+				return;
+
+			if ( humans_in_world.find(idperson) == humans_in_world.end() ) //not found
+			{
+				if(position_correct) //Solo incluyo en AGM si la posición se ha calculado correctamente
+					includeInAGM(idperson, personpose);
+			}
+			else // found
+			{
+					movePersonInAGM(idperson,personpose);
+			}
+
+			humans_in_world[idperson] = personpose;
+
+            backwards = false;
+		}
 
         ///////////////////////////
-        if ((list_psymbol.size() == 2) and (!enlace))
-        {
-            AGMModel::SPtr newModel(new AGMModel(worldModel));
-
-            try
-            {
-                newModel->addEdgeByIdentifiers(list_psymbol[0],list_psymbol[1], "interacting");
-                qDebug()<<"SE AÑADE EL ENLACE";
-            }
-            catch(...)
-            {
-                qDebug()<<"EXISTE EL ENLACE";
-            }
-
-            try
-            {
-                sendModificationProposal(worldModel,newModel);
-                enlace = true;
-            }
-            catch(...)
-            {
-                std::cout<<"No se puede actualizar worldModel"<<std::endl;
-            }
-
-        }
+//        if ((list_psymbol.size() == 2) and (!enlace))
+//        {
+//            AGMModel::SPtr newModel(new AGMModel(worldModel));
+//
+//            try
+//            {
+//                newModel->addEdgeByIdentifiers(list_psymbol[0],list_psymbol[1], "interacting");
+//                qDebug()<<"SE AÑADE EL ENLACE";
+//            }
+//            catch(...)
+//            {
+//                qDebug()<<"EXISTE EL ENLACE";
+//            }
+//
+//            try
+//            {
+//                sendModificationProposal(worldModel,newModel);
+//                enlace = true;
+//            }
+//            catch(...)
+//            {
+//                std::cout<<"No se puede actualizar worldModel"<<std::endl;
+//            }
+//
+//        }
     }
 
 
     catch(...)
     {
     }
+
 
 }
 
@@ -401,22 +499,27 @@ bool SpecificWorker::getPoseRot (jointListType list, Pose3D &personpose) {
 
 		personpose.ry = 3.1415926535 - (atan2(joint_left.z()-joint_right.z(),joint_left.x() - joint_right.x()));
 
-		rotation_correct = true;
+
+        if (backwards) //puede que este de espaldas.CAMBIAR SI NO ESTA LA CARA LO PONE DE ESPALDAS SI O SI
+            personpose.ry = 1.57;
+
+        //cambiar esto, solo vale para una cierta posición de la cámara
+        rotation_correct = true;
     }
 
-
-    //cambiar esto, solo vale para una cierta posición de la cámara
-	if (leftsh and !rightsh)
-	    //angulo de la camara - pi/2
-		personpose.ry = 0;
-	if (!leftsh and rightsh)
-        //angulo de la camara + pi/2
-	    personpose.ry = 3.1415926535;
-
-//	qDebug()<<"-----------------------------------------------------------------------";
-
-
-	/////////////////////////////////////////////////////////////////////////////////////
+//
+//	if (leftsh and !rightsh)
+//	{
+//        personpose.ry = 0;
+//        rotation_correct = true;
+//    }
+//    //angulo de la camara - pi/2
+//    if (!leftsh and rightsh)
+//	{
+//        personpose.ry = 3.1415926535;
+//        rotation_correct = true;
+//    }
+    //angulo de la camara + pi/2
 
 	return true;
 }
@@ -425,7 +528,7 @@ void SpecificWorker::compute()
 {
 	QMutexLocker locker(mutex);
 
-    getDataFromAstra();
+	getDataFromAstra();
 
 //#ifdef USE_QTGUI
 //    if (innerModelViewer) innerModelViewer->update();
@@ -509,6 +612,7 @@ StateStruct SpecificWorker::getAgentState()
 
 void SpecificWorker::structuralChange(const RoboCompAGMWorldModel::World &w)
 {
+    qDebug()<<"structuralChange";
 //subscribesToCODE
 	QMutexLocker lockIM(mutex);
  	AGMModelConverter::fromIceToInternal(w, worldModel);

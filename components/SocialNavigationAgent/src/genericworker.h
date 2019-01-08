@@ -20,10 +20,14 @@
 #define GENERICWORKER_H
 
 #include "config.h"
-#include <QtGui>
 #include <stdint.h>
 #include <qlog/qlog.h>
 
+#if Qt5_FOUND
+	#include <QtWidgets>
+#else
+	#include <QtGui>
+#endif
 #include <ui_mainUI.h>
 
 #include <CommonBehavior.h>
@@ -40,10 +44,7 @@
 #define CHECK_PERIOD 5000
 #define BASIC_PERIOD 100
 
-typedef map <string,::IceProxy::Ice::Object*> MapPrx;
-
 using namespace std;
-
 using namespace RoboCompLaser;
 using namespace RoboCompTrajectoryRobot2D;
 using namespace RoboCompAGMWorldModel;
@@ -54,6 +55,8 @@ using namespace RoboCompAGMExecutive;
 using namespace RoboCompPlanning;
 using namespace RoboCompLogger;
 using namespace RoboCompAGMCommonBehavior;
+
+typedef map <string,::IceProxy::Ice::Object*> MapPrx;
 
 
 struct BehaviorParameters
@@ -86,32 +89,32 @@ public:
 
 
 	OmniRobotPrx omnirobot_proxy;
-	SocialNavigationGaussianPrx socialnavigationgaussian_proxy;
 	LoggerPrx logger_proxy;
 	LaserPrx laser_proxy;
+	SocialNavigationGaussianPrx socialnavigationgaussian_proxy;
 	AGMExecutivePrx agmexecutive_proxy;
 
-	virtual bool reloadConfigAgent() = 0;
-	virtual bool activateAgent(const ParameterMap &prs) = 0;
-	virtual bool setAgentParameters(const ParameterMap &prs) = 0;
-	virtual ParameterMap getAgentParameters() = 0;
-	virtual void killAgent() = 0;
-	virtual int uptimeAgent() = 0;
-	virtual bool deactivateAgent() = 0;
-	virtual StateStruct getAgentState() = 0;
-	virtual NavState getState() = 0;
-	virtual float goBackwards(const TargetPose &target) = 0;
-	virtual void stop() = 0;
-	virtual void setHumanSpace(const PolyLineList &polyList) = 0;
-	virtual float goReferenced(const TargetPose &target, const float xRef, const float zRef, const float threshold) = 0;
-	virtual float changeTarget(const TargetPose &target) = 0;
-	virtual float go(const TargetPose &target) = 0;
-	virtual void mapBasedTarget(const NavigationParameterMap &parameters) = 0;
-	virtual void structuralChange(const RoboCompAGMWorldModel::World &w) = 0;
-	virtual void edgesUpdated(const RoboCompAGMWorldModel::EdgeSequence &modifications) = 0;
-	virtual void edgeUpdated(const RoboCompAGMWorldModel::Edge &modification) = 0;
-	virtual void symbolUpdated(const RoboCompAGMWorldModel::Node &modification) = 0;
-	virtual void symbolsUpdated(const RoboCompAGMWorldModel::NodeSequence &modifications) = 0;
+	virtual bool AGMCommonBehavior_reloadConfigAgent() = 0;
+	virtual bool AGMCommonBehavior_activateAgent(const ParameterMap &prs) = 0;
+	virtual bool AGMCommonBehavior_setAgentParameters(const ParameterMap &prs) = 0;
+	virtual ParameterMap AGMCommonBehavior_getAgentParameters() = 0;
+	virtual void AGMCommonBehavior_killAgent() = 0;
+	virtual int AGMCommonBehavior_uptimeAgent() = 0;
+	virtual bool AGMCommonBehavior_deactivateAgent() = 0;
+	virtual StateStruct AGMCommonBehavior_getAgentState() = 0;
+	virtual NavState TrajectoryRobot2D_getState() = 0;
+	virtual float TrajectoryRobot2D_goBackwards(const TargetPose &target) = 0;
+	virtual void TrajectoryRobot2D_stop() = 0;
+	virtual void TrajectoryRobot2D_setHumanSpace(const PolyLineList &polyList) = 0;
+	virtual float TrajectoryRobot2D_goReferenced(const TargetPose &target, const float xRef, const float zRef, const float threshold) = 0;
+	virtual float TrajectoryRobot2D_changeTarget(const TargetPose &target) = 0;
+	virtual float TrajectoryRobot2D_go(const TargetPose &target) = 0;
+	virtual void TrajectoryRobot2D_mapBasedTarget(const NavigationParameterMap &parameters) = 0;
+	virtual void AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldModel::World &w) = 0;
+	virtual void AGMExecutiveTopic_edgesUpdated(const RoboCompAGMWorldModel::EdgeSequence &modifications) = 0;
+	virtual void AGMExecutiveTopic_edgeUpdated(const RoboCompAGMWorldModel::Edge &modification) = 0;
+	virtual void AGMExecutiveTopic_symbolUpdated(const RoboCompAGMWorldModel::Node &modification) = 0;
+	virtual void AGMExecutiveTopic_symbolsUpdated(const RoboCompAGMWorldModel::NodeSequence &modifications) = 0;
 
 protected:
 	QTimer timer;
@@ -129,6 +132,7 @@ private:
 
 public slots:
 	virtual void compute() = 0;
+	virtual void initialize(int period) = 0;
 signals:
 	void kill();
 };

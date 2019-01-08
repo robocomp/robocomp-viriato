@@ -30,41 +30,41 @@ AGMCommonBehaviorI::~AGMCommonBehaviorI()
 
 bool AGMCommonBehaviorI::reloadConfigAgent(const Ice::Current&)
 {
-	return worker->reloadConfigAgent();
+	return worker->AGMCommonBehavior_reloadConfigAgent();
 }
 
 bool AGMCommonBehaviorI::activateAgent(const ParameterMap  &prs, const Ice::Current&)
 {
-	return worker->activateAgent(prs);
+	return worker->AGMCommonBehavior_activateAgent(prs);
 }
 
 bool AGMCommonBehaviorI::setAgentParameters(const ParameterMap  &prs, const Ice::Current&)
 {
-	return worker->setAgentParameters(prs);
+	return worker->AGMCommonBehavior_setAgentParameters(prs);
 }
 
 ParameterMap AGMCommonBehaviorI::getAgentParameters(const Ice::Current&)
 {
-	return worker->getAgentParameters();
+	return worker->AGMCommonBehavior_getAgentParameters();
 }
 
 void AGMCommonBehaviorI::killAgent(const Ice::Current&)
 {
-	worker->killAgent();
+	worker->AGMCommonBehavior_killAgent();
 }
 
 int AGMCommonBehaviorI::uptimeAgent(const Ice::Current&)
 {
-	return worker->uptimeAgent();
+	return worker->AGMCommonBehavior_uptimeAgent();
 }
 
 bool AGMCommonBehaviorI::deactivateAgent(const Ice::Current&)
 {
-	return worker->deactivateAgent();
+	return worker->AGMCommonBehavior_deactivateAgent();
 }
 
 StateStruct AGMCommonBehaviorI::getAgentState(const Ice::Current&)
 {
-	return worker->getAgentState();
+	return worker->AGMCommonBehavior_getAgentState();
 }
 

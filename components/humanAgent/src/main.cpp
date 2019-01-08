@@ -85,6 +85,7 @@
 #include <agmexecutivetopicI.h>
 
 #include <HumanTracker.h>
+#include <FaceTracking.h>
 
 
 // User includes here
@@ -137,6 +138,7 @@ int ::humanAgent::run(int argc, char* argv[])
 	int status=EXIT_SUCCESS;
 
 	HumanTrackerPrx humantracker_proxy;
+	FaceTrackingPrx facetracking_proxy;
 	AGMExecutivePrx agmexecutive_proxy;
 
 	string proxy, tmp;
@@ -158,6 +160,23 @@ int ::humanAgent::run(int argc, char* argv[])
 	}
 	rInfo("HumanTrackerProxy initialized Ok!");
 	mprx["HumanTrackerProxy"] = (::IceProxy::Ice::Object*)(&humantracker_proxy);//Remote server proxy creation example
+
+
+	try
+	{
+		if (not GenericMonitor::configGetString(communicator(), prefix, "FaceTrackingProxy", proxy, ""))
+		{
+			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy FaceTrackingProxy\n";
+		}
+		facetracking_proxy = FaceTrackingPrx::uncheckedCast( communicator()->stringToProxy( proxy ) );
+	}
+	catch(const Ice::Exception& ex)
+	{
+		cout << "[" << PROGRAM_NAME << "]: Exception: " << ex;
+		return EXIT_FAILURE;
+	}
+	rInfo("FaceTrackingProxy initialized Ok!");
+	mprx["FaceTrackingProxy"] = (::IceProxy::Ice::Object*)(&facetracking_proxy);//Remote server proxy creation example
 
 
 	try
@@ -285,12 +304,17 @@ int ::humanAgent::run(int argc, char* argv[])
 		cout << "[" << PROGRAM_NAME << "]: Exception raised on main thread: " << endl;
 		cout << ex;
 
-#ifdef USE_QTGUI
+	}
+	#ifdef USE_QTGUI
 		a.quit();
-#endif
-		monitor->exit(0);
-}
+	#endif
 
+
+	status = EXIT_SUCCESS;
+	monitor->terminate();
+	monitor->wait();
+	delete worker;
+	delete monitor;
 	return status;
 }
 

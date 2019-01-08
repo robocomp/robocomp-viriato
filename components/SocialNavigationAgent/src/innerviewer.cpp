@@ -375,7 +375,7 @@ void InnerViewer::createWindow(osgViewer::Viewer& viewer, const std::string &nam
 //	wsi->getScreenResolution(osg::GraphicsContext::ScreenIdentifier("",0, 0), width, height);
     //and traits->displayNum = 1; should be removed
 
-	wsi->getScreenResolution(osg::GraphicsContext::ScreenIdentifier("",1, 0), width, height);
+	wsi->getScreenResolution(osg::GraphicsContext::ScreenIdentifier("",0, 0), width, height);
 
 	qDebug()<<"width "<<width <<"height "<<height;
 //	wsi->getScreenResolution(osg::GraphicsContext::ScreenIdentifier(0), width, height);
@@ -390,7 +390,7 @@ void InnerViewer::createWindow(osgViewer::Viewer& viewer, const std::string &nam
 	traits->doubleBuffer = true;
 	traits->sharedContext = 0;
 	traits->windowName = "InnerModelViewer " + name;
-	traits->displayNum = 1;
+//	traits->displayNum = 1;
 
 	osg::ref_ptr<osg::GraphicsContext> gc = osg::GraphicsContext::createGraphicsContext(traits.get());
 

@@ -41,30 +41,38 @@ except:
 	print 'SLICE_PATH environment variable was not exported. Using only the default paths'
 	pass
 
-ice_SocialNavigationGaussian = False
+ice_RGBD = False
 for p in icePaths:
-	print 'Trying', p, 'to load SocialNavigationGaussian.ice'
-	if os.path.isfile(p+'/SocialNavigationGaussian.ice'):
-		print 'Using', p, 'to load SocialNavigationGaussian.ice'
+	print 'Trying', p, 'to load RGBD.ice'
+	if os.path.isfile(p+'/RGBD.ice'):
+		print 'Using', p, 'to load RGBD.ice'
 		preStr = "-I/opt/robocomp/interfaces/ -I"+ROBOCOMP+"/interfaces/ " + additionalPathStr + " --all "+p+'/'
-		wholeStr = preStr+"SocialNavigationGaussian.ice"
+		wholeStr = preStr+"RGBD.ice"
 		Ice.loadSlice(wholeStr)
-		ice_SocialNavigationGaussian = True
+		ice_RGBD = True
 		break
-if not ice_SocialNavigationGaussian:
-	print 'Couldn\'t load SocialNavigationGaussian'
+if not ice_RGBD:
+	print 'Couldn\'t load RGBD'
 	sys.exit(-1)
-from RoboCompSocialNavigationGaussian import *
+from RoboCompRGBD import *
+ice_FaceTracking = False
+for p in icePaths:
+	print 'Trying', p, 'to load FaceTracking.ice'
+	if os.path.isfile(p+'/FaceTracking.ice'):
+		print 'Using', p, 'to load FaceTracking.ice'
+		preStr = "-I/opt/robocomp/interfaces/ -I"+ROBOCOMP+"/interfaces/ " + additionalPathStr + " --all "+p+'/'
+		wholeStr = preStr+"FaceTracking.ice"
+		Ice.loadSlice(wholeStr)
+		ice_FaceTracking = True
+		break
+if not ice_FaceTracking:
+	print 'Couldn\'t load FaceTracking'
+	sys.exit(-1)
+from RoboCompFaceTracking import *
 
-class SocialNavigationGaussianI(SocialNavigationGaussian):
+class FaceTrackingI(FaceTracking):
 	def __init__(self, worker):
 		self.worker = worker
 
-	def getPassOnRight(self, persons, v, d, c):
-		return self.worker.getPassOnRight(persons, v, d)
-	def removePoints(self, l, c):
-		return self.worker.removePoints(l)
-	def getPersonalSpace(self, persons, v, d, c):
-		return self.worker.getPersonalSpace(persons, v, d)
-	def getObjectInteraction(self, persons, objects, d, interact, c):
-		return self.worker.getObjectInteraction(persons, objects, d, interact)
+	def getFaces(self, c):
+		return self.worker.getFaces()

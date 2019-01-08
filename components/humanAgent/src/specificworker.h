@@ -49,18 +49,28 @@ public:
     };
 
     typedef map <int,Pose3D> list_humans;
-    vector <int> list_id;
-
-    vector <int32_t> list_psymbol;
-    bool enlace = false;
-
     list_humans humans_in_world;
+
+    vector <int> list_id;
+    vector <int32_t> list_psymbol;
+
+    bool enlace = false;
     int mesh = 1;
 
     bool first = true;
     bool position_correct = false;
     bool rotation_correct = false;
+    //----------------- intento de relacionar cara con esqueleto -----------------------//
+	typedef map <int,int> relID;
 
+	relID IDjointface; //mapa que relaciona los id procedentes del esqueleto con los de la cara
+	relID IDfacegeneric;// rel cara con id generico de humanAgent
+	relID IDjointgeneric;//rel id joint con id generico
+
+	int IDgeneric = 0;
+    bool backwards = false;
+
+    //----------------------------------------------//
 
     SpecificWorker(MapPrx& mprx);
 	~SpecificWorker();
@@ -70,8 +80,6 @@ public:
     void getDataFromAstra();
 
 //	bool removeFromAGM(int id);
-
-
 
     bool getPoseRot (jointListType list, Pose3D &personpose);
 

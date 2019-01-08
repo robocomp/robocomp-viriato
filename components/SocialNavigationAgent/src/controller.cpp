@@ -288,7 +288,7 @@ std::vector<float> Controller::computeRobotOffsets(const std::shared_ptr<InnerMo
 	QVec p(3,0.f);
 	int k;
 	
-	if(	innerModel->getNode<InnerModelNode>("robot") == nullptr or innerModel->getNode<InnerModelNode>("laser") == nullptr)	
+	if(	innerModel->getNode<InnerModelNode>(QString("robot")) == nullptr or innerModel->getNode<InnerModelNode>(QString("laser")) == nullptr)
 	{
 		qDebug() << __FUNCTION__ << "No laser or robot nodes in InnerModel. Aborting";
 		throw;
@@ -299,7 +299,7 @@ std::vector<float> Controller::computeRobotOffsets(const std::shared_ptr<InnerMo
 	{
 		for(k = 10; k < 4000; k++)   /// OJO PONER EN FUNCION DEL LASER REAL
 		{
-				p = innerModel->getNode<InnerModelLaser>("laser")->laserTo("robot", k, i.angle);
+				p = innerModel->getNode<InnerModelLaser>(QString("laser"))->laserTo(QString("robot"), k, i.angle);
 				if( sqrt(p.x()*p.x() + p.z()*p.z()) - 250 >= 0) 
 				//if( base.contains( QPointF( p.x(), p.z() ) ) == false )
 					break;

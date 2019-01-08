@@ -126,6 +126,11 @@ if __name__ == '__main__':
 		worker = SpecificWorker(mprx)
 		worker.setParams(parameters)
 
+	adapter = ic.createObjectAdapter('FaceTracking')
+	adapter.add(FaceTrackingI(worker), ic.stringToIdentity('facetracking'))
+	adapter.activate()
+
+
 	signal.signal(signal.SIGINT, signal.SIG_DFL)
 	app.exec_()
 

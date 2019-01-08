@@ -100,7 +100,7 @@ void PathFinder::run()
  	//while(true)
 	{	
 		road.update();
-		projector.update(road);
+       // projector.update(road);
 		controller.update(road);
 		pathplanner.update(road);
 		//TODO Revisar para pasar un shared_ptr

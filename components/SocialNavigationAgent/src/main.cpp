@@ -163,12 +163,12 @@ int ::SocialNavigationAgent::run(int argc, char* argv[])
 	}
 	catch(const Ice::Exception& ex)
 	{
-		cout << "[" << PROGRAM_NAME << "]: Exception: " << ex;
+		cout << "[" << PROGRAM_NAME << "]: Exception creating proxy SocialNavigationGaussian: " << ex;
 		return EXIT_FAILURE;
 	}
 	rInfo("SocialNavigationGaussianProxy initialized Ok!");
-	mprx["SocialNavigationGaussianProxy"] = (::IceProxy::Ice::Object*)(&socialnavigationgaussian_proxy);//Remote server proxy creation example
 
+	mprx["SocialNavigationGaussianProxy"] = (::IceProxy::Ice::Object*)(&socialnavigationgaussian_proxy);//Remote server proxy creation example
 
 	try
 	{
@@ -180,12 +180,12 @@ int ::SocialNavigationAgent::run(int argc, char* argv[])
 	}
 	catch(const Ice::Exception& ex)
 	{
-		cout << "[" << PROGRAM_NAME << "]: Exception: " << ex;
+		cout << "[" << PROGRAM_NAME << "]: Exception creating proxy Laser: " << ex;
 		return EXIT_FAILURE;
 	}
 	rInfo("LaserProxy initialized Ok!");
-	mprx["LaserProxy"] = (::IceProxy::Ice::Object*)(&laser_proxy);//Remote server proxy creation example
 
+	mprx["LaserProxy"] = (::IceProxy::Ice::Object*)(&laser_proxy);//Remote server proxy creation example
 
 	try
 	{
@@ -197,12 +197,12 @@ int ::SocialNavigationAgent::run(int argc, char* argv[])
 	}
 	catch(const Ice::Exception& ex)
 	{
-		cout << "[" << PROGRAM_NAME << "]: Exception: " << ex;
+		cout << "[" << PROGRAM_NAME << "]: Exception creating proxy OmniRobot: " << ex;
 		return EXIT_FAILURE;
 	}
 	rInfo("OmniRobotProxy initialized Ok!");
-	mprx["OmniRobotProxy"] = (::IceProxy::Ice::Object*)(&omnirobot_proxy);//Remote server proxy creation example
 
+	mprx["OmniRobotProxy"] = (::IceProxy::Ice::Object*)(&omnirobot_proxy);//Remote server proxy creation example
 
 	try
 	{
@@ -214,12 +214,12 @@ int ::SocialNavigationAgent::run(int argc, char* argv[])
 	}
 	catch(const Ice::Exception& ex)
 	{
-		cout << "[" << PROGRAM_NAME << "]: Exception: " << ex;
+		cout << "[" << PROGRAM_NAME << "]: Exception creating proxy AGMExecutive: " << ex;
 		return EXIT_FAILURE;
 	}
 	rInfo("AGMExecutiveProxy initialized Ok!");
-	mprx["AGMExecutiveProxy"] = (::IceProxy::Ice::Object*)(&agmexecutive_proxy);//Remote server proxy creation example
 
+	mprx["AGMExecutiveProxy"] = (::IceProxy::Ice::Object*)(&agmexecutive_proxy);//Remote server proxy creation example
 	IceStorm::TopicManagerPrx topicManager;
 	try
 	{
@@ -230,8 +230,8 @@ int ::SocialNavigationAgent::run(int argc, char* argv[])
 		cout << "[" << PROGRAM_NAME << "]: Exception: STORM not running: " << ex << endl;
 		return EXIT_FAILURE;
 	}
-
 	IceStorm::TopicPrx logger_topic;
+
 	while (!logger_topic)
 	{
 		try
@@ -240,20 +240,21 @@ int ::SocialNavigationAgent::run(int argc, char* argv[])
 		}
 		catch (const IceStorm::NoSuchTopic&)
 		{
+			cout << "[" << PROGRAM_NAME << "]: ERROR retrieving Logger topic. \n";
 			try
 			{
 				logger_topic = topicManager->create("Logger");
 			}
 			catch (const IceStorm::TopicExists&){
 				// Another client created the topic.
+				cout << "[" << PROGRAM_NAME << "]: ERROR publishing the Logger topic. It's possible that other component have created\n";
 			}
 		}
 	}
+
 	Ice::ObjectPrx logger_pub = logger_topic->getPublisher()->ice_oneway();
-	LoggerPrx logger = LoggerPrx::uncheckedCast(logger_pub);
-	mprx["LoggerPub"] = (::IceProxy::Ice::Object*)(&logger);
-
-
+	logger_proxy = LoggerPrx::uncheckedCast(logger_pub);
+	mprx["LoggerPub"] = (::IceProxy::Ice::Object*)(&logger_proxy);
 
 	SpecificWorker *worker = new SpecificWorker(mprx);
 	//Monitor thread
@@ -272,88 +273,125 @@ int ::SocialNavigationAgent::run(int argc, char* argv[])
 
 	try
 	{
-		// Server adapter creation and publication
-		if (not GenericMonitor::configGetString(communicator(), prefix, "CommonBehavior.Endpoints", tmp, ""))
-		{
-			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy CommonBehavior\n";
-		}
-		Ice::ObjectAdapterPtr adapterCommonBehavior = communicator()->createObjectAdapterWithEndpoints("commonbehavior", tmp);
-		CommonBehaviorI *commonbehaviorI = new CommonBehaviorI(monitor );
-		adapterCommonBehavior->add(commonbehaviorI, communicator()->stringToIdentity("commonbehavior"));
-		adapterCommonBehavior->activate();
-
-
-
-
-		// Server adapter creation and publication
-		if (not GenericMonitor::configGetString(communicator(), prefix, "AGMCommonBehavior.Endpoints", tmp, ""))
-		{
-			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy AGMCommonBehavior";
-		}
-		Ice::ObjectAdapterPtr adapterAGMCommonBehavior = communicator()->createObjectAdapterWithEndpoints("AGMCommonBehavior", tmp);
-		AGMCommonBehaviorI *agmcommonbehavior = new AGMCommonBehaviorI(worker);
-		adapterAGMCommonBehavior->add(agmcommonbehavior, communicator()->stringToIdentity("agmcommonbehavior"));
-		adapterAGMCommonBehavior->activate();
-		cout << "[" << PROGRAM_NAME << "]: AGMCommonBehavior adapter created in port " << tmp << endl;
-
-
-		// Server adapter creation and publication
-		if (not GenericMonitor::configGetString(communicator(), prefix, "TrajectoryRobot2D.Endpoints", tmp, ""))
-		{
-			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy TrajectoryRobot2D";
-		}
-		Ice::ObjectAdapterPtr adapterTrajectoryRobot2D = communicator()->createObjectAdapterWithEndpoints("TrajectoryRobot2D", tmp);
-		TrajectoryRobot2DI *trajectoryrobot2d = new TrajectoryRobot2DI(worker);
-		adapterTrajectoryRobot2D->add(trajectoryrobot2d, communicator()->stringToIdentity("trajectoryrobot2d"));
-		adapterTrajectoryRobot2D->activate();
-		cout << "[" << PROGRAM_NAME << "]: TrajectoryRobot2D adapter created in port " << tmp << endl;
-
-
-
-
-
-		// Server adapter creation and publication
-		if (not GenericMonitor::configGetString(communicator(), prefix, "AGMExecutiveTopicTopic.Endpoints", tmp, ""))
-		{
-			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy AGMExecutiveTopicProxy";
-		}
-		Ice::ObjectAdapterPtr AGMExecutiveTopic_adapter = communicator()->createObjectAdapterWithEndpoints("agmexecutivetopic", tmp);
-		AGMExecutiveTopicPtr agmexecutivetopicI_ = new AGMExecutiveTopicI(worker);
-		Ice::ObjectPrx agmexecutivetopic = AGMExecutiveTopic_adapter->addWithUUID(agmexecutivetopicI_)->ice_oneway();
-		IceStorm::TopicPrx agmexecutivetopic_topic;
-		if(!agmexecutivetopic_topic){
 		try {
-			agmexecutivetopic_topic = topicManager->create("AGMExecutiveTopic");
+			// Server adapter creation and publication
+			if (not GenericMonitor::configGetString(communicator(), prefix, "CommonBehavior.Endpoints", tmp, "")) {
+				cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy CommonBehavior\n";
+			}
+			Ice::ObjectAdapterPtr adapterCommonBehavior = communicator()->createObjectAdapterWithEndpoints("commonbehavior", tmp);
+			CommonBehaviorI *commonbehaviorI = new CommonBehaviorI(monitor);
+			adapterCommonBehavior->add(commonbehaviorI, Ice::stringToIdentity("commonbehavior"));
+			adapterCommonBehavior->activate();
 		}
-		catch (const IceStorm::TopicExists&) {
-		//Another client created the topic
-		try{
-			agmexecutivetopic_topic = topicManager->retrieve("AGMExecutiveTopic");
+		catch(const Ice::Exception& ex)
+		{
+			status = EXIT_FAILURE;
+
+			cout << "[" << PROGRAM_NAME << "]: Exception raised while creating CommonBehavior adapter: " << endl;
+			cout << ex;
+
+		}
+
+
+
+		try
+		{
+			// Server adapter creation and publication
+			if (not GenericMonitor::configGetString(communicator(), prefix, "AGMCommonBehavior.Endpoints", tmp, ""))
+			{
+				cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy AGMCommonBehavior";
+			}
+			Ice::ObjectAdapterPtr adapterAGMCommonBehavior = communicator()->createObjectAdapterWithEndpoints("AGMCommonBehavior", tmp);
+			AGMCommonBehaviorI *agmcommonbehavior = new AGMCommonBehaviorI(worker);
+			adapterAGMCommonBehavior->add(agmcommonbehavior, Ice::stringToIdentity("agmcommonbehavior"));
+			adapterAGMCommonBehavior->activate();
+			cout << "[" << PROGRAM_NAME << "]: AGMCommonBehavior adapter created in port " << tmp << endl;
+			}
+			catch (const IceStorm::TopicExists&){
+				cout << "[" << PROGRAM_NAME << "]: ERROR creating or activating adapter for AGMCommonBehavior\n";
+			}
+
+
+		try
+		{
+			// Server adapter creation and publication
+			if (not GenericMonitor::configGetString(communicator(), prefix, "TrajectoryRobot2D.Endpoints", tmp, ""))
+			{
+				cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy TrajectoryRobot2D";
+			}
+			Ice::ObjectAdapterPtr adapterTrajectoryRobot2D = communicator()->createObjectAdapterWithEndpoints("TrajectoryRobot2D", tmp);
+			TrajectoryRobot2DI *trajectoryrobot2d = new TrajectoryRobot2DI(worker);
+			adapterTrajectoryRobot2D->add(trajectoryrobot2d, Ice::stringToIdentity("trajectoryrobot2d"));
+			adapterTrajectoryRobot2D->activate();
+			cout << "[" << PROGRAM_NAME << "]: TrajectoryRobot2D adapter created in port " << tmp << endl;
+			}
+			catch (const IceStorm::TopicExists&){
+				cout << "[" << PROGRAM_NAME << "]: ERROR creating or activating adapter for TrajectoryRobot2D\n";
+			}
+
+
+
+		// Server adapter creation and publication
+		IceStorm::TopicPrx agmexecutivetopic_topic;
+		Ice::ObjectPrx agmexecutivetopic;
+		try
+		{
+			if (not GenericMonitor::configGetString(communicator(), prefix, "AGMExecutiveTopicTopic.Endpoints", tmp, ""))
+			{
+				cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy AGMExecutiveTopicProxy";
+			}
+			Ice::ObjectAdapterPtr AGMExecutiveTopic_adapter = communicator()->createObjectAdapterWithEndpoints("agmexecutivetopic", tmp);
+			AGMExecutiveTopicPtr agmexecutivetopicI_ =  new AGMExecutiveTopicI(worker);
+			Ice::ObjectPrx agmexecutivetopic = AGMExecutiveTopic_adapter->addWithUUID(agmexecutivetopicI_)->ice_oneway();
+			if(!agmexecutivetopic_topic)
+			{
+				try {
+					agmexecutivetopic_topic = topicManager->create("AGMExecutiveTopic");
+				}
+				catch (const IceStorm::TopicExists&) {
+					//Another client created the topic
+					try{
+						cout << "[" << PROGRAM_NAME << "]: Probably other client already opened the topic. Trying to connect.\n";
+						agmexecutivetopic_topic = topicManager->retrieve("AGMExecutiveTopic");
+					}
+					catch(const IceStorm::NoSuchTopic&)
+					{
+						cout << "[" << PROGRAM_NAME << "]: Topic doesn't exists and couldn't be created.\n";
+						//Error. Topic does not exist
+					}
+				}
+				IceStorm::QoS qos;
+				agmexecutivetopic_topic->subscribeAndGetPublisher(qos, agmexecutivetopic);
+			}
+			AGMExecutiveTopic_adapter->activate();
 		}
 		catch(const IceStorm::NoSuchTopic&)
 		{
+			cout << "[" << PROGRAM_NAME << "]: Error creating AGMExecutiveTopic topic.\n";
 			//Error. Topic does not exist
-			}
 		}
-		IceStorm::QoS qos;
-		agmexecutivetopic_topic->subscribeAndGetPublisher(qos, agmexecutivetopic);
-		}
-		AGMExecutiveTopic_adapter->activate();
 
 		// Server adapter creation and publication
 		cout << SERVER_FULL_NAME " started" << endl;
 
 		// User defined QtGui elements ( main window, dialogs, etc )
 
-#ifdef USE_QTGUI
-		//ignoreInterrupt(); // Uncomment if you want the component to ignore console SIGINT signal (ctrl+c).
-		a.setQuitOnLastWindowClosed( true );
-#endif
+		#ifdef USE_QTGUI
+			//ignoreInterrupt(); // Uncomment if you want the component to ignore console SIGINT signal (ctrl+c).
+			a.setQuitOnLastWindowClosed( true );
+		#endif
 		// Run QT Application Event Loop
 		a.exec();
 
-		std::cout << "Unsubscribing topic: agmexecutivetopic " <<std::endl;
-		agmexecutivetopic_topic->unsubscribe( agmexecutivetopic );
+		try
+		{
+			std::cout << "Unsubscribing topic: agmexecutivetopic " <<std::endl;
+			agmexecutivetopic_topic->unsubscribe( agmexecutivetopic );
+		}
+		catch(const Ice::Exception& ex)
+		{
+			std::cout << "ERROR Unsubscribing topic: agmexecutivetopic " <<std::endl;
+		}
 
 		status = EXIT_SUCCESS;
 	}
@@ -364,12 +402,16 @@ int ::SocialNavigationAgent::run(int argc, char* argv[])
 		cout << "[" << PROGRAM_NAME << "]: Exception raised on main thread: " << endl;
 		cout << ex;
 
-#ifdef USE_QTGUI
+	}
+	#ifdef USE_QTGUI
 		a.quit();
-#endif
-		monitor->exit(0);
-}
+	#endif
 
+	status = EXIT_SUCCESS;
+	monitor->terminate();
+	monitor->wait();
+	delete worker;
+	delete monitor;
 	return status;
 }
 
