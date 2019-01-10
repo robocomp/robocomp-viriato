@@ -34,6 +34,7 @@ void PathFinder::go(float x, float z, const ParameterMap &parameters)
 		road.reset();
 		road.setRequiresReplanning(true);
 		currenttarget->setTranslation(QVec::vec3(x,0,z));
+		currenttarget->setHasRotation(false);
 	releaseRoad();
 };
 
@@ -100,7 +101,7 @@ void PathFinder::run()
  	//while(true)
 	{	
 		road.update();
-       // projector.update(road);
+        projector.update(road);
 		controller.update(road);
 		pathplanner.update(road);
 		//TODO Revisar para pasar un shared_ptr

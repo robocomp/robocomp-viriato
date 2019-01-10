@@ -188,3 +188,7 @@ components/humanAgent/Project\.cbp
 components/humanAgent/README\.md\.new
 
 components/humanAgent/src/ui_mainUI\.h
+
+components/SocialNavigationAgent/Project\.cbp
+
+components/SocialNavigationAgent/src/SocialNavigationAgent\.cbp

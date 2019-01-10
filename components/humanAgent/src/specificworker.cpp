@@ -117,6 +117,7 @@ void SpecificWorker::includeInAGM(int id,const Pose3D pose)
 			return;
 	}
 
+    mesh++;
 
 	std::string type = "person";
 	std::string imName = "person" + std::to_string(id);
@@ -192,7 +193,7 @@ void SpecificWorker::includeInAGM(int id,const Pose3D pose)
 
 	printf("includeInAGM ends\n");
 
-	mesh++;
+
 
 }
 
@@ -347,15 +348,15 @@ void SpecificWorker::getDataFromAstra()
 				int idface = IDjointface[idjoint];
 				idperson = IDfacegeneric[idface];
 
-				for (auto fcs : faces) //si la cara no esta trackeada puede que este de espaldas
-				{
-				    if((fcs.id == idface) and !fcs.tracking)
-				    {
-				    	backwards = true;
-                        break;
-                    }
-
-				}
+//				for (auto fcs : faces) //si la cara no esta trackeada puede que este de espaldas
+//				{
+//				    if((fcs.id == idface) and !fcs.tracking)
+//				    {
+//				    	backwards = true;
+//                        break;
+//                    }
+//
+//				}
 			}
 
 			if (idperson == -1)

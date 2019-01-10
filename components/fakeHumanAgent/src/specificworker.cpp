@@ -99,8 +99,8 @@ int SpecificWorker::includeInAGM(int id,const RoboCompInnerModelManager::Pose3D 
 {
 	printf("includeInAGM begins\n");
 	
-	std::string name = "person" + std::to_string(id);
-	std::string imName = "fakeperson" + std::to_string(id);
+	std::string name = "person" ;
+	std::string imName = "person" + std::to_string(id);
 	int personSymbolId = -1;
 	int idx=0;
 	while ((personSymbolId = worldModel->getIdentifierByType(name, idx++)) != -1)

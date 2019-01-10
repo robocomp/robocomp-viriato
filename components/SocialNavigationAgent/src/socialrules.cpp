@@ -40,7 +40,7 @@ void SocialRules::checkNewPersonInModel(AGMModel::SPtr worldModel_)
 	idselected->clear();
 	pSymbolId.clear();
 	//Check if the person is in the model
- 	for (uint i=0; i < 50; i++)
+ 	for (uint i=0; i < 5000; i++)
 	{
 		std::string name = "person" + std::to_string(i);
 		int idx = 0;
