@@ -1,5 +1,5 @@
 /*
- *    Copyright (C)2018 by YOUR NAME HERE
+ *    Copyright (C)2019 by YOUR NAME HERE
  *
  *    This file is part of RoboComp
  *
@@ -29,7 +29,8 @@ QObject()
 
 {
 	facetracking_proxy = (*(FaceTrackingPrx*)mprx["FaceTrackingProxy"]);
-	humantracker_proxy = (*(HumanTrackerPrx*)mprx["HumanTrackerProxy"]);
+	humantracker1_proxy = (*(HumanTrackerPrx*)mprx["HumanTrackerProxy1"]);
+	humantracker2_proxy = (*(HumanTrackerPrx*)mprx["HumanTrackerProxy2"]);
 	agmexecutive_proxy = (*(AGMExecutivePrx*)mprx["AGMExecutiveProxy"]);
 
 	mutex = new QMutex(QMutex::Recursive);

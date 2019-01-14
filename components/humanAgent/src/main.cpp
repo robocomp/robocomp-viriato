@@ -1,5 +1,5 @@
 /*
- *    Copyright (C) 2018 by YOUR NAME HERE
+ *    Copyright (C) 2019 by YOUR NAME HERE
  *
  *    This file is part of RoboComp
  *
@@ -137,29 +137,13 @@ int ::humanAgent::run(int argc, char* argv[])
 
 	int status=EXIT_SUCCESS;
 
-	HumanTrackerPrx humantracker_proxy;
 	FaceTrackingPrx facetracking_proxy;
+	HumanTrackerPrx humantracker1_proxy;
+	HumanTrackerPrx humantracker2_proxy;
 	AGMExecutivePrx agmexecutive_proxy;
 
 	string proxy, tmp;
 	initialize();
-
-
-	try
-	{
-		if (not GenericMonitor::configGetString(communicator(), prefix, "HumanTrackerProxy", proxy, ""))
-		{
-			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy HumanTrackerProxy\n";
-		}
-		humantracker_proxy = HumanTrackerPrx::uncheckedCast( communicator()->stringToProxy( proxy ) );
-	}
-	catch(const Ice::Exception& ex)
-	{
-		cout << "[" << PROGRAM_NAME << "]: Exception: " << ex;
-		return EXIT_FAILURE;
-	}
-	rInfo("HumanTrackerProxy initialized Ok!");
-	mprx["HumanTrackerProxy"] = (::IceProxy::Ice::Object*)(&humantracker_proxy);//Remote server proxy creation example
 
 
 	try
@@ -177,6 +161,40 @@ int ::humanAgent::run(int argc, char* argv[])
 	}
 	rInfo("FaceTrackingProxy initialized Ok!");
 	mprx["FaceTrackingProxy"] = (::IceProxy::Ice::Object*)(&facetracking_proxy);//Remote server proxy creation example
+
+
+	try
+	{
+		if (not GenericMonitor::configGetString(communicator(), prefix, "HumanTracker1Proxy", proxy, ""))
+		{
+			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy HumanTrackerProxy\n";
+		}
+		humantracker1_proxy = HumanTrackerPrx::uncheckedCast( communicator()->stringToProxy( proxy ) );
+	}
+	catch(const Ice::Exception& ex)
+	{
+		cout << "[" << PROGRAM_NAME << "]: Exception: " << ex;
+		return EXIT_FAILURE;
+	}
+	rInfo("HumanTrackerProxy1 initialized Ok!");
+	mprx["HumanTrackerProxy1"] = (::IceProxy::Ice::Object*)(&humantracker1_proxy);//Remote server proxy creation example
+
+
+	try
+	{
+		if (not GenericMonitor::configGetString(communicator(), prefix, "HumanTracker2Proxy", proxy, ""))
+		{
+			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy HumanTrackerProxy\n";
+		}
+		humantracker2_proxy = HumanTrackerPrx::uncheckedCast( communicator()->stringToProxy( proxy ) );
+	}
+	catch(const Ice::Exception& ex)
+	{
+		cout << "[" << PROGRAM_NAME << "]: Exception: " << ex;
+		return EXIT_FAILURE;
+	}
+	rInfo("HumanTrackerProxy2 initialized Ok!");
+	mprx["HumanTrackerProxy2"] = (::IceProxy::Ice::Object*)(&humantracker2_proxy);//Remote server proxy creation example
 
 
 	try

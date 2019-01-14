@@ -1,5 +1,5 @@
 /*
- *    Copyright (C)2018 by YOUR NAME HERE
+ *    Copyright (C)2019 by YOUR NAME HERE
  *
  *    This file is part of RoboComp
  *
@@ -76,7 +76,8 @@ public:
 	bool isActive() { return active; }
 
 
-	HumanTrackerPrx humantracker_proxy;
+	HumanTrackerPrx humantracker1_proxy;
+	HumanTrackerPrx humantracker2_proxy;
 	FaceTrackingPrx facetracking_proxy;
 	AGMExecutivePrx agmexecutive_proxy;
 

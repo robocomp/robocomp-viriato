@@ -1,9 +1,9 @@
-/*    This file is part of RoboComp
-*
-*    RoboComp is free software: you can redistribute it and/or modify
-*
- *    Copyright (C)2018 by YOUR NAME HERE
+/*
+ *    Copyright (C)2019 by YOUR NAME HERE
  *
+ *    This file is part of RoboComp
+ *
+ *    RoboComp is free software: you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation, either version 3 of the License, or
  *    (at your option) any later version.
@@ -257,7 +257,7 @@ void SpecificWorker::getDataFromAstra()
     try
     {
         PersonList users;
-        humantracker_proxy-> getUsersList(users);
+        humantracker1_proxy-> getUsersList(users);
         bool facefound = true;
 
         if(users.size()== 0)
@@ -277,7 +277,7 @@ void SpecificWorker::getDataFromAstra()
             {
                 joint pointindepth = {};
 
-                if ( !(humantracker_proxy->getJointDepthPosition(idjoint, "Head", pointindepth))) //obtenemos la posicion de la cabeza en profundidad
+                if ( !(humantracker1_proxy->getJointDepthPosition(idjoint, "Head", pointindepth))) //obtenemos la posicion de la cabeza en profundidad
                 {
                     qDebug()<<"No hay cabeza";
                     break;

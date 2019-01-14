@@ -39,7 +39,7 @@ void SocialRules::checkNewPersonInModel(AGMModel::SPtr worldModel_)
 	worldModel = worldModel_;
 	idselected->clear();
 	pSymbolId.clear();
-	//Check if the person is in the model
+	//Check if the person is in the model. Con humanAgent en vez de fakeHuman sustituir i<100 porque los id empiezan en 0
  	for (uint i=0; i < 5000; i++)
 	{
 		std::string name = "person" + std::to_string(i);
