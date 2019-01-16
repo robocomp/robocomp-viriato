@@ -206,10 +206,7 @@ void SpecificWorker::movePersonInAGM(int id,const Pose3D pose)
 	while ((personSymbolId = worldModel->getIdentifierByType(type, idx++)) != -1)
 	{
 		if (worldModel->getSymbolByIdentifier(personSymbolId)->getAttribute("imName") == imName)
-		{
-		    list_psymbol.push_back(personSymbolId);
 			break;
-		}
 	}
 	//move in AGM
 	AGMModelSymbol::SPtr personParent = worldModel->getParentByLink(personSymbolId, "RT");
@@ -249,176 +246,203 @@ void SpecificWorker::movePersonInAGM(int id,const Pose3D pose)
 }
 
 
-void SpecificWorker::getDataFromAstra()
+void SpecificWorker::getHumans()
 {
-    list_id.clear();
-    list_psymbol.clear();
 
-    try
-    {
-        PersonList users;
-        humantracker1_proxy-> getUsersList(users);
-        bool facefound = true;
-
-        if(users.size()== 0)
-            return;
-
-        //hay alguna persona
-        for (auto p:users) //para insertar persona en el modelo tiene que haber cara y cabeza
+	for (int cam = 1; cam < numcameras; cam++)
+	{
+		try
 		{
-            int idperson = -1;
+			PersonList users;
+			Faces faces;
 
-			Pose3D personpose;
-			auto idjoint = p.first; //id esqueleto
-
-            auto faces = facetracking_proxy-> getFaces(); //obtenemos las caras
-
-            if (IDjointface.find(idjoint) == IDjointface.end()) //Buscamos en el mapa si el id del esqueleto ya está relacionado con la cara. Si NO:
-            {
-                joint pointindepth = {};
-
-                if ( !(humantracker1_proxy->getJointDepthPosition(idjoint, "Head", pointindepth))) //obtenemos la posicion de la cabeza en profundidad
-                {
-                    qDebug()<<"No hay cabeza";
-                    break;
-                }
-
-                for (auto f:faces)
-                {
-                    if (f.tracking)
-                    {
-                        auto rect = QRect(f.boundingbox.posx, f.boundingbox.posy, f.boundingbox.width,f.boundingbox.height ); //para cada cara comprobamos si la cabeza esta contenida en el bounding box de la cara
-                        if (rect.contains(QPoint(pointindepth[0],pointindepth[1]))) //Si es asi
-                        {
-                            if (IDfacegeneric.find(f.id) != IDfacegeneric.end()) //Buscamos en el mapa si el id de la cara ya esta relacionaada con el generico. Si es asi:
-                            {
-                                IDjointface[idjoint] = f.id; //Relacionamos el id del joint con el de la cara
-                            }
-
-                            else //Si no esta
-                            {
-                                //Antes de asignar generico a cara ,comprobamos si los joints ya tienen generico
-                                if (IDjointgeneric.find(idjoint) == IDjointgeneric.end()) //Si no hay jointgeneric
-                                {
-                                    IDfacegeneric[f.id] = IDgeneric; //relacionamos id cara con id generico
-                                    IDjointface[idjoint] = f.id; //relacionamos id joint con id cara
-
-                                    IDjointgeneric[idjoint] = IDgeneric; //rel joint con generic
-
-                                    idperson = IDgeneric; //el id de la persona sera el id generico
-                                    IDgeneric++; //aumentamos en uno el id generico para que no coincidan
-                                }
-
-                                else
-                                {
-                                    IDfacegeneric[f.id] = IDjointgeneric[idjoint];
-                                    IDjointface[idjoint] = f.id;
-                                    idperson = IDjointgeneric[idjoint];
-                                }
-                            }
-
-                            break;
-                        }
-                    }
-                    else if (IDfacegeneric.find(f.id) == IDfacegeneric.end())     //Se comprueba si el id de la cara está ya registrado aunque no esté siendo trackeada
-                        facefound = false;
-
-                }
-
-                if ((faces.size() == 0) or !facefound) //insertar a la persona en el modelo con id person = id generic relacionando joint con generic
-                {
-                    //NO HAY CARAS
-                    if (IDjointgeneric.find(idjoint) == IDjointgeneric.end())
-                    {
-                        IDjointgeneric[idjoint] = IDgeneric;
-                        idperson = IDgeneric;
-                        IDgeneric++;
-                        backwards = true;
-                    }
-
-                    else //ya existe la relacion joint-generic
-                        idperson = IDjointgeneric[idjoint];
-
-                }
-                facefound = true;
-            }
-
-			else //el id ya está registrado accedemos al id generico
+			if (cam == 1)
 			{
-				int idface = IDjointface[idjoint];
-				idperson = IDfacegeneric[idface];
-
-//				for (auto fcs : faces) //si la cara no esta trackeada puede que este de espaldas
-//				{
-//				    if((fcs.id == idface) and !fcs.tracking)
-//				    {
-//				    	backwards = true;
-//                        break;
-//                    }
-//
-//				}
+				humantracker1_proxy->getUsersList(users);
+				auto faces = facetracking3_proxy-> getFaces();
 			}
 
-			if (idperson == -1)
-            	return;
+			if (cam == 2)
+			{
+				humantracker2_proxy->getUsersList(users);
+				auto faces = facetracking4_proxy-> getFaces();
+			}
 
-			//Una vez que se tiene el id de la persona se calcula su posición y rotación
-
-			jointListType joints_person = p.second.joints;
-
-			if (!getPoseRot(joints_person, personpose))
+			if(users.size() == 0)
 				return;
 
-			if ( humans_in_world.find(idperson) == humans_in_world.end() ) //not found
+			for (auto p:users) //para insertar persona en el modelo tiene que haber cara y cabeza
 			{
-				if(position_correct) //Solo incluyo en AGM si la posición se ha calculado correctamente
-					includeInAGM(idperson, personpose);
-			}
-			else // found
-			{
-					movePersonInAGM(idperson,personpose);
-			}
+				auto idjoint = p.first; //id esqueleto
+				auto idperson = getIDgeneric(idjoint,faces); //modificar para decir qué camara toma los datos (para el transform y el faceTracking)
 
-			humans_in_world[idperson] = personpose;
+				if (idperson == -1)
+					return;
 
-            backwards = false;
+				//Una vez que se tiene el id de la persona se calcula su posición y rotación
+				Pose3D personpose;
+				jointListType joints_person = p.second.joints;
+				getPoseRot(joints_person, personpose);
+
+				if (cam == 1)
+					humans_cam1[idperson] = personpose;
+				if (cam == 2)
+					humans_cam2[idperson] = personpose;
+			}
 		}
 
-        ///////////////////////////
-//        if ((list_psymbol.size() == 2) and (!enlace))
-//        {
-//            AGMModel::SPtr newModel(new AGMModel(worldModel));
-//
-//            try
-//            {
-//                newModel->addEdgeByIdentifiers(list_psymbol[0],list_psymbol[1], "interacting");
-//                qDebug()<<"SE AÑADE EL ENLACE";
-//            }
-//            catch(...)
-//            {
-//                qDebug()<<"EXISTE EL ENLACE";
-//            }
-//
-//            try
-//            {
-//                sendModificationProposal(worldModel,newModel);
-//                enlace = true;
-//            }
-//            catch(...)
-//            {
-//                std::cout<<"No se puede actualizar worldModel"<<std::endl;
-//            }
-//
-//        }
-    }
+
+		catch(...)
+		{
+			qDebug()<<"Can't connect to camera ", cam;
+		}
+
+	}
 
 
-    catch(...)
-    {
-    }
+
+
+               PersonList users2;
+        humantracker2_proxy-> getUsersList(users2);
+
+
+
 
 
 }
+
+RoboCompHumanTracker::PersonList SpecificWorker::mixData(RoboCompHumanTracker::PersonList users1, RoboCompHumanTracker::PersonList users2){
+    PersonList users;
+
+    if (!(users1.size()== 0) and (users2.size()==0))
+        return users1;
+
+    else if((users1.size()== 0) and !(users2.size()==0))
+        return users2;
+
+	for (auto p1 : users1)
+	{
+		Pose3D personpose1;
+		auto joints_person1 = p1.second.joints;
+
+		if (getPoseRot(joints_person1, personpose1))
+		{
+			for (auto p2 : users2)
+			{
+				Pose3D personpose2;
+				auto joints_person2 = p2.second.joints;
+
+				if (getPoseRot(joints_person2, personpose2))
+				{
+					auto dist = sqrt(((personpose2.x - personpose1.x)*(personpose2.x - personpose1.x))+(personpose2.z - personpose1.z)*(personpose2.z - personpose1.z));
+
+					if (dist > 1000) //BUSCAR UNA DISTANCIA A LA QUE SEAN LA MISMA PERSONA
+					{
+					    //buscar otra forma de hacerlo que esto es muy feo
+						users[p1.first] = p1.second;
+						users[p2.first] = p2.second;
+
+						//MAAAAAAAAAAL
+						//solo insertar la persona cuando se compruebe que no coincide con ninguna otra 
+					}
+
+					else
+					{
+						qDebug()<<" MISMA PERSONA";
+						//cual inserto
+					}
+
+
+				}
+			}
+
+		}
+
+	}
+        return users;
+
+}
+
+int SpecificWorker::getIDgeneric(int idjoint , RoboCompFaceTracking::Faces faces){
+
+    bool facefound = true;
+    int idperson = -1;
+
+
+    if (IDjointface.find(idjoint) == IDjointface.end()) //Buscamos en el mapa si el id del esqueleto ya está relacionado con la cara. Si NO:
+    {
+        joint pointindepth = {};
+
+        if (humantracker1_proxy->getJointDepthPosition(idjoint, "Head", pointindepth))//obtenemos la posicion de la cabeza en profundidad
+        {
+            for (auto f:faces)
+            {
+                if (f.tracking)
+                {
+                    auto rect = QRect(f.boundingbox.posx, f.boundingbox.posy, f.boundingbox.width,f.boundingbox.height ); //para cada cara comprobamos si la cabeza esta contenida en el bounding box de la cara
+                    if (rect.contains(QPoint(pointindepth[0],pointindepth[1]))) //Si es asi
+                    {
+                        if (IDfacegeneric.find(f.id) != IDfacegeneric.end()) //Buscamos en el mapa si el id de la cara ya esta relacionaada con el generico. Si es asi:
+                        {
+                            IDjointface[idjoint] = f.id; //Relacionamos el id del joint con el de la cara
+                        }
+
+                        else //Si no esta
+                        {
+                            //Antes de asignar generico a cara ,comprobamos si los joints ya tienen generico
+                            if (IDjointgeneric.find(idjoint) == IDjointgeneric.end()) //Si no hay jointgeneric
+                            {
+                                IDfacegeneric[f.id] = IDgeneric; //relacionamos id cara con id generico
+                                IDjointface[idjoint] = f.id; //relacionamos id joint con id cara
+                                IDjointgeneric[idjoint] = IDgeneric; //rel joint con generic
+                                idperson = IDgeneric; //el id de la persona sera el id generico
+                                IDgeneric++; //aumentamos en uno el id generico para que no coincidan
+                            }
+
+                            else
+                            {
+                                IDfacegeneric[f.id] = IDjointgeneric[idjoint];
+                                IDjointface[idjoint] = f.id;
+                                idperson = IDjointgeneric[idjoint];
+                            }
+                        }
+
+                        break;
+                    }
+                }
+                else if (IDfacegeneric.find(f.id) == IDfacegeneric.end())     //Se comprueba si el id de la cara está ya registrado aunque no esté siendo trackeada
+                    facefound = false;
+            }
+        }
+
+        if ((faces.size() == 0) or !facefound) //insertar a la persona en el modelo con id person = id generic relacionando joint con generic
+        {
+            //NO HAY CARAS
+            if (IDjointgeneric.find(idjoint) == IDjointgeneric.end())
+            {
+                IDjointgeneric[idjoint] = IDgeneric;
+                idperson = IDgeneric;
+                IDgeneric++;
+                backwards = true;
+            }
+
+            else //ya existe la relacion joint-generic
+                idperson = IDjointgeneric[idjoint];
+
+        }
+
+        facefound = true;
+    }
+
+    else //el id ya está registrado accedemos al id generico
+    {
+        int idface = IDjointface[idjoint];
+        idperson = IDfacegeneric[idface];
+
+    }
+    return idperson;
+}
+
 
 bool SpecificWorker::getPoseRot (jointListType list, Pose3D &personpose) {
 
@@ -529,7 +553,7 @@ void SpecificWorker::compute()
 {
 	QMutexLocker locker(mutex);
 
-	getDataFromAstra();
+	getHumans();
 
 //#ifdef USE_QTGUI
 //    if (innerModelViewer) innerModelViewer->update();

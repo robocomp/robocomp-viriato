@@ -12,7 +12,9 @@ AGMExecutiveTopicTopic.Endpoints=tcp -p 3127
 # Proxies for required interfaces
 HumanTracker1Proxy = humantracker:tcp -h localhost -p 11666
 HumanTracker2Proxy = humantracker:tcp -h localhost -p 22666
-FaceTrackingProxy = facetracking:tcp -h localhost -p 12666
+FaceTrackingProxy = facetracking:tcp -h localhost -p 
+FaceTracking3Proxy = facetracking:tcp -h localhost -p 12666
+FaceTracking4Proxy = facetracking:tcp -h localhost -p 33666
 AGMExecutiveProxy = agmexecutive:tcp -h localhost -p 10198
 # This property is used by the clients to connect to IceStorm.
 TopicManager.Proxy=IceStorm/TopicManager:default -p 9999

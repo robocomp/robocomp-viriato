@@ -33,6 +33,7 @@
 #ifdef USE_QTGUI
 	#include <osgviewer/osgview.h>
 	#include <innermodel/innermodelviewer.h>
+	#include <map>
 
 #endif
 
@@ -46,16 +47,14 @@ public:
         float x;
         float z;
         float ry;
+
     };
 
-    typedef map <int,Pose3D> list_humans;
-    list_humans humans_in_world;
+    std::map <int,Pose3D> humans_cam1; //rel id generico con sus posiciones
+    std::map <int,Pose3D> humans_cam2; //rel id generico con sus posiciones
 
-    vector <int> list_id;
-    vector <int32_t> list_psymbol;
-
-    bool enlace = false;
     int mesh = 1;
+    int numcameras = 2;
 
     bool first = true;
     bool position_correct = false;
@@ -77,12 +76,12 @@ public:
 	bool setParams(RoboCompCommonBehavior::ParameterList params);
 	void includeInAGM(int id,Pose3D pose);
 	void movePersonInAGM(int id, Pose3D pose);
-    void getDataFromAstra();
-
+    void getHumans();
+    RoboCompHumanTracker::PersonList mixData(RoboCompHumanTracker::PersonList users1, RoboCompHumanTracker::PersonList users2);
 //	bool removeFromAGM(int id);
 
     bool getPoseRot (jointListType list, Pose3D &personpose);
-
+    int getIDgeneric (int idjoint, RoboCompFaceTracking::Faces faces);
 
 	bool reloadConfigAgent();
 	bool activateAgent(const ParameterMap &prs);

@@ -137,30 +137,16 @@ int ::humanAgent::run(int argc, char* argv[])
 
 	int status=EXIT_SUCCESS;
 
-	FaceTrackingPrx facetracking_proxy;
+
 	HumanTrackerPrx humantracker1_proxy;
 	HumanTrackerPrx humantracker2_proxy;
+	FaceTrackingPrx facetracking3_proxy;
+	FaceTrackingPrx facetracking4_proxy;
 	AGMExecutivePrx agmexecutive_proxy;
 
 	string proxy, tmp;
 	initialize();
 
-
-	try
-	{
-		if (not GenericMonitor::configGetString(communicator(), prefix, "FaceTrackingProxy", proxy, ""))
-		{
-			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy FaceTrackingProxy\n";
-		}
-		facetracking_proxy = FaceTrackingPrx::uncheckedCast( communicator()->stringToProxy( proxy ) );
-	}
-	catch(const Ice::Exception& ex)
-	{
-		cout << "[" << PROGRAM_NAME << "]: Exception: " << ex;
-		return EXIT_FAILURE;
-	}
-	rInfo("FaceTrackingProxy initialized Ok!");
-	mprx["FaceTrackingProxy"] = (::IceProxy::Ice::Object*)(&facetracking_proxy);//Remote server proxy creation example
 
 
 	try
@@ -195,6 +181,40 @@ int ::humanAgent::run(int argc, char* argv[])
 	}
 	rInfo("HumanTrackerProxy2 initialized Ok!");
 	mprx["HumanTrackerProxy2"] = (::IceProxy::Ice::Object*)(&humantracker2_proxy);//Remote server proxy creation example
+
+	try
+	{
+		if (not GenericMonitor::configGetString(communicator(), prefix, "FaceTracking3Proxy", proxy, ""))
+		{
+			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy FaceTrackingProxy\n";
+		}
+		facetracking3_proxy = FaceTrackingPrx::uncheckedCast( communicator()->stringToProxy( proxy ) );
+	}
+	catch(const Ice::Exception& ex)
+	{
+		cout << "[" << PROGRAM_NAME << "]: Exception: " << ex;
+		return EXIT_FAILURE;
+	}
+	rInfo("FaceTrackingProxy3 initialized Ok!");
+	mprx["FaceTrackingProxy3"] = (::IceProxy::Ice::Object*)(&facetracking3_proxy);//Remote server proxy creation example
+
+
+	try
+	{
+		if (not GenericMonitor::configGetString(communicator(), prefix, "FaceTracking4Proxy", proxy, ""))
+		{
+			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy FaceTrackingProxy\n";
+		}
+		facetracking4_proxy = FaceTrackingPrx::uncheckedCast( communicator()->stringToProxy( proxy ) );
+	}
+	catch(const Ice::Exception& ex)
+	{
+		cout << "[" << PROGRAM_NAME << "]: Exception: " << ex;
+		return EXIT_FAILURE;
+	}
+	rInfo("FaceTrackingProxy4 initialized Ok!");
+	mprx["FaceTrackingProxy4"] = (::IceProxy::Ice::Object*)(&facetracking4_proxy);//Remote server proxy creation example
+
 
 
 	try

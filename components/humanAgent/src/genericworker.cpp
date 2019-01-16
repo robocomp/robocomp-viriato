@@ -28,9 +28,10 @@ QObject()
 #endif
 
 {
-	facetracking_proxy = (*(FaceTrackingPrx*)mprx["FaceTrackingProxy"]);
 	humantracker1_proxy = (*(HumanTrackerPrx*)mprx["HumanTrackerProxy1"]);
 	humantracker2_proxy = (*(HumanTrackerPrx*)mprx["HumanTrackerProxy2"]);
+	facetracking3_proxy = (*(FaceTrackingPrx*)mprx["FaceTrackingProxy3"]);
+	facetracking4_proxy = (*(FaceTrackingPrx*)mprx["FaceTrackingProxy4"]);
 	agmexecutive_proxy = (*(AGMExecutivePrx*)mprx["AGMExecutiveProxy"]);
 
 	mutex = new QMutex(QMutex::Recursive);

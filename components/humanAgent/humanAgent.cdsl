@@ -4,7 +4,7 @@ Component humanAgent
 {
 	Communications
 	{
-		requires HumanTracker,HumanTracker, FaceTracking;
+		requires HumanTracker,HumanTracker, FaceTracking, FaceTracking;
 	};
 	
 	language Cpp;

@@ -77,9 +77,10 @@ public:
 
 
 	HumanTrackerPrx humantracker1_proxy;
-	HumanTrackerPrx humantracker2_proxy;
-	FaceTrackingPrx facetracking_proxy;
-	AGMExecutivePrx agmexecutive_proxy;
+    HumanTrackerPrx humantracker2_proxy;
+    FaceTrackingPrx facetracking3_proxy;
+    FaceTrackingPrx facetracking4_proxy;
+    AGMExecutivePrx agmexecutive_proxy;
 
 	virtual bool reloadConfigAgent() = 0;
 	virtual bool activateAgent(const ParameterMap &prs) = 0;
