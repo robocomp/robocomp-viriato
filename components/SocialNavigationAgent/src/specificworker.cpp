@@ -141,21 +141,21 @@ void SpecificWorker::compute() {
 	}
 
 //	// PROVISIONAL read robot position from proxy
-//	try {
-//
-//		omnirobot_proxy->getBaseState(bState);
-//		innerModel->updateTransformValues("robot", bState.x, 0, bState.z, 0, bState.alpha, 0);
-//		//	qDebug() << "SpecificWorker::compute" << bState.x << bState.z << bState.alpha;
-//	}
-//	catch (const Ice::Exception &ex) {
-//		printf("Reading robot position-----The executive is probably not running, waiting for first AGM model publication...");
-//		std::cout << ex << std::endl;
-//	}
+	try {
+
+		omnirobot_proxy->getBaseState(bState);
+		innerModel->updateTransformValues("robot", bState.x, 0, bState.z, 0, bState.alpha, 0);
+		//	qDebug() << "SpecificWorker::compute" << bState.x << bState.z << bState.alpha;
+	}
+	catch (const Ice::Exception &ex) {
+		printf("Reading robot position-----The executive is probably not running, waiting for first AGM model publication...");
+		std::cout << ex << std::endl;
+	}
 
 	pathfinder.run(); //projector is comented because the social navigation cant acceded to the laser if the astraRGBD is working
 	//update viewer
-//	QVec robotpos = innerModel->transformS6D("world", robotname);
-//	viewer->ts_updateTransformValues(QString::fromStdString(robotname), robotpos);
+	QVec robotpos = innerModel->transformS6D("world", robotname);
+	viewer->ts_updateTransformValues(QString::fromStdString(robotname), robotpos);
 
     viewer->run();
  
