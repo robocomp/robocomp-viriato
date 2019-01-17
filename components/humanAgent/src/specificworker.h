@@ -47,26 +47,46 @@ public:
         float x;
         float z;
         float ry;
-
+        bool pos_good;
+        bool rot_good;
+		int confidence = 0;
     };
 
-    std::map <int,Pose3D> humans_cam1; //rel id generico con sus posiciones
-    std::map <int,Pose3D> humans_cam2; //rel id generico con sus posiciones
+
+    struct PersonType
+	{
+    	int id;
+    	Pose3D pos;
+
+	};
+
+
+    std::map <int,vector<PersonType>> Humans_in_camera;
+
+    typedef map <int,Pose3D> humanPos;
+
+    humanPos humans_in_world;
+
 
     int mesh = 1;
     int numcameras = 2;
 
     bool first = true;
-    bool position_correct = false;
-    bool rotation_correct = false;
+    bool facefound = false;
+
     //----------------- intento de relacionar cara con esqueleto -----------------------//
-	typedef map <int,int> relID;
 
-	relID IDjointface; //mapa que relaciona los id procedentes del esqueleto con los de la cara
-	relID IDfacegeneric;// rel cara con id generico de humanAgent
-	relID IDjointgeneric;//rel id joint con id generico
+    typedef map <int,int> relID;
+	struct HumanIndex
+    {
+        relID IDjointface; //mapa que relaciona los id procedentes del esqueleto con los de la cara
+        relID IDfacegeneric;// rel cara con id generico de humanAgent
+        relID IDjointgeneric;//rel id joint con id generico
 
-	int IDgeneric = 0;
+    };
+    std::map <int, HumanIndex> CamerasArray;
+
+    int IDgeneric = 0;
     bool backwards = false;
 
     //----------------------------------------------//
@@ -77,11 +97,12 @@ public:
 	void includeInAGM(int id,Pose3D pose);
 	void movePersonInAGM(int id, Pose3D pose);
     void getHumans();
-    RoboCompHumanTracker::PersonList mixData(RoboCompHumanTracker::PersonList users1, RoboCompHumanTracker::PersonList users2);
+	vector<PersonType> mixData( vector<PersonType> users1,  vector<PersonType> users2);
 //	bool removeFromAGM(int id);
 
-    bool getPoseRot (jointListType list, Pose3D &personpose);
-    int getIDgeneric (int idjoint, RoboCompFaceTracking::Faces faces);
+    bool getPoseRot (jointListType list, Pose3D &personpose, int idcam);
+    int getIDgeneric(int idjoint, RoboCompFaceTracking::Faces faces,int idcam);
+
 
 	bool reloadConfigAgent();
 	bool activateAgent(const ParameterMap &prs);

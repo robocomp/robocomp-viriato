@@ -212,7 +212,7 @@ void SpecificWorker::movePersonInAGM(int id,const Pose3D pose)
 	AGMModelSymbol::SPtr personParent = worldModel->getParentByLink(personSymbolId, "RT");
 	AGMModelEdge &edgeRT  = worldModel->getEdgeByIdentifiers(personParent->identifier, personSymbolId, "RT");
 
-	if (position_correct)
+	if (pose.pos_good)
 	{
 //	    qDebug()<<"Moving person to "<< pose.x << "," <<pose.z;
 		edgeRT.attributes["tx"] = float2str(pose.x);
@@ -220,7 +220,7 @@ void SpecificWorker::movePersonInAGM(int id,const Pose3D pose)
 		edgeRT.attributes["tz"] = float2str(pose.z);
 	}
 
-	if (rotation_correct)
+	if (pose.rot_good)
 	{
 //        qDebug()<<"Rotating person " <<pose.ry;
 		edgeRT.attributes["rx"] = "0";
@@ -228,7 +228,7 @@ void SpecificWorker::movePersonInAGM(int id,const Pose3D pose)
 		edgeRT.attributes["rz"] = "0";
 	}
 
-	if(!position_correct and !rotation_correct)
+	if(!pose.pos_good and !pose.rot_good)
 		return;
 
 	try
@@ -239,18 +239,16 @@ void SpecificWorker::movePersonInAGM(int id,const Pose3D pose)
 	{
 		std::cout<<"Exception moving in AGM: "<<e.what()<<std::endl;
 	}
-
-	position_correct = false;
-	rotation_correct = false;
-
 }
 
 
 void SpecificWorker::getHumans()
 {
 
-	for (int cam = 1; cam < numcameras; cam++)
+	for (int cam = 1; cam < numcameras+1; cam++)
 	{
+		Humans_in_camera[cam].clear();
+
 		try
 		{
 			PersonList users;
@@ -262,7 +260,7 @@ void SpecificWorker::getHumans()
 				auto faces = facetracking3_proxy-> getFaces();
 			}
 
-			if (cam == 2)
+			if (cam == 2) //NUC
 			{
 				humantracker2_proxy->getUsersList(users);
 				auto faces = facetracking4_proxy-> getFaces();
@@ -271,48 +269,65 @@ void SpecificWorker::getHumans()
 			if(users.size() == 0)
 				return;
 
-			for (auto p:users) //para insertar persona en el modelo tiene que haber cara y cabeza
+			for (auto p:users)
 			{
 				auto idjoint = p.first; //id esqueleto
-				auto idperson = getIDgeneric(idjoint,faces); //modificar para decir qué camara toma los datos (para el transform y el faceTracking)
+				auto idperson = getIDgeneric(idjoint,faces,cam);
 
 				if (idperson == -1)
 					return;
 
-				//Una vez que se tiene el id de la persona se calcula su posición y rotación
 				Pose3D personpose;
 				jointListType joints_person = p.second.joints;
-				getPoseRot(joints_person, personpose);
+				getPoseRot(joints_person, personpose, cam);
 
-				if (cam == 1)
-					humans_cam1[idperson] = personpose;
-				if (cam == 2)
-					humans_cam2[idperson] = personpose;
-			}
+				if (facefound) //face found se comprueba al obtener el IDgenerico
+				{
+					personpose.confidence = personpose.confidence + 30;
+					facefound = false;
+				}
+
+				PersonType person_detected;
+				person_detected.id = idperson;
+                person_detected.pos = personpose;
+
+                Humans_in_camera[cam].push_back(person_detected);
+            }
 		}
 
+        catch(...)
+        {
+            qDebug()<<"Can't connect to camera "<< cam;
+        }
 
-		catch(...)
-		{
-			qDebug()<<"Can't connect to camera ", cam;
-		}
+    }
 
-	}
+	auto totalhumans = mixData(Humans_in_camera[1],Humans_in_camera[2]); //Buscar otra manera
+	//teniendo esto se debe comprobar si la persona existe en humans_in_world. Si existe se mueve, sino se inserta.
+
+	for (auto h : totalhumans)
+    {
+        if ( humans_in_world.find(h.id) == humans_in_world.end() ) //not found
+        {
+            if(h.pos.pos_good) //Solo incluyo en AGM si la posición se ha calculado correctamente
+                includeInAGM(h.id, h.pos);
+        }
+        else // found
+            movePersonInAGM(h.id,h.pos);
 
 
-
-
-               PersonList users2;
-        humantracker2_proxy-> getUsersList(users2);
-
-
-
-
+        humans_in_world[h.id] = h.pos;
+    }
 
 }
 
-RoboCompHumanTracker::PersonList SpecificWorker::mixData(RoboCompHumanTracker::PersonList users1, RoboCompHumanTracker::PersonList users2){
-    PersonList users;
+
+vector<SpecificWorker::PersonType> SpecificWorker::mixData( vector<PersonType> users1,  vector<PersonType> users2)
+{
+
+	vector <PersonType> personmix;
+
+    qDebug()<<"size of users1 " <<users1.size() << " and size of users2 "<< users2.size();
 
     if (!(users1.size()== 0) and (users2.size()==0))
         return users1;
@@ -320,56 +335,47 @@ RoboCompHumanTracker::PersonList SpecificWorker::mixData(RoboCompHumanTracker::P
     else if((users1.size()== 0) and !(users2.size()==0))
         return users2;
 
-	for (auto p1 : users1)
-	{
-		Pose3D personpose1;
-		auto joints_person1 = p1.second.joints;
+    //////////////////////////////////////////////////////////////////////////////////////////
 
-		if (getPoseRot(joints_person1, personpose1))
-		{
-			for (auto p2 : users2)
-			{
-				Pose3D personpose2;
-				auto joints_person2 = p2.second.joints;
+    for(int i = 0; i< users1.size(); i++)
+    {
+        auto personpose1 = users1[i].pos;
 
-				if (getPoseRot(joints_person2, personpose2))
-				{
-					auto dist = sqrt(((personpose2.x - personpose1.x)*(personpose2.x - personpose1.x))+(personpose2.z - personpose1.z)*(personpose2.z - personpose1.z));
-
-					if (dist > 1000) //BUSCAR UNA DISTANCIA A LA QUE SEAN LA MISMA PERSONA
-					{
-					    //buscar otra forma de hacerlo que esto es muy feo
-						users[p1.first] = p1.second;
-						users[p2.first] = p2.second;
-
-						//MAAAAAAAAAAL
-						//solo insertar la persona cuando se compruebe que no coincide con ninguna otra 
-					}
-
-					else
-					{
-						qDebug()<<" MISMA PERSONA";
-						//cual inserto
-					}
+        for (int j = 0; j< users2.size(); j++)
+        {
+            auto personpose2 = users2[j].pos;
+            auto dist = sqrt(((personpose2.x - personpose1.x)*(personpose2.x - personpose1.x))+(personpose2.z - personpose1.z)*(personpose2.z - personpose1.z));
 
 
-				}
-			}
+            if (dist < 1000) //son la misma persona, ver confidencia de cada una e insertar la que más tenga, relacionar ids de alguna forma ¿?  map <int, int > relC1C2
+                qDebug()<<" MISMA PERSONA ";
 
-		}
+            else //revisar este razonamiento porque tengo el cerebro frito
+            {
+                if (i == users1.size()-1)
+                    personmix.push_back(users2[j]);
 
-	}
-        return users;
 
+                if (j == users2.size()-1)
+                    personmix.push_back(users1[i]);
+
+            }
+
+        }
+
+
+    }
+
+
+    return personmix ;
 }
 
-int SpecificWorker::getIDgeneric(int idjoint , RoboCompFaceTracking::Faces faces){
 
-    bool facefound = true;
+int SpecificWorker::getIDgeneric(int idjoint , RoboCompFaceTracking::Faces faces,int idcam){
+
     int idperson = -1;
 
-
-    if (IDjointface.find(idjoint) == IDjointface.end()) //Buscamos en el mapa si el id del esqueleto ya está relacionado con la cara. Si NO:
+    if (CamerasArray[idcam].IDjointface.find(idjoint) == CamerasArray[idcam].IDjointface.end()) //Buscamos en el mapa si el id del esqueleto ya está relacionado con la cara. Si NO:
     {
         joint pointindepth = {};
 
@@ -382,35 +388,35 @@ int SpecificWorker::getIDgeneric(int idjoint , RoboCompFaceTracking::Faces faces
                     auto rect = QRect(f.boundingbox.posx, f.boundingbox.posy, f.boundingbox.width,f.boundingbox.height ); //para cada cara comprobamos si la cabeza esta contenida en el bounding box de la cara
                     if (rect.contains(QPoint(pointindepth[0],pointindepth[1]))) //Si es asi
                     {
-                        if (IDfacegeneric.find(f.id) != IDfacegeneric.end()) //Buscamos en el mapa si el id de la cara ya esta relacionaada con el generico. Si es asi:
+                        if (CamerasArray[idcam].IDfacegeneric.find(f.id) != CamerasArray[idcam].IDfacegeneric.end()) //Buscamos en el mapa si el id de la cara ya esta relacionaada con el generico. Si es asi:
                         {
-                            IDjointface[idjoint] = f.id; //Relacionamos el id del joint con el de la cara
+                            CamerasArray[idcam].IDjointface[idjoint] = f.id; //Relacionamos el id del joint con el de la cara
                         }
 
                         else //Si no esta
                         {
                             //Antes de asignar generico a cara ,comprobamos si los joints ya tienen generico
-                            if (IDjointgeneric.find(idjoint) == IDjointgeneric.end()) //Si no hay jointgeneric
+                            if (CamerasArray[idcam].IDjointgeneric.find(idjoint) == CamerasArray[idcam].IDjointgeneric.end()) //Si no hay jointgeneric
                             {
-                                IDfacegeneric[f.id] = IDgeneric; //relacionamos id cara con id generico
-                                IDjointface[idjoint] = f.id; //relacionamos id joint con id cara
-                                IDjointgeneric[idjoint] = IDgeneric; //rel joint con generic
+                                CamerasArray[idcam].IDfacegeneric[f.id] = IDgeneric; //relacionamos id cara con id generico
+                                CamerasArray[idcam].IDjointface[idjoint] = f.id; //relacionamos id joint con id cara
+                                CamerasArray[idcam].IDjointgeneric[idjoint] = IDgeneric; //rel joint con generic
                                 idperson = IDgeneric; //el id de la persona sera el id generico
                                 IDgeneric++; //aumentamos en uno el id generico para que no coincidan
                             }
 
                             else
                             {
-                                IDfacegeneric[f.id] = IDjointgeneric[idjoint];
-                                IDjointface[idjoint] = f.id;
-                                idperson = IDjointgeneric[idjoint];
+                                CamerasArray[idcam].IDfacegeneric[f.id] = CamerasArray[idcam].IDjointgeneric[idjoint];
+                                CamerasArray[idcam].IDjointface[idjoint] = f.id;
+                                idperson = CamerasArray[idcam].IDjointgeneric[idjoint];
                             }
                         }
 
                         break;
                     }
                 }
-                else if (IDfacegeneric.find(f.id) == IDfacegeneric.end())     //Se comprueba si el id de la cara está ya registrado aunque no esté siendo trackeada
+                else if (CamerasArray[idcam].IDfacegeneric.find(f.id) == CamerasArray[idcam].IDfacegeneric.end())     //Se comprueba si el id de la cara está ya registrado aunque no esté siendo trackeada
                     facefound = false;
             }
         }
@@ -418,41 +424,42 @@ int SpecificWorker::getIDgeneric(int idjoint , RoboCompFaceTracking::Faces faces
         if ((faces.size() == 0) or !facefound) //insertar a la persona en el modelo con id person = id generic relacionando joint con generic
         {
             //NO HAY CARAS
-            if (IDjointgeneric.find(idjoint) == IDjointgeneric.end())
+            if (CamerasArray[idcam].IDjointgeneric.find(idjoint) == CamerasArray[idcam].IDjointgeneric.end())
             {
-                IDjointgeneric[idjoint] = IDgeneric;
+                CamerasArray[idcam].IDjointgeneric[idjoint] = IDgeneric;
                 idperson = IDgeneric;
                 IDgeneric++;
                 backwards = true;
             }
 
             else //ya existe la relacion joint-generic
-                idperson = IDjointgeneric[idjoint];
+                idperson = CamerasArray[idcam].IDjointgeneric[idjoint];
 
         }
-
-        facefound = true;
     }
 
     else //el id ya está registrado accedemos al id generico
     {
-        int idface = IDjointface[idjoint];
-        idperson = IDfacegeneric[idface];
+        int idface = CamerasArray[idcam].IDjointface[idjoint];
+        idperson = CamerasArray[idcam].IDfacegeneric[idface];
 
     }
     return idperson;
 }
 
 
-bool SpecificWorker::getPoseRot (jointListType list, Pose3D &personpose) {
+bool SpecificWorker::getPoseRot (jointListType list, Pose3D &personpose, int idcam) {
 
-    //////////////////////////////////GETTING POSITION//////////////////////
+	//////////////////////////////////GETTING POSITION//////////////////////
     int countjoints = 0;
     float newposez = 0;
     float newposex = 0;
 	float mediaz;
 	float mediax;
-    
+
+//    QString name_camera = "camera_astra" + idcam; //Antes hay que añadir la segunda camara
+    QString name_camera = "camera_astra";//
+
     vector<string> tronco = {"Head", "Neck", "ShoulderSpine", "MidSpine", "BaseSpine"};
     for (auto idjoint : tronco)
     {
@@ -461,12 +468,13 @@ bool SpecificWorker::getPoseRot (jointListType list, Pose3D &personpose) {
 			auto j = list[idjoint];
             if (j.size() == 3)
             {
-                QVec jointinworld = innerModel->transform("world", QVec::vec3(-j[0],0,j[2]), "camera_astra");
+                QVec jointinworld = innerModel->transform("world", QVec::vec3(-j[0],0,j[2]), name_camera);
 //				qDebug()<<" Found "<<QString::fromStdString(idjoint) <<" x = " << jointinworld.x()<<  " z = " << jointinworld.z() ;
 				newposex += jointinworld.x();
 				newposez += jointinworld.z();
 
 				countjoints++;
+				personpose.confidence = personpose.confidence + 10; //la fiabilidad aumenta en 10 por cada joint del tronco encontrado
 			}
 		}
 //        else qDebug() <<QString::fromStdString(idjoint) <<"Joint "<< QString::fromStdString(idjoint) <<" not found";
@@ -478,7 +486,7 @@ bool SpecificWorker::getPoseRot (jointListType list, Pose3D &personpose) {
 			mediax = newposex/countjoints;
 			mediaz = newposez/countjoints;
 
-			position_correct = true;
+			personpose.pos_good = true;
 		}
 		else
 			return false;
@@ -517,10 +525,10 @@ bool SpecificWorker::getPoseRot (jointListType list, Pose3D &personpose) {
     {
 
         auto l = list["LeftShoulder"];
-        QVec joint_left = innerModel->transform("world", QVec::vec3(-l[0],0,l[2]), "camera_astra");
+        QVec joint_left = innerModel->transform("world", QVec::vec3(-l[0],0,l[2]), name_camera);
 
         auto r = list["RightShoulder"];
-        QVec joint_right = innerModel->transform("world", QVec::vec3(-r[0],0,r[2]), "camera_astra");
+        QVec joint_right = innerModel->transform("world", QVec::vec3(-r[0],0,r[2]), name_camera);
 
 		personpose.ry = 3.1415926535 - (atan2(joint_left.z()-joint_right.z(),joint_left.x() - joint_right.x()));
 
@@ -529,7 +537,8 @@ bool SpecificWorker::getPoseRot (jointListType list, Pose3D &personpose) {
             personpose.ry = 1.57;
 
         //cambiar esto, solo vale para una cierta posición de la cámara
-        rotation_correct = true;
+        personpose.rot_good = true;
+        personpose.confidence = personpose.confidence + 20;
     }
 
 //
@@ -555,10 +564,6 @@ void SpecificWorker::compute()
 
 	getHumans();
 
-//#ifdef USE_QTGUI
-//    if (innerModelViewer) innerModelViewer->update();
-//    osgView->frame();
-//#endif
 }
 
 

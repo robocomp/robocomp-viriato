@@ -100,7 +100,7 @@ public:
 	void checkHumanBlock();
 	vector <int32_t> previous_blockinglist = {};
 	vector <int32_t> previous_softblockinglist = {};
-    	vector <int32_t> previous_affordanceslist = {};
+	vector <int32_t> previous_affordanceslist = {};
 
 
 
