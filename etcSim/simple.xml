@@ -197,7 +197,7 @@
   <node alias="faceTrackingNUC"  endpoint="facetracking:tcp -h 158.49.247.112 -p 44666">
   <workingDir path="/home/robocomp/" />
   <dependence alias="astraRGBDnuc" />
-  <upCommand command="rcremote localhost faceTracking /home/robocomp/robocomp/components/robocomp-viriato/components/faceTracking python src/faceTracking.py /home/robocomp/robocomp/components/robocomp-viriato/etcSim/faceTracking2.conf" />
+  <upCommand command="rcremote 158.49.247.112 faceTracking /home/robocomp/robocomp/components/robocomp-viriato/components/faceTracking python src/faceTracking.py /home/robocomp/robocomp/components/robocomp-viriato/etcSim/faceTracking2.conf" />
   <downCommand command="pkill -9 -f faceTracking.py"/>
 <configFile path="/home/robocomp/robocomp/components/robocomp-viriato/etcSim/faceTracking2.conf" />
   <xpos value="250.9789855056" />
