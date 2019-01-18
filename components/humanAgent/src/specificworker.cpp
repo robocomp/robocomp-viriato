@@ -327,8 +327,6 @@ vector<SpecificWorker::PersonType> SpecificWorker::mixData( vector<PersonType> u
 
 	vector <PersonType> personmix;
 
-    qDebug()<<"size of users1 " <<users1.size() << " and size of users2 "<< users2.size();
-
     if (!(users1.size()== 0) and (users2.size()==0))
         return users1;
 
@@ -348,15 +346,48 @@ vector<SpecificWorker::PersonType> SpecificWorker::mixData( vector<PersonType> u
 
 
             if (dist < 1000) //son la misma persona, ver confidencia de cada una e insertar la que más tenga, relacionar ids de alguna forma ¿?  map <int, int > relC1C2
+            {
                 qDebug()<<" MISMA PERSONA ";
+                PersonType person;
+
+                if (users1[i].pos.confidence < users2[j].pos.confidence)
+                    person = users2[j];
+                else
+                    person = users1[i];
+
+
+                if (sameperson.find(users1[i].id) != sameperson.end()) 
+                {
+					person.id = users1[i].id;
+                }
+                else
+                {
+					sameperson[users1[i].id] = users2[j].id;
+                }
+
+                personmix.push_back(person);
+            }
 
             else //revisar este razonamiento porque tengo el cerebro frito
             {
-                if (i == users1.size()-1)
+                bool found1 = false;
+                bool found2 = false;
+
+                for (auto p : personmix)
+                {
+                    if(p.id == users1[i].id)
+                        found1 = true;
+                    if(p.id == users2[j].id)
+                        found2 = true;
+
+                }
+
+
+                if ((i == users1.size()-1) and !found2 )
                     personmix.push_back(users2[j]);
 
 
-                if (j == users2.size()-1)
+                if ((j == users2.size()-1) and !found1)
                     personmix.push_back(users1[i]);
 
             }

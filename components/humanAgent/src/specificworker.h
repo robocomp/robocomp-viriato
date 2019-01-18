@@ -62,11 +62,8 @@ public:
 
 
     std::map <int,vector<PersonType>> Humans_in_camera;
-
     typedef map <int,Pose3D> humanPos;
-
     humanPos humans_in_world;
-
 
     int mesh = 1;
     int numcameras = 2;
@@ -85,6 +82,7 @@ public:
 
     };
     std::map <int, HumanIndex> CamerasArray;
+    relID sameperson;
 
     int IDgeneric = 0;
     bool backwards = false;
