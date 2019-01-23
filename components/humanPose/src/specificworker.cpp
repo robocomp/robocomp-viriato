@@ -53,10 +53,8 @@ SpecificWorker::~SpecificWorker()
 bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 {
 
-//
-//#ifdef USE_QTGUI
-//	innerModelViewer = new InnerModelViewer (innerModel, "root", osgView->getRootGroup(), true);
-//#endif
+    IDcamera = std::stoi(params["IDcamera"].value);
+
 	try
 	{
 		RoboCompAGMWorldModel::World w = agmexecutive_proxy->getModel();
@@ -71,181 +69,6 @@ bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
     timer.start(Period);
 
 	return true;
-}
-
-
-void SpecificWorker::includeInAGM(int id,const Pose3D pose)
-{
-//	printf("includeInAGM begins\n");
-//	std::string meshname;
-//	std::string scale;
-//	std::string rotationz;
-//
-//	if (mesh == 6) mesh = 1;
-//	switch(mesh)
-//	{
-//		case 1:
-//			meshname = "human01.3ds";
-//			scale = "12";
-//			rotationz= "3.1415926535";
-//			break;
-//		case 2:
-//			meshname = "human02.3ds";
-//			scale = "1.12";
-//			rotationz= "3.1415926535";
-//			break;
-//		case 3:
-//			meshname = "human03.3ds";
-//			scale = "8";
-//			rotationz= "1.57079632679";
-//			break;
-//		case 4:
-//			meshname = "human04.3ds";
-//			scale = "900";
-//			rotationz= "0";
-//			break;
-//		case 5:meshname = "human05.3ds";
-//			scale = "800";
-//			rotationz= "0";
-//			break;
-//		case 6:meshname = "human06.3ds";
-//			scale = "23";
-//			rotationz= "3.1415926535";
-//			break;
-//		default:
-//			qDebug()<< "Mesh error";
-//			return;
-//	}
-//
-//    mesh++;
-//
-//	std::string type = "person";
-//	std::string imName = "person" + std::to_string(id);
-//	int personSymbolId = -1;
-//	int idx=0;
-//	while ((personSymbolId = worldModel->getIdentifierByType(type, idx++)) != -1)
-//	{
-//		printf("%d %d\n", idx, personSymbolId);
-//		if (worldModel->getSymbolByIdentifier(personSymbolId)->getAttribute("imName") == imName)
-//		{
-//			printf("found %d!!\n", personSymbolId);
-//			break;
-//		}
-//	}
-//	if (personSymbolId != -1)
-//	{
-//		printf("Person already in the AGM model\n");
-//		return;
-//	}
-//
-//	AGMModel::SPtr newModel(new AGMModel(worldModel));
-//
-//	// Symbolic part
-//	AGMModelSymbol::SPtr person = newModel->newSymbol("person");
-//	personSymbolId = person->identifier;
-//	printf("Got personSymbolId: %d\n", personSymbolId);
-//	person->setAttribute("imName", imName);
-//	person->setAttribute("imType", "transform");
-//	AGMModelSymbol::SPtr personSt = newModel->newSymbol("personSt" + std::to_string(id));
-//	printf("person %d status %d\n", person->identifier, personSt->identifier);
-//
-//	newModel->addEdge(person, personSt, "hasStatus");
-//	newModel->addEdge(person, personSt, "noReach");
-//	newModel->addEdge(person, personSt, type);
-//    newModel->addEdgeByIdentifiers(person->identifier, 3, "in");
-//
-//    qDebug()<<"Inserting person " <<id << " with pose "<<pose.x <<" "<< pose.z;
-////    qFatal("--------------------------------------------------------------------");
-//	// Geometric part
-//	std::map<std::string, std::string> edgeRTAtrs;
-//	edgeRTAtrs["tx"] = std::to_string(pose.x);
-//	edgeRTAtrs["ty"] = "0";
-//	edgeRTAtrs["tz"] = std::to_string(pose.z);
-//	edgeRTAtrs["rx"] = "0";
-//	edgeRTAtrs["ry"] = std::to_string(pose.ry);
-//	edgeRTAtrs["rz"] = "0";
-//	newModel->addEdgeByIdentifiers(100, person->identifier, "RT", edgeRTAtrs);
-//
-//
-//	AGMModelSymbol::SPtr personMesh = newModel->newSymbol(meshname);
-//	printf("personMesh %d\n", personMesh->identifier);
-//	personMesh->setAttribute("collidable", "false");
-//	personMesh->setAttribute("imName", imName + "_Mesh");
-//	personMesh->setAttribute("imType", "mesh");
-//	std::string meshPath = "/home/robocomp/robocomp/components/robocomp-araceli/models/" +meshname;
-//	personMesh->setAttribute("path", meshPath);
-//	personMesh->setAttribute("render", "NormalRendering");
-//	personMesh->setAttribute("scalex", scale);
-//	personMesh->setAttribute("scaley", scale);
-//	personMesh->setAttribute("scalez", scale);
-//
-//	edgeRTAtrs["tx"] = "0";
-//	edgeRTAtrs["ty"] = "0";
-//	edgeRTAtrs["tz"] = "0";
-//	edgeRTAtrs["rx"] = "1.570796326794";
-//	edgeRTAtrs["ry"] = "0";
-//	edgeRTAtrs["rz"] = rotationz;
-//	newModel->addEdge(person, personMesh, "RT", edgeRTAtrs);
-//
-//	try{ sendModificationProposal(worldModel, newModel); }
-//	catch(...) {qDebug()<<"Error including the person in the AGM";}
-//
-//
-//	printf("includeInAGM ends\n");
-
-
-
-}
-
-void SpecificWorker::movePersonInAGM(int id,const Pose3D pose)
-{
-//	std::string type = "person";
-//	std::string imName = "person" + std::to_string(id);
-//	int personSymbolId = -1;
-//	int idx=0;
-//	while ((personSymbolId = worldModel->getIdentifierByType(type, idx++)) != -1)
-//	{
-//		if (worldModel->getSymbolByIdentifier(personSymbolId)->getAttribute("imName") == imName)
-//		{
-//		    list_psymbol.push_back(personSymbolId);
-//			break;
-//		}
-//	}
-//	//move in AGM
-//	AGMModelSymbol::SPtr personParent = worldModel->getParentByLink(personSymbolId, "RT");
-//	AGMModelEdge &edgeRT  = worldModel->getEdgeByIdentifiers(personParent->identifier, personSymbolId, "RT");
-//
-//	if (pose.pos_good)
-//	{
-////	    qDebug()<<"Moving person to "<< pose.x << "," <<pose.z;
-//		edgeRT.attributes["tx"] = float2str(pose.x);
-//		edgeRT.attributes["ty"] = "0";
-//		edgeRT.attributes["tz"] = float2str(pose.z);
-//	}
-//
-//	if (pose.rot_good)
-//	{
-////        qDebug()<<"Rotating person " <<pose.ry;
-//		edgeRT.attributes["rx"] = "0";
-//		edgeRT.attributes["ry"] = float2str(pose.ry);
-//		edgeRT.attributes["rz"] = "0";
-//	}
-//
-//	if(!pose.pos_good and !pose.rot_good)
-//		return;
-//
-//	try
-//	{
-//		AGMMisc::publishEdgeUpdate(edgeRT, agmexecutive_proxy);
-//	}
-//	catch(std::exception& e)
-//	{
-//		std::cout<<"Exception moving in AGM: "<<e.what()<<std::endl;
-//	}
-//
-//	pose.pos_good = false;
-//	pose.rot_good = false;
-
 }
 
 
@@ -292,7 +115,6 @@ void SpecificWorker::getDataFromAstra()
 
 			list_of_humans.push_back(person_detected);
 		}
-
     }
 
 
@@ -306,6 +128,8 @@ void SpecificWorker::getDataFromAstra()
 int SpecificWorker::getIDgeneric(int idjoint, RoboCompFaceTracking::Faces faces)
 {
     int idperson = -1;
+    auto idcam = IDcamera * 100; //Los ids de las personas obtenidas con la camara 1 empezaran por 100
+    auto ID = idcam + IDgeneric;
 
     if (IDjointface.find(idjoint) == IDjointface.end()) //Buscamos en el mapa si el id del esqueleto ya está relacionado con la cara. Si NO:
     {
@@ -330,10 +154,10 @@ int SpecificWorker::getIDgeneric(int idjoint, RoboCompFaceTracking::Faces faces)
 							//Antes de asignar generico a cara ,comprobamos si los joints ya tienen generico
 							if (IDjointgeneric.find(idjoint) == IDjointgeneric.end()) //Si no hay jointgeneric
 							{
-								IDfacegeneric[f.id] = IDgeneric; //relacionamos id cara con id generico
+								IDfacegeneric[f.id] = ID; //relacionamos id cara con id generico
 								IDjointface[idjoint] = f.id; //relacionamos id joint con id cara
 
-								IDjointgeneric[idjoint] = IDgeneric; //rel joint con generic
+								IDjointgeneric[idjoint] = ID; //rel joint con generic
 
 								idperson = IDgeneric; //el id de la persona sera el id generico
 								IDgeneric++; //aumentamos en uno el id generico para que no coincidan
@@ -362,8 +186,8 @@ int SpecificWorker::getIDgeneric(int idjoint, RoboCompFaceTracking::Faces faces)
             //NO HAY CARAS
             if (IDjointgeneric.find(idjoint) == IDjointgeneric.end())
             {
-                IDjointgeneric[idjoint] = IDgeneric;
-                idperson = IDgeneric;
+                IDjointgeneric[idjoint] = ID;
+                idperson = ID;
                 IDgeneric++;
                 backwards = true;
             }
@@ -397,7 +221,8 @@ bool SpecificWorker::getPoseRot (jointListType list, Pose3D &personpose) {
 	float mediaz;
 	float mediax;
 
-	QString name_camera = "camera_astra";
+	QString name_camera = "camera_astra" ;
+//	QString name_camera = "camera_astra" + QString(IDcamera);
 
 	vector<string> tronco = {"Head", "Neck", "ShoulderSpine", "MidSpine", "BaseSpine"};
 	for (auto idjoint : tronco)

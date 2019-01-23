@@ -69,6 +69,7 @@ public:
     bool first = true;
     bool facefound = false;
 
+    int IDcamera = 0;
 
     //----------------- intento de relacionar cara con esqueleto -----------------------//
 	typedef map <int,int> relID;
@@ -85,11 +86,7 @@ public:
     SpecificWorker(MapPrx& mprx);
 	~SpecificWorker();
 	bool setParams(RoboCompCommonBehavior::ParameterList params);
-	void includeInAGM(int id,Pose3D pose);
-	void movePersonInAGM(int id, Pose3D pose);
     void getDataFromAstra();
-
-//	bool removeFromAGM(int id);
 
     bool getPoseRot (jointListType list, Pose3D &personpose);
     int getIDgeneric(int idjoint, RoboCompFaceTracking::Faces faces);
