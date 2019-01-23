@@ -1,0 +1,85 @@
+/opt/clion/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /home/robolab/robocomp/components/robocomp-viriato/components/humanPose
+-- The C compiler identification is GNU 7.3.0
+-- The CXX compiler identification is GNU 7.3.0
+-- Check for working C compiler: /usr/bin/cc
+-- Check for working C compiler: /usr/bin/cc -- works
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Check for working CXX compiler: /usr/bin/c++
+-- Check for working CXX compiler: /usr/bin/c++ -- works
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+CMake Warning at src/CMakeLists.txt:6 (MESSAGE):
+  ROBOCOMP variable not set.  Using the default value: /opt/robocomp
+
+
+-- Looking for Q_WS_X11
+-- Looking for Q_WS_X11 - found
+-- Looking for Q_WS_WIN
+-- Looking for Q_WS_WIN - not found
+-- Looking for Q_WS_QWS
+-- Looking for Q_WS_QWS - not found
+-- Looking for Q_WS_MAC
+-- Looking for Q_WS_MAC - not found
+-- Found Qt4: /usr/bin/qmake (found version "4.8.7") 
+-- RoboComp root is now set to /opt/robocomp//
+-- 
+-- Ice version: 3.7.0
+-- Found the following Ice libraries:
+--   Ice (required)
+--   IceStorm (required)
+-- The following Ice libraries were not found:
+--   IceUtil (optional)
+-- Found Ice: /usr/bin/slice2cpp (found version "3.7.0") 
+-- Looking for pthread.h
+-- Looking for pthread.h - found
+-- Looking for pthread_create
+-- Looking for pthread_create - not found
+-- Looking for pthread_create in pthreads
+-- Looking for pthread_create in pthreads - not found
+-- Looking for pthread_create in pthread
+-- Looking for pthread_create in pthread - found
+-- Found Threads: TRUE  
+-- $SLICE_PATH=";/opt/robocomp//interfaces;/opt/robocomp/interfaces;;/opt/robocomp///interfaces/"
+-- Adding /opt/robocomp//interfaces to the Slice directory set.
+-- Adding /opt/robocomp/interfaces to the Slice directory set.
+-- Adding /opt/robocomp///interfaces/ to the Slice directory set.
+-- Adding rule to generate CommonBehavior.cpp and CommonBehavior.h from /opt/robocomp//interfaces/CommonBehavior.ice  (slice2cpp)
+-- Adding rule to generate HumanTracker.cpp and HumanTracker.h from /opt/robocomp//interfaces/HumanTracker.ice  (slice2cpp)
+-- Adding rule to generate FaceTracking.cpp and FaceTracking.h from /opt/robocomp//interfaces/FaceTracking.ice  (slice2cpp)
+-- Adding rule to generate AGMExecutive.cpp and AGMExecutive.h from /opt/robocomp//interfaces/AGMExecutive.ice  (slice2cpp)
+-- Adding rule to generate AGMWorldModel.cpp and AGMWorldModel.h from /opt/robocomp//interfaces/AGMWorldModel.ice  (slice2cpp)
+-- Adding rule to generate Planning.cpp and Planning.h from /opt/robocomp//interfaces/Planning.ice  (slice2cpp)
+-- Adding rule to generate AGMCommonBehavior.cpp and AGMCommonBehavior.h from /opt/robocomp//interfaces/AGMCommonBehavior.ice  (slice2cpp)
+-- Found Qt4: /usr/bin/qmake (found version "4.8.7") 
+-- Configuring done
+CMake Warning (dev) in src/CMakeLists.txt:
+  Policy CMP0071 is not set: Let AUTOMOC and AUTOUIC process GENERATED files.
+  Run "cmake --help-policy CMP0071" for policy details.  Use the cmake_policy
+  command to set the policy and suppress this warning.
+
+  For compatibility, CMake is excluding the GENERATED source file(s):
+
+    "/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/cmake-build-debug/src/CommonBehavior.cpp"
+    "/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/cmake-build-debug/src/HumanTracker.cpp"
+    "/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/cmake-build-debug/src/FaceTracking.cpp"
+    "/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/cmake-build-debug/src/AGMExecutive.cpp"
+    "/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/cmake-build-debug/src/AGMWorldModel.cpp"
+    "/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/cmake-build-debug/src/Planning.cpp"
+    "/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/cmake-build-debug/src/AGMCommonBehavior.cpp"
+
+  from processing by AUTOMOC and AUTOUIC.  If any of the files should be
+  processed, set CMP0071 to NEW.  If any of the files should not be
+  processed, explicitly exclude them by setting the source file property
+  SKIP_AUTOGEN:
+
+    set_property(SOURCE file.h PROPERTY SKIP_AUTOGEN ON)
+
+This warning is for project developers.  Use -Wno-dev to suppress it.
+
+-- Generating done
+-- Build files have been written to: /home/robolab/robocomp/components/robocomp-viriato/components/humanPose/cmake-build-debug

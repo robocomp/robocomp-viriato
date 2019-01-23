@@ -1,0 +1,15 @@
+import "HumanTracker.idsl";
+import "FaceTracking.idsl";
+
+Component humanPose
+{
+	Communications
+	{
+		requires HumanTracker, FaceTracking;
+	};
+	
+	language Cpp;
+	options agmagent, innermodelviewer;
+};
+
+

@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="humanPose"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;CMake Files\src\;CMake Files\..\;CMake Files\..\..\;CMake Files\..\..\..\;CMake Files\..\..\..\..\;CMake Files\..\..\..\..\..\;CMake Files\..\..\..\..\..\..\;CMake Files\..\..\..\..\..\..\..\;CMake Files\..\..\..\..\..\..\..\opt\;CMake Files\..\..\..\..\..\..\..\opt\robocomp\;CMake Files\..\..\..\..\..\..\..\opt\robocomp\cmake\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/cmake-build-debug/src"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/cmake-build-debug/src/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/cmake-build-debug/src/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/cmake-build-debug/src/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/cmake-build-debug/src/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="humanPose">
+				<Option output="/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/bin/humanPose" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/bin"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DQT_XML_LIB"/>
+					<Add option="-DQT_DLL"/>
+					<Add option="-DQT_GUI_LIB"/>
+					<Add option="-DQT_CORE_LIB"/>
+					<Add option="-DQT_OPENGL_LIB"/>
+					<Add directory="/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/cmake-build-debug/src/humanPose_autogen/include"/>
+					<Add directory="/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/cmake-build-debug/src"/>
+					<Add directory="/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/src/."/>
+					<Add directory="/opt/robocomp/include"/>
+					<Add directory="/classes"/>
+					<Add directory="/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/cmake-build-debug"/>
+					<Add directory="/opt/robocomp/classes"/>
+					<Add directory="/opt/robocomp/libs"/>
+					<Add directory="/opt/robocomp/interfaces"/>
+					<Add directory="/include"/>
+					<Add directory="/usr/include/qt4"/>
+					<Add directory="/usr/include/qt4/QtOpenGL"/>
+					<Add directory="/usr/include/qt4/QtGui"/>
+					<Add directory="/usr/include/qt4/QtXml"/>
+					<Add directory="/usr/include/qt4/QtCore"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/cmake-build-debug/src/Makefile&quot;  VERBOSE=1 humanPose"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/cmake-build-debug/src/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/cmake-build-debug/src/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/cmake-build-debug/src/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="humanPose/fast">
+				<Option output="/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/bin/humanPose" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/bin"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DQT_XML_LIB"/>
+					<Add option="-DQT_DLL"/>
+					<Add option="-DQT_GUI_LIB"/>
+					<Add option="-DQT_CORE_LIB"/>
+					<Add option="-DQT_OPENGL_LIB"/>
+					<Add directory="/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/cmake-build-debug/src/humanPose_autogen/include"/>
+					<Add directory="/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/cmake-build-debug/src"/>
+					<Add directory="/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/src/."/>
+					<Add directory="/opt/robocomp/include"/>
+					<Add directory="/classes"/>
+					<Add directory="/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/cmake-build-debug"/>
+					<Add directory="/opt/robocomp/classes"/>
+					<Add directory="/opt/robocomp/libs"/>
+					<Add directory="/opt/robocomp/interfaces"/>
+					<Add directory="/include"/>
+					<Add directory="/usr/include/qt4"/>
+					<Add directory="/usr/include/qt4/QtOpenGL"/>
+					<Add directory="/usr/include/qt4/QtGui"/>
+					<Add directory="/usr/include/qt4/QtXml"/>
+					<Add directory="/usr/include/qt4/QtCore"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/cmake-build-debug/src/Makefile&quot;  VERBOSE=1 humanPose/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/cmake-build-debug/src/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/cmake-build-debug/src/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/cmake-build-debug/src/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="humanPose_autogen">
+				<Option working_dir="/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/cmake-build-debug/src"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/cmake-build-debug/src/Makefile&quot;  VERBOSE=1 humanPose_autogen"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/cmake-build-debug/src/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/cmake-build-debug/src/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/cmake-build-debug/src/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/cmake-build-debug/src/AGMCommonBehavior.cpp">
+			<Option target="humanPose"/>
+		</Unit>
+		<Unit filename="/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/cmake-build-debug/src/AGMCommonBehavior.cpp.rule">
+			<Option target="humanPose"/>
+		</Unit>
+		<Unit filename="/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/cmake-build-debug/src/AGMExecutive.cpp">
+			<Option target="humanPose"/>
+		</Unit>
+		<Unit filename="/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/cmake-build-debug/src/AGMExecutive.cpp.rule">
+			<Option target="humanPose"/>
+		</Unit>
+		<Unit filename="/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/cmake-build-debug/src/AGMWorldModel.cpp">
+			<Option target="humanPose"/>
+		</Unit>
+		<Unit filename="/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/cmake-build-debug/src/AGMWorldModel.cpp.rule">
+			<Option target="humanPose"/>
+		</Unit>
+		<Unit filename="/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/cmake-build-debug/src/CommonBehavior.cpp">
+			<Option target="humanPose"/>
+		</Unit>
+		<Unit filename="/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/cmake-build-debug/src/CommonBehavior.cpp.rule">
+			<Option target="humanPose"/>
+		</Unit>
+		<Unit filename="/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/cmake-build-debug/src/FaceTracking.cpp">
+			<Option target="humanPose"/>
+		</Unit>
+		<Unit filename="/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/cmake-build-debug/src/FaceTracking.cpp.rule">
+			<Option target="humanPose"/>
+		</Unit>
+		<Unit filename="/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/cmake-build-debug/src/HumanTracker.cpp">
+			<Option target="humanPose"/>
+		</Unit>
+		<Unit filename="/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/cmake-build-debug/src/HumanTracker.cpp.rule">
+			<Option target="humanPose"/>
+		</Unit>
+		<Unit filename="/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/cmake-build-debug/src/Planning.cpp">
+			<Option target="humanPose"/>
+		</Unit>
+		<Unit filename="/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/cmake-build-debug/src/Planning.cpp.rule">
+			<Option target="humanPose"/>
+		</Unit>
+		<Unit filename="/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/cmake-build-debug/src/humanPose_autogen/mocs_compilation.cpp">
+			<Option target="humanPose"/>
+		</Unit>
+		<Unit filename="/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/src/agmcommonbehaviorI.cpp">
+			<Option target="humanPose"/>
+		</Unit>
+		<Unit filename="/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/src/agmcommonbehaviorI.h">
+			<Option target="humanPose"/>
+		</Unit>
+		<Unit filename="/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/src/agmexecutivetopicI.cpp">
+			<Option target="humanPose"/>
+		</Unit>
+		<Unit filename="/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/src/agmexecutivetopicI.h">
+			<Option target="humanPose"/>
+		</Unit>
+		<Unit filename="/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/src/commonbehaviorI.cpp">
+			<Option target="humanPose"/>
+		</Unit>
+		<Unit filename="/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/src/commonbehaviorI.h">
+			<Option target="humanPose"/>
+		</Unit>
+		<Unit filename="/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/src/genericmonitor.cpp">
+			<Option target="humanPose"/>
+		</Unit>
+		<Unit filename="/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/src/genericmonitor.h">
+			<Option target="humanPose"/>
+		</Unit>
+		<Unit filename="/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/src/genericworker.cpp">
+			<Option target="humanPose"/>
+		</Unit>
+		<Unit filename="/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/src/genericworker.h">
+			<Option target="humanPose"/>
+		</Unit>
+		<Unit filename="/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/src/main.cpp">
+			<Option target="humanPose"/>
+		</Unit>
+		<Unit filename="/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/src/specificmonitor.cpp">
+			<Option target="humanPose"/>
+		</Unit>
+		<Unit filename="/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/src/specificmonitor.h">
+			<Option target="humanPose"/>
+		</Unit>
+		<Unit filename="/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/src/specificworker.cpp">
+			<Option target="humanPose"/>
+		</Unit>
+		<Unit filename="/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/src/specificworker.h">
+			<Option target="humanPose"/>
+		</Unit>
+		<Unit filename="/opt/robocomp/classes/qlog/qlog.cpp">
+			<Option target="humanPose"/>
+		</Unit>
+		<Unit filename="/opt/robocomp/classes/qlog/qlog.h">
+			<Option target="humanPose"/>
+		</Unit>
+		<Unit filename="/opt/robocomp/classes/rapplication/rapplication.cpp">
+			<Option target="humanPose"/>
+		</Unit>
+		<Unit filename="/opt/robocomp/classes/rapplication/rapplication.h">
+			<Option target="humanPose"/>
+		</Unit>
+		<Unit filename="/opt/robocomp/classes/sigwatch/sigwatch.cpp">
+			<Option target="humanPose"/>
+		</Unit>
+		<Unit filename="/opt/robocomp/classes/sigwatch/sigwatch.h">
+			<Option target="humanPose"/>
+		</Unit>
+		<Unit filename="/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+		<Unit filename="/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/src/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\src\"/>
+		</Unit>
+		<Unit filename="/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/src/CMakeListsSpecific.txt">
+			<Option virtualFolder="CMake Files\src\"/>
+		</Unit>
+		<Unit filename="/home/robolab/robocomp/components/robocomp-viriato/components/humanPose/../../../../../../../opt/robocomp/cmake/robocomp.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\opt\robocomp\cmake\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>
