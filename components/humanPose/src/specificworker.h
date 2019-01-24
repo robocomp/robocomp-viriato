@@ -59,13 +59,6 @@ public:
 
     vector<PersonType> list_of_humans;
 
-
-
-    vector <int> list_id;
-    vector <int32_t> list_psymbol;
-
-    int mesh = 1;
-
     bool first = true;
     bool facefound = false;
 

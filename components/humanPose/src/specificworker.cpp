@@ -74,13 +74,16 @@ bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 
 void SpecificWorker::getDataFromAstra()
 {
-    list_id.clear();
-    list_psymbol.clear();
+
+    qDebug()<<"Getting data from Astra";
+    list_of_humans.clear();
+
 
     try
     {
         PersonList users;
         humantracker_proxy-> getUsersList(users);
+
         bool facefound = true;
 
         if(users.size()== 0)
@@ -93,12 +96,9 @@ void SpecificWorker::getDataFromAstra()
 			Pose3D personpose;
 			auto idjoint = p.first; //id esqueleto
 			auto faces = facetracking_proxy-> getFaces(); //obtenemos las caras
-
 			auto idperson = getIDgeneric(idjoint,faces);
 
-			if (idperson == -1)
-            	return;
-
+            if (idperson == -1) { return; }
 
 			jointListType joints_person = p.second.joints;
 			getPoseRot(joints_person, personpose);
@@ -117,10 +117,15 @@ void SpecificWorker::getDataFromAstra()
 		}
     }
 
-
     catch(...)
     {
     }
+
+
+    for(auto human : list_of_humans)
+	{
+    	qDebug()<<"HUMANO "<< human.id <<" situado en "<< human.pos.x << " " <<human.pos.z;
+	}
 
 
 }
@@ -206,7 +211,6 @@ int SpecificWorker::getIDgeneric(int idjoint, RoboCompFaceTracking::Faces faces)
         idperson = IDfacegeneric[idface];
 
     }
-
 
     return idperson;
 }
@@ -314,7 +318,6 @@ bool SpecificWorker::getPoseRot (jointListType list, Pose3D &personpose) {
 void SpecificWorker::compute()
 {
 	QMutexLocker locker(mutex);
-
 	getDataFromAstra();
 
 }
@@ -447,12 +450,6 @@ void SpecificWorker::symbolsUpdated(const RoboCompAGMWorldModel::NodeSequence &m
 
 void SpecificWorker::regenerateInnerModelViewer()
 {
-//	if (innerModelViewer)
-//	{
-//		osgView->getRootGroup()->removeChild(innerModelViewer);
-//	}
-//
-//	innerModelViewer = new InnerModelViewer(innerModel, "root", osgView->getRootGroup(), true);
 }
 
 
