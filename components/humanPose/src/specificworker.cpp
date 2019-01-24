@@ -75,15 +75,12 @@ bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 void SpecificWorker::getDataFromAstra()
 {
 
-    qDebug()<<"Getting data from Astra";
     list_of_humans.clear();
-
 
     try
     {
         PersonList users;
         humantracker_proxy-> getUsersList(users);
-
         bool facefound = true;
 
         if(users.size()== 0)
@@ -98,7 +95,8 @@ void SpecificWorker::getDataFromAstra()
 			auto faces = facetracking_proxy-> getFaces(); //obtenemos las caras
 			auto idperson = getIDgeneric(idjoint,faces);
 
-            if (idperson == -1) { return; }
+            if (idperson == -1) {
+                return; }
 
 			jointListType joints_person = p.second.joints;
 			getPoseRot(joints_person, personpose);
