@@ -1,9 +1,9 @@
-/*    This file is part of RoboComp
-*
-*    RoboComp is free software: you can redistribute it and/or modify
-*
- *    Copyright (C)2018 by YOUR NAME HERE
+/*
+ *    Copyright (C)2019 by YOUR NAME HERE
  *
+ *    This file is part of RoboComp
+ *
+ *    RoboComp is free software: you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation, either version 3 of the License, or
  *    (at your option) any later version.
@@ -24,23 +24,10 @@
 SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
 {
 
-//#ifdef USE_QTGUI
-//	innerModelViewer = NULL;
-//	osgView = new OsgView(this);
-//	osgGA::TrackballManipulator *tb = new osgGA::TrackballManipulator;
-//	osg::Vec3d eye(osg::Vec3(4000.,4000.,-1000.));
-//	osg::Vec3d center(osg::Vec3(0.,0.,-0.));
-//	osg::Vec3d up(osg::Vec3(0.,1.,0.));
-//	tb->setHomePosition(eye, center, up, true);
-//	tb->setByMatrix(osg::Matrixf::lookAt(eye,center,up));
-//	osgView->setCameraManipulator(tb);
-//#endif
-
 	active = false;
 	worldModel = AGMModel::SPtr(new AGMModel());
 	worldModel->name = "worldModel";
 	innerModel = new InnerModel();
-
 }
 
 /**
@@ -48,24 +35,25 @@ SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
 */
 SpecificWorker::~SpecificWorker()
 {
+	std::cout << "Destroying SpecificWorker" << std::endl;
 }
 
 bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 {
 
+    try
+    {
+        RoboCompAGMWorldModel::World w = agmexecutive_proxy->getModel();
+        structuralChange(w);
+    }
+    catch(...)
+    {
+        printf("The executive is probably not running, waiting for first AGM model publication...");
+    }
+
     IDcamera = std::stoi(params["IDcamera"].value);
 
-	try
-	{
-		RoboCompAGMWorldModel::World w = agmexecutive_proxy->getModel();
-		structuralChange(w);
-	}
-	catch(...)
-	{
-		printf("The executive is probably not running, waiting for first AGM model publication...");
-	}
-
-    Period = 200;
+    Period = 2000;
     timer.start(Period);
 
 	return true;
@@ -74,7 +62,6 @@ bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 
 void SpecificWorker::getDataFromAstra()
 {
-
     list_of_humans.clear();
 
     try
@@ -95,23 +82,42 @@ void SpecificWorker::getDataFromAstra()
 			auto faces = facetracking_proxy-> getFaces(); //obtenemos las caras
 			auto idperson = getIDgeneric(idjoint,faces);
 
-            if (idperson == -1) {
-                return; }
+			qDebug()<<"ID DE LA PERSONA "<< idperson;
+
+            if (idperson == -1) { return; }
 
 			jointListType joints_person = p.second.joints;
 			getPoseRot(joints_person, personpose);
-
 			if (facefound) //face found se comprueba al obtener el IDgenerico
 			{
 				personpose.confidence = personpose.confidence + 30;
 				facefound = false;
 			}
 
+
 			PersonType person_detected;
+
 			person_detected.id = idperson;
 			person_detected.pos = personpose;
 
 			list_of_humans.push_back(person_detected);
+
+		}
+
+		try
+		{
+			humanpose_proxy-> obtainHumanPose(IDcamera, list_of_humans);
+
+            for( auto human : list_of_humans)
+            {
+                qDebug()<<"HUMANO "<< human.id <<" situado en "<< human.pos.x << " " <<human.pos.z;
+            }
+
+
+        }
+
+		catch(...)
+		{
 		}
     }
 
@@ -119,11 +125,6 @@ void SpecificWorker::getDataFromAstra()
     {
     }
 
-
-    for(auto human : list_of_humans)
-	{
-    	qDebug()<<"HUMANO "<< human.id <<" situado en "<< human.pos.x << " " <<human.pos.z;
-	}
 
 
 }
@@ -192,7 +193,6 @@ int SpecificWorker::getIDgeneric(int idjoint, RoboCompFaceTracking::Faces faces)
                 IDjointgeneric[idjoint] = ID;
                 idperson = ID;
                 IDgeneric++;
-                backwards = true;
             }
 
             else //ya existe la relacion joint-generic
@@ -217,6 +217,8 @@ int SpecificWorker::getIDgeneric(int idjoint, RoboCompFaceTracking::Faces faces)
 bool SpecificWorker::getPoseRot (jointListType list, Pose3D &personpose) {
 
 	//////////////////////////////////GETTING POSITION//////////////////////
+
+
 	int countjoints = 0;
 	float newposez = 0;
 	float newposex = 0;
@@ -227,6 +229,7 @@ bool SpecificWorker::getPoseRot (jointListType list, Pose3D &personpose) {
 //	QString name_camera = "camera_astra" + QString(IDcamera);
 
 	vector<string> tronco = {"Head", "Neck", "ShoulderSpine", "MidSpine", "BaseSpine"};
+
 	for (auto idjoint : tronco)
 	{
 		if (list.find(idjoint) != list.end()) // found
@@ -234,8 +237,10 @@ bool SpecificWorker::getPoseRot (jointListType list, Pose3D &personpose) {
 			auto j = list[idjoint];
 			if (j.size() == 3)
 			{
-				QVec jointinworld = innerModel->transform("world", QVec::vec3(-j[0],0,j[2]), name_camera);
-//				qDebug()<<" Found "<<QString::fromStdString(idjoint) <<" x = " << jointinworld.x()<<  " z = " << jointinworld.z() ;
+				QVec jointinworld = innerModel->transform("world", QVec::vec3(-j[0],0,j[2]), "camera_astra");
+//
+//                qDebug()<<" Found "<<QString::fromStdString(idjoint) <<" x = " << jointinworld.x()<<  " z = " << jointinworld.z() ;
+
 				newposex += jointinworld.x();
 				newposez += jointinworld.z();
 
@@ -254,12 +259,12 @@ bool SpecificWorker::getPoseRot (jointListType list, Pose3D &personpose) {
 
 		personpose.pos_good = true;
 	}
+
 	else
 		return false;
 
 	personpose.x = mediax;
 	personpose.z = mediaz;
-
 
 	//////////////////////////////GETTING ROTATION //////////////////////////////////////
 
@@ -307,11 +312,8 @@ bool SpecificWorker::getPoseRot (jointListType list, Pose3D &personpose) {
 		personpose.confidence = personpose.confidence + 20;
 	}
 
-
 	return true;
 }
-
-
 
 void SpecificWorker::compute()
 {
@@ -320,9 +322,9 @@ void SpecificWorker::compute()
 
 }
 
+//////////////////////////////////////////////////////////////////////////
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool SpecificWorker::reloadConfigAgent()
 {
 //implementCODE
@@ -396,14 +398,12 @@ StateStruct SpecificWorker::getAgentState()
 
 void SpecificWorker::structuralChange(const RoboCompAGMWorldModel::World &w)
 {
-    qDebug()<<"structuralChange";
 //subscribesToCODE
 	QMutexLocker lockIM(mutex);
  	AGMModelConverter::fromIceToInternal(w, worldModel);
  
 	delete innerModel;
 	innerModel = AGMInner::extractInnerModel(worldModel);
-	regenerateInnerModelViewer();
 }
 
 void SpecificWorker::edgesUpdated(const RoboCompAGMWorldModel::EdgeSequence &modifications)
@@ -446,39 +446,42 @@ void SpecificWorker::symbolsUpdated(const RoboCompAGMWorldModel::NodeSequence &m
 
 
 
-void SpecificWorker::regenerateInnerModelViewer()
+bool SpecificWorker::setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated)
 {
-}
-
-
-bool SpecificWorker::setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated) {
 	printf("<<< setParametersAndPossibleActivation\n");
 	// We didn't reactivate the component
 	reactivated = false;
 
 	// Update parameters
 	params.clear();
-	for (ParameterMap::const_iterator it = prs.begin(); it != prs.end(); it++) {
+	for (ParameterMap::const_iterator it=prs.begin(); it!=prs.end(); it++)
+	{
 		params[it->first] = it->second;
 	}
 
-	try {
+	try
+	{
 		action = params["action"].value;
 		std::transform(action.begin(), action.end(), action.begin(), ::tolower);
 		//TYPE YOUR ACTION NAME
-		if (action == "actionname") {
+		if (action == "actionname")
+		{
 			active = true;
-		} else {
+		}
+		else
+		{
 			active = true;
 		}
 	}
-	catch (...) {
+	catch (...)
+	{
 		printf("exception in setParametersAndPossibleActivation %d\n", __LINE__);
 		return false;
 	}
 
 	// Check if we should reactivate the component
-	if (active) {
+	if (active)
+	{
 		active = true;
 		reactivated = true;
 	}
@@ -486,33 +489,26 @@ bool SpecificWorker::setParametersAndPossibleActivation(const ParameterMap &prs,
 	printf("setParametersAndPossibleActivation >>>\n");
 
 	return true;
-
 }
-
-bool SpecificWorker::sendModificationProposal(AGMModel::SPtr &worldModel, AGMModel::SPtr &newModel)
+void SpecificWorker::sendModificationProposal(AGMModel::SPtr &worldModel, AGMModel::SPtr &newModel)
 {
-	bool result = false;
 	try
-	{	qDebug()<<"Intentando sendModificationProposal";
-		AGMMisc::publishModification(newModel, agmexecutive_proxy, "HumanPose");
-		qDebug()<<"sendModificationProposal";
-		result = true;
-	}
-	catch(const RoboCompAGMExecutive::Locked &e)
 	{
-		printf("agmexecutive locked...\n");
+		AGMMisc::publishModification(newModel, agmexecutive_proxy, "humanPoseAgent");
+	}
+/*	catch(const RoboCompAGMExecutive::Locked &e)
+	{
 	}
 	catch(const RoboCompAGMExecutive::OldModel &e)
 	{
-		printf("agmexecutive oldModel...\n");
 	}
 	catch(const RoboCompAGMExecutive::InvalidChange &e)
 	{
-		printf("agmexecutive InvalidChange...\n");
 	}
+*/
 	catch(const Ice::Exception& e)
 	{
 		exit(1);
 	}
-	return result;
 }
+

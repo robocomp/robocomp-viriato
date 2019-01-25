@@ -29,6 +29,7 @@
 
 #include <HumanTracker.h>
 #include <FaceTracking.h>
+#include <HumanPose.h>
 #include <agm.h>
 
 #define CHECK_PERIOD 5000
@@ -38,6 +39,7 @@ typedef map <string,::IceProxy::Ice::Object*> MapPrx;
 
 using namespace std;
 
+using namespace RoboCompHumanPose;
 using namespace RoboCompAGMWorldModel;
 using namespace RoboCompFaceTracking;
 using namespace RoboCompAGMExecutive;
@@ -71,8 +73,9 @@ public:
 	bool isActive() { return active; }
 
 
-	FaceTrackingPrx facetracking_proxy;
 	HumanTrackerPrx humantracker_proxy;
+	HumanPosePrx humanpose_proxy;
+	FaceTrackingPrx facetracking_proxy;
 	AGMExecutivePrx agmexecutive_proxy;
 
 	virtual bool reloadConfigAgent() = 0;

@@ -86,6 +86,7 @@
 
 #include <HumanTracker.h>
 #include <FaceTracking.h>
+#include <HumanPose.h>
 
 
 // User includes here
@@ -134,6 +135,7 @@ int ::humanPose::run(int argc, char* argv[])
 	int status=EXIT_SUCCESS;
 
 	HumanTrackerPrx humantracker_proxy;
+	HumanPosePrx humanpose_proxy;
 	FaceTrackingPrx facetracking_proxy;
 	AGMExecutivePrx agmexecutive_proxy;
 
@@ -201,6 +203,29 @@ int ::humanPose::run(int argc, char* argv[])
 		cout << "[" << PROGRAM_NAME << "]: Exception: STORM not running: " << ex << endl;
 		return EXIT_FAILURE;
 	}
+
+	IceStorm::TopicPrx humanpose_topic;
+	while (!humanpose_topic)
+	{
+		try
+		{
+			humanpose_topic = topicManager->retrieve("HumanPose");
+		}
+		catch (const IceStorm::NoSuchTopic&)
+		{
+			try
+			{
+				humanpose_topic = topicManager->create("HumanPose");
+			}
+			catch (const IceStorm::TopicExists&){
+				// Another client created the topic.
+			}
+		}
+	}
+	Ice::ObjectPrx humanpose_pub = humanpose_topic->getPublisher()->ice_oneway();
+	HumanPosePrx humanpose = HumanPosePrx::uncheckedCast(humanpose_pub);
+	mprx["HumanPosePub"] = (::IceProxy::Ice::Object*)(&humanpose);
+
 
 
 	SpecificWorker *worker = new SpecificWorker(mprx);
