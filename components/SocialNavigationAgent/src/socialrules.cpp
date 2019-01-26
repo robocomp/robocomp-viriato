@@ -48,6 +48,7 @@ void SocialRules::checkNewPersonInModel(AGMModel::SPtr worldModel_)
 		{
 			if (worldModel->getSymbolByIdentifier(personSymbolId)->getAttribute("imName") == name)
 			{
+			    qDebug()<<"fooound";
 				pSymbolId.push_back(personSymbolId);
                 idselected->addItem(QString::number(personSymbolId));
 				std::cout<<"Person found "<< name <<" "<<personSymbolId <<std::endl;
