@@ -79,6 +79,7 @@ public:
     QLabel *label_4;
     QDoubleSpinBox *rot_sb;
     QPushButton *setPose_pb;
+    QPushButton *random;
     QGroupBox *points_gb;
     QVBoxLayout *verticalLayout_4;
     QTextEdit *point_te;
@@ -301,6 +302,11 @@ public:
 
         formLayout->setWidget(3, QFormLayout::FieldRole, setPose_pb);
 
+        random = new QPushButton(pose_gb);
+        random->setObjectName(QString::fromUtf8("random"));
+
+        formLayout->setWidget(4, QFormLayout::FieldRole, random);
+
 
         verticalLayout_3->addLayout(formLayout);
 
@@ -363,13 +369,6 @@ public:
 
         verticalLayout_2->addLayout(horizontalLayout_7);
 
-        pose_gb->raise();
-        points_gb->raise();
-        pose_gb->raise();
-        interacion_gb->raise();
-        rinteraction_pb->raise();
-        move_gb->raise();
-        groupBox_2->raise();
         QWidget::setTabOrder(left, up);
         QWidget::setTabOrder(up, down);
         QWidget::setTabOrder(down, right);
@@ -419,6 +418,7 @@ public:
 #endif // QT_NO_TOOLTIP
         label_4->setText(QApplication::translate("guiDlg", "Rot", 0, QApplication::UnicodeUTF8));
         setPose_pb->setText(QApplication::translate("guiDlg", "Set pose", 0, QApplication::UnicodeUTF8));
+        random->setText(QApplication::translate("guiDlg", "Random", 0, QApplication::UnicodeUTF8));
         points_gb->setTitle(QApplication::translate("guiDlg", "Points", 0, QApplication::UnicodeUTF8));
 #ifndef QT_NO_TOOLTIP
         point_te->setToolTip(QApplication::translate("guiDlg", "x,y", 0, QApplication::UnicodeUTF8));

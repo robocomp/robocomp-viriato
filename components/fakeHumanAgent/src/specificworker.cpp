@@ -49,7 +49,7 @@ SpecificWorker::~SpecificWorker()
 bool SpecificWorker::includeInRCIS(int id, const RoboCompInnerModelManager::Pose3D &pose, std::string meshName)
 {
 	printf("includeInRCIS begins\n");
-	std::string name = "fakeperson" + std::to_string(id);
+	std::string name = "person" + std::to_string(id);
 		
 	RoboCompInnerModelManager::meshType mesh;
 	mesh.pose.x  = 0;
@@ -313,7 +313,7 @@ void SpecificWorker::initializeUI(){
 	connect(rinteraction_pb, SIGNAL(clicked()),this, SLOT(removeEdgeAGM()));
 	connect(ainteraction_pb, SIGNAL(clicked()),this, SLOT(addInteraction()));
 //	connect(point_te, SIGNAL(textChanged()), this, SLOT(pointsChanged()));
-	
+    connect(random, SIGNAL(clicked()),this, SLOT(moverandom()));
 	//disable interface elements 
 	interactionChanged(0);
 	updatePersonInterfaz(false);
@@ -331,6 +331,16 @@ bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 	{
 		printf("The executive is probably not running, waiting for first AGM model publication...");
 	}
+
+    outerRegion.setLeft(std::stoi(params["OuterRegionLeft"].value));
+    outerRegion.setRight(std::stoi(params["OuterRegionRight"].value));
+    outerRegion.setBottom(std::stoi(params["OuterRegionBottom"].value));
+    outerRegion.setTop(std::stoi(params["OuterRegionTop"].value));
+
+    hmin = std::min(outerRegion.left(), outerRegion.right()) +500;
+    hmax = std::max(outerRegion.left(), outerRegion.right()) -500;
+    vmin = std::min(outerRegion.top(), outerRegion.bottom()) +500;
+    vmax = std::max(outerRegion.top(), outerRegion.bottom()) -500;
 
 	// Joystick
 	/*printf("Creating joystick...\n");
@@ -428,7 +438,7 @@ void SpecificWorker::addPerson()
 			person.autoMovement = false;
 			person.pose = pose;
 			person.personSymbolId = personSymbolId;
-			person.name = "fakeperson" + std::to_string(id);
+			person.name = "person" + std::to_string(id);
 			personMap.insert(std::pair<int,TPerson>(personSymbolId,person));
 			//include in comboBox
 			person_cb->addItem(QString::number(personSymbolId));
@@ -487,10 +497,10 @@ void SpecificWorker::movePerson(TPerson *person, RoboCompInnerModelManager::coor
 		return;
 	}
 	//check room change
-	if ((coordInWorld.z < 0 and person->pose.z >= 0) or (coordInWorld.z >= 0 and person->pose.z < 0))
-	{
-		changeRoom = true;
-	}
+//	if ((coordInWorld.z < 0 and person->pose.z >= 0) or (coordInWorld.z >= 0 and person->pose.z < 0))
+//	{
+//		changeRoom = true;
+//	}
 		
 	RoboCompInnerModelManager::Pose3D pose;
 	pose.x = coordInWorld.x;
@@ -529,15 +539,15 @@ void SpecificWorker::movePerson(TPerson *person, RoboCompInnerModelManager::coor
 	}
 	
 	//change room when needed
-	if(changeRoom)
-	{
-		int newRoom = 3;
-		//TODO ==> reevaluate to make it valid for any world
-		if (person->pose.z < 0 ){
-			newRoom = 5;
-		}
-		changePersonRoom(person->personSymbolId, newRoom);
-	}
+//	if(changeRoom)
+//	{
+//		int newRoom = 3;
+//		//TODO ==> reevaluate to make it valid for any world
+//		if (person->pose.z < 0 ){
+//			newRoom = 5;
+//		}
+//		changePersonRoom(person->personSymbolId, newRoom);
+//	}
 }
 
 void SpecificWorker::compute()
@@ -1079,4 +1089,29 @@ void SpecificWorker::updatePersonInterfaz(bool enable)
 	interacion_gb->setEnabled(enable);
 	pose_gb->setEnabled(enable);
 	points_gb->setEnabled(enable);
+}
+
+void SpecificWorker::moverandom()
+{
+    if (person_cb->currentText() == ""){
+        QMessageBox::information(this, "No person selected", "You have to select any person to change its pose");
+    }
+    else
+    {
+//        TPerson *person = &personMap[person_cb->currentText().toInt()];
+
+        coordInItem.x = hmin + (double)rand() * (hmax - hmin)/ (double)RAND_MAX;
+        coordInItem.z = vmin + (double)rand() * (vmax - vmin)/ (double)RAND_MAX;
+        valorgiro = 0 + (double)rand() * (3.141516)/ (double)RAND_MAX;
+
+//        movePerson(person, coordInItem, setPoseFlag);
+        x_sb->setValue(coordInItem.x );
+        z_sb->setValue(coordInItem.z);
+        rot_sb->setValue(valorgiro);
+
+        setPoseFlag = true;
+        
+    }
+
+
 }

@@ -64,6 +64,11 @@ Q_OBJECT
 	RoboCompInnerModelManager::coord3D coordInItem;
 	float valorgiro;
 	int robotID;
+
+	 QRectF outerRegion;
+    int hmin, hmax, vmin, vmax;
+
+
 public:
   
 	void move();
@@ -125,6 +130,7 @@ public slots:
 	void rotar(int valor);
 	void giroP();
 	void giroR();
+	void moverandom();
 
 private:
 	InnerModel *innerModel;

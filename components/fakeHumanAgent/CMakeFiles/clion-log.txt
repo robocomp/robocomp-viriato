@@ -1,18 +1,4 @@
 /opt/clion/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE= -G "CodeBlocks - Unix Makefiles" /home/robocomp/robocomp/components/robocomp-viriato/components/fakeHumanAgent
--- The C compiler identification is GNU 7.3.0
--- The CXX compiler identification is GNU 7.3.0
--- Check for working C compiler: /usr/bin/cc
--- Check for working C compiler: /usr/bin/cc -- works
--- Detecting C compiler ABI info
--- Detecting C compiler ABI info - done
--- Detecting C compile features
--- Detecting C compile features - done
--- Check for working CXX compiler: /usr/bin/c++
--- Check for working CXX compiler: /usr/bin/c++ -- works
--- Detecting CXX compiler ABI info
--- Detecting CXX compiler ABI info - done
--- Detecting CXX compile features
--- Detecting CXX compile features - done
 CMake Warning at src/CMakeLists.txt:6 (MESSAGE):
   ROBOCOMP variable not set.  Using the default value: /opt/robocomp
 
@@ -43,12 +29,12 @@ CMake Warning (dev) in src/CMakeLists.txt:
 
   For compatibility, CMake is excluding the GENERATED source file(s):
 
-    "/home/robolab/robocomp/components/robocomp-viriato/components/fakeHumanAgent/src/CommonBehavior.cpp"
-    "/home/robolab/robocomp/components/robocomp-viriato/components/fakeHumanAgent/src/InnerModelManager.cpp"
-    "/home/robolab/robocomp/components/robocomp-viriato/components/fakeHumanAgent/src/AGMExecutive.cpp"
-    "/home/robolab/robocomp/components/robocomp-viriato/components/fakeHumanAgent/src/AGMWorldModel.cpp"
-    "/home/robolab/robocomp/components/robocomp-viriato/components/fakeHumanAgent/src/Planning.cpp"
-    "/home/robolab/robocomp/components/robocomp-viriato/components/fakeHumanAgent/src/AGMCommonBehavior.cpp"
+    "/home/araceli/robocomp/components/robocomp-viriato/components/fakeHumanAgent/src/CommonBehavior.cpp"
+    "/home/araceli/robocomp/components/robocomp-viriato/components/fakeHumanAgent/src/InnerModelManager.cpp"
+    "/home/araceli/robocomp/components/robocomp-viriato/components/fakeHumanAgent/src/AGMExecutive.cpp"
+    "/home/araceli/robocomp/components/robocomp-viriato/components/fakeHumanAgent/src/AGMWorldModel.cpp"
+    "/home/araceli/robocomp/components/robocomp-viriato/components/fakeHumanAgent/src/Planning.cpp"
+    "/home/araceli/robocomp/components/robocomp-viriato/components/fakeHumanAgent/src/AGMCommonBehavior.cpp"
 
   from processing by AUTOMOC.  If any of the files should be processed, set
   CMP0071 to NEW.  If any of the files should not be processed, explicitly

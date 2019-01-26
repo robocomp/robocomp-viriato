@@ -356,7 +356,7 @@ vector<SpecificWorker::PersonType> SpecificWorker::mixData( vector<PersonType> u
                     person = users1[i];
 
 
-                if (sameperson.find(users1[i].id) != sameperson.end()) 
+                if (sameperson.find(users1[i].id) != sameperson.end())
                 {
 					person.id = users1[i].id;
                 }

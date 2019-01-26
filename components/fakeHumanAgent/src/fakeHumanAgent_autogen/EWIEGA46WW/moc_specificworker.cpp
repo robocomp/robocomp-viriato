@@ -22,7 +22,7 @@ static const uint qt_meta_data_SpecificWorker[] = {
        6,       // revision
        0,       // classname
        0,    0, // classinfo
-      22,   14, // methods
+      23,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -52,6 +52,7 @@ static const uint qt_meta_data_SpecificWorker[] = {
      251,  245,   15,   15, 0x0a,
      262,   15,   15,   15, 0x0a,
      270,   15,   15,   15, 0x0a,
+     278,   15,   15,   15, 0x0a,
 
        0        // eod
 };
@@ -64,7 +65,7 @@ static const char qt_meta_stringdata_SpecificWorker[] = {
     "addInteraction()\0removeEdgeAGM()\0upP()\0"
     "upR()\0downP()\0downR()\0rightP()\0rightR()\0"
     "leftP()\0leftR()\0valor\0rotar(int)\0"
-    "giroP()\0giroR()\0"
+    "giroP()\0giroR()\0moverandom()\0"
 };
 
 void SpecificWorker::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
@@ -95,6 +96,7 @@ void SpecificWorker::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _
         case 19: _t->rotar((*reinterpret_cast< int(*)>(_a[1]))); break;
         case 20: _t->giroP(); break;
         case 21: _t->giroR(); break;
+        case 22: _t->moverandom(); break;
         default: ;
         }
     }
@@ -132,9 +134,9 @@ int SpecificWorker::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 22)
+        if (_id < 23)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 22;
+        _id -= 23;
     }
     return _id;
 }
