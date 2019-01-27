@@ -48,7 +48,6 @@ void SocialRules::checkNewPersonInModel(AGMModel::SPtr worldModel_)
 		{
 			if (worldModel->getSymbolByIdentifier(personSymbolId)->getAttribute("imName") == name)
 			{
-			    qDebug()<<"fooound";
 				pSymbolId.push_back(personSymbolId);
                 idselected->addItem(QString::number(personSymbolId));
 				std::cout<<"Person found "<< name <<" "<<personSymbolId <<std::endl;
@@ -150,6 +149,7 @@ void SocialRules::checkMovement()
 	AGMModel::SPtr newM(new AGMModel(worldModel));
 	interactingpersons.clear();
 	totalpersons.clear();
+
  	
 	if (!interactingId.empty())
 	{
@@ -168,8 +168,24 @@ void SocialRules::checkMovement()
                 //person.vel=str2float(edgeRT.attributes["velocity"]);
                 person.vel = 0;
 
-			    qDebug()<<"POSICION PERSONA "<< person.x <<" " <<person.z <<" " <<person.angle;
-				persons.push_back(person);
+                if (previouspersons.empty())
+                    persons.push_back(person);
+
+                else
+                {
+                    for (auto p: previouspersons)
+                    {
+                        if (p.id == person.id)
+                        {
+                            if ((person.x != p.x) and (person.z != p.z) and (person.angle != p.angle)) //si la persona ya estaba pero se ha movido
+                                persons.push_back(person); //aqui solo voy a meter las que se hayan movido
+
+                        }
+                    }
+
+                }
+
+
 				totalpersons.push_back(person);
 				
 			}
@@ -177,43 +193,20 @@ void SocialRules::checkMovement()
 			interactingpersons.push_back(persons);
 			
 		}
-		ApplySocialRules();
+
+
+        ApplySocialRules();
 		
 
 		
 	}
 
+    previouspersons = totalpersons;
+
 }
+
 SNGPolylineSeq SocialRules::ApplySocialRules()
 {
-//	qDebug()<<__FUNCTION__;
-
-// 	movperson.clear();
-// 	quietperson.clear();
-// 	
-// 	SNGPolylineSeq seq;	
-// 	
-// 	if (person.vel > 0)
-// 		movperson.push_back(person);
-// 	else
-// 		quietperson.push_back(person);
-// 
-// 	if (!quietperson.empty())
-// 	{
-// 		SNGPolylineSeq secuencia = calculateGauss(false);
-// 		
-// 		for(auto s: secuencia)	
-// 			seq.push_back(s);
-// 			    
-// 	}
-// 	
-// 	if (!movperson.empty())
-// 	{
-// 		SNGPolylineSeq secuencia2 = PassOnRight(false);
-// 		for(auto s: secuencia2)
-// 			seq.push_back(s);			
-// 	}
-	
 	if(!interactingpersons.empty())
 	{	
 		try
@@ -226,6 +219,7 @@ SNGPolylineSeq SocialRules::ApplySocialRules()
 	
 			for (auto per: interactingpersons)
 			{
+
 				if((per.size() == 1) and (porpulsed))
 				{
 					seq = socialnavigationgaussian_proxy->  getPassOnRight(per, 0.1, false);
@@ -274,8 +268,6 @@ SNGPolylineSeq SocialRules::ApplySocialRules()
 	}
 
 	pathfinder->innerModelChanged(innerModel, totalpersons, intimate_seq, personal_seq, social_seq, object_seq,objectblock_seq);
-
-
 
 	//SNGPolylineSeq seqpoints = socialnavigationgaussian_proxy->RemovePoints(seq);
 	

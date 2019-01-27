@@ -337,10 +337,10 @@ bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
     outerRegion.setBottom(std::stoi(params["OuterRegionBottom"].value));
     outerRegion.setTop(std::stoi(params["OuterRegionTop"].value));
 
-    hmin = std::min(outerRegion.left(), outerRegion.right()) +500;
-    hmax = std::max(outerRegion.left(), outerRegion.right()) -500;
-    vmin = std::min(outerRegion.top(), outerRegion.bottom()) +500;
-    vmax = std::max(outerRegion.top(), outerRegion.bottom()) -500;
+    hmin = std::min(outerRegion.left(), outerRegion.right()) ;
+    hmax = std::max(outerRegion.left(), outerRegion.right()) ;
+    vmin = std::min(outerRegion.top(), outerRegion.bottom()) ;
+    vmax = std::max(outerRegion.top(), outerRegion.bottom()) -1000; //para que en las pruebas no se ponga en la pos destino
 
 	// Joystick
 	/*printf("Creating joystick...\n");

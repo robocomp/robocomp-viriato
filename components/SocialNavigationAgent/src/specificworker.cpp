@@ -166,7 +166,7 @@ void SpecificWorker::compute() {
 
     if (changepos) {
         socialrules.checkMovement();
-//        socialrules.checkRobotmov();
+        socialrules.checkRobotmov();
         changepos = false;
 	}
 

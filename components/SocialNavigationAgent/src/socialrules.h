@@ -43,6 +43,7 @@ public:
     bool accompanypulsed = false;
     bool porpulsed = false;
 
+	bool first = true;
 
 	float h = 0.1; //umbral
 	QMutex *mux;
@@ -56,6 +57,8 @@ public:
 	SNGPerson robot;
 	SNGPerson person;
 	SNGPersonSeq totalpersons;
+	SNGPersonSeq previouspersons;
+
 	vector <SNGPersonSeq> interactingpersons;
 	SNGPersonSeq quietperson; // quiet person
 	SNGPersonSeq movperson; //moving person
