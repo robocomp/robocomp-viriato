@@ -168,24 +168,7 @@ void SocialRules::checkMovement()
                 //person.vel=str2float(edgeRT.attributes["velocity"]);
                 person.vel = 0;
 
-                if (previouspersons.empty())
-                    persons.push_back(person);
-
-                else
-                {
-                    for (auto p: previouspersons)
-                    {
-                        if (p.id == person.id)
-                        {
-                            if ((person.x != p.x) and (person.z != p.z) and (person.angle != p.angle)) //si la persona ya estaba pero se ha movido
-                                persons.push_back(person); //aqui solo voy a meter las que se hayan movido
-
-                        }
-                    }
-
-                }
-
-
+                persons.push_back(person);
 				totalpersons.push_back(person);
 				
 			}
@@ -194,21 +177,17 @@ void SocialRules::checkMovement()
 			
 		}
 
-
         ApplySocialRules();
 		
 
 		
 	}
-
-    previouspersons = totalpersons;
-
 }
 
 SNGPolylineSeq SocialRules::ApplySocialRules()
 {
 	if(!interactingpersons.empty())
-	{	
+	{
 		try
 		{
 			social_seq.clear();

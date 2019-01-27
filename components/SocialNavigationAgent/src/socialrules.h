@@ -57,7 +57,6 @@ public:
 	SNGPerson robot;
 	SNGPerson person;
 	SNGPersonSeq totalpersons;
-	SNGPersonSeq previouspersons;
 
 	vector <SNGPersonSeq> interactingpersons;
 	SNGPersonSeq quietperson; // quiet person

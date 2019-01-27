@@ -93,8 +93,8 @@ rebuild_cache/fast: rebuild_cache
 
 # Special rule for the target edit_cache
 edit_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
-	/opt/clion/bin/cmake/linux/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake cache editor..."
+	/opt/clion/bin/cmake/linux/bin/ccmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : edit_cache
 
 # Special rule for the target edit_cache
@@ -510,6 +510,87 @@ genericworker.cpp.s:
 	cd /home/robocomp/robocomp/components/robocomp-viriato/components/fakeHumanAgent && $(MAKE) -f src/CMakeFiles/fakeHumanAgent.dir/build.make src/CMakeFiles/fakeHumanAgent.dir/genericworker.cpp.s
 .PHONY : genericworker.cpp.s
 
+home/robocomp/robocomp/classes/qjoystick/qjoystick.o: home/robocomp/robocomp/classes/qjoystick/qjoystick.cpp.o
+
+.PHONY : home/robocomp/robocomp/classes/qjoystick/qjoystick.o
+
+# target to build an object file
+home/robocomp/robocomp/classes/qjoystick/qjoystick.cpp.o:
+	cd /home/robocomp/robocomp/components/robocomp-viriato/components/fakeHumanAgent && $(MAKE) -f src/CMakeFiles/fakeHumanAgent.dir/build.make src/CMakeFiles/fakeHumanAgent.dir/home/robocomp/robocomp/classes/qjoystick/qjoystick.cpp.o
+.PHONY : home/robocomp/robocomp/classes/qjoystick/qjoystick.cpp.o
+
+home/robocomp/robocomp/classes/qjoystick/qjoystick.i: home/robocomp/robocomp/classes/qjoystick/qjoystick.cpp.i
+
+.PHONY : home/robocomp/robocomp/classes/qjoystick/qjoystick.i
+
+# target to preprocess a source file
+home/robocomp/robocomp/classes/qjoystick/qjoystick.cpp.i:
+	cd /home/robocomp/robocomp/components/robocomp-viriato/components/fakeHumanAgent && $(MAKE) -f src/CMakeFiles/fakeHumanAgent.dir/build.make src/CMakeFiles/fakeHumanAgent.dir/home/robocomp/robocomp/classes/qjoystick/qjoystick.cpp.i
+.PHONY : home/robocomp/robocomp/classes/qjoystick/qjoystick.cpp.i
+
+home/robocomp/robocomp/classes/qjoystick/qjoystick.s: home/robocomp/robocomp/classes/qjoystick/qjoystick.cpp.s
+
+.PHONY : home/robocomp/robocomp/classes/qjoystick/qjoystick.s
+
+# target to generate assembly for a file
+home/robocomp/robocomp/classes/qjoystick/qjoystick.cpp.s:
+	cd /home/robocomp/robocomp/components/robocomp-viriato/components/fakeHumanAgent && $(MAKE) -f src/CMakeFiles/fakeHumanAgent.dir/build.make src/CMakeFiles/fakeHumanAgent.dir/home/robocomp/robocomp/classes/qjoystick/qjoystick.cpp.s
+.PHONY : home/robocomp/robocomp/classes/qjoystick/qjoystick.cpp.s
+
+home/robocomp/robocomp/classes/qlog/qlog.o: home/robocomp/robocomp/classes/qlog/qlog.cpp.o
+
+.PHONY : home/robocomp/robocomp/classes/qlog/qlog.o
+
+# target to build an object file
+home/robocomp/robocomp/classes/qlog/qlog.cpp.o:
+	cd /home/robocomp/robocomp/components/robocomp-viriato/components/fakeHumanAgent && $(MAKE) -f src/CMakeFiles/fakeHumanAgent.dir/build.make src/CMakeFiles/fakeHumanAgent.dir/home/robocomp/robocomp/classes/qlog/qlog.cpp.o
+.PHONY : home/robocomp/robocomp/classes/qlog/qlog.cpp.o
+
+home/robocomp/robocomp/classes/qlog/qlog.i: home/robocomp/robocomp/classes/qlog/qlog.cpp.i
+
+.PHONY : home/robocomp/robocomp/classes/qlog/qlog.i
+
+# target to preprocess a source file
+home/robocomp/robocomp/classes/qlog/qlog.cpp.i:
+	cd /home/robocomp/robocomp/components/robocomp-viriato/components/fakeHumanAgent && $(MAKE) -f src/CMakeFiles/fakeHumanAgent.dir/build.make src/CMakeFiles/fakeHumanAgent.dir/home/robocomp/robocomp/classes/qlog/qlog.cpp.i
+.PHONY : home/robocomp/robocomp/classes/qlog/qlog.cpp.i
+
+home/robocomp/robocomp/classes/qlog/qlog.s: home/robocomp/robocomp/classes/qlog/qlog.cpp.s
+
+.PHONY : home/robocomp/robocomp/classes/qlog/qlog.s
+
+# target to generate assembly for a file
+home/robocomp/robocomp/classes/qlog/qlog.cpp.s:
+	cd /home/robocomp/robocomp/components/robocomp-viriato/components/fakeHumanAgent && $(MAKE) -f src/CMakeFiles/fakeHumanAgent.dir/build.make src/CMakeFiles/fakeHumanAgent.dir/home/robocomp/robocomp/classes/qlog/qlog.cpp.s
+.PHONY : home/robocomp/robocomp/classes/qlog/qlog.cpp.s
+
+home/robocomp/robocomp/classes/rapplication/rapplication.o: home/robocomp/robocomp/classes/rapplication/rapplication.cpp.o
+
+.PHONY : home/robocomp/robocomp/classes/rapplication/rapplication.o
+
+# target to build an object file
+home/robocomp/robocomp/classes/rapplication/rapplication.cpp.o:
+	cd /home/robocomp/robocomp/components/robocomp-viriato/components/fakeHumanAgent && $(MAKE) -f src/CMakeFiles/fakeHumanAgent.dir/build.make src/CMakeFiles/fakeHumanAgent.dir/home/robocomp/robocomp/classes/rapplication/rapplication.cpp.o
+.PHONY : home/robocomp/robocomp/classes/rapplication/rapplication.cpp.o
+
+home/robocomp/robocomp/classes/rapplication/rapplication.i: home/robocomp/robocomp/classes/rapplication/rapplication.cpp.i
+
+.PHONY : home/robocomp/robocomp/classes/rapplication/rapplication.i
+
+# target to preprocess a source file
+home/robocomp/robocomp/classes/rapplication/rapplication.cpp.i:
+	cd /home/robocomp/robocomp/components/robocomp-viriato/components/fakeHumanAgent && $(MAKE) -f src/CMakeFiles/fakeHumanAgent.dir/build.make src/CMakeFiles/fakeHumanAgent.dir/home/robocomp/robocomp/classes/rapplication/rapplication.cpp.i
+.PHONY : home/robocomp/robocomp/classes/rapplication/rapplication.cpp.i
+
+home/robocomp/robocomp/classes/rapplication/rapplication.s: home/robocomp/robocomp/classes/rapplication/rapplication.cpp.s
+
+.PHONY : home/robocomp/robocomp/classes/rapplication/rapplication.s
+
+# target to generate assembly for a file
+home/robocomp/robocomp/classes/rapplication/rapplication.cpp.s:
+	cd /home/robocomp/robocomp/components/robocomp-viriato/components/fakeHumanAgent && $(MAKE) -f src/CMakeFiles/fakeHumanAgent.dir/build.make src/CMakeFiles/fakeHumanAgent.dir/home/robocomp/robocomp/classes/rapplication/rapplication.cpp.s
+.PHONY : home/robocomp/robocomp/classes/rapplication/rapplication.cpp.s
+
 main.o: main.cpp.o
 
 .PHONY : main.o
@@ -536,87 +617,6 @@ main.s: main.cpp.s
 main.cpp.s:
 	cd /home/robocomp/robocomp/components/robocomp-viriato/components/fakeHumanAgent && $(MAKE) -f src/CMakeFiles/fakeHumanAgent.dir/build.make src/CMakeFiles/fakeHumanAgent.dir/main.cpp.s
 .PHONY : main.cpp.s
-
-opt/robocomp/classes/qjoystick/qjoystick.o: opt/robocomp/classes/qjoystick/qjoystick.cpp.o
-
-.PHONY : opt/robocomp/classes/qjoystick/qjoystick.o
-
-# target to build an object file
-opt/robocomp/classes/qjoystick/qjoystick.cpp.o:
-	cd /home/robocomp/robocomp/components/robocomp-viriato/components/fakeHumanAgent && $(MAKE) -f src/CMakeFiles/fakeHumanAgent.dir/build.make src/CMakeFiles/fakeHumanAgent.dir/opt/robocomp/classes/qjoystick/qjoystick.cpp.o
-.PHONY : opt/robocomp/classes/qjoystick/qjoystick.cpp.o
-
-opt/robocomp/classes/qjoystick/qjoystick.i: opt/robocomp/classes/qjoystick/qjoystick.cpp.i
-
-.PHONY : opt/robocomp/classes/qjoystick/qjoystick.i
-
-# target to preprocess a source file
-opt/robocomp/classes/qjoystick/qjoystick.cpp.i:
-	cd /home/robocomp/robocomp/components/robocomp-viriato/components/fakeHumanAgent && $(MAKE) -f src/CMakeFiles/fakeHumanAgent.dir/build.make src/CMakeFiles/fakeHumanAgent.dir/opt/robocomp/classes/qjoystick/qjoystick.cpp.i
-.PHONY : opt/robocomp/classes/qjoystick/qjoystick.cpp.i
-
-opt/robocomp/classes/qjoystick/qjoystick.s: opt/robocomp/classes/qjoystick/qjoystick.cpp.s
-
-.PHONY : opt/robocomp/classes/qjoystick/qjoystick.s
-
-# target to generate assembly for a file
-opt/robocomp/classes/qjoystick/qjoystick.cpp.s:
-	cd /home/robocomp/robocomp/components/robocomp-viriato/components/fakeHumanAgent && $(MAKE) -f src/CMakeFiles/fakeHumanAgent.dir/build.make src/CMakeFiles/fakeHumanAgent.dir/opt/robocomp/classes/qjoystick/qjoystick.cpp.s
-.PHONY : opt/robocomp/classes/qjoystick/qjoystick.cpp.s
-
-opt/robocomp/classes/qlog/qlog.o: opt/robocomp/classes/qlog/qlog.cpp.o
-
-.PHONY : opt/robocomp/classes/qlog/qlog.o
-
-# target to build an object file
-opt/robocomp/classes/qlog/qlog.cpp.o:
-	cd /home/robocomp/robocomp/components/robocomp-viriato/components/fakeHumanAgent && $(MAKE) -f src/CMakeFiles/fakeHumanAgent.dir/build.make src/CMakeFiles/fakeHumanAgent.dir/opt/robocomp/classes/qlog/qlog.cpp.o
-.PHONY : opt/robocomp/classes/qlog/qlog.cpp.o
-
-opt/robocomp/classes/qlog/qlog.i: opt/robocomp/classes/qlog/qlog.cpp.i
-
-.PHONY : opt/robocomp/classes/qlog/qlog.i
-
-# target to preprocess a source file
-opt/robocomp/classes/qlog/qlog.cpp.i:
-	cd /home/robocomp/robocomp/components/robocomp-viriato/components/fakeHumanAgent && $(MAKE) -f src/CMakeFiles/fakeHumanAgent.dir/build.make src/CMakeFiles/fakeHumanAgent.dir/opt/robocomp/classes/qlog/qlog.cpp.i
-.PHONY : opt/robocomp/classes/qlog/qlog.cpp.i
-
-opt/robocomp/classes/qlog/qlog.s: opt/robocomp/classes/qlog/qlog.cpp.s
-
-.PHONY : opt/robocomp/classes/qlog/qlog.s
-
-# target to generate assembly for a file
-opt/robocomp/classes/qlog/qlog.cpp.s:
-	cd /home/robocomp/robocomp/components/robocomp-viriato/components/fakeHumanAgent && $(MAKE) -f src/CMakeFiles/fakeHumanAgent.dir/build.make src/CMakeFiles/fakeHumanAgent.dir/opt/robocomp/classes/qlog/qlog.cpp.s
-.PHONY : opt/robocomp/classes/qlog/qlog.cpp.s
-
-opt/robocomp/classes/rapplication/rapplication.o: opt/robocomp/classes/rapplication/rapplication.cpp.o
-
-.PHONY : opt/robocomp/classes/rapplication/rapplication.o
-
-# target to build an object file
-opt/robocomp/classes/rapplication/rapplication.cpp.o:
-	cd /home/robocomp/robocomp/components/robocomp-viriato/components/fakeHumanAgent && $(MAKE) -f src/CMakeFiles/fakeHumanAgent.dir/build.make src/CMakeFiles/fakeHumanAgent.dir/opt/robocomp/classes/rapplication/rapplication.cpp.o
-.PHONY : opt/robocomp/classes/rapplication/rapplication.cpp.o
-
-opt/robocomp/classes/rapplication/rapplication.i: opt/robocomp/classes/rapplication/rapplication.cpp.i
-
-.PHONY : opt/robocomp/classes/rapplication/rapplication.i
-
-# target to preprocess a source file
-opt/robocomp/classes/rapplication/rapplication.cpp.i:
-	cd /home/robocomp/robocomp/components/robocomp-viriato/components/fakeHumanAgent && $(MAKE) -f src/CMakeFiles/fakeHumanAgent.dir/build.make src/CMakeFiles/fakeHumanAgent.dir/opt/robocomp/classes/rapplication/rapplication.cpp.i
-.PHONY : opt/robocomp/classes/rapplication/rapplication.cpp.i
-
-opt/robocomp/classes/rapplication/rapplication.s: opt/robocomp/classes/rapplication/rapplication.cpp.s
-
-.PHONY : opt/robocomp/classes/rapplication/rapplication.s
-
-# target to generate assembly for a file
-opt/robocomp/classes/rapplication/rapplication.cpp.s:
-	cd /home/robocomp/robocomp/components/robocomp-viriato/components/fakeHumanAgent && $(MAKE) -f src/CMakeFiles/fakeHumanAgent.dir/build.make src/CMakeFiles/fakeHumanAgent.dir/opt/robocomp/classes/rapplication/rapplication.cpp.s
-.PHONY : opt/robocomp/classes/rapplication/rapplication.cpp.s
 
 specificmonitor.o: specificmonitor.cpp.o
 
@@ -722,18 +722,18 @@ help:
 	@echo "... genericworker.o"
 	@echo "... genericworker.i"
 	@echo "... genericworker.s"
+	@echo "... home/robocomp/robocomp/classes/qjoystick/qjoystick.o"
+	@echo "... home/robocomp/robocomp/classes/qjoystick/qjoystick.i"
+	@echo "... home/robocomp/robocomp/classes/qjoystick/qjoystick.s"
+	@echo "... home/robocomp/robocomp/classes/qlog/qlog.o"
+	@echo "... home/robocomp/robocomp/classes/qlog/qlog.i"
+	@echo "... home/robocomp/robocomp/classes/qlog/qlog.s"
+	@echo "... home/robocomp/robocomp/classes/rapplication/rapplication.o"
+	@echo "... home/robocomp/robocomp/classes/rapplication/rapplication.i"
+	@echo "... home/robocomp/robocomp/classes/rapplication/rapplication.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"
-	@echo "... opt/robocomp/classes/qjoystick/qjoystick.o"
-	@echo "... opt/robocomp/classes/qjoystick/qjoystick.i"
-	@echo "... opt/robocomp/classes/qjoystick/qjoystick.s"
-	@echo "... opt/robocomp/classes/qlog/qlog.o"
-	@echo "... opt/robocomp/classes/qlog/qlog.i"
-	@echo "... opt/robocomp/classes/qlog/qlog.s"
-	@echo "... opt/robocomp/classes/rapplication/rapplication.o"
-	@echo "... opt/robocomp/classes/rapplication/rapplication.i"
-	@echo "... opt/robocomp/classes/rapplication/rapplication.s"
 	@echo "... specificmonitor.o"
 	@echo "... specificmonitor.i"
 	@echo "... specificmonitor.s"

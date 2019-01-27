@@ -3,4 +3,4 @@
 #include "EWIEGA46WW/moc_genericworker.cpp"
 #include "EWIEGA46WW/moc_specificmonitor.cpp"
 #include "EWIEGA46WW/moc_specificworker.cpp"
-#include "MMHIUYQLB4/moc_qjoystick.cpp"
+#include "EWKCBNEM32/moc_qjoystick.cpp"

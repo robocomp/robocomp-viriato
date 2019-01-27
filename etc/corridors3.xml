@@ -10,7 +10,7 @@
 		<transform id="room_3">
 
 		
-			<transform id="pared1" tx="-2500" ty="950" tz="4500"  rx="0" ry="0" rz="0" >
+			<transform id="pared1" tx="-2000" ty="950" tz="4500"  rx="0" ry="0" rz="0" >
 				<plane id="muro1"  nx="-500" nz="0" size="10000,1900,9"  texture="#880000" />
 			</transform>
 
@@ -18,7 +18,7 @@
 				<plane id="muro2"  nx="0" nz="5000" size="4000,1900,9"  texture="#880000" />
 			</transform>
 
-			<transform id="pared3"  tx="2500" ty="950" tz="4500"  rx="0" ry="0" rz="0">
+			<transform id="pared3"  tx="2000" ty="950" tz="4500"  rx="0" ry="0" rz="0">
 				<plane id="muro3"  nx="5000" nz="0" size="10000,1900,9"  texture="#880000" />
 			</transform>
 			
