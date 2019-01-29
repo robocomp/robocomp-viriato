@@ -86,9 +86,13 @@ bool SpecificMonitor::sendParamsToWorker(RoboCompCommonBehavior::ParameterList p
 void SpecificMonitor::readConfig(RoboCompCommonBehavior::ParameterList &params )
 {
 	RoboCompCommonBehavior::Parameter aux;
-	aux.editable = true;
+	aux.editable = false;
 	configGetString( "","IDcamera", aux.value, "nofile");
 	params["IDcamera"] = aux;
+
+	aux.editable = false;
+	configGetString( "","InnerModelPath", aux.value, "nofile");
+	params["InnerModelPath"] = aux;
 }
 
 //Check parameters and transform them to worker structure

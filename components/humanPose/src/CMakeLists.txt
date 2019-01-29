@@ -24,15 +24,13 @@ SET ( SOURCES
   genericmonitor.cpp
   commonbehaviorI.cpp
   genericworker.cpp
-  agmcommonbehaviorI.cpp
-  agmexecutivetopicI.cpp
 )
 
 
 
 #ROBOCOMP
 ROBOCOMP_INITIALIZE( $ENV{ROBOCOMP}/ )
-ROBOCOMP_WRAP_ICE( CommonBehavior HumanTracker  FaceTracking  HumanPose  AGMExecutive AGMWorldModel Planning AGMCommonBehavior )
+ROBOCOMP_WRAP_ICE( CommonBehavior HumanTracker  FaceTracking  HumanPose )
 SET (EXECUTABLE_OUTPUT_PATH ${RC_COMPONENT_DEVEL_PATH}/bin)
 
 # Qt4
@@ -48,8 +46,6 @@ SET( CMAKE_AUTOUIC TRUE )
 INCLUDE( ${QT_USE_FILE} )
 
 # Specify construction and link process
-SET(LIBS ${LIBS} -lagm)
-ADD_DEFINITIONS( -I/usr/include/libxml2/ )
 ADD_EXECUTABLE( humanPose ${SOURCES} ${MOC_SOURCES} ${RC_SOURCES} ${UI_HEADERS} )
 TARGET_LINK_LIBRARIES( humanPose ${QT_LIBRARIES} ${LIBS} ${STATIC_LIBS} ${SPECIFIC_LIBS})
 INSTALL(FILES ${EXECUTABLE_OUTPUT_PATH}/humanPose DESTINATION ${RC_COMPONENT_INSTALL_PATH}/bin/ PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )

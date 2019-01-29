@@ -81,8 +81,6 @@
 #include "specificmonitor.h"
 #include "commonbehaviorI.h"
 
-#include <agmcommonbehaviorI.h>
-#include <agmexecutivetopicI.h>
 
 #include <HumanTracker.h>
 #include <FaceTracking.h>
@@ -135,9 +133,8 @@ int ::humanPose::run(int argc, char* argv[])
 	int status=EXIT_SUCCESS;
 
 	HumanTrackerPrx humantracker_proxy;
-	HumanPosePrx humanpose_proxy;
 	FaceTrackingPrx facetracking_proxy;
-	AGMExecutivePrx agmexecutive_proxy;
+	HumanPosePrx humanpose_proxy;
 
 	string proxy, tmp;
 	initialize();
@@ -175,23 +172,6 @@ int ::humanPose::run(int argc, char* argv[])
 	}
 	rInfo("FaceTrackingProxy initialized Ok!");
 	mprx["FaceTrackingProxy"] = (::IceProxy::Ice::Object*)(&facetracking_proxy);//Remote server proxy creation example
-
-
-	try
-	{
-		if (not GenericMonitor::configGetString(communicator(), prefix, "AGMExecutiveProxy", proxy, ""))
-		{
-			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy AGMExecutiveProxy\n";
-		}
-		agmexecutive_proxy = AGMExecutivePrx::uncheckedCast( communicator()->stringToProxy( proxy ) );
-	}
-	catch(const Ice::Exception& ex)
-	{
-		cout << "[" << PROGRAM_NAME << "]: Exception: " << ex;
-		return EXIT_FAILURE;
-	}
-	rInfo("AGMExecutiveProxy initialized Ok!");
-	mprx["AGMExecutiveProxy"] = (::IceProxy::Ice::Object*)(&agmexecutive_proxy);//Remote server proxy creation example
 
 	IceStorm::TopicManagerPrx topicManager;
 	try
@@ -258,48 +238,8 @@ int ::humanPose::run(int argc, char* argv[])
 
 
 
-		// Server adapter creation and publication
-		if (not GenericMonitor::configGetString(communicator(), prefix, "AGMCommonBehavior.Endpoints", tmp, ""))
-		{
-			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy AGMCommonBehavior";
-		}
-		Ice::ObjectAdapterPtr adapterAGMCommonBehavior = communicator()->createObjectAdapterWithEndpoints("AGMCommonBehavior", tmp);
-		AGMCommonBehaviorI *agmcommonbehavior = new AGMCommonBehaviorI(worker);
-		adapterAGMCommonBehavior->add(agmcommonbehavior, communicator()->stringToIdentity("agmcommonbehavior"));
-		adapterAGMCommonBehavior->activate();
-		cout << "[" << PROGRAM_NAME << "]: AGMCommonBehavior adapter created in port " << tmp << endl;
 
 
-
-
-
-		// Server adapter creation and publication
-		if (not GenericMonitor::configGetString(communicator(), prefix, "AGMExecutiveTopicTopic.Endpoints", tmp, ""))
-		{
-			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy AGMExecutiveTopicProxy";
-		}
-		Ice::ObjectAdapterPtr AGMExecutiveTopic_adapter = communicator()->createObjectAdapterWithEndpoints("agmexecutivetopic", tmp);
-		AGMExecutiveTopicPtr agmexecutivetopicI_ = new AGMExecutiveTopicI(worker);
-		Ice::ObjectPrx agmexecutivetopic = AGMExecutiveTopic_adapter->addWithUUID(agmexecutivetopicI_)->ice_oneway();
-		IceStorm::TopicPrx agmexecutivetopic_topic;
-		if(!agmexecutivetopic_topic){
-		try {
-			agmexecutivetopic_topic = topicManager->create("AGMExecutiveTopic");
-		}
-		catch (const IceStorm::TopicExists&) {
-		//Another client created the topic
-		try{
-			agmexecutivetopic_topic = topicManager->retrieve("AGMExecutiveTopic");
-		}
-		catch(const IceStorm::NoSuchTopic&)
-		{
-			//Error. Topic does not exist
-			}
-		}
-		IceStorm::QoS qos;
-		agmexecutivetopic_topic->subscribeAndGetPublisher(qos, agmexecutivetopic);
-		}
-		AGMExecutiveTopic_adapter->activate();
 
 		// Server adapter creation and publication
 		cout << SERVER_FULL_NAME " started" << endl;
@@ -313,8 +253,6 @@ int ::humanPose::run(int argc, char* argv[])
 		// Run QT Application Event Loop
 		a.exec();
 
-		std::cout << "Unsubscribing topic: agmexecutivetopic " <<std::endl;
-		agmexecutivetopic_topic->unsubscribe( agmexecutivetopic );
 
 		status = EXIT_SUCCESS;
 	}

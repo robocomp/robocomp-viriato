@@ -30,7 +30,6 @@
 #include <HumanTracker.h>
 #include <FaceTracking.h>
 #include <HumanPose.h>
-#include <agm.h>
 
 #define CHECK_PERIOD 5000
 #define BASIC_PERIOD 100
@@ -39,20 +38,10 @@ typedef map <string,::IceProxy::Ice::Object*> MapPrx;
 
 using namespace std;
 
-using namespace RoboCompHumanPose;
-using namespace RoboCompAGMWorldModel;
-using namespace RoboCompFaceTracking;
-using namespace RoboCompAGMExecutive;
 using namespace RoboCompHumanTracker;
-using namespace RoboCompPlanning;
-using namespace RoboCompAGMCommonBehavior;
+using namespace RoboCompFaceTracking;
+using namespace RoboCompHumanPose;
 
-
-struct BehaviorParameters
-{
-	RoboCompPlanning::Action action;
-	std::vector< std::vector <std::string> > plan;
-};
 
 
 
@@ -68,40 +57,16 @@ public:
 
 	virtual bool setParams(RoboCompCommonBehavior::ParameterList params) = 0;
 	QMutex *mutex;
-	bool activate(const BehaviorParameters& parameters);
-	bool deactivate();
-	bool isActive() { return active; }
 
 
 	HumanTrackerPrx humantracker_proxy;
 	HumanPosePrx humanpose_proxy;
 	FaceTrackingPrx facetracking_proxy;
-	AGMExecutivePrx agmexecutive_proxy;
 
-	virtual bool reloadConfigAgent() = 0;
-	virtual bool activateAgent(const ParameterMap &prs) = 0;
-	virtual bool setAgentParameters(const ParameterMap &prs) = 0;
-	virtual ParameterMap getAgentParameters() = 0;
-	virtual void killAgent() = 0;
-	virtual int uptimeAgent() = 0;
-	virtual bool deactivateAgent() = 0;
-	virtual StateStruct getAgentState() = 0;
-	virtual void structuralChange(const RoboCompAGMWorldModel::World &w) = 0;
-	virtual void edgesUpdated(const RoboCompAGMWorldModel::EdgeSequence &modifications) = 0;
-	virtual void edgeUpdated(const RoboCompAGMWorldModel::Edge &modification) = 0;
-	virtual void symbolUpdated(const RoboCompAGMWorldModel::Node &modification) = 0;
-	virtual void symbolsUpdated(const RoboCompAGMWorldModel::NodeSequence &modifications) = 0;
 
 protected:
 	QTimer timer;
 	int Period;
-	bool active;
-	AGMModel::SPtr worldModel;
-	BehaviorParameters p;
-	ParameterMap params;
-	int iter;
-	bool setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated);
-	RoboCompPlanning::Action createAction(std::string s);
 
 private:
 

@@ -11,7 +11,7 @@ Component humanPose
 	};
 	
 	language Cpp;
-	options agmagent;
+
 };
 
 

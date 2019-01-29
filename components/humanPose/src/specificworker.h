@@ -65,32 +65,11 @@ public:
 	int getIDgeneric(int idjoint, RoboCompFaceTracking::Faces faces);
 
 
-	bool reloadConfigAgent();
-	bool activateAgent(const ParameterMap &prs);
-	bool setAgentParameters(const ParameterMap &prs);
-	ParameterMap getAgentParameters();
-	void killAgent();
-	int uptimeAgent();
-	bool deactivateAgent();
-	StateStruct getAgentState();
-	void structuralChange(const RoboCompAGMWorldModel::World &w);
-	void edgesUpdated(const RoboCompAGMWorldModel::EdgeSequence &modifications);
-	void edgeUpdated(const RoboCompAGMWorldModel::Edge &modification);
-	void symbolUpdated(const RoboCompAGMWorldModel::Node &modification);
-	void symbolsUpdated(const RoboCompAGMWorldModel::NodeSequence &modifications);
-
 public slots:
 	void compute();
 
 private:
-
 	InnerModel *innerModel;
-	std::string action;
-	ParameterMap params;
-	AGMModel::SPtr worldModel;
-	bool active;
-	bool setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated);
-	void sendModificationProposal(AGMModel::SPtr &worldModel, AGMModel::SPtr &newModel);
 
 };
 

@@ -411,6 +411,7 @@ void SpecificWorker::AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldMo
 	{
 		socialrules.checkNewPersonInModel(worldModel);
 		socialrules.innerModelChanged(innerModel);
+		innerModel->save("/home/robocomp/robocomp/components/robocomp-viriato/etcSim/innermodel.xml");
 	}
 	else
 		first = false;
