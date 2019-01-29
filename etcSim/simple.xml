@@ -144,18 +144,43 @@
  </node>
 
  <node alias="humanAgent" endpoint="agmcommonbehavior:tcp -h localhost -p 10217">
-  <dependence alias="executive" />
-  <dependence alias="faceTracking" />
-  <dependence alias="astraRGBD" />
   <workingDir path="/home/robocomp/" />
   <upCommand command="rcremote localhost humanAgent /home/robocomp/robocomp/components/robocomp-viriato/components/humanAgent ./bin/humanAgent /home/robocomp/robocomp/components/robocomp-viriato/etcSim/humanAgent.conf" />
   <downCommand command="killall -9 humanAgent" />
   <configFile path="/home/robocomp/robocomp/components/robocomp-viriato/etcSim/humanAgent.conf" />
   <xpos value="121.097569307" />
+  <ypos value="-20.5106363282" />
+  <radius value="10.0" />
+  <color value="#33FF33" />
+ </node>
+
+ <node alias="humanPose" endpoint="agmcommonbehavior:tcp -h localhost -p 10218">
+  <dependence alias="astraRGBD" />
+  <dependence alias="faceTracking" />
+  <workingDir path="/home/robocomp/" />
+  <upCommand command="rcremote localhost humanPose /home/robocomp/robocomp/components/robocomp-viriato/components/humanPose ./bin/humanPose /home/robocomp/robocomp/components/robocomp-viriato/etcSim/humanPose1.conf" />
+  <downCommand command="killall -9 humanPose" />
+  <configFile path="/home/robocomp/robocomp/components/robocomp-viriato/etcSim/humanPose1.conf" />
+  <xpos value="151.097569307" />
   <ypos value="20.5106363282" />
   <radius value="10.0" />
   <color value="#33FF33" />
  </node>
+
+ <node alias="humanPoseNUC" endpoint="agmcommonbehavior:tcp -h 158.49.247.112 -p 10219">
+  <dependence alias="astraRGBDnuc" />
+<dependence alias="faceTrackingNUC" />
+  <workingDir path="/home/robocomp/" />
+  <upCommand command="rcremote 158.49.247.112 humanPoseNUC /home/robocomp/robocomp/components/robocomp-viriato/components/humanPose ./bin/humanPose /home/robocomp/robocomp/components/robocomp-viriato/etcSim/humanPose2.conf" />
+  <downCommand command="killall -9 humanPoseNUC" />
+  <configFile path="/home/robocomp/robocomp/components/robocomp-viriato/etcSim/humanPose2.conf" />
+  <xpos value="191.097569307" />
+  <ypos value="170.5106363282" />
+  <radius value="10.0" />
+  <color value="#33FF33" />
+ </node>
+
+
 
  <node alias="astraRGBD" endpoint="humantracker:tcp -h localhost -p 11666"> 
   <workingDir path="/home/robocomp/" />

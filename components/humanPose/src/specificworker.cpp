@@ -53,7 +53,7 @@ bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 
     IDcamera = std::stoi(params["IDcamera"].value);
 
-    Period = 2000;
+    Period = 300;
     timer.start(Period);
 
 	return true;
@@ -82,7 +82,7 @@ void SpecificWorker::getDataFromAstra()
 			auto faces = facetracking_proxy-> getFaces(); //obtenemos las caras
 			auto idperson = getIDgeneric(idjoint,faces);
 
-			qDebug()<<"ID DE LA PERSONA "<< idperson;
+//			qDebug()<<"ID DE LA PERSONA "<< idperson;
 
             if (idperson == -1) { return; }
 
@@ -107,13 +107,6 @@ void SpecificWorker::getDataFromAstra()
 		try
 		{
 			humanpose_proxy-> obtainHumanPose(IDcamera, list_of_humans);
-
-            for( auto human : list_of_humans)
-            {
-                qDebug()<<"HUMANO "<< human.id <<" situado en "<< human.pos.x << " " <<human.pos.z;
-            }
-
-
         }
 
 		catch(...)
