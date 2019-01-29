@@ -65,5 +65,11 @@
 				<mesh id="astraRGBD_mesh" file="/home/robocomp/robocomp/files/osgModels/basics/cube2.3ds" scale="200,200,200" tx="0" ty="0" tz="0" rx="0" ry="0" rz="0" collide="1" />
 			</transform>
 		</transform>
+		<transform id="person100" tx="-1017.840027" ty="0" tz="1937.589966"  rx="0" ry="1.323760033" rz="0">
+			<mesh id="person100_Mesh" file="/home/robocomp/robocomp/components/robocomp-araceli/models/human01.3ds" scale="12,12,12" tx="0" ty="0" tz="0" rx="1.570796371" ry="0" rz="3.141592741" collide="0" />
+		</transform>
+		<transform id="person107" tx="-181.6855469" ty="0" tz="2142.592773"  rx="0" ry="4.489686012" rz="0">
+			<mesh id="person107_Mesh" file="/home/robocomp/robocomp/components/robocomp-araceli/models/human01.3ds" scale="12,12,12" tx="0" ty="0" tz="0" rx="1.570796371" ry="0" rz="3.141592741" collide="0" />
+		</transform>
 	</transform>
 </innermodel>

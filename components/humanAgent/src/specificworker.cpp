@@ -116,12 +116,15 @@ void SpecificWorker::getHumans()
 
             else // found
             {
-                for (int i =0; i< humans_in_world.size();i++)
+                for (int i = 0; i< humans_in_world.size();i++)
                 {
                   auto dist = sqrt(((humans_in_world[i].pos.x - h.pos.x)*(humans_in_world[i].pos.x - h.pos.x))+(humans_in_world[i].pos.z - h.pos.z)*(humans_in_world[i].pos.z - h.pos.z));
 
-                    if (dist < 1000)
-                        movePersonInAGM(h.id,h.pos);
+                    if (dist < 1000) //revisar esto porque no me aclaro ahora
+                    {
+                        movePersonInAGM(humans_in_world[i].id,h.pos);
+                    }
+
 
                     else if (i == (humans_in_world.size()-1))//solo insertar si es la última persona en comprobarse
                     {
