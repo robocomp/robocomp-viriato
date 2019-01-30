@@ -81,8 +81,12 @@ void SpecificWorker::getHumans()
 {
     if (reading) return;
 
-    if (humans_in_world.size() == 0) //Si no hay personas en el modelo
+
+    humans_in_world.clear();
+
+    if (previous_humans.size() == 0) //Si no hay personas en el modelo
     {
+        qDebug()<<"No hay personas en el mundo";
         for (auto h : Humans)
         {
             if (h.pos.pos_good) //Solo incluyo en AGM si la posición se ha calculado correctamente
@@ -99,7 +103,7 @@ void SpecificWorker::getHumans()
         {
             bool found = false;
 
-            for (auto human : humans_in_world)
+            for (auto human : previous_humans)
             {
                 if (human.id == h.id)
                 {
@@ -113,21 +117,22 @@ void SpecificWorker::getHumans()
 
             else
             {
-                for (int i = 0; i < humans_in_world.size(); i++)
+                for (int i = 0; i < previous_humans.size(); i++)
                 {
 
-                    if (h.IDcamera != humans_in_world[i].IDcamera)
-                    {
-                        auto dist = sqrt(((humans_in_world[i].pos.x - h.pos.x)*(humans_in_world[i].pos.x - h.pos.x))+(humans_in_world[i].pos.z - h.pos.z)*(humans_in_world[i].pos.z - h.pos.z));
+                    if (h.IDcamera != previous_humans[i].IDcamera)
 
-                        qDebug()<<"DISTANCIA ENTRE " << humans_in_world[i].id << " y " << h.id << " = " <<dist;
+                    {
+                        auto dist = sqrt(((previous_humans[i].pos.x - h.pos.x)*(previous_humans[i].pos.x - h.pos.x))+(previous_humans[i].pos.z - h.pos.z)*(previous_humans[i].pos.z - h.pos.z));
+
+                        qDebug()<<"DISTANCIA ENTRE " << previous_humans[i].id << " y " << h.id << " = " <<dist;
 
                         if (dist < 500) //450 es espacio íntimo
                         {
-                            movePersonInAGM(humans_in_world[i].id,h.pos);
+                            movePersonInAGM(previous_humans[i].id,h.pos);
                         }
 
-                        else if (i == (humans_in_world.size()-1))//solo insertar si es la última persona en comprobarse
+                        else if (i == (previous_humans.size()-1))//solo insertar si es la última persona en comprobarse
                         {
                             if(h.pos.pos_good)
                             {
@@ -137,7 +142,7 @@ void SpecificWorker::getHumans()
                         }
                     }
 
-                    else if (i == (humans_in_world.size()-1))
+                    else if (i == (previous_humans.size()-1))
                     {
                         if(h.pos.pos_good)
                         {
@@ -149,6 +154,8 @@ void SpecificWorker::getHumans()
             }
         }
     }
+
+    previous_humans = humans_in_world;
 }
 
 
