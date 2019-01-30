@@ -80,17 +80,17 @@ void SpecificWorker::obtainHumanPose(const humansDetected &list_of_humans) {
 void SpecificWorker::getHumans()
 {
     if (reading) return;
+    if (Humans.size() == 0) return;
 
 
-    humans_in_world.clear();
 
-    if (previous_humans.size() == 0) //Si no hay personas en el modelo
+    if (humans_in_world.size() == 0) //Si no hay personas en el modelo
     {
-        qDebug()<<"No hay personas en el mundo";
         for (auto h : Humans)
         {
             if (h.pos.pos_good) //Solo incluyo en AGM si la posición se ha calculado correctamente
             {
+                qDebug()<<"No hay personas en el mundo. Incluyo en AGM a Person "<< h.id;
                 includeInAGM(h.id, h.pos);
                 humans_in_world.push_back(h);
             }
@@ -99,6 +99,8 @@ void SpecificWorker::getHumans()
 
     else
     {
+        auto previous_humans = humans_in_world;
+
         for (auto h : Humans)
         {
             bool found = false;
@@ -113,7 +115,10 @@ void SpecificWorker::getHumans()
             }
 
             if (found)
+            {
+                qDebug()<<"La persona" << h.id << "ya estaba en el modelo. La muevo";
                 movePersonInAGM(h.id,h.pos);
+            }
 
             else
             {
@@ -129,6 +134,7 @@ void SpecificWorker::getHumans()
 
                         if (dist < 500) //450 es espacio íntimo
                         {
+                            qDebug()<< h.id << " y " <<previous_humans[i].id << " son la misma persona. La muevo";
                             movePersonInAGM(previous_humans[i].id,h.pos);
                         }
 
@@ -136,6 +142,7 @@ void SpecificWorker::getHumans()
                         {
                             if(h.pos.pos_good)
                             {
+                                qDebug() << "Persona "<< h.id <<"no está en el modelo. La inserto";
                                 includeInAGM(h.id, h.pos);
                                 humans_in_world.push_back(h);
                             }
@@ -146,6 +153,7 @@ void SpecificWorker::getHumans()
                     {
                         if(h.pos.pos_good)
                         {
+                            qDebug() << "Persona "<< h.id <<"no está en el modelo. La inserto 2";
                             includeInAGM(h.id, h.pos);
                             humans_in_world.push_back(h);
                         }
@@ -154,8 +162,6 @@ void SpecificWorker::getHumans()
             }
         }
     }
-
-    previous_humans = humans_in_world;
 }
 
 

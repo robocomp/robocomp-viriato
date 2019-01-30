@@ -122,6 +122,8 @@ void SpecificWorker::getDataFromAstra()
 
 int SpecificWorker::getIDgeneric(int idjoint, RoboCompFaceTracking::Faces faces)
 {
+    if (IDcamera == 0) return -1;
+
     int idperson = -1;
     auto idcam = IDcamera * 100; //Los ids de las personas obtenidas con la camara 1 empezaran por 100
     auto ID = idcam + IDgeneric;
