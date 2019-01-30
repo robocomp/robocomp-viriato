@@ -95,6 +95,8 @@ void SpecificWorker::getDataFromAstra()
 
 			person_detected.id = idperson;
 			person_detected.pos = personpose;
+			person_detected.IDcamera = IDcamera;
+
 
 			list_of_humans.push_back(person_detected);
 
@@ -102,7 +104,7 @@ void SpecificWorker::getDataFromAstra()
 
 		try
 		{
-			humanpose_proxy-> obtainHumanPose(IDcamera, list_of_humans);
+			humanpose_proxy-> obtainHumanPose(list_of_humans);
         }
 
 		catch(...)

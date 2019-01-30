@@ -63,29 +63,25 @@ bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 void SpecificWorker::compute()
 {
     QMutexLocker locker(mutex);
+    getHumans();
 }
 
 
-void SpecificWorker::obtainHumanPose(const int idcamera, const humansDetected &list_of_humans) {
+void SpecificWorker::obtainHumanPose(const humansDetected &list_of_humans) {
 
+    reading = true;
     Humans.clear();
     Humans = list_of_humans;
+    reading = false;
 
-    IDcamera = idcamera;
-
-    qDebug()<<"PERSONAS DETECTADAS CAMARA " << idcamera;
-
-    for (auto h:Humans)
-        qDebug() << "Persona " << h.id;
-
-    getHumans();
 
 }
 
 void SpecificWorker::getHumans()
 {
+    if (reading) return;
 
-    if (humans_in_world.size() == 0)
+    if (humans_in_world.size() == 0) //Si no hay personas en el modelo
     {
         for (auto h : Humans)
         {
@@ -102,31 +98,46 @@ void SpecificWorker::getHumans()
         for (auto h : Humans)
         {
             bool found = false;
-            for (auto person : humans_in_world)
+
+            for (auto human : humans_in_world)
             {
-                if (person.id == h.id)
+                if (human.id == h.id)
                 {
                     found = true;
                     break;
                 }
             }
 
-            if (!found)
+            if (found)
                 movePersonInAGM(h.id,h.pos);
 
-            else // found
+            else
             {
-                for (int i = 0; i< humans_in_world.size();i++)
+                for (int i = 0; i < humans_in_world.size(); i++)
                 {
-                  auto dist = sqrt(((humans_in_world[i].pos.x - h.pos.x)*(humans_in_world[i].pos.x - h.pos.x))+(humans_in_world[i].pos.z - h.pos.z)*(humans_in_world[i].pos.z - h.pos.z));
 
-                    if (dist < 1000) //revisar esto porque no me aclaro ahora
+                    if (h.IDcamera != humans_in_world[i].IDcamera)
                     {
-                        movePersonInAGM(humans_in_world[i].id,h.pos);
+                        auto dist = sqrt(((humans_in_world[i].pos.x - h.pos.x)*(humans_in_world[i].pos.x - h.pos.x))+(humans_in_world[i].pos.z - h.pos.z)*(humans_in_world[i].pos.z - h.pos.z));
+
+                        qDebug()<<"DISTANCIA ENTRE " << humans_in_world[i].id << " y " << h.id << " = " <<dist;
+
+                        if (dist < 500) //450 es espacio íntimo
+                        {
+                            movePersonInAGM(humans_in_world[i].id,h.pos);
+                        }
+
+                        else if (i == (humans_in_world.size()-1))//solo insertar si es la última persona en comprobarse
+                        {
+                            if(h.pos.pos_good)
+                            {
+                                includeInAGM(h.id, h.pos);
+                                humans_in_world.push_back(h);
+                            }
+                        }
                     }
 
-
-                    else if (i == (humans_in_world.size()-1))//solo insertar si es la última persona en comprobarse
+                    else if (i == (humans_in_world.size()-1))
                     {
                         if(h.pos.pos_good)
                         {
@@ -139,99 +150,6 @@ void SpecificWorker::getHumans()
         }
     }
 }
-
-
-
-
-
-//void SpecificWorker::mixData(vector<humansDetected> DetectedHumans)
-//{
-//
-//	vector <PersonType> personmix;
-//
-//    if (!(users1.size()== 0) and (users2.size()==0))
-//        return users1;
-//
-//    else if((users1.size()== 0) and !(users2.size()==0))
-//        return users2;
-//
-//    //////////////////////////////////////////////////////////////////////////////////////////
-//
-//    for(int i = 0; i< users1.size(); i++)
-//    {
-//        auto personpose1 = users1[i].pos;
-//
-//        for (int j = 0; j< users2.size(); j++)
-//        {
-//            auto personpose2 = users2[j].pos;
-//            auto dist = sqrt(((personpose2.x - personpose1.x)*(personpose2.x - personpose1.x))+(personpose2.z - personpose1.z)*(personpose2.z - personpose1.z));
-//
-//
-//            if (dist < 1000) //son la misma persona, ver confidencia de cada una e insertar la que más tenga, relacionar ids de alguna forma ¿?  map <int, int > relC1C2
-//            {
-//                qDebug()<<" MISMA PERSONA ";
-//                PersonType person;
-//
-//                bool id1found = false;
-//                bool id2found = false;
-//
-////                buscar en la lista de ids insertados si ya existe alguno de los dos, si existe insertar con el id que ya está
-//				if ( humans_in_world.find(users1[i].id) != humans_in_world.end() )  //Si ya existe el id 1 en el mundo
-//					bool id1found = true;
-//
-//				if ( humans_in_world.find(users2[j].id) != humans_in_world.end() )  //Si ya existe el id 2
-//					bool id2found = true;
-//
-//				if (id1found and id2found)
-//					qDebug()<<"Mal vamos";
-//
-//				if (id1found and !id2found)
-//				    person.id = users1[i].id;
-//
-//
-//                if (!id1found and id2found)
-//                    person.id = users2[j].id;
-//
-//
-//                if (users1[i].pos.confidence < users2[j].pos.confidence)
-//                    person.pos = users2[j].pos;
-//                else
-//                    person.pos = users1[i].pos;
-//
-//                personmix.push_back(person);
-//            }
-//
-//            else //revisar este razonamiento porque tengo el cerebro frito
-//            {
-//                bool found1 = false;
-//                bool found2 = false;
-//
-//                for (auto p : personmix)
-//                {
-//                    if(p.id == users1[i].id)
-//                        found1 = true;
-//                    if(p.id == users2[j].id)
-//                        found2 = true;
-//
-//                }
-//
-//                //solo añado a una persona cuando ya la haya comprobado con las demás personas detectadas por la otra cámara
-//                if ((i == users1.size()-1) and !found2 )
-//                    personmix.push_back(users2[j]);
-//
-//
-//                if ((j == users2.size()-1) and !found1)
-//                    personmix.push_back(users1[i]);
-//
-//            }
-//
-//        }
-//
-//
-//    }
-//
-//    return personmix ;
-//}
 
 
 
