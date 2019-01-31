@@ -105,6 +105,11 @@ void SpecificWorker::getDataFromAstra()
 		try
 		{
 			humanpose_proxy-> obtainHumanPose(list_of_humans);
+
+			for (auto h:list_of_humans)
+			{
+			    qDebug()<<"Devuelvo humano " << h.id;
+			}
         }
 
 		catch(...)
@@ -156,7 +161,7 @@ int SpecificWorker::getIDgeneric(int idjoint, RoboCompFaceTracking::Faces faces)
 
 								IDjointgeneric[idjoint] = ID; //rel joint con generic
 
-								idperson = IDgeneric; //el id de la persona sera el id generico
+								idperson = ID; //el id de la persona sera el id generico
 								IDgeneric++; //aumentamos en uno el id generico para que no coincidan
 							}
 

@@ -128,24 +128,42 @@ void SpecificWorker::getHumans()
                     if (h.IDcamera != previous_humans[i].IDcamera)
 
                     {
-                        auto dist = sqrt(((previous_humans[i].pos.x - h.pos.x)*(previous_humans[i].pos.x - h.pos.x))+(previous_humans[i].pos.z - h.pos.z)*(previous_humans[i].pos.z - h.pos.z));
+                        auto dist = sqrt(((previous_humans[i].pos.x - h.pos.x)*(previous_humans[i].pos.x - h.pos.x))+(previous_humans[i].pos.z - h.pos.z)*
+                                                                                                                                     (previous_humans[i].pos.z - h.pos.z));
 
                         qDebug()<<"DISTANCIA ENTRE " << previous_humans[i].id << " y " << h.id << " = " <<dist;
 
                         if (dist < 500) //450 es espacio íntimo
                         {
-                            qDebug()<< h.id << " y " <<previous_humans[i].id << " son la misma persona. La muevo";
-                            movePersonInAGM(previous_humans[i].id,h.pos);
+                            if (relID.find(h.id) == relID.end()) //cuando haya más camaras esto no lo puedo hacer así
+                            {
+                                relID[h.id] = previous_humans[i].id;
+                                qDebug()<< h.id << " y " <<previous_humans[i].id << " son la misma persona. La muevo";
+                                movePersonInAGM(previous_humans[i].id,h.pos);
+                                break;
+                            }
+                            else
+                            {
+                                movePersonInAGM(previous_humans[i].id,h.pos);
+                                break;
+
+                            }
+
+
                         }
 
                         else if (i == (previous_humans.size()-1))//solo insertar si es la última persona en comprobarse
                         {
-                            if(h.pos.pos_good)
+                            if (relID.find(h.id) == relID.end()) //cuando haya más camaras esto no lo puedo hacer así
                             {
-                                qDebug() << "Persona "<< h.id <<"no está en el modelo. La inserto";
-                                includeInAGM(h.id, h.pos);
-                                humans_in_world.push_back(h);
+                                if (h.pos.pos_good) {
+                                    qDebug() << "Persona " << h.id << "no está en el modelo. La inserto";
+                                    includeInAGM(h.id, h.pos);
+                                    humans_in_world.push_back(h);
+                                }
                             }
+                            else
+                                qDebug()<<"La persona ya estaba relacionada con otra en el modelo";
                         }
                     }
 
