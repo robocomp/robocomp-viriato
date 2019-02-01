@@ -25,11 +25,11 @@ InnerViewer::InnerViewer( const InnerPtr &innerModel_, const std::string &name_,
 	fmt.setDoubleBuffer(true);
 	QGLFormat::setDefaultFormat(fmt);
 	tb = new osgGA::TrackballManipulator;
-	osg::Vec3d eye(osg::Vec3(4000., 4000., 1000.));
-	osg::Vec3d center(osg::Vec3(0., 0., -0.));
+	osg::Vec3d eye(osg::Vec3(4500., 20000., -4000.));
+	osg::Vec3d center(osg::Vec3(4500., 0., -4000.));
 	osg::Vec3d up(osg::Vec3(0., -1., 0.));
-	tb->setHomePosition(eye, center, up, true);
-	tb->setByMatrix(osg::Matrixf::lookAt(eye, center, up));
+	tb->setHomePosition(eye, center, up, false);
+//	tb->setByMatrix(osg::Matrixf::lookAt(eye, center, up));
 	viewer.setCameraManipulator(tb);
 	osgViewer::Viewer::ThreadingModel threadingModel = osgViewer::Viewer::AutomaticSelection;
 	viewer.setThreadingModel(threadingModel);
