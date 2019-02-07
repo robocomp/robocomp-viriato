@@ -21,6 +21,7 @@
 /**
 * \brief Default constructor
 */
+
 SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
 {
 
@@ -29,6 +30,13 @@ SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
 	worldModel->name = "worldModel";
 	innerModel = new InnerModel();
 }
+
+
+double dist_euclidean(double x1, double y1, double x2, double y2){
+
+    return sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2));
+}
+
 
 /**
 * \brief Default destructor
@@ -74,6 +82,8 @@ void SpecificWorker::obtainHumanPose(const humansDetected &list_of_humans) {
     reading = false;
 
 
+
+
 }
 
 void SpecificWorker::getHumans()
@@ -81,6 +91,7 @@ void SpecificWorker::getHumans()
     if (reading) return;
     if (Humans.size() == 0) return;
 
+    int IDcamera = Humans[0].IDcamera;
 
     if (humans_in_world.size() == 0) //Si no hay personas en el modelo
     {
@@ -94,152 +105,175 @@ void SpecificWorker::getHumans()
                 humans_in_world.push_back(h);
             }
         }
+
+        return;
     }
 
-    float Mdist [Humans.size()][humans_in_world.size()];
-
-    for (int i; i< Humans.size() ; i++)
-    {
-        for (int j; j< humans_in_world.size(); j++)
-        {
-            auto dist = sqrt(((humans_in_world[j].pos.x - Humans[i].pos.x)*(humans_in_world[j].pos.x - Humans[i].pos.x))+(humans_in_world[j].pos.z - Humans[i].pos.z)*
-                                                                                                         (humans_in_world[j].pos.z - Humans[i].pos.z));
-            Mdist[i][j] = dist;
-
-        }
-    }
-
-
-//    else
+//
+//
+//    else //Lo que no le veo sentido a esto es comparar a una persona con si mismo
 //    {
-//        auto previous_humans = humans_in_world;
 //
-//        for (auto h : Humans)
+//        float Mdist [Humans.size()][humans_in_world.size()];
+//
+//        for (int i = 0; i< Humans.size() ; i++)
 //        {
-//            bool found = false;
-//
-//            for (auto prev : previous_humans)
+//            for (int j = 0; j< humans_in_world.size(); j++)
 //            {
-//                if (prev.id == h.id)
-//                {
-//                    found = true;
-//                    break;
-//                }
-//            }
+//                qDebug()<<"Pose de Humans from camera " << Humans[i].IDcamera <<" = " << Humans[i].pos.x << " " << Humans[i].pos.z;
+//                qDebug()<<"Pose de humans_in_world from camera"<< humans_in_world[j].IDcamera <<"="<< humans_in_world[j].pos.x  << " " << humans_in_world[j].pos.z;
 //
-//            if (found)
-//            {
-//                qDebug() <<" Persona "<< h.id << " ya en el modelo. La muevo";
+//                auto dist = dist_euclidean(humans_in_world[j].pos.x,humans_in_world[j].pos.z,Humans[i].pos.x,Humans[i].pos.z);
 //
-//                int idtomove;
+//                //                auto dist = sqrt(((humans_in_world[j].pos.x - Humans[i].pos.x)*(humans_in_world[j].pos.x - Humans[i].pos.x))+(humans_in_world[j].pos.z - Humans[i].pos.z)*
+////                                                                                                                             (humans_in_world[j].pos.z - Humans[i].pos.z));
+//                Mdist[i][j] = dist;
 //
-//                if(relID.find(h.id) != relID.end())
-//                    idtomove = relID[h.id];
+//                qDebug()<< dist;
+//                if (dist > 400) qDebug()<<"SON DIFERENTES";
 //
-//                else idtomove = h.id;
-//
-//                movePersonInAGM(idtomove,h.pos);
-//                continue;
-//            }
-//
-//
-//            else
-//            {
-//                for (int i = 0; i < previous_humans.size(); i++)
-//                {
-//
-//                    if (h.IDcamera == previous_humans[i].IDcamera)
-//                    {
-//                        if( i == (previous_humans.size()-1) and (h.pos.pos_good))
-//                        {
-//                            qDebug() << "Persona "<< h.id <<"no está en el modelo. La inserto 2";
-//                            includeInAGM(h.id, h.pos);
-//                            humans_in_world.push_back(h);
-//                        }
-//                    }
-//
-//
-//
-//                    else
-//                    {
-//                        auto dist = sqrt(((previous_humans[i].pos.x - h.pos.x)*(previous_humans[i].pos.x - h.pos.x))+(previous_humans[i].pos.z - h.pos.z)*
-//                                                                                                                                     (previous_humans[i].pos.z - h.pos.z));
-//                        qDebug()<<"DISTANCIA ENTRE " << previous_humans[i].id << " y " << h.id << " = " <<dist;
-//
-//                        std::pair <int, int> sameper;
-//                        std::pair <int, int> sameper1;
-//                        sameper = std::make_pair(h.id, previous_humans[i].id);
-//                        sameper1 = std::make_pair( previous_humans[i].id,h.id);
-//
-//                        if (dist < 500) //450 es espacio íntimo
-//                        {
-//                            if ((sameperson.find(sameper) == sameperson.end()) and (sameperson.find(sameper1) == sameperson.end()))
-//                            {
-//                                sameperson[sameper] = 0;
-//                                sameperson[sameper1] = 0;
-//                            }
-//
-//                            else
-//                            {
-//                                sameperson[sameper] = sameperson[sameper] - 1;
-//                                sameperson[sameper1] = sameperson[sameper1] - 1;
-//
-//                            }
-//
-//
-//                            auto rep1 = sameperson[sameper];
-//                            auto rep2 = sameperson[sameper1];
-//
-//
-//                            if ((rep1 > -5)or (rep2 > -5))
-//                            {
-//                                relID[h.id] = previous_humans[i].id;
-//                                humans_in_world.push_back(h);
-//                            }
-//
-//
-//
-//                            if (h.pos.confidence > previous_humans[i].pos.confidence)
-//                            {
-//                                movePersonInAGM(previous_humans[i].id,h.pos);
-//                                continue;
-//                            }
-//
-//                        }
-//
-//
-//                        else if (i == (previous_humans.size()-1))//solo insertar si es la última persona en comprobarse
-//                        {
-//
-//                            if ((sameperson.find(sameper) != sameperson.end()) or (sameperson.find(sameper1) != sameperson.end()))
-//                            {
-//                                sameperson[sameper] = sameperson[sameper] + 1;
-//                                sameperson[sameper1] = sameperson[sameper1] + 1;
-//
-//
-//                            }
-//
-//
-//                            auto rep1 = sameperson[sameper];
-//                            auto rep2 = sameperson[sameper1];
-//
-//
-//                            if ( (( rep1 > 10) or ( rep2 > 10)) and (h.pos.pos_good))
-//
-//                            {
-//                                qDebug() << "Persona " << h.id << "no está en el modelo. La inserto";
-//                                includeInAGM(h.id, h.pos);
-//                                humans_in_world.push_back(h);
-//                            }
-//
-//                         }
-//                    }
-//
-//
-//                }
 //            }
 //        }
+//
 //    }
+
+
+
+
+
+    else
+    {
+        IDprevcam = IDcamera;
+
+        auto previous_humans = humans_in_world;
+
+        for (auto h : Humans)
+        {
+            bool found = false;
+
+            for (auto prev : previous_humans)
+            {
+                if (prev.id == h.id)
+                {
+                    found = true;
+                    break;
+                }
+            }
+
+            if (found)
+            {
+                qDebug() <<" Persona "<< h.id << " ya en el modelo. La muevo";
+
+                int idtomove;
+
+                if(relID.find(h.id) != relID.end())
+                    idtomove = relID[h.id];
+
+                else idtomove = h.id;
+
+                movePersonInAGM(idtomove,h.pos);
+                continue;
+            }
+
+
+            else
+            {
+                for (int i = 0; i < previous_humans.size(); i++)
+                {
+
+                    if (h.IDcamera == previous_humans[i].IDcamera)
+                    {
+                        if( i == (previous_humans.size()-1) and (h.pos.pos_good))
+                        {
+                            qDebug() << "Persona "<< h.id <<"no está en el modelo. La inserto 2";
+                            includeInAGM(h.id, h.pos);
+                            humans_in_world.push_back(h);
+                        }
+                    }
+
+
+
+                    else
+                    {
+                        auto dist = dist_euclidean(previous_humans[i].pos.x,previous_humans[i].pos.z,h.pos.x,h.pos.z);
+
+
+                        qDebug()<<"DISTANCIA ENTRE " << previous_humans[i].id << " y " << h.id << " = " <<dist;
+
+                        std::pair <int, int> sameper;
+                        std::pair <int, int> sameper1;
+                        sameper = std::make_pair(h.id, previous_humans[i].id);
+                        sameper1 = std::make_pair( previous_humans[i].id,h.id);
+
+                        if (dist < 500) //450 es espacio íntimo
+                        {
+                            if ((sameperson.find(sameper) == sameperson.end()) and (sameperson.find(sameper1) == sameperson.end()))
+                            {
+                                sameperson[sameper] = 0;
+                                sameperson[sameper1] = 0;
+                            }
+
+                            else
+                            {
+                                sameperson[sameper] = sameperson[sameper] - 1;
+                                sameperson[sameper1] = sameperson[sameper1] - 1;
+
+                            }
+
+
+                            auto rep1 = sameperson[sameper];
+                            auto rep2 = sameperson[sameper1];
+
+
+                            if ((rep1 > -5)or (rep2 > -5))
+                            {
+                                relID[h.id] = previous_humans[i].id;
+                                humans_in_world.push_back(h);
+                            }
+
+
+
+                            if (h.pos.confidence > previous_humans[i].pos.confidence)
+                            {
+                                movePersonInAGM(previous_humans[i].id,h.pos);
+                                continue;
+                            }
+
+                        }
+
+
+                        else if (i == (previous_humans.size()-1))//solo insertar si es la última persona en comprobarse
+                        {
+
+                            if ((sameperson.find(sameper) != sameperson.end()) or (sameperson.find(sameper1) != sameperson.end()))
+                            {
+                                sameperson[sameper] = sameperson[sameper] + 1;
+                                sameperson[sameper1] = sameperson[sameper1] + 1;
+
+
+                            }
+
+
+                            auto rep1 = sameperson[sameper];
+                            auto rep2 = sameperson[sameper1];
+
+
+                            if ( (( rep1 > 10) or ( rep2 > 10)) and (h.pos.pos_good))
+
+                            {
+                                qDebug() << "Persona " << h.id << "no está en el modelo. La inserto";
+                                includeInAGM(h.id, h.pos);
+                                humans_in_world.push_back(h);
+                            }
+
+                         }
+                    }
+
+
+                }
+            }
+        }
+    }
 }
 
 
@@ -411,6 +445,8 @@ void SpecificWorker::movePersonInAGM(int id,const Pose3D pose)
         std::cout<<"Exception moving in AGM: "<<e.what()<<std::endl;
     }
 }
+
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool SpecificWorker::reloadConfigAgent()

@@ -628,7 +628,28 @@ void PathPlanner::modifyGraph(SNGPolylineSeq intimate, SNGPolylineSeq personal, 
 				iter->second.free = false;
 			}
 		} 	
-	}	
+	}
+
+	for (auto bl : objectsblocking)
+	{
+		QPolygonF qp;
+		for (auto p:bl)
+		{
+			qp << QPointF(p.x*1000,p.z*1000);
+		}
+
+		for(FMap::iterator iter = fmap.begin(); iter != fmap.end(); ++iter)
+		{
+			if (qp.containsPoint(QPointF(iter->first.x,iter->first.z),Qt::OddEvenFill))
+			{
+				point.x = iter->first.x;
+				point.z = iter->first.z;
+				occupied_list.push_back(point);
+
+				iter->second.free = false;
+			}
+		}
+	}
 
 	for(FMap::iterator iter = fmap.begin(); iter != fmap.end(); ++iter)
 	{
