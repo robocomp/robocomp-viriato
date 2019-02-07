@@ -59,7 +59,7 @@ bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 		printf("The executive is probably not running, waiting for first AGM model publication...");
 	}
 
-    Period = 200;
+    Period = 33.33;
     timer.start(Period);
 
 	return true;
@@ -88,6 +88,7 @@ void SpecificWorker::obtainHumanPose(const humansDetected &list_of_humans) {
 
 void SpecificWorker::getHumans()
 {
+
     if (reading) return;
     if (Humans.size() == 0) return;
 
@@ -109,7 +110,7 @@ void SpecificWorker::getHumans()
         return;
     }
 
-//
+////////////////////////// LO QUE PEDRO QUIERE HACER ///////////////////////////////////////////
 //
 //    else //Lo que no le veo sentido a esto es comparar a una persona con si mismo
 //    {
@@ -140,7 +141,7 @@ void SpecificWorker::getHumans()
 
 
 
-
+////////////////////////// LO QUE PABLO ME DICE QUE HAGA ///////////////////////////////////////////
     else
     {
         IDprevcam = IDcamera;
@@ -162,7 +163,7 @@ void SpecificWorker::getHumans()
 
             if (found)
             {
-                qDebug() <<" Persona "<< h.id << " ya en el modelo. La muevo";
+//                qDebug() <<" Persona "<< h.id << " ya en el modelo";
 
                 int idtomove;
 
@@ -181,99 +182,85 @@ void SpecificWorker::getHumans()
                 for (int i = 0; i < previous_humans.size(); i++)
                 {
 
-                    if (h.IDcamera == previous_humans[i].IDcamera)
+                    auto dist = dist_euclidean(previous_humans[i].pos.x,previous_humans[i].pos.z,h.pos.x,h.pos.z);
+
+
+                    qDebug()<<"DISTANCIA ENTRE " << previous_humans[i].id << " y " << h.id << " = " <<dist;
+
+                    std::pair <int, int> sameper;
+                    std::pair <int, int> sameper1;
+                    sameper = std::make_pair(h.id, previous_humans[i].id);
+                    sameper1 = std::make_pair( previous_humans[i].id,h.id);
+
+                    if (dist < 500) //450 es espacio íntimo
                     {
-                        if( i == (previous_humans.size()-1) and (h.pos.pos_good))
+                        if ((sameperson.find(sameper) == sameperson.end()) and (sameperson.find(sameper1) == sameperson.end()))
                         {
-                            qDebug() << "Persona "<< h.id <<"no está en el modelo. La inserto 2";
+                            sameperson[sameper] = 0;
+                            sameperson[sameper1] = 0;
+                        }
+
+                        else
+                        {
+                            sameperson[sameper] = sameperson[sameper] - 1;
+                            sameperson[sameper1] = sameperson[sameper1] - 1;
+
+                        }
+
+                        auto rep1 = sameperson[sameper];
+                        auto rep2 = sameperson[sameper1];
+
+
+                        if ((rep1 < -5) or (rep2 < -5))
+                        {
+                            qDebug ()<< "Relaciono " << h.id << " y " << previous_humans[i].id;
+                            relID[h.id] = previous_humans[i].id;
+                            humans_in_world.push_back(h);
+                        }
+
+
+                        if (h.pos.confidence > previous_humans[i].pos.confidence)
+                        {
+                            movePersonInAGM(previous_humans[i].id,h.pos);
+                            continue;
+                        }
+
+
+                    }
+
+
+                    else if (i == (previous_humans.size()-1))//solo insertar si es la última persona en comprobarse
+                    {
+
+                        if ((sameperson.find(sameper) != sameperson.end()) or (sameperson.find(sameper1) != sameperson.end()))
+                        {
+                            sameperson[sameper] = sameperson[sameper] + 1;
+                            sameperson[sameper1] = sameperson[sameper1] + 1;
+
+
+                        }
+
+
+                        auto rep1 = sameperson[sameper];
+                        auto rep2 = sameperson[sameper1];
+
+
+                        if ( (( rep1 > 10) or ( rep2 > 10)) and (h.pos.pos_good))
+
+                        {
+                            qDebug() << "Persona " << h.id << "no está en el modelo. La inserto";
                             includeInAGM(h.id, h.pos);
                             humans_in_world.push_back(h);
                         }
-                    }
 
-
-
-                    else
-                    {
-                        auto dist = dist_euclidean(previous_humans[i].pos.x,previous_humans[i].pos.z,h.pos.x,h.pos.z);
-
-
-                        qDebug()<<"DISTANCIA ENTRE " << previous_humans[i].id << " y " << h.id << " = " <<dist;
-
-                        std::pair <int, int> sameper;
-                        std::pair <int, int> sameper1;
-                        sameper = std::make_pair(h.id, previous_humans[i].id);
-                        sameper1 = std::make_pair( previous_humans[i].id,h.id);
-
-                        if (dist < 500) //450 es espacio íntimo
-                        {
-                            if ((sameperson.find(sameper) == sameperson.end()) and (sameperson.find(sameper1) == sameperson.end()))
-                            {
-                                sameperson[sameper] = 0;
-                                sameperson[sameper1] = 0;
-                            }
-
-                            else
-                            {
-                                sameperson[sameper] = sameperson[sameper] - 1;
-                                sameperson[sameper1] = sameperson[sameper1] - 1;
-
-                            }
-
-
-                            auto rep1 = sameperson[sameper];
-                            auto rep2 = sameperson[sameper1];
-
-
-                            if ((rep1 > -5)or (rep2 > -5))
-                            {
-                                relID[h.id] = previous_humans[i].id;
-                                humans_in_world.push_back(h);
-                            }
-
-
-
-                            if (h.pos.confidence > previous_humans[i].pos.confidence)
-                            {
-                                movePersonInAGM(previous_humans[i].id,h.pos);
-                                continue;
-                            }
-
-                        }
-
-
-                        else if (i == (previous_humans.size()-1))//solo insertar si es la última persona en comprobarse
-                        {
-
-                            if ((sameperson.find(sameper) != sameperson.end()) or (sameperson.find(sameper1) != sameperson.end()))
-                            {
-                                sameperson[sameper] = sameperson[sameper] + 1;
-                                sameperson[sameper1] = sameperson[sameper1] + 1;
-
-
-                            }
-
-
-                            auto rep1 = sameperson[sameper];
-                            auto rep2 = sameperson[sameper1];
-
-
-                            if ( (( rep1 > 10) or ( rep2 > 10)) and (h.pos.pos_good))
-
-                            {
-                                qDebug() << "Persona " << h.id << "no está en el modelo. La inserto";
-                                includeInAGM(h.id, h.pos);
-                                humans_in_world.push_back(h);
-                            }
-
-                         }
-                    }
+                     }
 
 
                 }
             }
         }
     }
+
 }
 
 

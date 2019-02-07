@@ -49,7 +49,7 @@ bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 	catch(std::exception e) { qFatal("Error reading config params"); }
 
 
-    Period = 300;
+    Period = 33.3;
     timer.start(Period);
 
 	return true;
