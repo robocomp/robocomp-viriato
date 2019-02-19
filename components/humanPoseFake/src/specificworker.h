@@ -26,7 +26,8 @@
 
 #ifndef SPECIFICWORKER_H
 #define SPECIFICWORKER_H
-
+#include <QFileDialog>
+#include <QMessageBox>
 #include <genericworker.h>
 #include <innermodel/innermodel.h>
 
@@ -42,7 +43,10 @@ public:
 public slots:
 	void compute();
 	void initialize(int period);
-
+    void publish_person();
+    void load_file();
+    void save_file();
+    
 private:
 	InnerModel *innerModel;
 

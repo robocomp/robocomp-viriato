@@ -23,7 +23,9 @@
 */
 SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
 {
-
+    connect(publish_pb, SIGNAL(pressed()), this, SLOT(publish_person()));
+    connect(save_pb, SIGNAL(pressed()), this, SLOT(save_file()));
+    connect(load_pb, SIGNAL(pressed()), this, SLOT(load_file()));
 }
 
 /**
@@ -45,12 +47,6 @@ bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 //		innerModel = new InnerModel(innermodel_path);
 //	}
 //	catch(std::exception e) { qFatal("Error reading config params"); }
-
-
-
-
-	
-
 
 	return true;
 }
@@ -78,5 +74,66 @@ void SpecificWorker::compute()
 // 	}
 }
 
+void SpecificWorker::publish_person()
+{
+    std::cout << "Publish person" << std::endl;
+    RoboCompHumanPose::humansDetected human_list;
+    RoboCompHumanPose::PersonType person;
+    
+    //camera
+    person.IDcamera = cameraID_sb->value();
+    
+    QStringList lines = person_te->toPlainText().split('\n', QString::SkipEmptyParts);
+    for(auto line: lines)
+    {
+        person.id = line.split(',')[0].toInt();
+        QStringList aux = line.mid(line.indexOf('(')+1,line.indexOf(')')-line.indexOf('(')-1).split(',');
 
+        person.pos.x = aux[0].toFloat();
+        person.pos.z = aux[1].toFloat();
+        person.pos.ry = aux[2].toFloat();
+        person.pos.pos_good = aux[3].contains("true");
+        person.pos.rot_good = aux[4].contains("true");
+        person.pos.confidence = aux[5].toInt();
+        human_list.push_back(person);
+qDebug()<<"PersonData"<<person.id<<person.pos.x<<person.pos.z<<person.pos.ry<<person.pos.pos_good<<person.pos.rot_good<<person.pos.confidence;
+        
+    }
+    try
+    {
+        //humanpose_proxy->obtainHumanPose(human_list);
+    }
+    catch(...)
+    {
+        std::cout <<"ERROR publishing person, check IceStorm is running"<<std::endl;
+    }
+    
+}
+
+void SpecificWorker::load_file()
+{
+    QString filename = QFileDialog::getOpenFileName(this, tr("Open file"), "", tr("Text Files (*.txt )"));
+    QFile file(filename);
+    if(!file.open(QIODevice::ReadOnly)) {
+        QMessageBox::information(0, "error", file.errorString());
+        return;
+    }
+    QTextStream in(&file);
+    QString text = in.readAll();
+    person_te->clear();
+    person_te->setText(text);
+}
+
+void SpecificWorker::save_file()
+{
+    QString filename = QFileDialog::getSaveFileName(this, tr("Save file"), "", tr("Text Files (*.txt )"));
+    QFile file(filename);
+    if(!file.open(QIODevice::WriteOnly)) {
+        QMessageBox::information(0, "error", file.errorString());
+        return;
+    }
+    QString content = person_te->toPlainText();
+    file.write(content.toUtf8());
+    file.close();
+}
 
