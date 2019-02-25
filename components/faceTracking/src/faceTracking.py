@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 #
-# Copyright (C) 2018 by YOUR NAME HERE
+# Copyright (C) 2019 by YOUR NAME HERE
 #
 #    This file is part of RoboComp
 #
@@ -92,7 +92,7 @@ class CommonBehaviorI(RoboCompCommonBehavior.CommonBehavior):
 
 
 if __name__ == '__main__':
-	app = QtCore.QCoreApplication(sys.argv)
+	app = QtGui.QApplication(sys.argv)
 	params = copy.deepcopy(sys.argv)
 	if len(params) > 1:
 		if not params[1].startswith('--Ice.Config='):

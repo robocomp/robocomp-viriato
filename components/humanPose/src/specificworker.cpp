@@ -49,16 +49,61 @@ bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 	catch(std::exception e) { qFatal("Error reading config params"); }
 
 
-    Period = 33.3;
+    Period = 33.33;
     timer.start(Period);
 
 	return true;
 }
 
 
+void SpecificWorker::saveData()
+{
+
+	jointfile.open ( "joints.txt" , ios::app);
+
+	try
+	{
+		PersonList users;
+		humantracker_proxy-> getUsersList(users);
+
+		if(users.size()== 0)
+			return;
+
+		for (auto u : users)
+		{
+			auto id = u.first;
+			auto joints = u.second.joints;
+
+			jointfile << id <<" # ";
+
+			for (auto j: joints)
+			{
+				jointfile << " " <<j.first <<" "<<j.second[0] << " " << j.second[1] << " " <<j.second[2];
+                jointfile << " # ";
+			}
+
+
+		}
+
+        jointfile <<endl;
+	}
+
+
+	catch(...)
+	{
+	}
+
+	jointfile.close();
+
+//	file.close();
+
+}
+
 void SpecificWorker::getDataFromAstra()
 {
     list_of_humans.clear();
+
+
 
     try
     {
@@ -68,6 +113,7 @@ void SpecificWorker::getDataFromAstra()
 
         if(users.size()== 0)
             return;
+
 
         //hay alguna persona
         for (auto p:users) //para insertar persona en el modelo tiene que haber cara y cabeza
@@ -106,10 +152,6 @@ void SpecificWorker::getDataFromAstra()
 		{
 			humanpose_proxy-> obtainHumanPose(list_of_humans);
 
-			for (auto h:list_of_humans)
-			{
-			    qDebug()<<"Devuelvo humano " << h.id;
-			}
         }
 
 		catch(...)
@@ -316,7 +358,8 @@ bool SpecificWorker::getPoseRot (jointListType list, Pose3D &personpose) {
 void SpecificWorker::compute()
 {
 	QMutexLocker locker(mutex);
-	getDataFromAstra();
+    saveData();
+	//getDataFromAstra();
 
 }
 

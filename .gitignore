@@ -192,3 +192,11 @@ components/humanAgent/src/ui_mainUI\.h
 components/SocialNavigationAgent/Project\.cbp
 
 components/SocialNavigationAgent/src/SocialNavigationAgent\.cbp
+
+\.idea/
+
+components/faceTracking/files/dataset/
+
+components/humanPose/CMakeFiles/
+
+components/humanPose/cmake-build-debug/

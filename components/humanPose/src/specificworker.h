@@ -39,6 +39,9 @@ public:
     humansDetected list_of_humans; //PersonType defined in HumanPose.h
 
 
+    fstream jointfile;
+
+
     bool first = true;
     bool facefound = false;
 
@@ -61,6 +64,7 @@ public:
 	bool setParams(RoboCompCommonBehavior::ParameterList params);
 
 	void getDataFromAstra();
+	void saveData();
 	bool getPoseRot (jointListType list, Pose3D &personpose);
 	int getIDgeneric(int idjoint, RoboCompFaceTracking::Faces faces);
 

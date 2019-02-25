@@ -59,9 +59,9 @@ public:
 	QMutex *mutex;
 
 
+	FaceTrackingPrx facetracking_proxy;
 	HumanTrackerPrx humantracker_proxy;
 	HumanPosePrx humanpose_proxy;
-	FaceTrackingPrx facetracking_proxy;
 
 
 protected:

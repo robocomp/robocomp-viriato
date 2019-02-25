@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2018 by YOUR NAME HERE
+# Copyright (C) 2019 by YOUR NAME HERE
 #
 #    This file is part of RoboComp
 #
@@ -94,8 +94,14 @@ from RoboCompFaceTracking import *
 
 from facetrackingI import *
 
+try:
+	from ui_mainUI import *
+except:
+	print "Can't import UI file. Did you run 'make'?"
+	sys.exit(-1)
 
-class GenericWorker(QtCore.QObject):
+
+class GenericWorker(QtGui.QWidget):
 	kill = QtCore.Signal()
 
 
@@ -104,6 +110,9 @@ class GenericWorker(QtCore.QObject):
 
 
 		self.rgbd_proxy = mprx["RGBDProxy"]
+		self.ui = Ui_guiDlg()
+		self.ui.setupUi(self)
+		self.show()
 
 
 		self.mutex = QtCore.QMutex(QtCore.QMutex.Recursive)

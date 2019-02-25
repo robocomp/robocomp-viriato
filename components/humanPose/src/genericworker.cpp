@@ -23,8 +23,8 @@
 GenericWorker::GenericWorker(MapPrx& mprx) :
 QObject()
 {
-	humantracker_proxy = (*(HumanTrackerPrx*)mprx["HumanTrackerProxy"]);
 	facetracking_proxy = (*(FaceTrackingPrx*)mprx["FaceTrackingProxy"]);
+	humantracker_proxy = (*(HumanTrackerPrx*)mprx["HumanTrackerProxy"]);
 	humanpose_proxy = (*(HumanPosePrx*)mprx["HumanPosePub"]);
 
 	mutex = new QMutex(QMutex::Recursive);

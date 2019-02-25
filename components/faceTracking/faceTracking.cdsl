@@ -10,5 +10,6 @@ Component faceTracking
 	};
 	
 	language Python;
+	gui Qt(QWidget);
 };
 

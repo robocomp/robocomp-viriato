@@ -132,29 +132,12 @@ int ::humanPose::run(int argc, char* argv[])
 
 	int status=EXIT_SUCCESS;
 
-	HumanTrackerPrx humantracker_proxy;
 	FaceTrackingPrx facetracking_proxy;
+	HumanTrackerPrx humantracker_proxy;
 	HumanPosePrx humanpose_proxy;
 
 	string proxy, tmp;
 	initialize();
-
-
-	try
-	{
-		if (not GenericMonitor::configGetString(communicator(), prefix, "HumanTrackerProxy", proxy, ""))
-		{
-			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy HumanTrackerProxy\n";
-		}
-		humantracker_proxy = HumanTrackerPrx::uncheckedCast( communicator()->stringToProxy( proxy ) );
-	}
-	catch(const Ice::Exception& ex)
-	{
-		cout << "[" << PROGRAM_NAME << "]: Exception: " << ex;
-		return EXIT_FAILURE;
-	}
-	rInfo("HumanTrackerProxy initialized Ok!");
-	mprx["HumanTrackerProxy"] = (::IceProxy::Ice::Object*)(&humantracker_proxy);//Remote server proxy creation example
 
 
 	try
@@ -172,6 +155,23 @@ int ::humanPose::run(int argc, char* argv[])
 	}
 	rInfo("FaceTrackingProxy initialized Ok!");
 	mprx["FaceTrackingProxy"] = (::IceProxy::Ice::Object*)(&facetracking_proxy);//Remote server proxy creation example
+
+
+	try
+	{
+		if (not GenericMonitor::configGetString(communicator(), prefix, "HumanTrackerProxy", proxy, ""))
+		{
+			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy HumanTrackerProxy\n";
+		}
+		humantracker_proxy = HumanTrackerPrx::uncheckedCast( communicator()->stringToProxy( proxy ) );
+	}
+	catch(const Ice::Exception& ex)
+	{
+		cout << "[" << PROGRAM_NAME << "]: Exception: " << ex;
+		return EXIT_FAILURE;
+	}
+	rInfo("HumanTrackerProxy initialized Ok!");
+	mprx["HumanTrackerProxy"] = (::IceProxy::Ice::Object*)(&humantracker_proxy);//Remote server proxy creation example
 
 	IceStorm::TopicManagerPrx topicManager;
 	try
