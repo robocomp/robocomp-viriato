@@ -52,7 +52,6 @@ public:
 
 	relID IDjointface; //mapa que relaciona los id procedentes del esqueleto con los de la cara
 	relID IDfacegeneric;// rel cara con id generico de humanPose
-	relID IDjointgeneric;//rel id joint con id generico
 
 	int IDgeneric = 0;
     bool backwards = false;

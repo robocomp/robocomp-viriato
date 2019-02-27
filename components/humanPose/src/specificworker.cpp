@@ -102,9 +102,6 @@ void SpecificWorker::saveData()
 void SpecificWorker::getDataFromAstra()
 {
     list_of_humans.clear();
-
-
-
     try
     {
         PersonList users;
@@ -114,11 +111,9 @@ void SpecificWorker::getDataFromAstra()
         if(users.size()== 0)
             return;
 
-
         //hay alguna persona
-        for (auto p:users) //para insertar persona en el modelo tiene que haber cara y cabeza
+        for (auto p:users)
 		{
-
 			Pose3D personpose;
 			auto idjoint = p.first; //id esqueleto
 			auto faces = facetracking_proxy-> getFaces(); //obtenemos las caras
@@ -175,7 +170,6 @@ int SpecificWorker::getIDgeneric(int idjoint, RoboCompFaceTracking::Faces faces)
     int idperson = -1;
     auto idcam = IDcamera * 100; //Los ids de las personas obtenidas con la camara 1 empezaran por 100
     auto ID = idcam + IDgeneric;
-
     if (IDjointface.find(idjoint) == IDjointface.end()) //Buscamos en el mapa si el id del esqueleto ya está relacionado con la cara. Si NO:
     {
         joint pointindepth = {};
@@ -189,59 +183,34 @@ int SpecificWorker::getIDgeneric(int idjoint, RoboCompFaceTracking::Faces faces)
 					auto rect = QRect(f.boundingbox.posx, f.boundingbox.posy, f.boundingbox.width,f.boundingbox.height ); //para cada cara comprobamos si la cabeza esta contenida en el bounding box de la cara
 					if (rect.contains(QPoint(pointindepth[0],pointindepth[1]))) //Si es asi
 					{
+						qDebug()<< "Cara de " << f.id << "pertenece a " << idjoint;
+
 						if (IDfacegeneric.find(f.id) != IDfacegeneric.end()) //Buscamos en el mapa si el id de la cara ya esta relacionaada con el generico. Si es asi:
 						{
 							IDjointface[idjoint] = f.id; //Relacionamos el id del joint con el de la cara
+							idperson = IDfacegeneric[f.id];
+
+							qDebug()<<"ya estaban relacionados";
 						}
 
 						else //Si no esta
 						{
-							//Antes de asignar generico a cara ,comprobamos si los joints ya tienen generico
-							if (IDjointgeneric.find(idjoint) == IDjointgeneric.end()) //Si no hay jointgeneric
-							{
+
 								IDfacegeneric[f.id] = ID; //relacionamos id cara con id generico
 								IDjointface[idjoint] = f.id; //relacionamos id joint con id cara
 
-								IDjointgeneric[idjoint] = ID; //rel joint con generic
-
 								idperson = ID; //el id de la persona sera el id generico
 								IDgeneric++; //aumentamos en uno el id generico para que no coincidan
-							}
-
-							else
-							{
-								IDfacegeneric[f.id] = IDjointgeneric[idjoint];
-								IDjointface[idjoint] = f.id;
-								idperson = IDjointgeneric[idjoint];
-							}
 						}
 
 						break;
 					}
 				}
-				else if (IDfacegeneric.find(f.id) == IDfacegeneric.end())     //Se comprueba si el id de la cara está ya registrado aunque no esté siendo trackeada
-					facefound = false;
 
 			}
+
+			facefound = true;
 		}
-
-
-        if ((faces.size() == 0) or !facefound) //insertar a la persona en el modelo con id person = id generic relacionando joint con generic
-        {
-            //NO HAY CARAS
-            if (IDjointgeneric.find(idjoint) == IDjointgeneric.end())
-            {
-                IDjointgeneric[idjoint] = ID;
-                idperson = ID;
-                IDgeneric++;
-            }
-
-            else //ya existe la relacion joint-generic
-                idperson = IDjointgeneric[idjoint];
-
-        }
-
-        facefound = true;
     }
 
     else //el id ya está registrado accedemos al id generico
@@ -282,8 +251,8 @@ bool SpecificWorker::getPoseRot (jointListType list, Pose3D &personpose) {
 //
 //                qDebug()<<" Found "<<QString::fromStdString(idjoint) <<" x = " << jointinworld.x()<<  " z = " << jointinworld.z() ;
 
-				newposex += jointinworld.x();
-				newposez += jointinworld.z();
+				newposex = jointinworld.x() + newposex;
+				newposez = jointinworld.z() + newposez;
 
 				countjoints++;
 				personpose.confidence = personpose.confidence + 10; //la fiabilidad aumenta en 10 por cada joint del tronco encontrado
@@ -295,8 +264,13 @@ bool SpecificWorker::getPoseRot (jointListType list, Pose3D &personpose) {
 	if (countjoints != 0 )
 	{
 //			qDebug()<<"Numero de joints "<< countjoints;
-		mediax = newposex/countjoints;
-		mediaz = newposez/countjoints;
+//		mediax = newposex/countjoints;
+//		mediaz = newposez/countjoints;
+
+        auto j = list["BaseSpine"];
+        QVec jointinworld = innerModel->transform("world", QVec::vec3(-j[0],0,j[2]), "camera_astra");
+        mediax =  jointinworld.x();
+        mediaz =  jointinworld.z();
 
 		personpose.pos_good = true;
 	}
@@ -345,8 +319,8 @@ bool SpecificWorker::getPoseRot (jointListType list, Pose3D &personpose) {
 		personpose.ry = 3.1415926535 - (atan2(joint_left.z()-joint_right.z(),joint_left.x() - joint_right.x()));
 
 
-		if (backwards) //puede que este de espaldas.CAMBIAR SI NO ESTA LA CARA LO PONE DE ESPALDAS SI O SI
-			personpose.ry = 1.57;
+//		if (backwards) //puede que este de espaldas.CAMBIAR SI NO ESTA LA CARA LO PONE DE ESPALDAS SI O SI
+//			personpose.ry = 1.57;
 
 		//cambiar esto, solo vale para una cierta posición de la cámara
 		personpose.rot_good = true;
@@ -358,15 +332,9 @@ bool SpecificWorker::getPoseRot (jointListType list, Pose3D &personpose) {
 
 void SpecificWorker::compute()
 {
-    auto faces = facetracking_proxy-> getFaces(); //obtenemos las caras
-
-    for (auto f:faces)
-    {
-        qDebug()<<"CAARAS" <<QString::fromStdString( f.name )<< f.confidence;
-    }
 	QMutexLocker locker(mutex);
-    saveData();
-	//getDataFromAstra();
+//    saveData();
+	getDataFromAstra();
 
 }
 

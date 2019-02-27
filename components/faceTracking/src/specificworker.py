@@ -258,8 +258,6 @@ class SpecificWorker(GenericWorker):
 
             self.ui.image_label.setPixmap(QPixmap.fromImage(qImg))
 
-
-
             return True
 
     #
