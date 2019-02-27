@@ -25,7 +25,7 @@ p10
 tp11
 Rp12
 (I1
-(I4
+(I5
 tp13
 cnumpy
 dtype
@@ -44,7 +44,7 @@ I1
 I0
 tp19
 bI00
-S'araceli\x00cristianesteban\x00unknown\x00'
+S'araceli\x00cristianesteban\x00pedro\x00\x00\x00unknown\x00'
 p20
 tp21
 bsS'_sklearn_version'

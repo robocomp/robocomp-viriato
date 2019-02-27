@@ -92,13 +92,14 @@ struct TFace
 {
     int id;
     ::std::string name;
+    float confidence;
     ::RoboCompFaceTracking::Point centroid;
     ::RoboCompFaceTracking::Box boundingbox;
     bool tracking;
 
-    std::tuple<const int&, const ::std::string&, const ::RoboCompFaceTracking::Point&, const ::RoboCompFaceTracking::Box&, const bool&> ice_tuple() const
+    std::tuple<const int&, const ::std::string&, const float&, const ::RoboCompFaceTracking::Point&, const ::RoboCompFaceTracking::Box&, const bool&> ice_tuple() const
     {
-        return std::tie(id, name, centroid, boundingbox, tracking);
+        return std::tie(id, name, confidence, centroid, boundingbox, tracking);
     }
 };
 
@@ -219,7 +220,7 @@ template<>
 struct StreamableTraits<::RoboCompFaceTracking::TFace>
 {
     static const StreamHelperCategory helper = StreamHelperCategoryStruct;
-    static const int minWireSize = 30;
+    static const int minWireSize = 34;
     static const bool fixedLength = false;
 };
 
@@ -228,7 +229,7 @@ struct StreamReader<::RoboCompFaceTracking::TFace, S>
 {
     static void read(S* istr, ::RoboCompFaceTracking::TFace& v)
     {
-        istr->readAll(v.id, v.name, v.centroid, v.boundingbox, v.tracking);
+        istr->readAll(v.id, v.name, v.confidence, v.centroid, v.boundingbox, v.tracking);
     }
 };
 
@@ -433,104 +434,10 @@ struct TFace
 {
     ::Ice::Int id;
     ::std::string name;
+    ::Ice::Float confidence;
     ::RoboCompFaceTracking::Point centroid;
     ::RoboCompFaceTracking::Box boundingbox;
     bool tracking;
-
-    bool operator==(const TFace& rhs_) const
-    {
-        if(this == &rhs_)
-        {
-            return true;
-        }
-        if(id != rhs_.id)
-        {
-            return false;
-        }
-        if(name != rhs_.name)
-        {
-            return false;
-        }
-        if(centroid != rhs_.centroid)
-        {
-            return false;
-        }
-        if(boundingbox != rhs_.boundingbox)
-        {
-            return false;
-        }
-        if(tracking != rhs_.tracking)
-        {
-            return false;
-        }
-        return true;
-    }
-
-    bool operator<(const TFace& rhs_) const
-    {
-        if(this == &rhs_)
-        {
-            return false;
-        }
-        if(id < rhs_.id)
-        {
-            return true;
-        }
-        else if(rhs_.id < id)
-        {
-            return false;
-        }
-        if(name < rhs_.name)
-        {
-            return true;
-        }
-        else if(rhs_.name < name)
-        {
-            return false;
-        }
-        if(centroid < rhs_.centroid)
-        {
-            return true;
-        }
-        else if(rhs_.centroid < centroid)
-        {
-            return false;
-        }
-        if(boundingbox < rhs_.boundingbox)
-        {
-            return true;
-        }
-        else if(rhs_.boundingbox < boundingbox)
-        {
-            return false;
-        }
-        if(tracking < rhs_.tracking)
-        {
-            return true;
-        }
-        else if(rhs_.tracking < tracking)
-        {
-            return false;
-        }
-        return false;
-    }
-
-    bool operator!=(const TFace& rhs_) const
-    {
-        return !operator==(rhs_);
-    }
-    bool operator<=(const TFace& rhs_) const
-    {
-        return operator<(rhs_) || operator==(rhs_);
-    }
-    bool operator>(const TFace& rhs_) const
-    {
-        return !operator<(rhs_) && !operator==(rhs_);
-    }
-    bool operator>=(const TFace& rhs_) const
-    {
-        return !operator<(rhs_);
-    }
 };
 
 typedef ::std::vector< ::RoboCompFaceTracking::TFace> Faces;
@@ -712,7 +619,7 @@ template<>
 struct StreamableTraits< ::RoboCompFaceTracking::TFace>
 {
     static const StreamHelperCategory helper = StreamHelperCategoryStruct;
-    static const int minWireSize = 30;
+    static const int minWireSize = 34;
     static const bool fixedLength = false;
 };
 
@@ -723,6 +630,7 @@ struct StreamWriter< ::RoboCompFaceTracking::TFace, S>
     {
         ostr->write(v.id);
         ostr->write(v.name);
+        ostr->write(v.confidence);
         ostr->write(v.centroid);
         ostr->write(v.boundingbox);
         ostr->write(v.tracking);
@@ -736,6 +644,7 @@ struct StreamReader< ::RoboCompFaceTracking::TFace, S>
     {
         istr->read(v.id);
         istr->read(v.name);
+        istr->read(v.confidence);
         istr->read(v.centroid);
         istr->read(v.boundingbox);
         istr->read(v.tracking);

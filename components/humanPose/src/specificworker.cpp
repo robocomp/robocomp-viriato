@@ -122,6 +122,7 @@ void SpecificWorker::getDataFromAstra()
 			Pose3D personpose;
 			auto idjoint = p.first; //id esqueleto
 			auto faces = facetracking_proxy-> getFaces(); //obtenemos las caras
+
 			auto idperson = getIDgeneric(idjoint,faces);
 
 //			qDebug()<<"ID DE LA PERSONA "<< idperson;
@@ -357,6 +358,12 @@ bool SpecificWorker::getPoseRot (jointListType list, Pose3D &personpose) {
 
 void SpecificWorker::compute()
 {
+    auto faces = facetracking_proxy-> getFaces(); //obtenemos las caras
+
+    for (auto f:faces)
+    {
+        qDebug()<<"CAARAS" <<QString::fromStdString( f.name )<< f.confidence;
+    }
 	QMutexLocker locker(mutex);
     saveData();
 	//getDataFromAstra();
