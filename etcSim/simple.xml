@@ -167,11 +167,11 @@
   <color value="#33FF33" />
  </node>
 
- <node alias="humanPoseNUC" endpoint="agmcommonbehavior:tcp -h 158.49.247.112 -p 10219">
+ <node alias="humanPoseNUC" endpoint="agmcommonbehavior:tcp -h 158.49.247.170 -p 10219">
   <dependence alias="astraRGBDnuc" />
 <dependence alias="faceTrackingNUC" />
   <workingDir path="/home/robocomp/" />
-  <upCommand command="rcremote 158.49.247.112 humanPoseNUC /home/robocomp/robocomp/components/robocomp-viriato/components/humanPose ./bin/humanPose /home/robocomp/robocomp/components/robocomp-viriato/etcSim/humanPose2.conf" />
+  <upCommand command="rcremote 158.49.247.170 humanPoseNUC /home/robocomp/robocomp/components/robocomp-viriato/components/humanPose ./bin/humanPose /home/robocomp/robocomp/components/robocomp-viriato/etcSim/humanPose2.conf" />
   <downCommand command="killall -9 humanPoseNUC" />
   <configFile path="/home/robocomp/robocomp/components/robocomp-viriato/etcSim/humanPose2.conf" />
   <xpos value="191.097569307" />
@@ -193,10 +193,10 @@
   <color value="#33FF33" />
  </node>
 
-<node alias="astraRGBDnuc" endpoint="humantracker:tcp -h 158.49.247.112 -p 22666"> 
+<node alias="astraRGBDnuc" endpoint="humantracker:tcp -h 158.49.247.170 -p 22666"> 
   <workingDir path="/home/robocomp/" />
-  <upCommand command="rcremote 158.49.247.112 astraRGBD /home/robocomp/robocomp/components/robocomp-robolab/components/astraRGBD ./bin/astraRGBD /home/robocomp/robocomp/components/robocomp-viriato/etcSim/astraRGBD2.conf" />
-  <downCommand command="rcremote 158.49.247.112 X /home/robocomp/robocomp/components/robocomp-robolab/components/astraRGBD killall -9 astraRGBD" />
+  <upCommand command="rcremote 158.49.247.170 astraRGBD /home/robocomp/robocomp/components/robocomp-robolab/components/astraRGBD ./bin/astraRGBD /home/robocomp/robocomp/components/robocomp-viriato/etcSim/astraRGBD2.conf" />
+  <downCommand command="rcremote 158.49.247.170 X /home/robocomp/robocomp/components/robocomp-robolab/components/astraRGBD killall -9 astraRGBD" />
   <configFile path="/home/robocomp/robocomp/components/robocomp-viriato/etcSim/astraRGBD2.conf" />
   <xpos value="121.097569307" />
   <ypos value="140.5106363282" />
@@ -219,10 +219,10 @@
  </node>
 
  
-  <node alias="faceTrackingNUC"  endpoint="facetracking:tcp -h 158.49.247.112 -p 44666">
+  <node alias="faceTrackingNUC"  endpoint="facetracking:tcp -h 158.49.247.170 -p 44666">
   <workingDir path="/home/robocomp/" />
   <dependence alias="astraRGBDnuc" />
-  <upCommand command="rcremote 158.49.247.112 faceTracking /home/robocomp/robocomp/components/robocomp-viriato/components/faceTracking python src/faceTracking.py /home/robocomp/robocomp/components/robocomp-viriato/etcSim/faceTracking2.conf" />
+  <upCommand command="rcremote 158.49.247.170 faceTracking /home/robocomp/robocomp/components/robocomp-viriato/components/faceTracking python src/faceTracking.py /home/robocomp/robocomp/components/robocomp-viriato/etcSim/faceTracking2.conf" />
   <downCommand command="pkill -9 -f faceTracking.py"/>
 <configFile path="/home/robocomp/robocomp/components/robocomp-viriato/etcSim/faceTracking2.conf" />
   <xpos value="250.9789855056" />

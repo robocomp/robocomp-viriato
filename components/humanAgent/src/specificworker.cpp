@@ -80,6 +80,7 @@ void SpecificWorker::obtainHumanPose(const humansDetected &list_of_humans) {
     reading = true;
     Humans.clear();
     Humans = list_of_humans;
+    qDebug() <<"Receiving from camera "<< Humans[0].IDcamera;
     reading = false;
 
 }
@@ -108,36 +109,6 @@ void SpecificWorker::getHumans()
 
         return;
     }
-
-////////////////////////// LO QUE PEDRO QUIERE HACER ///////////////////////////////////////////
-//
-//    else //Lo que no le veo sentido a esto es comparar a una persona con si mismo
-//    {
-//
-//        float Mdist [Humans.size()][humans_in_world.size()];
-//
-//        for (int i = 0; i< Humans.size() ; i++)
-//        {
-//            for (int j = 0; j< humans_in_world.size(); j++)
-//            {
-//                qDebug()<<"Pose de Humans from camera " << Humans[i].IDcamera <<" = " << Humans[i].pos.x << " " << Humans[i].pos.z;
-//                qDebug()<<"Pose de humans_in_world from camera"<< humans_in_world[j].IDcamera <<"="<< humans_in_world[j].pos.x  << " " << humans_in_world[j].pos.z;
-//
-//                auto dist = dist_euclidean(humans_in_world[j].pos.x,humans_in_world[j].pos.z,Humans[i].pos.x,Humans[i].pos.z);
-//
-//                //                auto dist = sqrt(((humans_in_world[j].pos.x - Humans[i].pos.x)*(humans_in_world[j].pos.x - Humans[i].pos.x))+(humans_in_world[j].pos.z - Humans[i].pos.z)*
-////                                                                                                                             (humans_in_world[j].pos.z - Humans[i].pos.z));
-//                Mdist[i][j] = dist;
-//
-//                qDebug()<< dist;
-//                if (dist > 450) qDebug()<<"SON DIFERENTES";
-//
-//            }
-//        }
-//
-//    }
-
-////////////////////////// LO QUE PABLO ME DICE QUE HAGA ///////////////////////////////////////////
 
 
     for (auto h : Humans)
