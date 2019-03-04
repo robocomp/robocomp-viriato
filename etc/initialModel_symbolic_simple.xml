@@ -57,7 +57,6 @@
 	<attribute key="imType" value="transform" />
 	<attribute key="imName" value="astraRGBD" />
 	</symbol>
-	<link src="1" dst="32" label="know" > </link>
 	<link src="32" dst="3" label="in" > </link>
 	<symbol id="33" type="objectSt"> </symbol>
 	<symbol id="34" type="objectSt">
@@ -69,7 +68,7 @@
 	<attribute key="imType" value="transform" />
 	<attribute key="imName" value="astraRGBD" />
 	</symbol>
-	<link src="1" dst="33" label="know" > </link>
+
 	<link src="33" dst="3" label="in" > </link>
 	<symbol id="34" type="objectSt"> </symbol>
 	<symbol id="35" type="objectSt">
