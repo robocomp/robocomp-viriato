@@ -64,15 +64,9 @@
 			<transform id="camera_astra_1" tx="0" ty="920" tz="0"  rx="0" ry="0" rz="0">
 				<mesh id="astraRGBD_mesh_1" file="/home/robocomp/robocomp/files/osgModels/basics/cube2.3ds" scale="200,200,200" tx="0" ty="0" tz="0" rx="0" ry="0" rz="0" collide="1" />
 			</transform>
-			<transform id="camera_astra_2" tx="0" ty="1200" tz="0"  rx="0" ry="0.5235990286" rz="0">
+			<transform id="camera_astra_2" tx="-750" ty="1200" tz="1200"  rx="0" ry="0" rz="0">
 				<mesh id="astraRGBD_mesh_2" file="/home/robocomp/robocomp/files/osgModels/basics/cube2.3ds" scale="200,200,200" tx="0" ty="0" tz="0" rx="0" ry="0" rz="0" collide="1" />
 			</transform>
-		</transform>
-		<transform id="person100" tx="32.207901" ty="0" tz="2231.429932"  rx="0" ry="2.90895009" rz="0">
-			<mesh id="person100_Mesh" file="/home/robocomp/robocomp/components/robocomp-araceli/models/human01.3ds" scale="12,12,12" tx="0" ty="0" tz="0" rx="1.570796371" ry="0" rz="3.141592741" collide="0" />
-		</transform>
-		<transform id="person200" tx="0" ty="0" tz="0"  rx="0" ry="0" rz="0">
-			<mesh id="person200_Mesh" file="/home/robocomp/robocomp/components/robocomp-araceli/models/human02.3ds" scale="1.120000005,1.120000005,1.120000005" tx="0" ty="0" tz="0" rx="1.570796371" ry="0" rz="3.141592741" collide="0" />
 		</transform>
 	</transform>
 </innermodel>
