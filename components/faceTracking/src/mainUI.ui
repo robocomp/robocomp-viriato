@@ -56,6 +56,13 @@
       </widget>
      </item>
      <item>
+      <widget class="QPushButton" name="train_button">
+       <property name="text">
+        <string>Train Model</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <spacer name="verticalSpacer">
        <property name="orientation">
         <enum>Qt::Vertical</enum>

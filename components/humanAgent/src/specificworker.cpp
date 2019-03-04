@@ -80,7 +80,6 @@ void SpecificWorker::obtainHumanPose(const humansDetected &list_of_humans) {
     reading = true;
     Humans.clear();
     Humans = list_of_humans;
-    qDebug() <<"Receiving from camera "<< Humans[0].IDcamera;
     reading = false;
 
 }
@@ -95,7 +94,7 @@ void SpecificWorker::getHumans()
 
     if (humans_in_world.size() == 0) //Si no hay personas en el modelo
     {
-        qDebug()<<"No humans in world. Inserting the received ones";
+        qDebug()<<"No humans in world. Inserting the received ones from camera " << IDcamera;
 
         for (auto h : Humans)
         {
@@ -148,11 +147,13 @@ void SpecificWorker::getHumans()
             sameper = std::make_pair(h.id, humans_in_world[i].id);
             sameper1 = std::make_pair( humans_in_world[i].id,h.id);
 
-            if ((dist < 500)) //450 es espacio íntimo   // la misma cámara me está dando dos personas distintas
+            qDebug()<<"DISTANCIA ENTRE " << humans_in_world[i].id << " y " << h.id << " = " <<dist;
+
+            if ((dist < 500)) //450 es espacio íntimo   
             {
                 if (  IDcamera != humans_in_world[i].IDcamera )
                 {
-                    qDebug()<<"DISTANCIA ENTRE " << humans_in_world[i].id << " y " << h.id << " = " <<dist;
+
                     if ((sameperson.find(sameper) == sameperson.end()) and (sameperson.find(sameper1) == sameperson.end()))
                     {
                         sameperson[sameper] = 0;
@@ -195,14 +196,10 @@ void SpecificWorker::getHumans()
                 {
                     sameperson[sameper] = sameperson[sameper] + 1;
                     sameperson[sameper1] = sameperson[sameper1] + 1;
-
-
                 }
-
 
                 auto rep1 = sameperson[sameper];
                 auto rep2 = sameperson[sameper1];
-
 
                 if ( (( rep1 > 10) or ( rep2 > 10)) and (h.pos.pos_good))
 

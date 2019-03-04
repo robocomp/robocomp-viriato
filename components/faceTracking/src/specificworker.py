@@ -39,6 +39,8 @@ class SpecificWorker(GenericWorker):
         self.ui.name_lineEdit.textEdited.connect(self.name_changed)
         self.ui.name_lineEdit.editingFinished.connect(self.name_finished)
         self.ui.add_person_button.clicked.connect(self.add_person)
+        self.ui.train_button.clicked.connect(self.update_model)
+
 
     def read_files(self):
 
@@ -113,25 +115,26 @@ class SpecificWorker(GenericWorker):
             os.mkdir(dir)
             self.time_Lapse(dir)
 
-        reply2 = QMessageBox.question(self.focusWidget(), 'The model needs to be trained',
-                                     ' Do you want to train the model? It may take a while', QMessageBox.Yes, QMessageBox.No)
+        self.update_model()
 
-        if reply2 == QtGui.QMessageBox.No:
-            self.ui.name_lineEdit.clear()
-            self.writting = False
-            return
 
-        else:
-            self.update_model()
 
         self.ui.name_lineEdit.clear()
         self.writting = False
 
     def update_model(self):
 
-        ExEm.extract_embeddings("./files/dataset", self.embedder, self.net)
-        TM.train_model()
-        self.read_files()
+        reply2 = QMessageBox.question(self.focusWidget(), 'The model needs to be trained',
+                                      ' Do you want to train the model? It may take a while', QMessageBox.Yes,
+                                      QMessageBox.No)
+
+        if reply2 == QtGui.QMessageBox.No:
+            return
+
+        else:
+            ExEm.extract_embeddings("./files/dataset", self.embedder, self.net)
+            TM.train_model()
+            self.read_files()
 
     @QtCore.Slot()
     def compute(self):
@@ -168,7 +171,6 @@ class SpecificWorker(GenericWorker):
 
             objects = self.ct.update(rects)
 
-
             # loop over the tracked objects
 
             faces_found = []
@@ -187,7 +189,7 @@ class SpecificWorker(GenericWorker):
                         faceT.boundingbox = bbox
                         tracking = True
 
-                        (endX, startY , endX, startY) = qrects.getCoords()
+                        (startX, endY , endX, startY) = qrects.getCoords()
 
                         # extract the face ROI
                         face = frame[startY:endY, startX:endX]

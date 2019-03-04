@@ -111,10 +111,6 @@ void SpecificWorker::getDataFromAstra()
         if(users.size()== 0)
             return;
 
-        else
-		{
-        	qDebug()<<users.size()<< "Humanos encontrados";
-		}
         //hay alguna persona
         for (auto p:users)
 		{
@@ -172,8 +168,6 @@ int SpecificWorker::getIDgeneric(int idjoint, RoboCompFaceTracking::Faces faces)
 
     if (IDcamera == 0) return -1;
 
-	qDebug()<<__FUNCTION__;
-
 	int idperson = -1;
     auto idcam = IDcamera * 100; //Los ids de las personas obtenidas con la camara 1 empezaran por 100
     auto ID = idcam + IDgeneric;
@@ -196,8 +190,6 @@ int SpecificWorker::getIDgeneric(int idjoint, RoboCompFaceTracking::Faces faces)
 						{
 							IDjointface[idjoint] = f.id; //Relacionamos el id del joint con el de la cara
 							idperson = IDfacegeneric[f.id];
-
-							qDebug()<<"ya estaba en el modelo";
 						}
 
 						else //Si no esta
@@ -212,7 +204,6 @@ int SpecificWorker::getIDgeneric(int idjoint, RoboCompFaceTracking::Faces faces)
 						break;
 					}
 				}
-
 			}
 
 			facefound = true;
@@ -221,7 +212,6 @@ int SpecificWorker::getIDgeneric(int idjoint, RoboCompFaceTracking::Faces faces)
 
     else //el id ya está registrado accedemos al id generico
     {
-    	qDebug()<< "ya relacionados";
         int idface = IDjointface[idjoint];
         idperson = IDfacegeneric[idface];
 
@@ -251,12 +241,17 @@ bool SpecificWorker::getPoseRot (jointListType list, Pose3D &personpose) {
 	{
 		if (list.find(idjoint) != list.end()) // found
 		{
+
 			auto j = list[idjoint];
 			if (j.size() == 3)
 			{
-				QVec jointinworld = innerModel->transform("world", QVec::vec3(-j[0],0,j[2]), "camera_astra");
+
+                qDebug()<<" Found "<<QString::fromStdString(idjoint) <<" x = " << -j[0] <<" y = " << j[1] <<  " z = " << j[2];
+
+				QVec jointinworld = innerModel->transform("world", QVec::vec3(-j[0],j[1],j[2]), "camera_astra");
+
 //
-//                qDebug()<<" Found "<<QString::fromStdString(idjoint) <<" x = " << jointinworld.x()<<  " z = " << jointinworld.z() ;
+//                qDebug()<<" Found "<<QString::fromStdString(idjoint) <<" x = " << jointinworld.x()<<" y = " << jointinworld.y() <<  " z = " << jointinworld.z() ;
 
 				newposex = jointinworld.x() + newposex;
 				newposez = jointinworld.z() + newposez;
@@ -268,18 +263,23 @@ bool SpecificWorker::getPoseRot (jointListType list, Pose3D &personpose) {
 //        else qDebug() <<QString::fromStdString(idjoint) <<"Joint "<< QString::fromStdString(idjoint) <<" not found";
 	}
 
+	qDebug()<<"--------------------------------------------------------";
+
 	if (countjoints != 0 )
 	{
 
 		mediax = newposex/countjoints;
 		mediaz = newposez/countjoints;
 
-//        auto j = list["Head"];
-//        QVec jointinworld = innerModel->transform("world", QVec::vec3(-j[0],0,j[2]), "camera_astra");
-//        mediax =  jointinworld.x();
-//        mediaz =  jointinworld.z();
-
+//        if (list.find("Head") != list.end()) // found
+//        {
+//            auto j = list["Head"];
+//            QVec jointinworld = innerModel->transform("world", QVec::vec3(-j[0], 0, j[2]), "camera_astra");
+//            mediax = jointinworld.x();
+//            mediaz = jointinworld.z();
+//
 		personpose.pos_good = true;
+//        }
 	}
 
 	else
