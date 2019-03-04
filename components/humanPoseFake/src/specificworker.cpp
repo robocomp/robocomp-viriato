@@ -101,7 +101,7 @@ qDebug()<<"PersonData"<<person.id<<person.pos.x<<person.pos.z<<person.pos.ry<<pe
     }
     try
     {
-        //humanpose_proxy->obtainHumanPose(human_list);
+        humanpose_proxy->obtainHumanPose(human_list);
     }
     catch(...)
     {
