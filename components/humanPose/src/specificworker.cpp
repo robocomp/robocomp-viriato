@@ -232,8 +232,8 @@ bool SpecificWorker::getPoseRot (jointListType list, Pose3D &personpose) {
 	float mediaz;
 	float mediax;
 
-	QString name_camera = "camera_astra" ;
-//	QString name_camera = "camera_astra" + QString(IDcamera);
+//	QString name_camera = "camera_astra" ;
+	QString name_camera = "camera_astra_" + QString::number(IDcamera);
 
 	vector<string> tronco = {"Head", "Neck", "ShoulderSpine", "MidSpine", "BaseSpine"};
 
@@ -248,7 +248,7 @@ bool SpecificWorker::getPoseRot (jointListType list, Pose3D &personpose) {
 
                 qDebug()<<" Found "<<QString::fromStdString(idjoint) <<" x = " << -j[0] <<" y = " << j[1] <<  " z = " << j[2];
 
-				QVec jointinworld = innerModel->transform("world", QVec::vec3(-j[0],j[1],j[2]), "camera_astra");
+				QVec jointinworld = innerModel->transform("world", QVec::vec3(-j[0],j[1],j[2]), QString(name_camera));
 
 //
 //                qDebug()<<" Found "<<QString::fromStdString(idjoint) <<" x = " << jointinworld.x()<<" y = " << jointinworld.y() <<  " z = " << jointinworld.z() ;
@@ -318,10 +318,10 @@ bool SpecificWorker::getPoseRot (jointListType list, Pose3D &personpose) {
 	{
 
 		auto l = list["LeftShoulder"];
-		QVec joint_left = innerModel->transform("world", QVec::vec3(-l[0],0,l[2]), name_camera);
+		QVec joint_left = innerModel->transform("world", QVec::vec3(-l[0],0,l[2]), QString(name_camera));
 
 		auto r = list["RightShoulder"];
-		QVec joint_right = innerModel->transform("world", QVec::vec3(-r[0],0,r[2]), name_camera);
+		QVec joint_right = innerModel->transform("world", QVec::vec3(-r[0],0,r[2]), QString(name_camera));
 
 		personpose.ry = 3.1415926535 - (atan2(joint_left.z()-joint_right.z(),joint_left.x() - joint_right.x()));
 
