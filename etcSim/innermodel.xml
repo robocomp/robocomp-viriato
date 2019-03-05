@@ -64,7 +64,7 @@
 			<transform id="camera_astra_1" tx="0" ty="920" tz="0"  rx="0" ry="0" rz="0">
 				<mesh id="astraRGBD_mesh_1" file="/home/robocomp/robocomp/files/osgModels/basics/cube2.3ds" scale="200,200,200" tx="0" ty="0" tz="0" rx="0" ry="0" rz="0" collide="1" />
 			</transform>
-			<transform id="camera_astra_2" tx="-750" ty="1200" tz="1200"  rx="0" ry="0" rz="0">
+			<transform id="camera_astra_2" tx="0" ty="970" tz="0"  rx="0" ry="0" rz="0">
 				<mesh id="astraRGBD_mesh_2" file="/home/robocomp/robocomp/files/osgModels/basics/cube2.3ds" scale="200,200,200" tx="0" ty="0" tz="0" rx="0" ry="0" rz="0" collide="1" />
 			</transform>
 		</transform>
