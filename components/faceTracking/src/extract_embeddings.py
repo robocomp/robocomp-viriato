@@ -10,18 +10,25 @@ import imutils
 import pickle
 import cv2
 import os
+import align_faces as ALF
 
 # construct the argument parser and parse the arguments
-def extract_embeddings(dataset, embedder, detector):
-
+def extract_embeddings():
 
 	conf = 0.5
+
+	dataset = "/home/robocomp/robocomp/components/robocomp-viriato/components/faceTracking/files/dataset"
+
+	model = "/home/robocomp/robocomp/components/robocomp-viriato/components/faceTracking/files/res10_300x300_ssd_iter_140000.caffemodel"
+	prototxt = "/home/robocomp/robocomp/components/robocomp-viriato/components/faceTracking/files/deploy.prototxt"
+	detector = cv2.dnn.readNetFromCaffe(prototxt, model)
 
 	print("[INFO] quantifying faces...")
 	imagePaths = list(paths.list_images(dataset))
 
-	# initialize our lists of extracted facial embeddings and
-	# corresponding people names
+	embedding_model = "/home/robocomp/robocomp/components/robocomp-viriato/components/faceTracking/files/openface_nn4.small2.v1.t7"
+	embedder = cv2.dnn.readNetFromTorch(embedding_model)
+
 	knownEmbeddings = []
 	knownNames = []
 
@@ -32,24 +39,51 @@ def extract_embeddings(dataset, embedder, detector):
 	# loop over the image paths
 	for (i, imagePath) in enumerate(imagePaths):
 		# extract the person name from the image path
-		print("[INFO] processing image {}/{}".format(i + 1, len(imagePaths)))
+
 		name = imagePath.split(os.path.sep)[-2]
 
-		# load the image, resize it to have a width of 600 pixels (while
-		# maintaining the aspect ratio), and then grab the image
-		# dimensions
-		image = cv2.imread(imagePath)
-		if (type(image)== NoneType): continue
-		image = imutils.resize(image, width=600)
-		(h, w) = image.shape[:2]
+		image_orig = cv2.imread(imagePath)
+
+		if(type(image_orig) == NoneType):
+			continue
+		image = imutils.resize(image_orig, width=600)
+		(h, w) = image_orig.shape[:2]
+
+		################# aliging image ######################
+		# if(type(image_orig) == NoneType):
+		# 	img_original_good = False
+		# else:
+		# 	img_original_good = True
+		#
+		# if (img_original_good == False): continue
+		#
+		#
+		# image_orig = imutils.resize(image_orig, width=800)
+		# (h, w) = image_orig.shape[:2]
+		#print("[INFO] aligning image {}/{}".format(i + 1, len(imagePaths)))
+		# image = ALF.align_faces(image_orig,h,w, detector)
+		#
+		# if (type(image) == NoneType):
+		# 	img_alig_good = False
+		# else:
+		# 	img_alig_good = True
+		#
+		# if ((img_alig_good == False) and (img_original_good == True)):
+		# 	print("[INFO] Aligned image not valid. Using original" )
+		# 	image = image_orig
+		#
+		# elif(img_alig_good == False) :
+		# 	print("[INFO] Can't process image {}/{}".format(i + 1, len(imagePaths)))
+		# 	continue
+		#########################################################
+		print("[INFO] processing image {}/{}".format(i + 1, len(imagePaths)))
 
 		# construct a blob from the image
 		imageBlob = cv2.dnn.blobFromImage(
 			cv2.resize(image, (300, 300)), 1.0, (300, 300),
 			(104.0, 177.0, 123.0), swapRB=False, crop=False)
 
-		# apply OpenCV's deep learning-based face detector to localize
-		# faces in the input image
+
 		detector.setInput(imageBlob)
 		detections = detector.forward()
 
@@ -60,33 +94,22 @@ def extract_embeddings(dataset, embedder, detector):
 			i = np.argmax(detections[0, 0, :, 2])
 			confidence = detections[0, 0, i, 2]
 
-			# ensure that the detection with the largest probability also
-			# means our minimum probability test (thus helping filter out
-			# weak detections)
 			if confidence > conf:
-				# compute the (x, y)-coordinates of the bounding box for
-				# the face
+
 				box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
 				(startX, startY, endX, endY) = box.astype("int")
 
-				# extract the face ROI and grab the ROI dimensions
 				face = image[startY:endY, startX:endX]
 				(fH, fW) = face.shape[:2]
 
-				# ensure the face width and height are sufficiently large
 				if fW < 20 or fH < 20:
 					continue
 
-				# construct a blob for the face ROI, then pass the blob
-				# through our face embedding model to obtain the 128-d
-				# quantification of the face
 				faceBlob = cv2.dnn.blobFromImage(face, 1.0 / 255,
 					(96, 96), (0, 0, 0), swapRB=True, crop=False)
 				embedder.setInput(faceBlob)
 				vec = embedder.forward()
 
-				# add the name of the person + corresponding face
-				# embedding to their respective lists
 				knownNames.append(name)
 				knownEmbeddings.append(vec.flatten())
 				total += 1
@@ -94,6 +117,6 @@ def extract_embeddings(dataset, embedder, detector):
 	# dump the facial embeddings + names to disk
 	print("[INFO] serializing {} encodings...".format(total))
 	data = {"embeddings": knownEmbeddings, "names": knownNames}
-	f = open("/home/robocomp/robocomp/components/robocomp-viriato/components/faceTracking/files/output/embedding.pickle", "wb")
+	f = open("/home/robocomp/robocomp/components/robocomp-viriato/components/faceTracking/files/output/embeddings.pickle", "wb")
 	f.write(pickle.dumps(data))
 	f.close()

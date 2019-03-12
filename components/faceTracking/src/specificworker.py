@@ -14,6 +14,7 @@ import pickle
 import extract_embeddings as ExEm
 import train_model as TM
 
+CURRENT_PATH = os.path.dirname(__file__)
 
 class SpecificWorker(GenericWorker):
     def __init__(self, proxy_map):
@@ -58,6 +59,9 @@ class SpecificWorker(GenericWorker):
         self.recognizer = pickle.loads(open(recog).read())
         self.label_encoder = pickle.loads(open(le).read())
 
+
+        print (CURRENT_PATH)
+
     def setParams(self, params):
         self.read_files()
         self.show()
@@ -76,17 +80,39 @@ class SpecificWorker(GenericWorker):
     def time_Lapse(self, dir):
         QMessageBox().information(self.focusWidget(), 'Time Lapse', 'For a better recognition rotate the face in several directions. Push OK to start', QMessageBox.Ok)
 
-        for count in range(100):
+        for count in range(10):
             color, _, _, _ = self.rgbd_proxy.getData()
             frame = np.fromstring(color, dtype=np.uint8)
             frame = np.reshape(frame, (480, 640, 3))
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
+            # (h, w) = frame.shape[:2]
+            # blob = cv2.dnn.blobFromImage(cv2.resize(frame, (300, 300)), 1.0,
+            #                              (300, 300), (104.0, 177.0, 123.0))
+            #
+            # self.net.setInput(blob)
+            # detections = self.net.forward()
+            #
+            # for i in range(0, detections.shape[2]):
+            #
+            #     confidence = detections[0, 0, i, 2]
+            #     if confidence >self.confidence:
+            #
+            #         box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
+            #         (startX, startY, endX, endY) = box.astype("int")
+            #         startX = startX -100
+            #         startY = startY -100
+            #         endX = endX + 100
+            #         endY = endY + 100
+            #
+            #         face = frame[startY:endY, startX:endX]
+            # pass the blob through the network and obtain the detections and
+            # predictions
+
             print ("Saving frame%d.jpg" % count)
 
             name_file = os.path.join(dir, "frame%d.jpg" % count)
             cv2.imwrite(name_file, frame)
-
             time.sleep(0.2)
 
 
@@ -97,7 +123,8 @@ class SpecificWorker(GenericWorker):
             print ("No name inserted")
             return
 
-        dir = "./files/dataset/" + self.name_dir.strip().lower() #se crea el directorio en minusculas y sin espacios
+        dir = os.path.join(CURRENT_PATH,"../files/dataset", self.name_dir.strip().lower())  #se crea el directorio en minusculas y sin espacios
+        print (dir)
 
         if os.path.isdir(dir):
             reply = QMessageBox.question(self.focusWidget(), 'The directory already exists',
@@ -132,9 +159,11 @@ class SpecificWorker(GenericWorker):
             return
 
         else:
-            ExEm.extract_embeddings("./files/dataset", self.embedder, self.net)
+            ExEm.extract_embeddings()
             TM.train_model()
             self.read_files()
+
+        print ("[INFO] Model updated ")
 
     @QtCore.Slot()
     def compute(self):
@@ -206,15 +235,18 @@ class SpecificWorker(GenericWorker):
 
                         # perform classification to recognize the face
                         preds = self.recognizer.predict_proba(vec)[0]
-
                         j = np.argmax(preds)
 
-                        proba = preds[j]
-                        name = self.label_encoder.classes_[j]
+                        proba = preds[j] *100
+                        if (proba < 50):
+                            name = "unknow"
+
+                        else:
+                            name = self.label_encoder.classes_[j]
 
                         # draw the bounding box of the face along with the
                         # associated probability
-                        text = "{}: {:.2f}%".format(name, proba * 100)
+                        text = "{}: {:.2f}%".format(name, proba)
                         y = startY - 10 if startY - 10 > 10 else startY + 10
                         cv2.rectangle(frame, (startX, startY), (endX, endY),
                                       (255, 10, 150), 2)

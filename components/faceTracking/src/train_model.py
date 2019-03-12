@@ -10,7 +10,7 @@ import pickle
 
 def train_model():
 
-	embeddings ="/home/robocomp/robocomp/components/robocomp-viriato/components/faceTracking/files/output/embedding.pickle"
+	embeddings ="/home/robocomp/robocomp/components/robocomp-viriato/components/faceTracking/files/output/embeddings.pickle"
 
 	# load the face embeddings
 	print("[INFO] loading face embeddings...")
