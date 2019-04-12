@@ -200,3 +200,11 @@ components/faceTracking/files/dataset/
 components/humanPose/CMakeFiles/
 
 components/humanPose/cmake-build-debug/
+
+etcSim/
+
+etc/
+
+components/humanPose/joints\.txt
+
+components/fakeHumanAgent/src/ui_mainUI\.h
