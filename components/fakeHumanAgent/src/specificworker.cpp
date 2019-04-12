@@ -57,11 +57,11 @@ bool SpecificWorker::includeInRCIS(int id, const RoboCompInnerModelManager::Pose
 	mesh.pose.z  = 0;
 	mesh.pose.rx = 1.57079632679;
 	mesh.pose.ry = 0;
-	mesh.pose.rz = 3.1415926535;
+	mesh.pose.rz = QString::fromStdString(rotationz).toFloat();
 	
-	mesh.scaleX = mesh.scaleY = mesh.scaleZ = 12;
+	mesh.scaleX = mesh.scaleY = mesh.scaleZ = QString::fromStdString(scale).toFloat();
 	mesh.render = 0;
-	mesh.meshPath = "/home/robocomp/robocomp/components/robocomp-araceli/models/" + meshName + ".3ds";
+	mesh.meshPath = "/home/robocomp/robocomp/components/robocomp-araceli/models/" + meshName;
 
 	try
 	{
@@ -98,7 +98,7 @@ bool SpecificWorker::removeFromRCIS(int id)
 int SpecificWorker::includeInAGM(int id,const RoboCompInnerModelManager::Pose3D &pose, std::string mesh)
 {
 	printf("includeInAGM begins\n");
-	
+
 	std::string name = "person" ;
 	std::string imName = "person" + std::to_string(id);
 	int personSymbolId = -1;
@@ -132,9 +132,9 @@ int SpecificWorker::includeInAGM(int id,const RoboCompInnerModelManager::Pose3D 
 	newModel->addEdge(person, personSt, "hasStatus");
 	newModel->addEdge(person, personSt, "noReach");
 	newModel->addEdge(person, personSt, name);
-	
-	
-	//Add person in room ==> It has to be fixed to allow use it in different scenarios 
+
+
+	//Add person in room ==> It has to be fixed to allow use it in different scenarios
 	if (pose.z < 0 )
 	{
 		newModel->addEdgeByIdentifiers(person->identifier, 5, "in");
@@ -158,19 +158,19 @@ int SpecificWorker::includeInAGM(int id,const RoboCompInnerModelManager::Pose3D 
 	personMesh->setAttribute("collidable", "false");
 	personMesh->setAttribute("imName", imName + "_Mesh");
 	personMesh->setAttribute("imType", "mesh");
-	std::string meshPath = "/home/robocomp/robocomp/components/robocomp-araceli/models/" + mesh + ".3ds";
+	std::string meshPath = "/home/robocomp/robocomp/components/robocomp-araceli/models/" + mesh ;
 	personMesh->setAttribute("path", meshPath);
 	personMesh->setAttribute("render", "NormalRendering");
-	personMesh->setAttribute("scalex", "12");
-	personMesh->setAttribute("scaley", "12");
-	personMesh->setAttribute("scalez", "12");
+	personMesh->setAttribute("scalex", scale);
+	personMesh->setAttribute("scaley", scale);
+	personMesh->setAttribute("scalez", scale);
 
 	edgeRTAtrs["tx"] = "0";
 	edgeRTAtrs["ty"] = "0";
 	edgeRTAtrs["tz"] = "0";
 	edgeRTAtrs["rx"] = "1.570796326794";
 	edgeRTAtrs["ry"] = "0";
-	edgeRTAtrs["rz"] = "3.1415926535";
+	edgeRTAtrs["rz"] = rotationz;
 	newModel->addEdge(person, personMesh, "RT", edgeRTAtrs);
 
 	while (true)
@@ -307,7 +307,9 @@ void SpecificWorker::initializeUI(){
 	
 	connect(save_pb, SIGNAL(clicked()), this, SLOT(savePoints()));
 	connect(load_pb, SIGNAL(clicked()), this, SLOT(loadPoints()));
-	//connect(person_cb, SIGNAL(currentIndexChanged(int)), this, SLOT(personChanged(int)));
+
+//	connect(person_cb, SIGNAL(currentIndexChanged(int)), this, SLOT(cbIndexChanged(int)));
+
 	connect(interaction_cb, SIGNAL(currentIndexChanged(int)), this, SLOT(interactionChanged(int)));
 	connect(autoM_cb, SIGNAL(clicked()),this, SLOT(autoMovement()));
 	connect(rinteraction_pb, SIGNAL(clicked()),this, SLOT(removeEdgeAGM()));
@@ -366,7 +368,7 @@ bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 void SpecificWorker::upP(){
 	coordInItem.x = 0;
 	coordInItem.z = HUMANADVVEL;
-	moveFlag = true;
+    moveFlag = true;
 }
 void SpecificWorker::upR(){
 	moveFlag = false;
@@ -384,7 +386,8 @@ void SpecificWorker::downR(){
 void SpecificWorker::rightP(){
   	coordInItem.x = HUMANADVVEL;
 	coordInItem.z = 0;
-	moveFlag = true;
+
+    moveFlag = true;
 }
 void SpecificWorker::rightR(){
 	moveFlag = false;
@@ -393,6 +396,7 @@ void SpecificWorker::rightR(){
 void SpecificWorker::leftP(){
   	coordInItem.x = -HUMANADVVEL;
 	coordInItem.z = 0;
+
 	moveFlag = true;
 }
 void SpecificWorker::leftR(){
@@ -411,9 +415,22 @@ void SpecificWorker::giroR(){
 	moveFlag = false;
 }
 
+void SpecificWorker::cbIndexChanged(int index)
+{
+	qDebug()<<"cbIndexChanged";
+
+	if (person_cb->currentText() != "")
+	{
+		TPerson *person = &personMap[person_cb->currentText().toInt()];
+		giro->QAbstractSlider::setSliderPosition(person->pose.ry);
+	}
+}
+
+
 void SpecificWorker::addPerson()
 {
-	qDebug()<<"add clicked";
+
+    qDebug()<<"add clicked";
 	RoboCompInnerModelManager::Pose3D pose;
 	pose.x = x_sb->value();
 	pose.y = 0;
@@ -421,17 +438,55 @@ void SpecificWorker::addPerson()
 	pose.rx = 0.f;
 	pose.ry = rot_sb->value();
 	pose.rz = 0.f;
-	std::string mesh = mesh_cb->currentText().toStdString();
+	int mesh = mesh_cb->currentText().toInt();
+
+	switch(mesh)
+	{
+		case 1:
+			meshname = "human01.3ds";
+			scale = "12";
+			rotationz= "3.1415926535";
+			break;
+		case 2:
+			meshname = "human02.3ds";
+			scale = "1.21";
+			rotationz= "3.1415926535";
+			break;
+		case 3:
+			meshname = "human03.3ds";
+			scale = "8";
+			rotationz= "1.57079632679";
+			break;
+		case 4:
+			meshname = "human04.3ds";
+			scale = "900";
+			rotationz= "0";
+			break;
+		case 5:meshname = "human05.3ds";
+			scale = "800";
+			rotationz= "0";
+			break;
+		case 6:meshname = "human06.3ds";
+			scale = "23";
+			rotationz= "3.1415926535";
+			break;
+		default:
+			qDebug()<< "Mesh error";
+			return;
+	}
+
+
 	int id = personMap.size() + 1;
 	// avoid inserting same element twice
 	while (personMap.find(id) != personMap.end())
 		id++;
-	
+
+
 	// Include person in RCIS
-	if (includeInRCIS(id, pose, mesh))
+	if (includeInRCIS(id, pose, meshname))
 	{
 		// Include person in AGM
-		int personSymbolId = includeInAGM(id, pose, mesh);
+		int personSymbolId = includeInAGM(id, pose, meshname);
 		if (personSymbolId != -1)
 		{
 			TPerson person;
@@ -442,9 +497,13 @@ void SpecificWorker::addPerson()
 			personMap.insert(std::pair<int,TPerson>(personSymbolId,person));
 			//include in comboBox
 			person_cb->addItem(QString::number(personSymbolId));
+            int index = person_cb->findText(QString::number(personSymbolId));
+            person_cb->setCurrentIndex(index);
+
 			int1_cb->addItem(QString::number(personSymbolId));
 			int2_cb->addItem(QString::number(personSymbolId));
 			updatePersonInterfaz(true);
+
 		}
 	}
 }
@@ -476,9 +535,22 @@ void SpecificWorker::move()
 		std::cout<<"No selected person to move"<<std::endl;
 	}
 	else{
+
+
+
 		TPerson *person = &personMap[person_cb->currentText().toInt()];
+
+		if (prevIdSelected != person_cb->currentText()) { valorgiro = person->pose.ry ;}
+
 		movePerson(person, coordInItem, setPoseFlag);
-	}
+
+		x_lb->setText(  QString::number(person->pose.x) );
+        z_lb->setText(  QString::number(person->pose.z));
+        rot_lb->setText(  QString::number(person->pose.ry));
+
+		prevIdSelected = person_cb->currentText();
+
+    }
 }
 
 void SpecificWorker::movePerson(TPerson *person, RoboCompInnerModelManager::coord3D coordInItem ,bool global)
@@ -501,7 +573,7 @@ void SpecificWorker::movePerson(TPerson *person, RoboCompInnerModelManager::coor
 //	{
 //		changeRoom = true;
 //	}
-		
+
 	RoboCompInnerModelManager::Pose3D pose;
 	pose.x = coordInWorld.x;
 	pose.y = coordInWorld.y;
@@ -512,6 +584,8 @@ void SpecificWorker::movePerson(TPerson *person, RoboCompInnerModelManager::coor
 	//store new position
 	person->pose = pose;
 	//move in RCIS
+
+
 	try{
 		innermodelmanager_proxy->setPoseFromParent(person->name, pose);
 	}
@@ -1064,6 +1138,7 @@ SpecificWorker::TInteraction SpecificWorker::string2Interaction(std::string inte
 
 void SpecificWorker::interactionChanged(int index)
 {
+	qDebug()<<"interactionChanged";
 	TInteraction option = string2Interaction(interaction_cb->currentText().toStdString());
 	switch(option)
 	{

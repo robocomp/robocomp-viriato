@@ -65,8 +65,14 @@ Q_OBJECT
 	float valorgiro;
 	int robotID;
 
+	std::string meshname;
+	std::string scale;
+	std::string rotationz;
+
 	 QRectF outerRegion;
     int hmin, hmax, vmin, vmax;
+	QString prevIdSelected = "";
+
 
 
 public:
@@ -128,6 +134,7 @@ public slots:
 	void leftP ();
 	void leftR ();
 	void rotar(int valor);
+	void cbIndexChanged(int index);
 	void giroP();
 	void giroR();
 	void moverandom();
