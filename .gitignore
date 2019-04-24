@@ -208,3 +208,17 @@ etc/
 components/humanPose/joints\.txt
 
 components/fakeHumanAgent/src/ui_mainUI\.h
+
+components/fakeHumanAgent/CMakeFiles/
+
+components/fakeHumanAgent/bin/
+
+components/fakeHumanAgent/src/CMakeFiles/
+
+components/fakeHumanAgent/src/fakeHumanAgent_autogen/
+
+components/fakeHumanAgent/src/Makefile
+
+components/fakeHumanAgent/Makefile
+
+components/fakeHumanAgent/CMakeCache\.txt

@@ -71,6 +71,8 @@ void PathPlanner::update(Road &road)
 			if(currentPath.empty() == false)
             {
                 pId_blocking.clear();
+                pId_affblocking.clear();
+
 //                if (!checkHumanSoftBlock(currentPath) and !checkAffordances(currentPath))
 //                {
                     road.readRoadFromList(currentPath);
@@ -84,9 +86,11 @@ void PathPlanner::update(Road &road)
 			else
 			{
 				pId_softblocking.clear();
-				pId_affblocking.clear();
 				std::cout << __FILE__ << __FUNCTION__ << " No path found, checking if there are humans" << std::endl;
-				checkHumanBlock(road);
+                if(!checkHumanBlock(road))
+                {
+                    checkAffordancesBlock(road);
+                }
 			}
 			road.setRequiresReplanning(false);
             road.setFinished(true);
@@ -118,7 +122,9 @@ void PathPlanner::run(std::function<Road&()> getRoad, std::function<void()> rele
 			if(currentPath.empty() == false)
             {
                 pId_blocking.clear();
-                if (!checkHumanSoftBlock(currentPath) and !checkAffordances(currentPath))
+                pId_affblocking.clear();
+
+                if (!checkHumanSoftBlock(currentPath))
                 {
                     road.readRoadFromList(currentPath);
                 }
@@ -126,9 +132,11 @@ void PathPlanner::run(std::function<Road&()> getRoad, std::function<void()> rele
 			else
 			{
 				pId_softblocking.clear();
-				pId_affblocking.clear();
 				std::cout << __FILE__ << __FUNCTION__ << " No path found, checking if there are humans" << std::endl;
-				checkHumanBlock(road);
+				if(!checkHumanBlock(road))
+				{
+				    checkAffordancesBlock(road);
+				}
 			}
 			road.setRequiresReplanning(false);
             road.setFinished(true);
@@ -150,47 +158,48 @@ void PathPlanner::reloadInnerModel(const InnerPtr &innerModel_)
 	innerModel = innerModel_;
 }
 
-bool PathPlanner::checkAffordances(std::list<QVec> currentPath) //devuelve true si hay alguna persona con softblock
-{
-    qDebug()<<__FUNCTION__;
-    pId_affblocking.clear();
-    vector<QPolygonF> qp_list;
-
-    for (auto poly : polylines_aff)
-    {
-        QPolygonF qp;
-        for (auto p:poly)
-            qp << QPointF(p.x * 1000, p.z * 1000);
-
-        for (auto p:currentPath)
-        {
-            if (qp.containsPoint(QPointF(p.x(), p.z()), Qt::OddEvenFill))
-            {
-                qp_list.push_back(qp);
-                break;
-            }
-        }
-    }
-
-    for (auto polygon : qp_list)
-    {
-        for (auto p:persons)
-        {
-            if (polygon.containsPoint(QPointF(p.x* 1000, p.z* 1000), Qt::OddEvenFill))
-            {
-                qDebug () <<"La persona situada en " <<p.x*1000 << " "<< p.z*1000 << "bloquea al robot al estar en una AFFORDANCE. CON ID" << p.id ;
-                pId_affblocking.push_back(p.id);
-            }
-        }
-    }
-
-    qDebug()<<"NUMERO DE PERSONAS EN AFFORDANCE = "<<pId_affblocking.size();
-    if (pId_affblocking.size() > 0)
-        return true;
-    else
-        return false;
-}
-
+//
+//bool PathPlanner::checkAffordances(std::list<QVec> currentPath) //devuelve true si hay alguna persona con softblock
+//{
+//    qDebug()<<__FUNCTION__;
+//    pId_affblocking.clear();
+//    vector<QPolygonF> qp_list;
+//
+//    for (auto poly : polylines_aff)
+//    {
+//        QPolygonF qp;
+//        for (auto p:poly)
+//            qp << QPointF(p.x * 1000, p.z * 1000);
+//
+//        for (auto p:currentPath)
+//        {
+//            if (qp.containsPoint(QPointF(p.x(), p.z()), Qt::OddEvenFill))
+//            {
+//                qp_list.push_back(qp);
+//                break;
+//            }
+//        }
+//    }
+//
+//    for (auto polygon : qp_list)
+//    {
+//        for (auto p:persons)
+//        {
+//            if (polygon.containsPoint(QPointF(p.x* 1000, p.z* 1000), Qt::OddEvenFill))
+//            {
+//                qDebug () <<"La persona situada en " <<p.x*1000 << " "<< p.z*1000 << "bloquea al robot al estar en una AFFORDANCE. CON ID" << p.id ;
+//                pId_affblocking.push_back(p.id);
+//            }
+//        }
+//    }
+//
+//    qDebug()<<"NUMERO DE PERSONAS EN AFFORDANCE = "<<pId_affblocking.size();
+//    if (pId_affblocking.size() > 0)
+//        return true;
+//    else
+//        return false;
+//}
+//
 
 
 bool PathPlanner::checkHumanSoftBlock(std::list<QVec> currentPath) //devuelve true si hay alguna persona con softblock
@@ -236,22 +245,89 @@ bool PathPlanner::checkHumanSoftBlock(std::list<QVec> currentPath) //devuelve tr
 
 
 
-
-void PathPlanner::checkHumanBlock(Road &road)
+bool PathPlanner::checkHumanBlock(Road &road)
 {
     qDebug()<<__FUNCTION__;
 	FMap fmap_aux = fmap;
 	fmap = fmap_initial;
     pId_blocking.clear();
 
+    bool human_found = false;
+
 	std::list<QVec> Path = computePath(road, currenttarget);
 
 	if(!Path.empty())
     {
-		qDebug()<<"HUMANOS BLOQUEANDO EL CAMINO";
+		qDebug()<<"COMPROBANDO SI HAY HUMANOS BLOQUEANDO EL CAMINO";
         QPolygonF qp;
 
 		for (auto poly : polylines_block)
+		{
+			qp.clear();
+			for (auto p:poly)
+				qp << QPointF(p.x * 1000, p.z * 1000);
+
+			for (FMap::iterator iter = fmap.begin(); iter != fmap.end(); ++iter)
+			{
+				if (qp.containsPoint(QPointF(iter->first.x, iter->first.z), Qt::OddEvenFill))
+				{
+					point.x = iter->first.x;
+					point.z = iter->first.z;
+					occupied_list.push_back(point);
+
+					iter->second.free = false;
+				}
+			}
+
+			Path = computePath(road, currenttarget);
+
+			if (Path.empty())
+			{
+				human_found = true;
+				break;
+			}
+		}
+
+		qDebug()<<"Hay "<< persons.size()<<" persona en el mundo, comprobando cual bloquea al robot";
+
+
+		if (human_found)
+		{
+
+			for (auto p:persons)
+			{
+				if (qp.containsPoint(QPointF(p.x* 1000, p.z* 1000), Qt::OddEvenFill))
+				{
+					qDebug () <<"La persona situada en " <<p.x*1000 << " "<< p.z*1000 << "bloquea el camino. CON ID" << p.id ;
+					pId_blocking.push_back(p.id);
+				}
+			}
+
+			qDebug()<<"HAY "<< pId_blocking.size()<< " PERSONAS BLOQUEANDO EL CAMINO";
+		}
+
+	}
+
+	fmap = fmap_aux;
+
+    return human_found;
+}
+
+bool PathPlanner::checkAffordancesBlock(Road &road)
+{
+    qDebug()<<__FUNCTION__;
+	FMap fmap_aux = fmap;
+	fmap = fmap_initial;
+    pId_affblocking.clear();
+
+	std::list<QVec> Path = computePath(road, currenttarget);
+
+	if(!Path.empty())
+    {
+		qDebug()<<"AFFORDANCES BLOQUEANDO EL CAMINO";
+        QPolygonF qp;
+
+		for (auto poly : polylines_affblock)
 		{
 			qp.clear();
 			for (auto p:poly)
@@ -276,20 +352,24 @@ void PathPlanner::checkHumanBlock(Road &road)
 		}
 
 		qDebug()<<"Hay "<< persons.size()<<" persona en el mundo, comprobando cual bloquea al robot";
-	for (auto p:persons)
+
+
+	    for (auto p:persons)
         {
             if (qp.containsPoint(QPointF(p.x* 1000, p.z* 1000), Qt::OddEvenFill))
             {
-                qDebug () <<"La persona situada en " <<p.x*1000 << " "<< p.z*1000 << "bloquea el camino. CON ID" << p.id ;
-                pId_blocking.push_back(p.id);
+                qDebug () <<"La persona situada en " <<p.x*1000 << " "<< p.z*1000 << " esta en un AFFORFANCE y bloquea el camino. CON ID" << p.id ;
+                pId_affblocking.push_back(p.id);
             }
         }
 
-        qDebug()<<"HAY "<< pId_blocking.size()<< " PERSONAS BLOQUEANDO EL CAMINO";
+        qDebug()<<"HAY "<< pId_affblocking.size()<< " PERSONAS EN AFFORDANCES BLOQUEANDO EL CAMINO";
 
-	}
+	} else {return false;}
 
 	fmap = fmap_aux;
+
+    return true;
 }
 
 
@@ -605,7 +685,8 @@ void PathPlanner::modifyGraph(SNGPolylineSeq intimate, SNGPolylineSeq personal, 
 //	qDebug()<<__FUNCTION__;
 	polylines_block = intimate;
 	polylines_softblock = personal;
-    polylines_aff = objectsblocking;
+    polylines_aff = object;
+    polylines_affblock = objectsblocking;
 
 	occupied_list.clear();
 	

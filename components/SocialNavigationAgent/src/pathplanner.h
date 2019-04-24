@@ -134,13 +134,15 @@ PathPlanner
 		SNGPolylineSeq polylines_block;
 		SNGPolylineSeq polylines_softblock;
         SNGPolylineSeq polylines_aff;
+		SNGPolylineSeq polylines_affblock;
         SNGPersonSeq persons;
 
-        void checkHumanBlock(Road &road);
+        bool checkHumanBlock(Road &road);
         vector <int32_t> pId_blocking = {};
         bool checkHumanSoftBlock(std::list<QVec> currentPath);
         vector <int32_t> pId_softblocking = {};
-        bool checkAffordances(std::list<QVec> currentPath);
+//        bool checkAffordances(std::list<QVec> currentPath);
+        bool checkAffordancesBlock(Road &road);
         vector <int32_t> pId_affblocking = {};
 	/////////////////////////////////////////////////////////
 	private:
