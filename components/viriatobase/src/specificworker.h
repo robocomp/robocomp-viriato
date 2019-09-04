@@ -48,6 +48,8 @@ public:
 	void setOdometerPose(const int x, const int z, const float alpha);
 	void stopBase();
 	void setSpeedBase(const float advx, const float advz, const float rot);
+	void setSpeedBase(const float adv, const float rot);
+
 
 private:
 	void setWheels(QVec wheelVels_);

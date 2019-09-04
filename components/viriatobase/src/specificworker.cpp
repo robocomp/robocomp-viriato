@@ -187,6 +187,7 @@ void SpecificWorker::setOdometer(const TBaseState &state)
 
 void SpecificWorker::getBaseState(TBaseState &state)
 {
+	printf("getBaseState\n");
 	QMutexLocker locker(mutex);
 	state.x = x;
 	state.z = z;
@@ -236,4 +237,8 @@ void SpecificWorker::setWheels(QVec wheelVels_)
 // 	wheelsPos.print("wheelsPos");
 }
 
+void SpecificWorker::setSpeedBase(const float adv, const float rot)
+{
+	setSpeedBase(0, adv, rot);
 
+}

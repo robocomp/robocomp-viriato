@@ -82,8 +82,13 @@
 #include "commonbehaviorI.h"
 
 #include <omnirobotI.h>
+#include <differentialrobotI.h>
+#include <genericbaseI.h>
 
 #include <OmniRobot.h>
+#include <GenericBase.h>
+#include <DifferentialRobot.h>
+#include <GenericBase.h>
 #include <GenericBase.h>
 
 
@@ -173,11 +178,35 @@ int ::viriatobase::run(int argc, char* argv[])
 		{
 			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy OmniRobot";
 		}
-		Ice::ObjectAdapterPtr adapterOmniRobot = communicator()->createObjectAdapterWithEndpoints("OmniRobot", tmp);
+		Ice::ObjectAdapterPtr adapterOmniRobot = communicator()->createObjectAdapterWithEndpoints("omnirobot", tmp);
 		OmniRobotI *omnirobot = new OmniRobotI(worker);
 		adapterOmniRobot->add(omnirobot, communicator()->stringToIdentity("omnirobot"));
 		adapterOmniRobot->activate();
 		cout << "[" << PROGRAM_NAME << "]: OmniRobot adapter created in port " << tmp << endl;
+
+
+		// Server adapter creation and publication
+		if (not GenericMonitor::configGetString(communicator(), prefix, "DifferentialRobot.Endpoints", tmp, ""))
+		{
+			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy DifferentialRobot";
+		}
+		Ice::ObjectAdapterPtr adapterDifferentialRobot = communicator()->createObjectAdapterWithEndpoints("DifferentialRobot", tmp);
+		DifferentialRobotI *differentialrobot = new DifferentialRobotI(worker);
+		adapterDifferentialRobot->add(differentialrobot, communicator()->stringToIdentity("differentialrobot"));
+		adapterDifferentialRobot->activate();
+		cout << "[" << PROGRAM_NAME << "]: DifferentialRobot adapter created in port " << tmp << endl;
+
+
+		// Server adapter creation and publication
+		if (not GenericMonitor::configGetString(communicator(), prefix, "GenericBase.Endpoints", tmp, ""))
+		{
+			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy GenericBase";
+		}
+		Ice::ObjectAdapterPtr adapterGenericBase = communicator()->createObjectAdapterWithEndpoints("GenericBase", tmp);
+		GenericBaseI *genericbase = new GenericBaseI(worker);
+		adapterGenericBase->add(genericbase, communicator()->stringToIdentity("genericbase"));
+		adapterGenericBase->activate();
+		cout << "[" << PROGRAM_NAME << "]: GenericBase adapter created in port " << tmp << endl;
 
 
 

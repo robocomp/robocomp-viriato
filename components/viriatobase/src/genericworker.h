@@ -29,6 +29,9 @@
 
 #include <OmniRobot.h>
 #include <GenericBase.h>
+#include <DifferentialRobot.h>
+#include <GenericBase.h>
+#include <GenericBase.h>
 
 #define CHECK_PERIOD 5000
 #define BASIC_PERIOD 100
@@ -39,6 +42,7 @@ using namespace std;
 
 using namespace RoboCompOmniRobot;
 using namespace RoboCompGenericBase;
+using namespace RoboCompDifferentialRobot;
 
 
 
@@ -66,6 +70,7 @@ public:
 	virtual void setOdometerPose(const int x, const int z, const float alpha) = 0;
 	virtual void stopBase() = 0;
 	virtual void setSpeedBase(const float advx, const float advz, const float rot) = 0;
+	virtual void setSpeedBase(const float adv, const float rot) = 0;
 
 protected:
 	QTimer timer;

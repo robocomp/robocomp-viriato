@@ -1,9 +1,10 @@
-CommonBehavior.Endpoints=tcp -p 3244
+CommonBehavior.Endpoints=tcp -p 12669
 
 
 # Endpoints for implemented interfaces
 OmniRobot.Endpoints=tcp -p 12238
-
+DifferentialRobot.Endpoints=tcp -p 10004
+GenericBase.Endpoints=tcp -p 12240
 
 
 ViriatoBase.Port=/dev/ttyUSB0
