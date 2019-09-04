@@ -30,7 +30,16 @@ SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
 */
 SpecificWorker::~SpecificWorker()
 {
+	std::cout << "Destroying SpecificWorker" << std::endl;
 	delete viriato;
+}
+
+void SpecificWorker::initialize(int period)
+{
+	std::cout << "Initialize worker" << std::endl;
+	this->Period = period;
+	timer.start(Period);
+
 }
 
 bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
@@ -241,4 +250,96 @@ void SpecificWorker::setSpeedBase(const float adv, const float rot)
 {
 	setSpeedBase(0, adv, rot);
 
+}
+//*************************
+//ICE INTERFACES
+//*************************
+void SpecificWorker::DifferentialRobot_correctOdometer(const int x, const int z, const float alpha)
+{
+	correctOdometer(x,z,alpha);
+}
+
+void SpecificWorker::DifferentialRobot_getBasePose(int &x, int &z, float &alpha)
+{
+	getBasePose(x,z,alpha);
+}
+
+void SpecificWorker::DifferentialRobot_resetOdometer()
+{
+	resetOdometer();
+}
+
+void SpecificWorker::DifferentialRobot_setOdometer(const RoboCompGenericBase::TBaseState &state)
+{
+	setOdometer(state);
+}
+
+void SpecificWorker::DifferentialRobot_getBaseState(RoboCompGenericBase::TBaseState &state)
+{
+	getBaseState(state);
+}
+
+void SpecificWorker::DifferentialRobot_setOdometerPose(const int x, const int z, const float alpha)
+{
+	setOdometerPose(x,z,alpha);
+}
+
+void SpecificWorker::DifferentialRobot_stopBase()
+{
+	stopBase();
+}
+
+void SpecificWorker::DifferentialRobot_setSpeedBase(const float adv, const float rot)
+{
+	setSpeedBase(adv,rot);
+}
+
+void SpecificWorker::GenericBase_getBaseState(RoboCompGenericBase::TBaseState &state)
+{
+	getBaseState(state);
+}
+
+void SpecificWorker::GenericBase_getBasePose(int &x, int &z, float &alpha)
+{
+	getBasePose(x,z,alpha);
+}
+
+void SpecificWorker::OmniRobot_correctOdometer(const int x, const int z, const float alpha)
+{
+	correctOdometer(x,z,alpha);
+}
+
+void SpecificWorker::OmniRobot_getBasePose(int &x, int &z, float &alpha)
+{
+	getBasePose(x,z,alpha);
+}
+
+void SpecificWorker::OmniRobot_resetOdometer()
+{
+	resetOdometer();
+}
+
+void SpecificWorker::OmniRobot_setOdometer(const RoboCompGenericBase::TBaseState &state)
+{
+	setOdometer(state);
+}
+
+void SpecificWorker::OmniRobot_getBaseState(RoboCompGenericBase::TBaseState &state)
+{
+	getBaseState(state);
+}
+
+void SpecificWorker::OmniRobot_setOdometerPose(const int x, const int z, const float alpha)
+{
+	setOdometerPose(x,z,alpha);
+}
+
+void SpecificWorker::OmniRobot_stopBase()
+{
+	stopBase();
+}
+
+void SpecificWorker::OmniRobot_setSpeedBase(const float advx, const float advz, const float rot)
+{
+	setSpeedBase(advx,advz,rot);
 }

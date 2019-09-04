@@ -1,5 +1,5 @@
 /*
- *    Copyright (C) 2018 by YOUR NAME HERE
+ *    Copyright (C) 2019 by YOUR NAME HERE
  *
  *    This file is part of RoboComp
  *
@@ -81,14 +81,10 @@
 #include "specificmonitor.h"
 #include "commonbehaviorI.h"
 
-#include <omnirobotI.h>
 #include <differentialrobotI.h>
 #include <genericbaseI.h>
+#include <omnirobotI.h>
 
-#include <OmniRobot.h>
-#include <GenericBase.h>
-#include <DifferentialRobot.h>
-#include <GenericBase.h>
 #include <GenericBase.h>
 
 
@@ -142,7 +138,6 @@ int ::viriatobase::run(int argc, char* argv[])
 	initialize();
 
 
-
 	SpecificWorker *worker = new SpecificWorker(mprx);
 	//Monitor thread
 	SpecificMonitor *monitor = new SpecificMonitor(worker,communicator());
@@ -160,55 +155,79 @@ int ::viriatobase::run(int argc, char* argv[])
 
 	try
 	{
-		// Server adapter creation and publication
-		if (not GenericMonitor::configGetString(communicator(), prefix, "CommonBehavior.Endpoints", tmp, ""))
-		{
-			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy CommonBehavior\n";
+		try {
+			// Server adapter creation and publication
+			if (not GenericMonitor::configGetString(communicator(), prefix, "CommonBehavior.Endpoints", tmp, "")) {
+				cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy CommonBehavior\n";
+			}
+			Ice::ObjectAdapterPtr adapterCommonBehavior = communicator()->createObjectAdapterWithEndpoints("commonbehavior", tmp);
+			CommonBehaviorI *commonbehaviorI = new CommonBehaviorI(monitor);
+			adapterCommonBehavior->add(commonbehaviorI, Ice::stringToIdentity("commonbehavior"));
+			adapterCommonBehavior->activate();
 		}
-		Ice::ObjectAdapterPtr adapterCommonBehavior = communicator()->createObjectAdapterWithEndpoints("commonbehavior", tmp);
-		CommonBehaviorI *commonbehaviorI = new CommonBehaviorI(monitor );
-		adapterCommonBehavior->add(commonbehaviorI, communicator()->stringToIdentity("commonbehavior"));
-		adapterCommonBehavior->activate();
-
-
-
-
-		// Server adapter creation and publication
-		if (not GenericMonitor::configGetString(communicator(), prefix, "OmniRobot.Endpoints", tmp, ""))
+		catch(const Ice::Exception& ex)
 		{
-			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy OmniRobot";
+			status = EXIT_FAILURE;
+
+			cout << "[" << PROGRAM_NAME << "]: Exception raised while creating CommonBehavior adapter: " << endl;
+			cout << ex;
+
 		}
-		Ice::ObjectAdapterPtr adapterOmniRobot = communicator()->createObjectAdapterWithEndpoints("omnirobot", tmp);
-		OmniRobotI *omnirobot = new OmniRobotI(worker);
-		adapterOmniRobot->add(omnirobot, communicator()->stringToIdentity("omnirobot"));
-		adapterOmniRobot->activate();
-		cout << "[" << PROGRAM_NAME << "]: OmniRobot adapter created in port " << tmp << endl;
 
 
-		// Server adapter creation and publication
-		if (not GenericMonitor::configGetString(communicator(), prefix, "DifferentialRobot.Endpoints", tmp, ""))
+
+		try
 		{
-			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy DifferentialRobot";
-		}
-		Ice::ObjectAdapterPtr adapterDifferentialRobot = communicator()->createObjectAdapterWithEndpoints("DifferentialRobot", tmp);
-		DifferentialRobotI *differentialrobot = new DifferentialRobotI(worker);
-		adapterDifferentialRobot->add(differentialrobot, communicator()->stringToIdentity("differentialrobot"));
-		adapterDifferentialRobot->activate();
-		cout << "[" << PROGRAM_NAME << "]: DifferentialRobot adapter created in port " << tmp << endl;
+			// Server adapter creation and publication
+			if (not GenericMonitor::configGetString(communicator(), prefix, "DifferentialRobot.Endpoints", tmp, ""))
+			{
+				cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy DifferentialRobot";
+			}
+			Ice::ObjectAdapterPtr adapterDifferentialRobot = communicator()->createObjectAdapterWithEndpoints("DifferentialRobot", tmp);
+			DifferentialRobotI *differentialrobot = new DifferentialRobotI(worker);
+			adapterDifferentialRobot->add(differentialrobot, Ice::stringToIdentity("differentialrobot"));
+			adapterDifferentialRobot->activate();
+			cout << "[" << PROGRAM_NAME << "]: DifferentialRobot adapter created in port " << tmp << endl;
+			}
+			catch (const IceStorm::TopicExists&){
+				cout << "[" << PROGRAM_NAME << "]: ERROR creating or activating adapter for DifferentialRobot\n";
+			}
 
 
-		// Server adapter creation and publication
-		if (not GenericMonitor::configGetString(communicator(), prefix, "GenericBase.Endpoints", tmp, ""))
+		try
 		{
-			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy GenericBase";
-		}
-		Ice::ObjectAdapterPtr adapterGenericBase = communicator()->createObjectAdapterWithEndpoints("GenericBase", tmp);
-		GenericBaseI *genericbase = new GenericBaseI(worker);
-		adapterGenericBase->add(genericbase, communicator()->stringToIdentity("genericbase"));
-		adapterGenericBase->activate();
-		cout << "[" << PROGRAM_NAME << "]: GenericBase adapter created in port " << tmp << endl;
+			// Server adapter creation and publication
+			if (not GenericMonitor::configGetString(communicator(), prefix, "GenericBase.Endpoints", tmp, ""))
+			{
+				cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy GenericBase";
+			}
+			Ice::ObjectAdapterPtr adapterGenericBase = communicator()->createObjectAdapterWithEndpoints("GenericBase", tmp);
+			GenericBaseI *genericbase = new GenericBaseI(worker);
+			adapterGenericBase->add(genericbase, Ice::stringToIdentity("genericbase"));
+			adapterGenericBase->activate();
+			cout << "[" << PROGRAM_NAME << "]: GenericBase adapter created in port " << tmp << endl;
+			}
+			catch (const IceStorm::TopicExists&){
+				cout << "[" << PROGRAM_NAME << "]: ERROR creating or activating adapter for GenericBase\n";
+			}
 
 
+		try
+		{
+			// Server adapter creation and publication
+			if (not GenericMonitor::configGetString(communicator(), prefix, "OmniRobot.Endpoints", tmp, ""))
+			{
+				cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy OmniRobot";
+			}
+			Ice::ObjectAdapterPtr adapterOmniRobot = communicator()->createObjectAdapterWithEndpoints("OmniRobot", tmp);
+			OmniRobotI *omnirobot = new OmniRobotI(worker);
+			adapterOmniRobot->add(omnirobot, Ice::stringToIdentity("omnirobot"));
+			adapterOmniRobot->activate();
+			cout << "[" << PROGRAM_NAME << "]: OmniRobot adapter created in port " << tmp << endl;
+			}
+			catch (const IceStorm::TopicExists&){
+				cout << "[" << PROGRAM_NAME << "]: ERROR creating or activating adapter for OmniRobot\n";
+			}
 
 
 
@@ -217,10 +236,10 @@ int ::viriatobase::run(int argc, char* argv[])
 
 		// User defined QtGui elements ( main window, dialogs, etc )
 
-#ifdef USE_QTGUI
-		//ignoreInterrupt(); // Uncomment if you want the component to ignore console SIGINT signal (ctrl+c).
-		a.setQuitOnLastWindowClosed( true );
-#endif
+		#ifdef USE_QTGUI
+			//ignoreInterrupt(); // Uncomment if you want the component to ignore console SIGINT signal (ctrl+c).
+			a.setQuitOnLastWindowClosed( true );
+		#endif
 		// Run QT Application Event Loop
 		a.exec();
 
@@ -234,12 +253,16 @@ int ::viriatobase::run(int argc, char* argv[])
 		cout << "[" << PROGRAM_NAME << "]: Exception raised on main thread: " << endl;
 		cout << ex;
 
-#ifdef USE_QTGUI
+	}
+	#ifdef USE_QTGUI
 		a.quit();
-#endif
-		monitor->exit(0);
-}
+	#endif
 
+	status = EXIT_SUCCESS;
+	monitor->terminate();
+	monitor->wait();
+	delete worker;
+	delete monitor;
 	return status;
 }
 

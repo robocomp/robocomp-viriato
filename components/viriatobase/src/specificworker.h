@@ -40,6 +40,28 @@ public:
 	~SpecificWorker();
 	bool setParams(RoboCompCommonBehavior::ParameterList params);
 
+	//Ice Interfaces
+	void DifferentialRobot_correctOdometer(const int x, const int z, const float alpha);
+	void DifferentialRobot_getBasePose(int &x, int &z, float &alpha);
+	void DifferentialRobot_resetOdometer();
+	void DifferentialRobot_setOdometer(const RoboCompGenericBase::TBaseState &state);
+	void DifferentialRobot_getBaseState(RoboCompGenericBase::TBaseState &state);
+	void DifferentialRobot_setOdometerPose(const int x, const int z, const float alpha);
+	void DifferentialRobot_stopBase();
+	void DifferentialRobot_setSpeedBase(const float adv, const float rot);
+	void GenericBase_getBaseState(RoboCompGenericBase::TBaseState &state);
+	void GenericBase_getBasePose(int &x, int &z, float &alpha);
+	void OmniRobot_correctOdometer(const int x, const int z, const float alpha);
+	void OmniRobot_getBasePose(int &x, int &z, float &alpha);
+	void OmniRobot_resetOdometer();
+	void OmniRobot_setOdometer(const RoboCompGenericBase::TBaseState &state);
+	void OmniRobot_getBaseState(RoboCompGenericBase::TBaseState &state);
+	void OmniRobot_setOdometerPose(const int x, const int z, const float alpha);
+	void OmniRobot_stopBase();
+	void OmniRobot_setSpeedBase(const float advx, const float advz, const float rot);
+	
+private:
+	//Internal methods
 	void correctOdometer(const int x, const int z, const float alpha);
 	void getBasePose(int &x, int &z, float &alpha);
 	void resetOdometer();
@@ -51,7 +73,7 @@ public:
 	void setSpeedBase(const float adv, const float rot);
 
 
-private:
+
 	void setWheels(QVec wheelVels_);
 	void computeOdometry(bool forced=false);
 	float R, l1, l2;
@@ -66,7 +88,7 @@ private:
 	InnerModelTransform *corrBackPose, *corrNewPose;
 public slots:
 	void compute();
-
+	void initialize(int period);
 
 private:
 	Viriato *viriato;
