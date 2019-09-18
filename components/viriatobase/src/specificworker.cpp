@@ -38,7 +38,7 @@ void SpecificWorker::initialize(int period)
 {
 	std::cout << "Initialize worker" << std::endl;
 	this->Period = period;
-	timer.start(Period);
+	timer.start(0);
 
 }
 
@@ -116,14 +116,13 @@ bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 	M_vels_2_wheels = M_vels_2_wheels.operator*(1./(R)); // 1/R instead of 1/(2*pi*R) because we use rads/s instead of rev/s
 	M_vels_2_wheels.print("M_vels_2_wheels");
 	
-	timer.start(0);
-	
+
 	return true;
 }
 
 void SpecificWorker::compute()
 {
-// 	printf("compute\n");
+ //	printf("compute\n");
 	setWheels(wheelVels);
 	computeOdometry(false);
 	usleep(10000);
@@ -140,7 +139,7 @@ void SpecificWorker::computeOdometry(bool forced)
 
 	deltaPos(1) *= -1;
 	previousWheelsPos = wheelsPos;
-	
+
 	QVec newP;
 	// Raw odometry
 	innermodel->updateTransformValues("newPose",     deltaPos(1), 0, deltaPos(0),       0,       deltaPos(2), 0);
@@ -155,10 +154,12 @@ void SpecificWorker::computeOdometry(bool forced)
 	innermodel->updateTransformValues("corrNewPose",    deltaPos(1), 0, deltaPos(0),    0,       deltaPos(2), 0);
 	newP = innermodel->transform("root", "corrNewPose");
 	innermodel->updateTransformValues("corrBackPose",       newP(0), 0,     newP(2),    0, corrAngle+deltaPos(2), 0);
+
 	innermodel->updateTransformValues("corrNewPose",              0, 0,           0,    0,                 0, 0);
 	corrX = newP(0);
 	corrZ = newP(2);
 	corrAngle += deltaPos(2);
+	
 }
 
 
@@ -196,7 +197,7 @@ void SpecificWorker::setOdometer(const TBaseState &state)
 
 void SpecificWorker::getBaseState(TBaseState &state)
 {
-	printf("getBaseState\n");
+//	printf("getBaseState\n");
 	QMutexLocker locker(mutex);
 	state.x = x;
 	state.z = z;
@@ -222,12 +223,13 @@ void SpecificWorker::stopBase()
 
 void SpecificWorker::setSpeedBase(const float advx, const float advz, const float rotv)
 {
+
 	computeOdometry(true);
 	QMutexLocker locker(mutex);
 	const QVec v = QVec::vec3(advz, advx, rotv);
-// 	v.print("v");
+ 	v.print("v");
 	const QVec wheels = M_vels_2_wheels * v;
-// 	wheels.print("wheels");
+ 	wheels.print("wheels");
 	setWheels(wheels);
 }
 
