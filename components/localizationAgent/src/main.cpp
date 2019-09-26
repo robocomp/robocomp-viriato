@@ -85,7 +85,6 @@
 #include <agmexecutivetopicI.h>
 #include <apriltagsI.h>
 #include <fullposeestimationpubI.h>
-#include <fullposeestimationpubI.h>
 
 #include <Planning.h>
 #include <GenericBase.h>
@@ -368,46 +367,6 @@ int ::localizationAgent::run(int argc, char* argv[])
 		}
 
 		// Server adapter creation and publication
-		IceStorm::TopicPrx fullposeestimationpub_topic;
-		Ice::ObjectPrx fullposeestimationpub1;
-		try
-		{
-			if (not GenericMonitor::configGetString(communicator(), prefix, "FullPoseEstimationPubTopic.Endpoints", tmp, ""))
-			{
-				cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy FullPoseEstimationPubProxy";
-			}
-			Ice::ObjectAdapterPtr FullPoseEstimationPub_adapter = communicator()->createObjectAdapterWithEndpoints("fullposeestimationpub", tmp);
-			FullPoseEstimationPubPtr fullposeestimationpubI_ =  new FullPoseEstimationPubI(worker);
-			Ice::ObjectPrx fullposeestimationpub1 = FullPoseEstimationPub_adapter->addWithUUID(fullposeestimationpubI_)->ice_oneway();
-			if(!fullposeestimationpub_topic)
-			{
-				try {
-					fullposeestimationpub_topic = topicManager->create("FullPoseEstimationPub");
-				}
-				catch (const IceStorm::TopicExists&) {
-					//Another client created the topic
-					try{
-						cout << "[" << PROGRAM_NAME << "]: Probably other client already opened the topic. Trying to connect.\n";
-						fullposeestimationpub_topic = topicManager->retrieve("FullPoseEstimationPub");
-					}
-					catch(const IceStorm::NoSuchTopic&)
-					{
-						cout << "[" << PROGRAM_NAME << "]: Topic doesn't exists and couldn't be created.\n";
-						//Error. Topic does not exist
-					}
-				}
-				IceStorm::QoS qos;
-				fullposeestimationpub_topic->subscribeAndGetPublisher(qos, fullposeestimationpub1);
-			}
-			FullPoseEstimationPub_adapter->activate();
-		}
-		catch(const IceStorm::NoSuchTopic&)
-		{
-			cout << "[" << PROGRAM_NAME << "]: Error creating FullPoseEstimationPub topic.\n";
-			//Error. Topic does not exist
-		}
-
-		// Server adapter creation and publication
 		cout << SERVER_FULL_NAME " started" << endl;
 
 		// User defined QtGui elements ( main window, dialogs, etc )
@@ -436,15 +395,6 @@ int ::localizationAgent::run(int argc, char* argv[])
 		catch(const Ice::Exception& ex)
 		{
 			std::cout << "ERROR Unsubscribing topic: apriltags " <<std::endl;
-		}
-		try
-		{
-			std::cout << "Unsubscribing topic: fullposeestimationpub " <<std::endl;
-			fullposeestimationpub_topic->unsubscribe( fullposeestimationpub );
-		}
-		catch(const Ice::Exception& ex)
-		{
-			std::cout << "ERROR Unsubscribing topic: fullposeestimationpub " <<std::endl;
 		}
 		try
 		{

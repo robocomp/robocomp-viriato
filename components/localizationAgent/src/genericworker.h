@@ -99,7 +99,6 @@ public:
 	virtual void AprilTags_newAprilTagAndPose(const tagsList &tags, const RoboCompGenericBase::TBaseState &bState, const RoboCompJointMotor::MotorStateMap &hState) = 0;
 	virtual void AprilTags_newAprilTag(const tagsList &tags) = 0;
 	virtual void FullPoseEstimationPub_newFullPose(const RoboCompFullPoseEstimation::FullPose &pose) = 0;
-	virtual void FullPoseEstimationPub_newFullPose(const RoboCompFullPoseEstimation::FullPose &pose) = 0;
 
 protected:
 //State Machine

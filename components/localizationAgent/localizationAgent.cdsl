@@ -8,7 +8,7 @@ Component localizationAgent
         Communications
         {
                 requires OmniRobot;
-                subscribesTo FullPoseEstimationPub, FullPoseEstimationPub, AprilTags;
+                subscribesTo FullPoseEstimationPub,  AprilTags;
         };
         language Cpp;
         options agmagent;

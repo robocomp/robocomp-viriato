@@ -36,22 +36,24 @@ SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
 SpecificWorker::~SpecificWorker()
 {
 	std::cout << "Destroying SpecificWorker" << std::endl;
+	emit computetofinalize();
 }
 
 bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 {
 //       THE FOLLOWING IS JUST AN EXAMPLE
 //	To use innerModelPath parameter you should uncomment specificmonitor.cpp readConfig method content
-//	try
-//	{
-//		RoboCompCommonBehavior::Parameter par = params.at("InnerModelPath");
-//		std::string innermodel_path = par.value;
-//		innerModel = new InnerModel(innermodel_path);
-//	}
-//	catch(std::exception e) { qFatal("Error reading config params"); }
+	try
+	{
+		RoboCompCommonBehavior::Parameter par = params.at("InnerModelPath");
+		std::string innermodel_path = par.value;
+		innerModel = new InnerModel(innermodel_path);
+	}
+	catch(std::exception e) { qFatal("Error reading config params"); }
 
 
 
+	defaultMachine.start();
 	
 
 	try
@@ -72,6 +74,7 @@ void SpecificWorker::initialize(int period)
 	std::cout << "Initialize worker" << std::endl;
 	this->Period = period;
 	timer.start(Period);
+	emit this->initializetocompute();
 
 }
 
@@ -90,6 +93,24 @@ void SpecificWorker::compute()
 //		std::cout << "Error reading from Camera" << e << std::endl;
 //	}
 }
+
+
+void SpecificWorker::sm_compute()
+{
+	std::cout<<"Entered state compute"<<std::endl;
+	compute();
+}
+
+void SpecificWorker::sm_initialize()
+{
+	std::cout<<"Entered initial state initialize"<<std::endl;
+}
+
+void SpecificWorker::sm_finalize()
+{
+	std::cout<<"Entered final state finalize"<<std::endl;
+}
+
 
 
 
@@ -213,7 +234,13 @@ void SpecificWorker::AGMExecutiveTopic_symbolsUpdated(const RoboCompAGMWorldMode
 
 }
 
-void SpecificWorker::FullPoseEstimationPub_newFullPose(const RoboCompFullPoseEstimation::FullPose &pose)
+void SpecificWorker::AprilTags_newAprilTagAndPose(const tagsList &tags, const RoboCompGenericBase::TBaseState &bState, const RoboCompJointMotor::MotorStateMap &hState)
+{
+//subscribesToCODE
+
+}
+
+void SpecificWorker::AprilTags_newAprilTag(const tagsList &tags)
 {
 //subscribesToCODE
 

@@ -52,14 +52,21 @@ public:
 	void AGMExecutiveTopic_edgeUpdated(const RoboCompAGMWorldModel::Edge &modification);
 	void AGMExecutiveTopic_symbolUpdated(const RoboCompAGMWorldModel::Node &modification);
 	void AGMExecutiveTopic_symbolsUpdated(const RoboCompAGMWorldModel::NodeSequence &modifications);
-	void FullPoseEstimationPub_newFullPose(const RoboCompFullPoseEstimation::FullPose &pose);
+	void AprilTags_newAprilTagAndPose(const tagsList &tags, const RoboCompGenericBase::TBaseState &bState, const RoboCompJointMotor::MotorStateMap &hState);
+	void AprilTags_newAprilTag(const tagsList &tags);
 	void FullPoseEstimationPub_newFullPose(const RoboCompFullPoseEstimation::FullPose &pose);
 
 public slots:
 	void compute();
 	void initialize(int period);
+//Specification slot methods State Machine
+	void sm_compute();
+	void sm_initialize();
+	void sm_finalize();
+
+//--------------------
 private:
-	std::shared_ptr<InnerModel> innerModel;
+	InnerModel *innerModel;
 	std::string action;
 	ParameterMap params;
 	AGMModel::SPtr worldModel;
