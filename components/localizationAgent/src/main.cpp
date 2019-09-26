@@ -83,13 +83,15 @@
 
 #include <agmcommonbehaviorI.h>
 #include <agmexecutivetopicI.h>
+#include <apriltagsI.h>
 #include <fullposeestimationpubI.h>
 #include <fullposeestimationpubI.h>
 
 #include <Planning.h>
+#include <GenericBase.h>
 #include <FullPoseEstimation.h>
 #include <AGMWorldModel.h>
-#include <GenericBase.h>
+#include <JointMotor.h>
 
 
 // User includes here
@@ -286,6 +288,46 @@ int ::localizationAgent::run(int argc, char* argv[])
 		}
 
 		// Server adapter creation and publication
+		IceStorm::TopicPrx apriltags_topic;
+		Ice::ObjectPrx apriltags;
+		try
+		{
+			if (not GenericMonitor::configGetString(communicator(), prefix, "AprilTagsTopic.Endpoints", tmp, ""))
+			{
+				cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy AprilTagsProxy";
+			}
+			Ice::ObjectAdapterPtr AprilTags_adapter = communicator()->createObjectAdapterWithEndpoints("apriltags", tmp);
+			AprilTagsPtr apriltagsI_ =  new AprilTagsI(worker);
+			Ice::ObjectPrx apriltags = AprilTags_adapter->addWithUUID(apriltagsI_)->ice_oneway();
+			if(!apriltags_topic)
+			{
+				try {
+					apriltags_topic = topicManager->create("AprilTags");
+				}
+				catch (const IceStorm::TopicExists&) {
+					//Another client created the topic
+					try{
+						cout << "[" << PROGRAM_NAME << "]: Probably other client already opened the topic. Trying to connect.\n";
+						apriltags_topic = topicManager->retrieve("AprilTags");
+					}
+					catch(const IceStorm::NoSuchTopic&)
+					{
+						cout << "[" << PROGRAM_NAME << "]: Topic doesn't exists and couldn't be created.\n";
+						//Error. Topic does not exist
+					}
+				}
+				IceStorm::QoS qos;
+				apriltags_topic->subscribeAndGetPublisher(qos, apriltags);
+			}
+			AprilTags_adapter->activate();
+		}
+		catch(const IceStorm::NoSuchTopic&)
+		{
+			cout << "[" << PROGRAM_NAME << "]: Error creating AprilTags topic.\n";
+			//Error. Topic does not exist
+		}
+
+		// Server adapter creation and publication
 		IceStorm::TopicPrx fullposeestimationpub_topic;
 		Ice::ObjectPrx fullposeestimationpub;
 		try
@@ -385,6 +427,15 @@ int ::localizationAgent::run(int argc, char* argv[])
 		catch(const Ice::Exception& ex)
 		{
 			std::cout << "ERROR Unsubscribing topic: agmexecutivetopic " <<std::endl;
+		}
+		try
+		{
+			std::cout << "Unsubscribing topic: apriltags " <<std::endl;
+			apriltags_topic->unsubscribe( apriltags );
+		}
+		catch(const Ice::Exception& ex)
+		{
+			std::cout << "ERROR Unsubscribing topic: apriltags " <<std::endl;
 		}
 		try
 		{

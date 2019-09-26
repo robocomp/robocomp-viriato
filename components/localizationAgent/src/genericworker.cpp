@@ -24,6 +24,23 @@ GenericWorker::GenericWorker(MapPrx& mprx) :
 QObject()
 {
 
+//Initialization State machine
+	initializeState->addTransition(this, SIGNAL(initializetocompute()), computeState);
+	computeState->addTransition(this, SIGNAL(computetocompute()), computeState);
+	computeState->addTransition(this, SIGNAL(computetofinalize()), finalizeState);
+
+	defaultMachine.addState(computeState);
+	defaultMachine.addState(initializeState);
+	defaultMachine.addState(finalizeState);
+
+	defaultMachine.setInitialState(initializeState);
+
+	QObject::connect(computeState, SIGNAL(entered()), this, SLOT(sm_compute()));
+	QObject::connect(initializeState, SIGNAL(entered()), this, SLOT(sm_initialize()));
+	QObject::connect(finalizeState, SIGNAL(entered()), this, SLOT(sm_finalize()));
+	QObject::connect(&timer, SIGNAL(timeout()), this, SIGNAL(computetocompute()));
+
+//------------------
 	agmexecutive_proxy = (*(AGMExecutivePrx*)mprx["AGMExecutiveProxy"]);
 	omnirobot_proxy = (*(OmniRobotPrx*)mprx["OmniRobotProxy"]);
 

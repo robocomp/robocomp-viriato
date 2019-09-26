@@ -1,6 +1,6 @@
 import "OmniRobot.idsl";
 import "FullPoseEstimationPub.idsl";
-import "AprilTagsServer.idsl";
+import "AprilTags.idsl";
 
 
 Component localizationAgent
@@ -8,8 +8,9 @@ Component localizationAgent
         Communications
         {
                 requires OmniRobot;
-                subscribesTo FullPoseEstimationPub, FullPoseEstimationPub;
+                subscribesTo FullPoseEstimationPub, FullPoseEstimationPub, AprilTags;
         };
         language Cpp;
         options agmagent;
+        statemachine "statemachine.smdsl";
 };

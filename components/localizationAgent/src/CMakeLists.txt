@@ -27,6 +27,7 @@ SET ( SOURCES
   genericworker.cpp
   agmcommonbehaviorI.cpp
   agmexecutivetopicI.cpp
+  apriltagsI.cpp
   fullposeestimationpubI.cpp
   fullposeestimationpubI.cpp
 )
@@ -36,7 +37,7 @@ SET ( SOURCES
 
 #ROBOCOMP
 ROBOCOMP_INITIALIZE( $ENV{ROBOCOMP}/ )
-ROBOCOMP_WRAP_ICE( CommonBehavior Planning FullPoseEstimation AGMWorldModel GenericBase OmniRobot FullPoseEstimationPub FullPoseEstimationPub AGMCommonBehavior AGMExecutive AGMWorldModel AGMExecutive AGMWorldModel Planning AGMCommonBehavior )
+ROBOCOMP_WRAP_ICE( CommonBehavior Planning GenericBase FullPoseEstimation AGMWorldModel JointMotor OmniRobot AprilTags FullPoseEstimationPub FullPoseEstimationPub AGMCommonBehavior AGMExecutive AGMWorldModel AGMExecutive AGMWorldModel Planning AGMCommonBehavior )
 SET (EXECUTABLE_OUTPUT_PATH ${RC_COMPONENT_DEVEL_PATH}/bin)
 
 

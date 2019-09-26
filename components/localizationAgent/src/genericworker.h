@@ -23,13 +23,17 @@
 #include <stdint.h>
 #include <qlog/qlog.h>
 
+#include <QStateMachine>
+#include <QState>
 #include <CommonBehavior.h>
 
 #include <Planning.h>
+#include <GenericBase.h>
 #include <FullPoseEstimation.h>
 #include <AGMWorldModel.h>
-#include <GenericBase.h>
+#include <JointMotor.h>
 #include <OmniRobot.h>
+#include <AprilTags.h>
 #include <FullPoseEstimationPub.h>
 #include <AGMCommonBehavior.h>
 #include <AGMExecutive.h>
@@ -40,10 +44,12 @@
 
 using namespace std;
 using namespace RoboCompPlanning;
+using namespace RoboCompGenericBase;
 using namespace RoboCompFullPoseEstimation;
 using namespace RoboCompAGMWorldModel;
-using namespace RoboCompGenericBase;
+using namespace RoboCompJointMotor;
 using namespace RoboCompOmniRobot;
+using namespace RoboCompAprilTags;
 using namespace RoboCompFullPoseEstimationPub;
 using namespace RoboCompAGMCommonBehavior;
 using namespace RoboCompAGMExecutive;
@@ -90,10 +96,20 @@ public:
 	virtual void AGMExecutiveTopic_edgeUpdated(const RoboCompAGMWorldModel::Edge &modification) = 0;
 	virtual void AGMExecutiveTopic_symbolUpdated(const RoboCompAGMWorldModel::Node &modification) = 0;
 	virtual void AGMExecutiveTopic_symbolsUpdated(const RoboCompAGMWorldModel::NodeSequence &modifications) = 0;
+	virtual void AprilTags_newAprilTagAndPose(const tagsList &tags, const RoboCompGenericBase::TBaseState &bState, const RoboCompJointMotor::MotorStateMap &hState) = 0;
+	virtual void AprilTags_newAprilTag(const tagsList &tags) = 0;
 	virtual void FullPoseEstimationPub_newFullPose(const RoboCompFullPoseEstimation::FullPose &pose) = 0;
 	virtual void FullPoseEstimationPub_newFullPose(const RoboCompFullPoseEstimation::FullPose &pose) = 0;
 
 protected:
+//State Machine
+	QStateMachine defaultMachine;
+
+	QState *computeState = new QState();
+	QState *initializeState = new QState();
+	QFinalState *finalizeState = new QFinalState();
+
+//-------------------------
 
 	QTimer timer;
 	int Period;
@@ -109,11 +125,23 @@ private:
 
 
 public slots:
+//Slots funtion State Machine
+	virtual void sm_compute() = 0;
+	virtual void sm_initialize() = 0;
+	virtual void sm_finalize() = 0;
+
+//-------------------------
 	virtual void compute() = 0;
     virtual void initialize(int period) = 0;
 	
 signals:
 	void kill();
+//Signals for State Machine
+	void initializetocompute();
+	void computetocompute();
+	void computetofinalize();
+
+//-------------------------
 };
 
 #endif
