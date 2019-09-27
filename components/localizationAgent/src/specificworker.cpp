@@ -18,6 +18,50 @@
  */
 #include "specificworker.h"
 
+class TimedList
+{
+	class TimedDatum
+	{
+	public:
+		TimedDatum(float d)
+		{
+			datum = d;
+			datum_time = QTime::currentTime();
+		}
+		float datum;
+		QTime datum_time;
+	};
+
+public:
+	TimedList(float msecs)
+	{
+		maxMSec = msecs;
+	}
+	void add(float datum)
+	{
+		data.push_back(TimedDatum(datum));
+	}
+	float getSum()
+	{
+		while (data.size()>0)
+		{
+			if (data[0].datum_time.elapsed() > maxMSec)
+				data.pop_front();
+			else
+				break;
+		}
+		float acc = 0.;
+		for (int i=0; i<data.size(); i++)
+			acc += data[i].datum;
+		return acc;
+	}
+private:
+	float maxMSec;
+	QList<TimedDatum> data;
+};
+
+
+
 /**
 * \brief Default constructor
 */
@@ -75,26 +119,301 @@ void SpecificWorker::initialize(int period)
 	this->Period = period;
 	timer.start(Period);
 	emit this->initializetocompute();
-
 }
 
 void SpecificWorker::compute()
 {
-//computeCODE
-//QMutexLocker locker(mutex);
-//	try
-//	{
-//		camera_proxy->getYImage(0,img, cState, bState);
-//		memcpy(image_gray.data, &img[0], m_width*m_height*sizeof(uchar));
-//		searchTags(image_gray);
-//	}
-//	catch(const Ice::Exception &e)
-//	{
-//		std::cout << "Error reading from Camera" << e << std::endl;
-//	}
+	static QTime reloj = QTime::currentTime();
+	QMutexLocker l(mutex);
+
+	RoboCompGenericBase::TBaseState newState;
+	// retrieve model
+	if (worldModel->getIdentifierByType("robot") < 0)
+	{
+		try
+		{
+			RoboCompAGMWorldModel::World w = agmexecutive_proxy->getModel();
+			AGMExecutiveTopic_structuralChange(w);
+		}
+		catch(...)
+		{
+			printf("The executive is probably not running, waiting for first AGM model publication...");
+		}
+	}
+	// retrieve different position values
+
+	// odometry
+	try
+	{
+		omnirobot_proxy->getBaseState(omniState);
+		newState = omniState;
+	}
+	catch (...)
+	{
+		printf("Can't connect to the robot!!\n");
+	}
+
+	//compute new state 
+	computeNewState();
+
+	// Check if base needs correction
+	if (enoughDifference(omniState, newState))
+	{
+		setCorrectedPosition(newState);
+		lastState = newState;
+	}
+	odometryAndLocationIssues();
+}
+
+void SpecificWorker::computeNewState()
+{
+
+}
+
+// compute difference between actual and last value to determine if it should be sent
+bool SpecificWorker::enoughDifference(const RoboCompGenericBase::TBaseState &lastState, const RoboCompGenericBase::TBaseState &newState)
+{
+	if (fabs(newState.correctedX - lastState.correctedX) > 5 or fabs(newState.correctedZ - lastState.correctedZ) > 5 or fabs(newState.correctedAlpha - lastState.correctedAlpha) > 0.02)
+	{
+		return true;
+	}
+	return false;
+}
+
+// send corrected position
+void SpecificWorker::setCorrectedPosition(const RoboCompGenericBase::TBaseState &bState)
+{
+	std::cout<<"correct odometer position"<<std::endl;
+	try
+	{
+		omnirobot_proxy->correctOdometer(bState.correctedX, bState.correctedZ, bState.correctedAlpha);
+	}
+	catch(Ice::Exception &ex)
+	{
+		std::cout<<ex.what()<<std::endl;
+	}
+}
+
+//update robot position in model
+
+bool SpecificWorker::odometryAndLocationIssues(bool force)
+{
+	static QTime lastSent = QTime::currentTime();
+	if (lastSent.elapsed() > 2000)
+	{
+		force = true;
+	}
+	// Get robot's odometry
+	RoboCompGenericBase::TBaseState bState;
+	try
+	{
+		omnirobot_proxy->getBaseState(bState);
+	}
+	catch (...)
+	{
+		printf("Can't connect to the robot!!\n");
+		return false;
+	}
+
+	// Get robot's symbol and its identifier
+	int32_t robotId=-1;
+	robotId = worldModel->getIdentifierByType("robot");
+	if (robotId < 0)
+	{
+		printf("Robot symbol not found, Waiting for the executive...\n");
+		usleep(1000000);
+		return false;
+	}
+	AGMModelSymbol::SPtr robot = worldModel->getSymbol(robotId);
+
+	// Update odometry in the cognitive model
+	includeMovementInRobotSymbol(robot);
+
+	// Get current roomId
+	int roomId=-1;
+	for (auto edge = robot->edgesBegin(worldModel); edge != robot->edgesEnd(worldModel); edge++)
+	{
+		const std::pair<int32_t, int32_t> symbolPair = edge->getSymbolPair();
+
+		if (edge->getLabel() == "RT")
+		{
+			const string secondType = worldModel->getSymbol(symbolPair.first)->symbolType;
+			if (symbolPair.second == robotId and secondType == "room")
+			{
+				roomId = symbolPair.first;
+				break;
+			}
+		}
+	}
+	if (roomId < 0)
+	{
+		printf("roomId not found, Waiting for Insert innerModel...\n");
+		usleep(1000000);
+		return false;
+	}
+
+	// Query which should actually be the current room based on the corrected odometry odometry
+	int32_t robotIsActuallyInRoom;
+	float schmittTriggerLikeThreshold = 80;
+	if (bState.correctedZ < -schmittTriggerLikeThreshold)
+	{
+		robotIsActuallyInRoom = 5;
+	}
+	else if (bState.correctedZ > schmittTriggerLikeThreshold)
+	{
+		robotIsActuallyInRoom = 3;
+	}
+	else
+	{
+		robotIsActuallyInRoom = roomId;
+	}
+
+
+	if (roomId != robotIsActuallyInRoom)
+	{
+		try
+		{
+			AGMModel::SPtr newModel(new AGMModel(worldModel));
+
+			// Modify IN edge
+			newModel->removeEdgeByIdentifiers(robotId, roomId, "in");
+			newModel->addEdgeByIdentifiers(robotId, robotIsActuallyInRoom, "in");
+
+			// Move "in" edges for every object IN the robot
+			AGMModelSymbol::SPtr newRobot = newModel->getSymbol(robotId);
+			for (auto edgeIn = robot->edgesBegin(newModel); edgeIn != robot->edgesEnd(newModel); edgeIn++)
+			{
+				const std::pair<int32_t, int32_t> symbolPair = edgeIn->getSymbolPair();
+				if ( edgeIn->linking=="in" and symbolPair.second==robot->identifier )
+				{
+					AGMModelSymbol::SPtr objectToMove = newModel->getSymbol(symbolPair.first);
+					newModel->removeEdgeByIdentifiers(objectToMove->identifier, roomId, "in");
+					newModel->addEdgeByIdentifiers(objectToMove->identifier, robotIsActuallyInRoom, "in");
+				}
+			}
+
+
+			// Modify RT edge
+			AGMModelEdge edgeRT = newModel->getEdgeByIdentifiers(roomId, robotId, "RT");
+			newModel->removeEdgeByIdentifiers(roomId, robotId, "RT");
+			try
+			{
+				float bStatex = str2float(edgeRT->getAttribute("tx"));
+				float bStatez = str2float(edgeRT->getAttribute("tz"));
+				float bStatealpha = str2float(edgeRT->getAttribute("ry"));
+
+				// to reduce the publication frequency
+				if (fabs(bStatex - bState.correctedX)>5 or fabs(bStatez - bState.correctedZ)>5 or fabs(bStatealpha - bState.correctedAlpha)>0.02 or force)
+				{
+					//Publish update edge
+					printf("\nUpdate odometry...\n");
+					qDebug()<<"bState local --> "<<bStatex<<bStatez<<bStatealpha;
+					qDebug()<<"bState corrected --> "<<bState.correctedX<<bState.correctedZ<<bState.correctedAlpha;
+
+					edgeRT->setAttribute("tx", float2str(bState.correctedX));
+					edgeRT->setAttribute("tz", float2str(bState.correctedZ));
+					edgeRT->setAttribute("ry", float2str(bState.correctedAlpha));
+				}
+				newModel->addEdgeByIdentifiers(robotIsActuallyInRoom, robotId, "RT", edgeRT->attributes);
+				AGMMisc::publishModification(newModel, agmexecutive_proxy, "navigationAgent");
+				rDebug2(("navigationAgent moved robot from room"));
+			}
+			catch (...)
+			{
+				printf("Can't update odometry in RT, edge exists but we encountered other problem!!\n");
+				return false;
+			}
+		}
+		catch (...)
+		{
+			printf("Can't update room... do edges exist? !!!\n");
+			return false;
+		}
+	}
+	else
+	{
+		try
+		{
+			AGMModelEdge edge  = worldModel->getEdgeByIdentifiers(roomId, robotId, "RT");
+			try
+			{
+				float bStatex = str2float(edge->getAttribute("tx"));
+				float bStatez = str2float(edge->getAttribute("tz"));
+				float bStatealpha = str2float(edge->getAttribute("ry"));
+				// to reduce the publication frequency
+				if (fabs(bStatex - bState.correctedX)>5 or fabs(bStatez - bState.correctedZ)>5 or fabs(bStatealpha - bState.correctedAlpha)>0.02 or force)
+				{
+					//Publish update edge
+ 					printf("\nUpdate odometry...\n");
+ 					qDebug()<<"bState local --> "<<bStatex<<bStatez<<bStatealpha;
+ 					qDebug()<<"bState corrected --> "<<bState.correctedX<<bState.correctedZ<<bState.correctedAlpha;
+					edge->setAttribute("tx", float2str(bState.correctedX));
+					edge->setAttribute("tz", float2str(bState.correctedZ));
+					edge->setAttribute("ry", float2str(bState.correctedAlpha));
+					lastSent = QTime::currentTime();
+					AGMMisc::publishEdgeUpdate(edge, agmexecutive_proxy);
+				}
+			}
+			catch (...)
+			{
+				printf("Can't update odometry in RT, edge exists but we encountered other problem!!\n");
+				return false;
+			}
+		}
+		catch (...)
+		{
+			printf("Can't update odometry in RT, edge does not exist? !!!\n");
+			return false;
+		}
+	}
+
+	return true;
+
+}
+void SpecificWorker::includeMovementInRobotSymbol(AGMModelSymbol::SPtr robot)
+{
+	static TimedList list(3000);
+	static RoboCompGenericBase::TBaseState lastBaseState = lastState;
+
+	const float movX = lastState.x - lastBaseState.x;
+	const float movZ = lastState.z - lastBaseState.z;
+	const float movA = abs(lastState.alpha - lastBaseState.alpha);
+	const float mov = sqrt(movX*movX+movZ*movZ) + 20.*movA;
+	list.add(mov);
+	lastBaseState = lastState;
+
+	const float currentValue = list.getSum();
+	bool setValue = true;
+	static QTime lastSent = QTime::currentTime();
+	try
+	{
+		const float availableValue = str2float(robot->getAttribute("movedInLastSecond"));
+		const float ddiff = abs(currentValue-availableValue);
+		if (ddiff < 5 and lastSent.elapsed()<1000)
+		{
+			setValue = false;
+		}
+	}
+	catch(...){	}
+
+	if (setValue)
+	{
+		lastSent = QTime::currentTime();
+		const std::string attrValue = float2str(currentValue);
+		robot->setAttribute("movedInLastSecond", attrValue);
+		try
+		{
+			AGMMisc::publishNodeUpdate(robot, agmexecutive_proxy);
+		}
+		catch (...)
+		{
+			printf("Executive not running?\n");
+		}
+	}
 }
 
 
+//STATE MACHINE
 void SpecificWorker::sm_compute()
 {
 	std::cout<<"Entered state compute"<<std::endl;
@@ -110,10 +429,6 @@ void SpecificWorker::sm_finalize()
 {
 	std::cout<<"Entered final state finalize"<<std::endl;
 }
-
-
-
-
 
 bool SpecificWorker::AGMCommonBehavior_reloadConfigAgent()
 {
@@ -242,13 +557,19 @@ void SpecificWorker::AprilTags_newAprilTagAndPose(const tagsList &tags, const Ro
 
 void SpecificWorker::AprilTags_newAprilTag(const tagsList &tags)
 {
-//subscribesToCODE
+	std::cout<<"April received"<<std::endl;
+	for(auto tag: tags)
+	{
+		std::cout << tag.cameraId <<"=>ID(x,y,z,rx,ry,rz): "<<tag.id<<"("<<tag.tx<<","<<tag.ty<<","<<tag.tz<<","<<tag.rx<<","<<tag.ry<<","<<tag.rz<<")"<<std::endl;
+	}
 
 }
 
 void SpecificWorker::FullPoseEstimationPub_newFullPose(const RoboCompFullPoseEstimation::FullPose &pose)
 {
-//subscribesToCODE
+	std::cout<<"FullPose received "<<std::endl;
+	
+	std::cout << pose.source <<" (x,y,z,rx,ry,rz): ("<<pose.x<<","<<pose.y<<","<<pose.z<<","<<pose.rx<<","<<pose.ry<<","<<pose.rz<<")"<<std::endl;
 
 }
 

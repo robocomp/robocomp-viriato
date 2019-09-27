@@ -39,6 +39,12 @@ public:
 	~SpecificWorker();
 	bool setParams(RoboCompCommonBehavior::ParameterList params);
 
+	bool odometryAndLocationIssues(bool force=false);
+	void includeMovementInRobotSymbol(AGMModelSymbol::SPtr robot);
+	void setCorrectedPosition(const RoboCompGenericBase::TBaseState &bState);
+	bool enoughDifference(const RoboCompGenericBase::TBaseState &lastState, const RoboCompGenericBase::TBaseState &newState);
+	void computeNewState();
+
 	bool AGMCommonBehavior_reloadConfigAgent();
 	bool AGMCommonBehavior_activateAgent(const ParameterMap &prs);
 	bool AGMCommonBehavior_setAgentParameters(const ParameterMap &prs);
@@ -66,6 +72,8 @@ public slots:
 
 //--------------------
 private:
+	RoboCompGenericBase::TBaseState lastState, aprilState, omniState;
+	RoboCompCommonBehavior::ParameterList worker_params;
 	InnerModel *innerModel;
 	std::string action;
 	ParameterMap params;
