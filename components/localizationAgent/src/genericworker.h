@@ -29,14 +29,14 @@
 
 #include <Planning.h>
 #include <GenericBase.h>
-#include <FullPoseEstimation.h>
-#include <AGMWorldModel.h>
 #include <JointMotor.h>
+#include <FullPoseEstimation.h>
 #include <OmniRobot.h>
 #include <AprilTags.h>
 #include <FullPoseEstimationPub.h>
 #include <AGMCommonBehavior.h>
 #include <AGMExecutive.h>
+#include <AGMWorldModel.h>
 #include <agm.h>
 
 #define CHECK_PERIOD 5000
@@ -45,14 +45,14 @@
 using namespace std;
 using namespace RoboCompPlanning;
 using namespace RoboCompGenericBase;
-using namespace RoboCompFullPoseEstimation;
-using namespace RoboCompAGMWorldModel;
 using namespace RoboCompJointMotor;
+using namespace RoboCompFullPoseEstimation;
 using namespace RoboCompOmniRobot;
 using namespace RoboCompAprilTags;
 using namespace RoboCompFullPoseEstimationPub;
 using namespace RoboCompAGMCommonBehavior;
 using namespace RoboCompAGMExecutive;
+using namespace RoboCompAGMWorldModel;
 
 typedef map <string,::IceProxy::Ice::Object*> MapPrx;
 
@@ -81,6 +81,7 @@ public:
 
 
 	AGMExecutivePrx agmexecutive_proxy;
+	FullPoseEstimationPrx fullposeestimation_proxy;
 	OmniRobotPrx omnirobot_proxy;
 
 	virtual bool AGMCommonBehavior_reloadConfigAgent() = 0;
@@ -102,9 +103,14 @@ public:
 
 protected:
 //State Machine
-	QStateMachine defaultMachine;
+	QStateMachine customMachine;
 
-	QState *computeState = new QState();
+	QState *publishState = new QState();
+	QState *pop_dataState = new QState();
+	QState *read_uwbState = new QState();
+	QState *read_rsState = new QState();
+	QState *read_aprilState = new QState();
+	QState *compute_poseState = new QState();
 	QState *initializeState = new QState();
 	QFinalState *finalizeState = new QFinalState();
 
@@ -125,20 +131,32 @@ private:
 
 public slots:
 //Slots funtion State Machine
-	virtual void sm_compute() = 0;
+	virtual void sm_publish() = 0;
+	virtual void sm_pop_data() = 0;
+	virtual void sm_read_uwb() = 0;
+	virtual void sm_read_rs() = 0;
+	virtual void sm_read_april() = 0;
+	virtual void sm_compute_pose() = 0;
 	virtual void sm_initialize() = 0;
 	virtual void sm_finalize() = 0;
 
 //-------------------------
-	virtual void compute() = 0;
     virtual void initialize(int period) = 0;
 	
 signals:
 	void kill();
 //Signals for State Machine
-	void initializetocompute();
-	void computetocompute();
-	void computetofinalize();
+	void t_initialize_to_pop_data();
+	void t_pop_data_to_pop_data();
+	void t_pop_data_to_read_uwb();
+	void t_read_uwb_to_pop_data();
+	void t_pop_data_to_read_rs();
+	void t_pop_data_to_read_april();
+	void t_read_april_to_compute_pose();
+	void t_read_rs_to_compute_pose();
+	void t_compute_pose_to_publish();
+	void t_compute_pose_to_pop_data();
+	void t_pop_data_to_finalize();
 
 //-------------------------
 };

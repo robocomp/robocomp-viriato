@@ -29,7 +29,9 @@
 #define SPECIFICWORKER_H
 
 #include <genericworker.h>
+#include "doublebuffer.h"
 #include <innermodel/innermodel.h>
+
 
 class SpecificWorker : public GenericWorker
 {
@@ -66,13 +68,21 @@ public slots:
 	void compute();
 	void initialize(int period);
 //Specification slot methods State Machine
-	void sm_compute();
+	void sm_publish();
+	void sm_pop_data();
+	void sm_read_uwb();
+	void sm_read_rs();
+	void sm_read_april();
+	void sm_compute_pose();
 	void sm_initialize();
 	void sm_finalize();
 
 //--------------------
 private:
-	RoboCompGenericBase::TBaseState lastState, aprilState, omniState;
+	int UWB_DATA = 0;
+	DoubleBuffer<RoboCompFullPoseEstimation::FullPose, RoboCompFullPoseEstimation::FullPose> db;
+	RoboCompFullPoseEstimation::FullPose poseRead, initial_offset;
+	RoboCompGenericBase::TBaseState lastState, aprilState, omniState, newState;
 	RoboCompCommonBehavior::ParameterList worker_params;
 	InnerModel *innerModel;
 	std::string action;

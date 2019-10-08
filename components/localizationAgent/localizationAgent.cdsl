@@ -1,5 +1,6 @@
 import "OmniRobot.idsl";
 import "FullPoseEstimationPub.idsl";
+import "FullPoseEstimation.idsl";
 import "AprilTags.idsl";
 
 
@@ -7,7 +8,7 @@ Component localizationAgent
 {
         Communications
         {
-                requires OmniRobot;
+                requires OmniRobot, FullPoseEstimation;
                 subscribesTo FullPoseEstimationPub,  AprilTags;
         };
         language Cpp;

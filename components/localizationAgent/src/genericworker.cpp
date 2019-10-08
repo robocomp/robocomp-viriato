@@ -25,23 +25,41 @@ QObject()
 {
 
 //Initialization State machine
-	initializeState->addTransition(this, SIGNAL(initializetocompute()), computeState);
-	computeState->addTransition(this, SIGNAL(computetocompute()), computeState);
-	computeState->addTransition(this, SIGNAL(computetofinalize()), finalizeState);
+	initializeState->addTransition(this, SIGNAL(t_initialize_to_pop_data()), pop_dataState);
+	pop_dataState->addTransition(this, SIGNAL(t_pop_data_to_pop_data()), pop_dataState);
+	pop_dataState->addTransition(this, SIGNAL(t_pop_data_to_read_uwb()), read_uwbState);
+	read_uwbState->addTransition(this, SIGNAL(t_read_uwb_to_pop_data()), pop_dataState);
+	pop_dataState->addTransition(this, SIGNAL(t_pop_data_to_read_rs()), read_rsState);
+	pop_dataState->addTransition(this, SIGNAL(t_pop_data_to_read_april()), read_aprilState);
+	read_aprilState->addTransition(this, SIGNAL(t_read_april_to_compute_pose()), compute_poseState);
+	read_rsState->addTransition(this, SIGNAL(t_read_rs_to_compute_pose()), compute_poseState);
+	compute_poseState->addTransition(this, SIGNAL(t_compute_pose_to_publish()), publishState);
+	compute_poseState->addTransition(this, SIGNAL(t_compute_pose_to_pop_data()), pop_dataState);
+	pop_dataState->addTransition(this, SIGNAL(t_pop_data_to_finalize()), finalizeState);
 
-	defaultMachine.addState(computeState);
-	defaultMachine.addState(initializeState);
-	defaultMachine.addState(finalizeState);
+	customMachine.addState(publishState);
+	customMachine.addState(pop_dataState);
+	customMachine.addState(read_uwbState);
+	customMachine.addState(read_rsState);
+	customMachine.addState(read_aprilState);
+	customMachine.addState(compute_poseState);
+	customMachine.addState(initializeState);
+	customMachine.addState(finalizeState);
 
-	defaultMachine.setInitialState(initializeState);
+	customMachine.setInitialState(initializeState);
 
-	QObject::connect(computeState, SIGNAL(entered()), this, SLOT(sm_compute()));
+	QObject::connect(publishState, SIGNAL(entered()), this, SLOT(sm_publish()));
+	QObject::connect(pop_dataState, SIGNAL(entered()), this, SLOT(sm_pop_data()));
+	QObject::connect(read_uwbState, SIGNAL(entered()), this, SLOT(sm_read_uwb()));
+	QObject::connect(read_rsState, SIGNAL(entered()), this, SLOT(sm_read_rs()));
+	QObject::connect(read_aprilState, SIGNAL(entered()), this, SLOT(sm_read_april()));
+	QObject::connect(compute_poseState, SIGNAL(entered()), this, SLOT(sm_compute_pose()));
 	QObject::connect(initializeState, SIGNAL(entered()), this, SLOT(sm_initialize()));
 	QObject::connect(finalizeState, SIGNAL(entered()), this, SLOT(sm_finalize()));
-	QObject::connect(&timer, SIGNAL(timeout()), this, SIGNAL(computetocompute()));
 
 //------------------
 	agmexecutive_proxy = (*(AGMExecutivePrx*)mprx["AGMExecutiveProxy"]);
+	fullposeestimation_proxy = (*(FullPoseEstimationPrx*)mprx["FullPoseEstimationProxy"]);
 	omnirobot_proxy = (*(OmniRobotPrx*)mprx["OmniRobotProxy"]);
 
 	mutex = new QMutex(QMutex::Recursive);

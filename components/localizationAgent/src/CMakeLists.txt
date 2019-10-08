@@ -36,7 +36,7 @@ SET ( SOURCES
 
 #ROBOCOMP
 ROBOCOMP_INITIALIZE( $ENV{ROBOCOMP}/ )
-ROBOCOMP_WRAP_ICE( CommonBehavior Planning GenericBase FullPoseEstimation AGMWorldModel JointMotor OmniRobot AprilTags FullPoseEstimationPub AGMCommonBehavior AGMExecutive AGMWorldModel AGMExecutive AGMWorldModel Planning AGMCommonBehavior )
+ROBOCOMP_WRAP_ICE( CommonBehavior Planning GenericBase JointMotor FullPoseEstimation OmniRobot AprilTags FullPoseEstimationPub AGMCommonBehavior AGMExecutive AGMWorldModel AGMExecutive AGMWorldModel Planning AGMCommonBehavior )
 SET (EXECUTABLE_OUTPUT_PATH ${RC_COMPONENT_DEVEL_PATH}/bin)
 
 

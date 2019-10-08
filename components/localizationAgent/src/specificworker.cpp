@@ -80,7 +80,7 @@ SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
 SpecificWorker::~SpecificWorker()
 {
 	std::cout << "Destroying SpecificWorker" << std::endl;
-	emit computetofinalize();
+	emit t_pop_data_to_finalize();
 }
 
 bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
@@ -95,11 +95,8 @@ bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 	}
 	catch(std::exception e) { qFatal("Error reading config params"); }
 
-
-
-	defaultMachine.start();
-	
-
+	customMachine.start();
+	// retrieve model
 	try
 	{
 		RoboCompAGMWorldModel::World w = agmexecutive_proxy->getModel();
@@ -109,7 +106,6 @@ bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 	{
 		printf("The executive is probably not running, waiting for first AGM model publication...");
 	}
-
 	return true;
 }
 
@@ -117,8 +113,6 @@ void SpecificWorker::initialize(int period)
 {
 	std::cout << "Initialize worker" << std::endl;
 	this->Period = period;
-	timer.start(Period);
-	emit this->initializetocompute();
 }
 
 void SpecificWorker::compute()
@@ -127,19 +121,6 @@ void SpecificWorker::compute()
 	QMutexLocker l(mutex);
 
 	RoboCompGenericBase::TBaseState newState;
-	// retrieve model
-	if (worldModel->getIdentifierByType("robot") < 0)
-	{
-		try
-		{
-			RoboCompAGMWorldModel::World w = agmexecutive_proxy->getModel();
-			AGMExecutiveTopic_structuralChange(w);
-		}
-		catch(...)
-		{
-			printf("The executive is probably not running, waiting for first AGM model publication...");
-		}
-	}
 	// retrieve different position values
 
 	// odometry
@@ -414,21 +395,98 @@ void SpecificWorker::includeMovementInRobotSymbol(AGMModelSymbol::SPtr robot)
 
 
 //STATE MACHINE
-void SpecificWorker::sm_compute()
+void SpecificWorker::sm_publish()
 {
-	std::cout<<"Entered state compute"<<std::endl;
-	compute();
+	std::cout<<"Entered state publish"<<std::endl;
+
+
+}
+
+void SpecificWorker::sm_pop_data()
+{
+	std::cout<<"Entered state pop_data"<<std::endl;
+	if(not db.isEmpty())
+	{
+		poseRead = db.get();
+		if(poseRead.source == "realsense")
+		{
+			emit t_pop_data_to_read_rs();
+		}
+		else
+		{
+			emit t_pop_data_to_read_uwb();
+		}
+	}
+	else
+	{
+		std::cout<<"No data"<<std::endl;
+		QTimer::singleShot(100,this, SIGNAL(t_pop_data_to_pop_data()));
+	}
+}
+
+void SpecificWorker::sm_read_uwb()
+{
+	std::cout<<"Entered state read_uwb"<<std::endl;
+	initial_offset.x += poseRead.x; 
+	initial_offset.z += poseRead.x;
+	initial_offset.ry += poseRead.x;
+	UWB_DATA ++;
+	if (UWB_DATA == 10)
+	{
+		try
+		{
+			fullposeestimation_proxy->setInitialPose(initial_offset.x/10.f, 0.f, initial_offset.z/10.f, 0.f, initial_offset.ry/10.f, 0.f);
+		}catch(...)
+		{
+			qDebug()<<"Error setting initialpose to RealSense";
+		}
+	}
+	emit t_read_uwb_to_pop_data();
+}
+
+void SpecificWorker::sm_read_rs()
+{
+	std::cout<<"Entered state read_rs"<<std::endl;
+}
+
+void SpecificWorker::sm_read_april()
+{
+	std::cout<<"Entered state read_april"<<std::endl;
+}
+
+void SpecificWorker::sm_compute_pose()
+{
+	std::cout<<"Entered state compute_pose"<<std::endl;
+	if(enoughDifference(lastState, newState))
+	{
+		emit t_compute_pose_to_publish();
+	}
+	else
+	{
+		emit t_compute_pose_to_pop_data();
+	}
 }
 
 void SpecificWorker::sm_initialize()
 {
 	std::cout<<"Entered initial state initialize"<<std::endl;
+	initial_offset.x = 0.f;
+	initial_offset.y = 0.f;
+	initial_offset.z = 0.f;
+	initial_offset.rx = 0.f;
+	initial_offset.ry = 0.f;
+	initial_offset.rz = 0.f;
+	emit this->t_initialize_to_pop_data();
 }
 
 void SpecificWorker::sm_finalize()
 {
 	std::cout<<"Entered final state finalize"<<std::endl;
 }
+
+
+
+/// AGM 
 
 bool SpecificWorker::AGMCommonBehavior_reloadConfigAgent()
 {
@@ -568,9 +626,9 @@ void SpecificWorker::AprilTags_newAprilTag(const tagsList &tags)
 void SpecificWorker::FullPoseEstimationPub_newFullPose(const RoboCompFullPoseEstimation::FullPose &pose)
 {
 	std::cout<<"FullPose received "<<std::endl;
-	
 	std::cout << pose.source <<" (x,y,z,rx,ry,rz): ("<<pose.x<<","<<pose.y<<","<<pose.z<<","<<pose.rx<<","<<pose.ry<<","<<pose.rz<<")"<<std::endl;
-
+	RoboCompFullPoseEstimation::FullPose copy = pose;
+	db.put(copy);
 }
 
 

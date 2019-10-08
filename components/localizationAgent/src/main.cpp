@@ -88,8 +88,6 @@
 
 #include <Planning.h>
 #include <GenericBase.h>
-#include <FullPoseEstimation.h>
-#include <AGMWorldModel.h>
 #include <JointMotor.h>
 
 
@@ -139,6 +137,7 @@ int ::localizationAgent::run(int argc, char* argv[])
 	int status=EXIT_SUCCESS;
 
 	AGMExecutivePrx agmexecutive_proxy;
+	FullPoseEstimationPrx fullposeestimation_proxy;
 	OmniRobotPrx omnirobot_proxy;
 
 	string proxy, tmp;
@@ -161,6 +160,23 @@ int ::localizationAgent::run(int argc, char* argv[])
 	rInfo("AGMExecutiveProxy initialized Ok!");
 
 	mprx["AGMExecutiveProxy"] = (::IceProxy::Ice::Object*)(&agmexecutive_proxy);//Remote server proxy creation example
+
+	try
+	{
+		if (not GenericMonitor::configGetString(communicator(), prefix, "FullPoseEstimationProxy", proxy, ""))
+		{
+			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy FullPoseEstimationProxy\n";
+		}
+		fullposeestimation_proxy = FullPoseEstimationPrx::uncheckedCast( communicator()->stringToProxy( proxy ) );
+	}
+	catch(const Ice::Exception& ex)
+	{
+		cout << "[" << PROGRAM_NAME << "]: Exception creating proxy FullPoseEstimation: " << ex;
+		return EXIT_FAILURE;
+	}
+	rInfo("FullPoseEstimationProxy initialized Ok!");
+
+	mprx["FullPoseEstimationProxy"] = (::IceProxy::Ice::Object*)(&fullposeestimation_proxy);//Remote server proxy creation example
 
 	try
 	{
