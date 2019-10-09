@@ -36,6 +36,7 @@ QObject()
 	compute_poseState->addTransition(this, SIGNAL(t_compute_pose_to_publish()), publishState);
 	compute_poseState->addTransition(this, SIGNAL(t_compute_pose_to_pop_data()), pop_dataState);
 	pop_dataState->addTransition(this, SIGNAL(t_pop_data_to_finalize()), finalizeState);
+	publishState->addTransition(this, SIGNAL(t_publish_to_pop_data()), pop_dataState);
 
 	customMachine.addState(publishState);
 	customMachine.addState(pop_dataState);

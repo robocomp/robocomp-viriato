@@ -73,7 +73,7 @@ public:
         {
             O oData = queue.front();
             queue.pop();
-            qDebug() << "read " << queue.size();
+//            qDebug() << "read " << queue.size();
             return oData;
         }
         else 
@@ -90,7 +90,7 @@ public:
                 queue.emplace(std::move(buffer));
             else
                 queue.back() = buffer;
-            qDebug() << "in put queue size " << queue.size();
+//            qDebug() << "in put queue size " << queue.size();
         }
     }
 };

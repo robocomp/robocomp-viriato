@@ -67,7 +67,6 @@ private:
 */
 SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
 {
-
 	active = false;
 	worldModel = AGMModel::SPtr(new AGMModel());
 	worldModel->name = "worldModel";
@@ -117,42 +116,11 @@ void SpecificWorker::initialize(int period)
 
 void SpecificWorker::compute()
 {
-	static QTime reloj = QTime::currentTime();
-	QMutexLocker l(mutex);
-
-	RoboCompGenericBase::TBaseState newState;
-	// retrieve different position values
-
-	// odometry
-	try
-	{
-		omnirobot_proxy->getBaseState(omniState);
-		newState = omniState;
-	}
-	catch (...)
-	{
-		printf("Can't connect to the robot!!\n");
-	}
-
-	//compute new state 
-	computeNewState();
-
-	// Check if base needs correction
-	if (enoughDifference(omniState, newState))
-	{
-		setCorrectedPosition(newState);
-		lastState = newState;
-	}
-	odometryAndLocationIssues();
 }
 
-void SpecificWorker::computeNewState()
-{
-
-}
 
 // compute difference between actual and last value to determine if it should be sent
-bool SpecificWorker::enoughDifference(const RoboCompGenericBase::TBaseState &lastState, const RoboCompGenericBase::TBaseState &newState)
+bool SpecificWorker::enoughDifferenceBState(const RoboCompGenericBase::TBaseState &lastState, const RoboCompGenericBase::TBaseState &newState)
 {
 	if (fabs(newState.correctedX - lastState.correctedX) > 5 or fabs(newState.correctedZ - lastState.correctedZ) > 5 or fabs(newState.correctedAlpha - lastState.correctedAlpha) > 0.02)
 	{
@@ -160,6 +128,16 @@ bool SpecificWorker::enoughDifference(const RoboCompGenericBase::TBaseState &las
 	}
 	return false;
 }
+// compute difference between actual and last value to determine if it should be sent
+bool SpecificWorker::enoughDifferencePose(const RoboCompFullPoseEstimation::FullPose &lastPose, const RoboCompFullPoseEstimation::FullPose &newPose)
+{
+	if (fabs(newPose.x - lastPose.x) > 5 or fabs(newPose.z - lastPose.z) > 5 or fabs(newPose.ry - lastPose.ry) > 0.02)
+	{
+		return true;
+	}
+	return false;
+}
+
 
 // send corrected position
 void SpecificWorker::setCorrectedPosition(const RoboCompGenericBase::TBaseState &bState)
@@ -176,26 +154,8 @@ void SpecificWorker::setCorrectedPosition(const RoboCompGenericBase::TBaseState 
 }
 
 //update robot position in model
-
-bool SpecificWorker::odometryAndLocationIssues(bool force)
+bool SpecificWorker::publishPoseInModel(const RoboCompFullPoseEstimation::FullPose &pose)
 {
-	static QTime lastSent = QTime::currentTime();
-	if (lastSent.elapsed() > 2000)
-	{
-		force = true;
-	}
-	// Get robot's odometry
-	RoboCompGenericBase::TBaseState bState;
-	try
-	{
-		omnirobot_proxy->getBaseState(bState);
-	}
-	catch (...)
-	{
-		printf("Can't connect to the robot!!\n");
-		return false;
-	}
-
 	// Get robot's symbol and its identifier
 	int32_t robotId=-1;
 	robotId = worldModel->getIdentifierByType("robot");
@@ -206,9 +166,6 @@ bool SpecificWorker::odometryAndLocationIssues(bool force)
 		return false;
 	}
 	AGMModelSymbol::SPtr robot = worldModel->getSymbol(robotId);
-
-	// Update odometry in the cognitive model
-	includeMovementInRobotSymbol(robot);
 
 	// Get current roomId
 	int roomId=-1;
@@ -236,11 +193,11 @@ bool SpecificWorker::odometryAndLocationIssues(bool force)
 	// Query which should actually be the current room based on the corrected odometry odometry
 	int32_t robotIsActuallyInRoom;
 	float schmittTriggerLikeThreshold = 80;
-	if (bState.correctedZ < -schmittTriggerLikeThreshold)
+	if (pose.z < -schmittTriggerLikeThreshold)
 	{
 		robotIsActuallyInRoom = 5;
 	}
-	else if (bState.correctedZ > schmittTriggerLikeThreshold)
+	else if (pose.z > schmittTriggerLikeThreshold)
 	{
 		robotIsActuallyInRoom = 3;
 	}
@@ -248,8 +205,6 @@ bool SpecificWorker::odometryAndLocationIssues(bool force)
 	{
 		robotIsActuallyInRoom = roomId;
 	}
-
-
 	if (roomId != robotIsActuallyInRoom)
 	{
 		try
@@ -272,31 +227,18 @@ bool SpecificWorker::odometryAndLocationIssues(bool force)
 					newModel->addEdgeByIdentifiers(objectToMove->identifier, robotIsActuallyInRoom, "in");
 				}
 			}
-
-
 			// Modify RT edge
 			AGMModelEdge edgeRT = newModel->getEdgeByIdentifiers(roomId, robotId, "RT");
 			newModel->removeEdgeByIdentifiers(roomId, robotId, "RT");
 			try
 			{
-				float bStatex = str2float(edgeRT->getAttribute("tx"));
-				float bStatez = str2float(edgeRT->getAttribute("tz"));
-				float bStatealpha = str2float(edgeRT->getAttribute("ry"));
+				edgeRT->setAttribute("tx", float2str(pose.x));
+				edgeRT->setAttribute("tz", float2str(pose.z));
+				edgeRT->setAttribute("ry", float2str(pose.ry));
 
-				// to reduce the publication frequency
-				if (fabs(bStatex - bState.correctedX)>5 or fabs(bStatez - bState.correctedZ)>5 or fabs(bStatealpha - bState.correctedAlpha)>0.02 or force)
-				{
-					//Publish update edge
-					printf("\nUpdate odometry...\n");
-					qDebug()<<"bState local --> "<<bStatex<<bStatez<<bStatealpha;
-					qDebug()<<"bState corrected --> "<<bState.correctedX<<bState.correctedZ<<bState.correctedAlpha;
-
-					edgeRT->setAttribute("tx", float2str(bState.correctedX));
-					edgeRT->setAttribute("tz", float2str(bState.correctedZ));
-					edgeRT->setAttribute("ry", float2str(bState.correctedAlpha));
-				}
 				newModel->addEdgeByIdentifiers(robotIsActuallyInRoom, robotId, "RT", edgeRT->attributes);
-				AGMMisc::publishModification(newModel, agmexecutive_proxy, "navigationAgent");
+				AGMMisc::publishModification(newModel, agmexecutive_proxy, "localizationAgent");
+				lastPublish = pose;
 				rDebug2(("navigationAgent moved robot from room"));
 			}
 			catch (...)
@@ -318,22 +260,13 @@ bool SpecificWorker::odometryAndLocationIssues(bool force)
 			AGMModelEdge edge  = worldModel->getEdgeByIdentifiers(roomId, robotId, "RT");
 			try
 			{
-				float bStatex = str2float(edge->getAttribute("tx"));
-				float bStatez = str2float(edge->getAttribute("tz"));
-				float bStatealpha = str2float(edge->getAttribute("ry"));
-				// to reduce the publication frequency
-				if (fabs(bStatex - bState.correctedX)>5 or fabs(bStatez - bState.correctedZ)>5 or fabs(bStatealpha - bState.correctedAlpha)>0.02 or force)
-				{
-					//Publish update edge
- 					printf("\nUpdate odometry...\n");
- 					qDebug()<<"bState local --> "<<bStatex<<bStatez<<bStatealpha;
- 					qDebug()<<"bState corrected --> "<<bState.correctedX<<bState.correctedZ<<bState.correctedAlpha;
-					edge->setAttribute("tx", float2str(bState.correctedX));
-					edge->setAttribute("tz", float2str(bState.correctedZ));
-					edge->setAttribute("ry", float2str(bState.correctedAlpha));
-					lastSent = QTime::currentTime();
-					AGMMisc::publishEdgeUpdate(edge, agmexecutive_proxy);
-				}
+				//Publish update edge
+				printf("\nUpdate model...\n");
+				edge->setAttribute("tx", float2str(pose.x));
+				edge->setAttribute("tz", float2str(pose.z));
+				edge->setAttribute("ry", float2str(pose.ry));
+				AGMMisc::publishEdgeUpdate(edge, agmexecutive_proxy);
+				lastPublish = pose;
 			}
 			catch (...)
 			{
@@ -347,72 +280,28 @@ bool SpecificWorker::odometryAndLocationIssues(bool force)
 			return false;
 		}
 	}
-
 	return true;
-
 }
-void SpecificWorker::includeMovementInRobotSymbol(AGMModelSymbol::SPtr robot)
-{
-	static TimedList list(3000);
-	static RoboCompGenericBase::TBaseState lastBaseState = lastState;
-
-	const float movX = lastState.x - lastBaseState.x;
-	const float movZ = lastState.z - lastBaseState.z;
-	const float movA = abs(lastState.alpha - lastBaseState.alpha);
-	const float mov = sqrt(movX*movX+movZ*movZ) + 20.*movA;
-	list.add(mov);
-	lastBaseState = lastState;
-
-	const float currentValue = list.getSum();
-	bool setValue = true;
-	static QTime lastSent = QTime::currentTime();
-	try
-	{
-		const float availableValue = str2float(robot->getAttribute("movedInLastSecond"));
-		const float ddiff = abs(currentValue-availableValue);
-		if (ddiff < 5 and lastSent.elapsed()<1000)
-		{
-			setValue = false;
-		}
-	}
-	catch(...){	}
-
-	if (setValue)
-	{
-		lastSent = QTime::currentTime();
-		const std::string attrValue = float2str(currentValue);
-		robot->setAttribute("movedInLastSecond", attrValue);
-		try
-		{
-			AGMMisc::publishNodeUpdate(robot, agmexecutive_proxy);
-		}
-		catch (...)
-		{
-			printf("Executive not running?\n");
-		}
-	}
-}
-
 
 //STATE MACHINE
 void SpecificWorker::sm_publish()
 {
-	std::cout<<"Entered state publish"<<std::endl;
-
-
+	std::cout<<"Entered state PUBLISH"<<std::endl;
+	publishPoseInModel(poseRead);
+	emit t_publish_to_pop_data();
 }
 
 void SpecificWorker::sm_pop_data()
 {
-	std::cout<<"Entered state pop_data"<<std::endl;
+//	std::cout<<"Entered state pop_data"<<std::endl;
 	if(not db.isEmpty())
 	{
 		poseRead = db.get();
-		if(poseRead.source == "realsense")
+		if(poseRead.source == "realsense" and UWB_DATA >= 10)
 		{
 			emit t_pop_data_to_read_rs();
 		}
-		else
+		else if(UWB_DATA <= 10)
 		{
 			emit t_pop_data_to_read_uwb();
 		}
@@ -420,7 +309,7 @@ void SpecificWorker::sm_pop_data()
 	else
 	{
 		std::cout<<"No data"<<std::endl;
-		QTimer::singleShot(100,this, SIGNAL(t_pop_data_to_pop_data()));
+		QTimer::singleShot(200,this, SIGNAL(t_pop_data_to_pop_data()));
 	}
 }
 
@@ -428,13 +317,14 @@ void SpecificWorker::sm_read_uwb()
 {
 	std::cout<<"Entered state read_uwb"<<std::endl;
 	initial_offset.x += poseRead.x; 
-	initial_offset.z += poseRead.x;
-	initial_offset.ry += poseRead.x;
+	initial_offset.z += poseRead.z;
+	initial_offset.ry += poseRead.ry;
 	UWB_DATA ++;
 	if (UWB_DATA == 10)
 	{
 		try
 		{
+			qDebug()<<"SET INITIAL POSE";
 			fullposeestimation_proxy->setInitialPose(initial_offset.x/10.f, 0.f, initial_offset.z/10.f, 0.f, initial_offset.ry/10.f, 0.f);
 		}catch(...)
 		{
@@ -447,6 +337,7 @@ void SpecificWorker::sm_read_uwb()
 void SpecificWorker::sm_read_rs()
 {
 	std::cout<<"Entered state read_rs"<<std::endl;
+	emit t_read_rs_to_compute_pose();
 }
 
 void SpecificWorker::sm_read_april()
@@ -457,11 +348,11 @@ void SpecificWorker::sm_read_april()
 void SpecificWorker::sm_compute_pose()
 {
 	std::cout<<"Entered state compute_pose"<<std::endl;
-	if(enoughDifference(lastState, newState))
+	if(enoughDifferencePose(lastPublish, poseRead))
 	{
 		emit t_compute_pose_to_publish();
 	}
-	else
+ 	else
 	{
 		emit t_compute_pose_to_pop_data();
 	}
@@ -625,8 +516,8 @@ void SpecificWorker::AprilTags_newAprilTag(const tagsList &tags)
 
 void SpecificWorker::FullPoseEstimationPub_newFullPose(const RoboCompFullPoseEstimation::FullPose &pose)
 {
-	std::cout<<"FullPose received "<<std::endl;
-	std::cout << pose.source <<" (x,y,z,rx,ry,rz): ("<<pose.x<<","<<pose.y<<","<<pose.z<<","<<pose.rx<<","<<pose.ry<<","<<pose.rz<<")"<<std::endl;
+//	std::cout<<"FullPose received "<<std::endl;
+//	std::cout << pose.source <<" (x,y,z,rx,ry,rz): ("<<pose.x<<","<<pose.y<<","<<pose.z<<","<<pose.rx<<","<<pose.ry<<","<<pose.rz<<")"<<std::endl;
 	RoboCompFullPoseEstimation::FullPose copy = pose;
 	db.put(copy);
 }

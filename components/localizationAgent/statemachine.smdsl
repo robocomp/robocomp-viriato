@@ -16,7 +16,8 @@ customMachine{
         read_april => compute_pose;
         read_rs => compute_pose;
         compute_pose => publish;
-        compute_pose => pop_data;        
+        compute_pose => pop_data;
+        publish => pop_data;        
         pop_data => finalize;
     };
 };

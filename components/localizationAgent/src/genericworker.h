@@ -157,6 +157,7 @@ signals:
 	void t_compute_pose_to_publish();
 	void t_compute_pose_to_pop_data();
 	void t_pop_data_to_finalize();
+	void t_publish_to_pop_data();
 
 //-------------------------
 };

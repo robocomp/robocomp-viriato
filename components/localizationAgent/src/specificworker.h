@@ -41,11 +41,12 @@ public:
 	~SpecificWorker();
 	bool setParams(RoboCompCommonBehavior::ParameterList params);
 
-	bool odometryAndLocationIssues(bool force=false);
 	void includeMovementInRobotSymbol(AGMModelSymbol::SPtr robot);
 	void setCorrectedPosition(const RoboCompGenericBase::TBaseState &bState);
-	bool enoughDifference(const RoboCompGenericBase::TBaseState &lastState, const RoboCompGenericBase::TBaseState &newState);
-	void computeNewState();
+	bool enoughDifferenceBState(const RoboCompGenericBase::TBaseState &lastState, const RoboCompGenericBase::TBaseState &newState);
+	bool enoughDifferencePose(const RoboCompFullPoseEstimation::FullPose &lastPose, const RoboCompFullPoseEstimation::FullPose &newPose);
+	bool publishPoseInModel(const RoboCompFullPoseEstimation::FullPose &pose);
+
 
 	bool AGMCommonBehavior_reloadConfigAgent();
 	bool AGMCommonBehavior_activateAgent(const ParameterMap &prs);
@@ -81,8 +82,7 @@ public slots:
 private:
 	int UWB_DATA = 0;
 	DoubleBuffer<RoboCompFullPoseEstimation::FullPose, RoboCompFullPoseEstimation::FullPose> db;
-	RoboCompFullPoseEstimation::FullPose poseRead, initial_offset;
-	RoboCompGenericBase::TBaseState lastState, aprilState, omniState, newState;
+	RoboCompFullPoseEstimation::FullPose poseRead, initial_offset, lastPublish;
 	RoboCompCommonBehavior::ParameterList worker_params;
 	InnerModel *innerModel;
 	std::string action;
