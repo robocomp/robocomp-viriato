@@ -59,7 +59,13 @@ public:
 
     bool isEmpty()
     {
+        std::lock_guard<std::mutex> lock(bufferMutex);
         return queue.empty();
+    }
+    int size()
+    {
+        std::lock_guard<std::mutex> lock(bufferMutex);
+        return queue.size();
     }
     void setMaxQueueSize(const uint newMax)
     {

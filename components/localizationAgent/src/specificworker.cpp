@@ -261,7 +261,7 @@ bool SpecificWorker::publishPoseInModel(const RoboCompFullPoseEstimation::FullPo
 			try
 			{
 				//Publish update edge
-				printf("\nUpdate model...\n");
+				printf("\nUpdate model...(x,z,ry):(%f,%f,%f)\n",pose.x, pose.z, pose.ry);
 				edge->setAttribute("tx", float2str(pose.x));
 				edge->setAttribute("tz", float2str(pose.z));
 				edge->setAttribute("ry", float2str(pose.ry));
@@ -293,7 +293,7 @@ void SpecificWorker::sm_publish()
 
 void SpecificWorker::sm_pop_data()
 {
-//	std::cout<<"Entered state pop_data"<<std::endl;
+	std::cout<<"Entered state pop_data"<<std::endl;
 	if(not db.isEmpty())
 	{
 		poseRead = db.get();
@@ -301,9 +301,16 @@ void SpecificWorker::sm_pop_data()
 		{
 			emit t_pop_data_to_read_rs();
 		}
-		else if(UWB_DATA <= 10)
+		else
 		{
-			emit t_pop_data_to_read_uwb();
+			if(UWB_DATA <= 10)
+			{
+				emit t_pop_data_to_read_uwb();
+			}
+			else
+			{
+				QTimer::singleShot(200,this, SIGNAL(t_pop_data_to_pop_data()));
+			}
 		}
 	}
 	else
@@ -315,20 +322,24 @@ void SpecificWorker::sm_pop_data()
 
 void SpecificWorker::sm_read_uwb()
 {
-	std::cout<<"Entered state read_uwb"<<std::endl;
-	initial_offset.x += poseRead.x; 
-	initial_offset.z += poseRead.z;
-	initial_offset.ry += poseRead.ry;
-	UWB_DATA ++;
-	if (UWB_DATA == 10)
+	if (poseRead.source == "uwb")
 	{
-		try
+		std::cout<<"Entered state read_uwb"<<std::endl;
+		initial_offset.x += poseRead.x; 
+		initial_offset.z += poseRead.z;
+		initial_offset.ry += poseRead.ry;
+
+		UWB_DATA ++;
+		if (UWB_DATA == 10)
 		{
-			qDebug()<<"SET INITIAL POSE";
-			fullposeestimation_proxy->setInitialPose(initial_offset.x/10.f, 0.f, initial_offset.z/10.f, 0.f, initial_offset.ry/10.f, 0.f);
-		}catch(...)
-		{
-			qDebug()<<"Error setting initialpose to RealSense";
+			try
+			{
+				qDebug()<<"SET INITIAL POSE: "<<initial_offset.x/10.f<<","<<initial_offset.z/10.f<<","<<initial_offset.ry/10.f;
+				fullposeestimation_proxy->setInitialPose(initial_offset.x/10.f, 0.f, initial_offset.z/10.f, 0.f, initial_offset.ry/10.f, 0.f);
+			}catch(...)
+			{
+				qDebug()<<"Error setting initialpose to RealSense";
+			}
 		}
 	}
 	emit t_read_uwb_to_pop_data();
@@ -336,7 +347,7 @@ void SpecificWorker::sm_read_uwb()
 
 void SpecificWorker::sm_read_rs()
 {
-	std::cout<<"Entered state read_rs"<<std::endl;
+	std::cout<<"Entered state read_rs "<<poseRead.x<<","<<poseRead.z<<","<<poseRead.ry<<std::endl;
 	emit t_read_rs_to_compute_pose();
 }
 
