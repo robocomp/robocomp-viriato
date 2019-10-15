@@ -1,0 +1,193 @@
+spacePattern=3
+lineThickness=2
+fontName=Arial
+name=domain_navigation
+vertexDiameter=52
+shortPattern=1
+nodeThickness=2
+fontSize=12
+longPattern=3
+===
+setStop : active(1)
+{
+	{
+		1:robot(0,0)
+		2:status(210,0)
+		1->2(hasStatus)
+		1->2(stop)*
+	}
+	=>
+	{
+		1:robot(0,0)
+		2:status(210,0)
+		1->2(hasStatus)
+		1->2(stop)
+	}
+}
+
+unsetStop : passive(1)
+{
+	{
+		1:robot(0,0)
+		2:status(210,0)
+		1->2(hasStatus)
+		1->2(stop)
+	}
+	=>
+	{
+		1:robot(0,0)
+		2:status(210,0)
+		1->2(hasStatus)
+		1->2(stop)*
+	}
+}
+
+
+
+
+changeRoom : active(1)
+{
+	{
+		s1:roomSt(-120,230)
+		s2:roomSt(120,230)
+		r1:room(-120,100)
+		r2:room(120,100)
+		robot:robot(0,0)
+		robot->r1(in)
+		r1->r2(transitable)
+		r1->s1(room)
+		r2->s2(room)
+	}
+	=>
+	{
+		s1:roomSt(-120,230)
+		s2:roomSt(120,230)
+		r1:room(-120,100)
+		r2:room(120,100)
+		robot:robot(0,0)
+		robot->r2(in)
+		r1->r2(transitable)
+		r1->s1(room)
+		r2->s2(room)
+	}
+	effect
+	{
+		(forall
+			something:object
+			(when
+				(in something robot)
+				(and
+					(not (in something s1))
+					(in something s2)
+				)
+			)
+		)
+	}
+}
+
+setObjectReach : active(1)
+{
+	{
+		robot:robot(0,0)
+		room:room(0,130)
+		object:object(160,130)
+		status:objectSt(390,130)
+		object->status(hasStatus)
+		object->status(noReach)
+		object->status(reachable)
+		object->room(in)
+		robot->room(in)
+	}
+	=>
+	{
+		robot:robot(0,0)
+		room:room(0,130)
+		object:object(160,130)
+		status:objectSt(390,130)
+		object->status(hasStatus)
+		object->status(reach)
+		object->status(reachable)
+		object->room(in)
+		robot->room(in)
+	}
+	effect
+	{
+		(forall
+			something:pose
+			(forall
+				somethingSt:poseSt
+				(when
+					(hasStatus something somethingSt)
+					(and
+						(not (reach something somethingSt))
+						(noReach something somethingSt)
+					)
+				)
+			)
+		)
+	}
+}
+
+setObjectNotReach : passive(1)
+{
+	{
+		status:objectSt(250,-40)
+		object:object(50,-40)
+		object->status(hasStatus)
+		object->status(reach)
+	}
+	=>
+	{
+		status:objectSt(250,-40)
+		object:object(50,-40)
+		object->status(hasStatus)
+		object->status(noReach)
+	}
+}
+
+reachPose : active(3)
+{
+	{
+		pose:pose(65,0)
+		room:room(-130,0)
+		robot:robot(-130,-125)
+		ost:poseSt(290,0)
+		pose->room(in)
+		robot->room(in)
+		pose->ost(noReach)
+	}
+	=>
+	{
+		pose:pose(65,0)
+		room:room(-130,0)
+		robot:robot(-130,-125)
+		ost:poseSt(290,0)
+		pose->room(in)
+		robot->room(in)
+		pose->ost(reach)
+	}
+}
+
+setNoReachPose : active(1)
+{
+	{
+		pose:pose(65,0)
+		room:room(-130,0)
+		robot:robot(-130,-125)
+		ost:poseSt(290,0)
+		pose->room(in)
+		robot->room(in)
+		pose->ost(reach)
+	}
+	=>
+	{
+		pose:pose(65,0)
+		room:room(-130,0)
+		robot:robot(-130,-125)
+		ost:poseSt(290,0)
+		pose->room(in)
+		robot->room(in)
+		pose->ost(noReach)
+	}
+}
+
