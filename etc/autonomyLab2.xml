@@ -165,7 +165,26 @@
 
 
 		<transform id="room_5">
-			<!-- ROOM B -->
+            <!-- APRIL -->
+			<!--<transform id="april" tx="3672" tz="-2018" rx="1.57075" rz="1.57075" >-->
+			<transform id="april" tx="3672" tz="-2018" rx="1.57075" rz="-1.57075">
+				<axes id="axes2"/>
+				<plane id="planeTag00" nz="-1" size="-348,348,10"   texture="/home/robocomp/robocomp/files/innermodel/tar36h11-0.png" />
+			<!-- CAMERAS -->
+				<transform id="cam1Translation" >
+					<rgbd id="camera1" focal="333" width="640" height="480" port="10097" noise="0.00" ifconfig="40000,50000" />
+					<plane id="cam1_mesh" nz="1" px="-100" pz="-100" size="200,200,10" repeat="1" texture="#555500" />
+				</transform>
+				<transform id="cam2Translation" >
+					<rgbd id="camera2" focal="333" width="640" height="480" port="10097" noise="0.00" ifconfig="40000,50000" />
+					<plane id="cam2_mesh" nz="1" px="-100" pz="-100" size="200,200,10" repeat="1" texture="#555500" />
+				</transform>
+				<transform id="cam3Translation" >
+					<rgbd id="camera3" focal="333" width="640" height="480" port="10096" noise="0.00" ifconfig="40000,50000" />
+					<plane id="cam3_mesh" nz="1" px="-100" pz="-100" size="200,200,10" repeat="1" texture="#555500" />
+				</transform>
+			</transform>
+            <!-- ROOM B -->
 			<transform id="pared7" tx="4593.4101565" tz="105.78302" ty="950" >
 				<plane id="muro7" nx="42.76941" nz="309.890625" size="312.828102789,1900,9"  texture="#008800" />
 			</transform>
