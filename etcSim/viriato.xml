@@ -1,0 +1,28 @@
+﻿<innerModel>
+	
+	<omnirobot id="robot" port="12238" />
+    <plane id="base_mesh" size="540,220,460" py="137.5" texture="#666666"  collide="1" />
+    
+    <!-- laser position -->
+    <transform id="laser1Pose" tx="11" ty="300" tz="200" ry="0.785398" >
+        <laser id="laser1" measures="100" min="100" max="30000" angle="4.2" port="10003" />
+    </transform>
+    <transform id="laser2Pose" tx="0" ty="300" tz="130" rx="0" >
+        <laser id="laser2" measures="100" min="100" max="30000" angle="4.2" port="10003" />
+    </transform>
+    
+    <mesh id="barracolumna" file="/home/robocomp/robocomp/files/osgModels/basics/cube.3ds" tx="0" ty="700" tz="15" scale="40,500,30"  collide="1" />
+    <mesh id="barrahombro" file="/home/robocomp/robocomp/files/osgModels/robexarm/barrahombro.3ds" tx="-150" ty="1180" tz="30" ry="-1.5707963267949" scale="1000" collide="1" />
+    
+    
+    <transform id="monitor_pose" ty="1155" tz="70" rx="0"  >
+        <plane id="monitor_mesh" size="340,270,80" texture="#222266"  collide="1" />
+    </transform>
+    
+    
+
+    
+    <transform id="base_bodypost" ty="1388" tz="0" >
+    </transform>
+
+</innerModel>
