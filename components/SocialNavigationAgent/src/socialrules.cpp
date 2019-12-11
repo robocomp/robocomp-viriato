@@ -20,6 +20,7 @@ void SocialRules::initialize(SocialNavigationGaussianPrx socialnavigationgaussia
 	innerModel = innerModel_;
 	worldModel = worldModel_;
 
+
 	objectInteraction(false);
 }
 
@@ -70,6 +71,7 @@ void SocialRules::checkInteraction()
 	interactingId.clear();
 	
 	qDebug()<<__FUNCTION__;
+
 	for (auto id : pSymbolId)
 	{
 		AGMModelSymbol::SPtr personAGM = worldModel->getSymbol(id);
@@ -141,6 +143,7 @@ void SocialRules::checkInteraction()
             interactingId.push_back(Ids);
         }
 	}
+
 }
 
 void SocialRules::checkMovement()
@@ -434,13 +437,21 @@ void SocialRules::goToPerson()
 
 void SocialRules::checkRobotmov()
 {
+    qDebug()<<__FUNCTION__;
+    qDebug()<< worldModel->size();
+    qDebug()<<"------1--------";
 	robotSymbolId = worldModel->getIdentifierByType("robot");
+    qDebug()<<"------2--------";
 	AGMModelSymbol::SPtr robotparent = worldModel->getParentByLink(robotSymbolId, "RT");
+    qDebug()<<"------3--------";
 	AGMModelEdge &edgeRTrobot  = worldModel->getEdgeByIdentifiers(robotparent->identifier, robotSymbolId, "RT");
-		
+    qDebug()<<"------4--------";
 	robot.x=str2float(edgeRTrobot.attributes["tx"])/1000;
 	robot.z=str2float(edgeRTrobot.attributes["tz"])/1000;
 	robot.angle=str2float(edgeRTrobot.attributes["ry"]);
+    qDebug()<<"------5--------";
+
+	qDebug()<< "POSE ROBOT" << robot.x <<robot.z <<robot.angle;
 
 	point.x=robot.x;
 	point.z=robot.z;
@@ -459,6 +470,7 @@ void SocialRules::checkRobotmov()
 
 	poserobot.push_back(point);
 
+	qDebug()<<"FIN checkrobotmov";
 }
 
 /**

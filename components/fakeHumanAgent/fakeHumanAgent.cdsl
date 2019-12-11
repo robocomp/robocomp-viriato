@@ -8,6 +8,7 @@ Component fakeHumanAgent
 	};
 	language Cpp;
 	gui Qt(QWidget);
-	options agmagent, innermodelviewer;
+	options agmagent;
+	 //innermodelviewer;
 };
 

@@ -1,5 +1,5 @@
 /*
- *    Copyright (C) 2018 by YOUR NAME HERE
+ *    Copyright (C) 2019 by YOUR NAME HERE
  *
  *    This file is part of RoboComp
  *
@@ -28,34 +28,14 @@ TrajectoryRobot2DI::~TrajectoryRobot2DI()
 {
 }
 
-NavState TrajectoryRobot2DI::getState(const Ice::Current&)
-{
-	return worker->TrajectoryRobot2D_getState();
-}
-
-float TrajectoryRobot2DI::goBackwards(const TargetPose  &target, const Ice::Current&)
-{
-	return worker->TrajectoryRobot2D_goBackwards(target);
-}
-
-void TrajectoryRobot2DI::stop(const Ice::Current&)
-{
-	worker->TrajectoryRobot2D_stop();
-}
-
-void TrajectoryRobot2DI::setHumanSpace(const PolyLineList  &polyList, const Ice::Current&)
-{
-	worker->TrajectoryRobot2D_setHumanSpace(polyList);
-}
-
-float TrajectoryRobot2DI::goReferenced(const TargetPose  &target, const float  xRef, const float  zRef, const float  threshold, const Ice::Current&)
-{
-	return worker->TrajectoryRobot2D_goReferenced(target, xRef, zRef, threshold);
-}
-
 float TrajectoryRobot2DI::changeTarget(const TargetPose  &target, const Ice::Current&)
 {
 	return worker->TrajectoryRobot2D_changeTarget(target);
+}
+
+NavState TrajectoryRobot2DI::getState(const Ice::Current&)
+{
+	return worker->TrajectoryRobot2D_getState();
 }
 
 float TrajectoryRobot2DI::go(const TargetPose  &target, const Ice::Current&)
@@ -63,8 +43,28 @@ float TrajectoryRobot2DI::go(const TargetPose  &target, const Ice::Current&)
 	return worker->TrajectoryRobot2D_go(target);
 }
 
+float TrajectoryRobot2DI::goBackwards(const TargetPose  &target, const Ice::Current&)
+{
+	return worker->TrajectoryRobot2D_goBackwards(target);
+}
+
+float TrajectoryRobot2DI::goReferenced(const TargetPose  &target, const float  xRef, const float  zRef, const float  threshold, const Ice::Current&)
+{
+	return worker->TrajectoryRobot2D_goReferenced(target, xRef, zRef, threshold);
+}
+
 void TrajectoryRobot2DI::mapBasedTarget(const NavigationParameterMap  &parameters, const Ice::Current&)
 {
 	worker->TrajectoryRobot2D_mapBasedTarget(parameters);
+}
+
+void TrajectoryRobot2DI::setHumanSpace(const PolyLineList  &polyList, const Ice::Current&)
+{
+	worker->TrajectoryRobot2D_setHumanSpace(polyList);
+}
+
+void TrajectoryRobot2DI::stop(const Ice::Current&)
+{
+	worker->TrajectoryRobot2D_stop();
 }
 

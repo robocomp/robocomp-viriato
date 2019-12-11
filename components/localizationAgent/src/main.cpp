@@ -86,9 +86,9 @@
 #include <apriltagsI.h>
 #include <fullposeestimationpubI.h>
 
+#include <JointMotor.h>
 #include <Planning.h>
 #include <GenericBase.h>
-#include <JointMotor.h>
 
 
 // User includes here

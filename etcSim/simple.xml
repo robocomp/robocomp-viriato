@@ -97,9 +97,9 @@
   <dependence alias="base" />
   <!--dependence alias="slam" /-->
   <workingDir path="/home/robocomp/" />
-  <upCommand command="rcremote localhost localizationAgnt /home/robocomp/robocomp/components/robocomp-shelly/components/localizationAgent ./bin/localizationAgent --Ice.Config=/home/robocomp/robocomp/components/robocomp-shelly/etcSim/localizationAgent.conf" />
+  <upCommand command="rcremote localhost localizationAgnt /home/robocomp/robocomp/components/robocomp-viriato/components/localizationAgent ./bin/localizationAgent --Ice.Config=/home/robocomp/robocomp/components/robocomp-viriato/etcSim/localizationAgent.conf" />
   <downCommand command="killall -9 localizationAgent" />
-  <configFile path="/home/robocomp/robocomp/components/robocomp-shelly/etcSim/localizationAgent.conf" />
+  <configFile path="/home/robocomp/robocomp/components/robocomp-viriato/etcSim/localizationAgent.conf" />
   <xpos value="-116.350970747" />
   <ypos value="-115.512538117" />
   <radius value="13.0" />
@@ -184,7 +184,7 @@
 
  <node alias="astraRGBD" endpoint="humantracker:tcp -h localhost -p 11666"> 
   <workingDir path="/home/robocomp/" />
-  <upCommand command="rcremote localhost astraRGBD /home/robocomp/robocomp/components/robocomp-robolab/components/astraRGBD ./bin/astraRGBD /home/robocomp/robocomp/components/robocomp-viriato/etcSim/astraRGBD.conf" />
+  <upCommand command="rcremote localhost astraRGBD /home/robocomp/robocomp/components/robocomp-robolab/components/hardware/camera/astraRGBD ./bin/astraRGBD /home/robocomp/robocomp/components/robocomp-viriato/etcSim/astraRGBD.conf" />
   <downCommand command="killall -9 astraRGBD" />
   <configFile path="/home/robocomp/robocomp/components/robocomp-viriato/etcSim/astraRGBD.conf" />
   <xpos value="121.097569307" />

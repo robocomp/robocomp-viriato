@@ -78,7 +78,7 @@ void PathFinder::initialize( const std::shared_ptr<InnerModel> &innerModel_,
 	pathplanner.initialize(currenttarget, innerModel, state, configparams);
 	
 	/// Initialize the Projector
-	projector.initialize(innerModel, currenttarget, state, configparams, laser_prx);
+//	projector.initialize(innerModel, currenttarget, state, configparams, laser_prx);
 
 	/// Initialize the low level controller that drives the robot on the road	
 	controller.initialize(innerModel, laser_prx, configparams, omnirobot_proxy);
@@ -98,10 +98,11 @@ void PathFinder::initialize( const std::shared_ptr<InnerModel> &innerModel_,
 
 void PathFinder::run()
 {
+
  	//while(true)
 	{	
 		road.update();
-        projector.update(road);
+//        projector.update(road); //este no se conecta
 		controller.update(road);
 		pathplanner.update(road);
 		//TODO Revisar para pasar un shared_ptr
@@ -122,8 +123,8 @@ void PathFinder::innerModelChanged (const std::shared_ptr<InnerModel> &innerMode
 		pathplanner.reloadInnerModel(innerModel_) ;
 		pathplanner.modifyGraph(intimate, personal,social, object,objectsblocking);
 		road.reloadInnerModel( innerModel_ ) ;  
-		projector.reloadInnerModel(innerModel_) ;  
-		projector.update_polyline(personal); //para el laser
+//		projector.reloadInnerModel(innerModel_) ;
+//		projector.update_polyline(personal); //para el laser
 		controller.reloadInnerModel( innerModel_ );
 	releaseRoad();
 //	qDebug()<<__FUNCTION__<< "--------------TERMINA GET ROAD -----------------------";

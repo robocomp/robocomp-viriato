@@ -84,7 +84,7 @@ private:
 	DoubleBuffer<RoboCompFullPoseEstimation::FullPose, RoboCompFullPoseEstimation::FullPose> db;
 	RoboCompFullPoseEstimation::FullPose poseRead, initial_offset, lastPublish;
 	RoboCompCommonBehavior::ParameterList worker_params;
-	InnerModel *innerModel;
+	std::shared_ptr<InnerModel> innerModel;
 	std::string action;
 	ParameterMap params;
 	AGMModel::SPtr worldModel;

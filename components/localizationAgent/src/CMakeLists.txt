@@ -36,13 +36,11 @@ SET ( SOURCES
 
 #ROBOCOMP
 ROBOCOMP_INITIALIZE( $ENV{ROBOCOMP}/ )
-ROBOCOMP_WRAP_ICE( CommonBehavior Planning GenericBase JointMotor FullPoseEstimation OmniRobot AprilTags FullPoseEstimationPub AGMCommonBehavior AGMExecutive AGMWorldModel AGMExecutive AGMWorldModel Planning AGMCommonBehavior )
+ROBOCOMP_WRAP_ICE( CommonBehavior JointMotor Planning GenericBase FullPoseEstimation OmniRobot AprilTags FullPoseEstimationPub AGMCommonBehavior AGMExecutive AGMWorldModel AGMExecutiveTopic AGMWorldModel Planning AGMCommonBehavior )
 SET (EXECUTABLE_OUTPUT_PATH ${RC_COMPONENT_DEVEL_PATH}/bin)
 
 
 # Specify construction and link process
-SET(LIBS ${LIBS} -lagm)
-ADD_DEFINITIONS( -I/usr/include/libxml2/ )
 ADD_EXECUTABLE( localizationAgent ${SOURCES} ${MOC_SOURCES} ${RC_SOURCES} ${UI_HEADERS} )
 TARGET_LINK_LIBRARIES( localizationAgent ${LIBS} ${STATIC_LIBS} ${SPECIFIC_LIBS} ${QT_LIBRARIES} ${Ice_LIBRARIES})
 INSTALL(FILES ${EXECUTABLE_OUTPUT_PATH}/localizationAgent DESTINATION ${RC_COMPONENT_INSTALL_PATH}/bin/ PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )

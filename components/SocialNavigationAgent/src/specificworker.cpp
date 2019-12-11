@@ -17,7 +17,7 @@
  *    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "specificworker.h"
-#include <math.h> 
+#include <math.h>
 
 #define PI M_PI
 
@@ -29,18 +29,14 @@ SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
 {
 	qDebug() << __FUNCTION__ ;
 	active = false;
-	active = false;	
 	worldModel = AGMModel::SPtr(new AGMModel());
 	worldModel->name = "worldModel";
 	haveTarget = false;
 	innerModel = std::make_shared<InnerModel>();
 
 
-
-	// 	world = AGMModel::SPtr(new AGMModel());
-
 	//Timed slot to read TrajectoryRobot2D state
-	connect(&trajReader, SIGNAL(timeout()), &aE, SLOT(readTrajState()));
+//	connect(&trajReader, SIGNAL(timeout()), &aE, SLOT(readTrajState()));
 	connect(gaussiana,SIGNAL(clicked()),&socialrules, SLOT(calculateGauss()));
 //	connect(por,SIGNAL(clicked()),&socialrules, SLOT(PassOnRight()));
 	connect(objint,SIGNAL(clicked()),&socialrules, SLOT(objectInteraction()));
@@ -75,7 +71,8 @@ bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList paramsL)
 	
 	#ifdef USE_QTGUI
 		viewer = std::make_shared<InnerViewer>(innerModel, "Social Navigation");  //InnerViewer copies internally innerModel so it has to be resynchronized
-		//viewer->start();	
+		viewer->start();
+
 	#endif
 
 	std::shared_ptr<RoboCompCommonBehavior::ParameterList> configparams = std::make_shared<RoboCompCommonBehavior::ParameterList>(paramsL);
@@ -85,13 +82,15 @@ bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList paramsL)
 // 	innerModel->getNode<InnerModelJoint>("armX2")->setAngle(2.5);
 	
 	try
-	{		
+	{
 		RoboCompAGMWorldModel::World w = agmexecutive_proxy->getModel();
-		AGMExecutiveTopic_structuralChange(w);
-		// Initializing PathFinder
-		pathfinder.initialize(innerModel, viewer, configparams, laser_proxy, omnirobot_proxy);
-		// Initializing SocialRules
-		socialrules.initialize(socialnavigationgaussian_proxy, agmexecutive_proxy, mutex, &pathfinder, worldModel, innerModel);
+        AGMExecutiveTopic_structuralChange(w);
+        // Initializing PathFinder
+        qDebug()<<"....1....";
+        pathfinder.initialize(innerModel, viewer, configparams, laser_proxy, omnirobot_proxy);
+        qDebug()<<"....2....";
+        // Initializing SocialRules
+        socialrules.initialize(socialnavigationgaussian_proxy, agmexecutive_proxy, mutex, &pathfinder, worldModel, innerModel);
 
 		AGMExecutiveTopic_structuralChange(w);
 		rDebug2(("Leaving Structural Change"));
@@ -104,7 +103,7 @@ bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList paramsL)
 	//rDebug2(("Pathfinder up and running"));
 
 
-	qLog::getInstance()->setProxy("both", logger_proxy);
+//	qLog::getInstance()->setProxy("both", logger_pubproxy);
 	rDebug2(("NavigationAgent started"));
 	
 	//Proxies for actionExecution
@@ -135,7 +134,7 @@ void SpecificWorker::compute() {
 
 	static bool first = true;
 	if (first) {
-		qLog::getInstance()->setProxy("both", logger_proxy);
+//		qLog::getInstance()->setProxy("both", logger_pubproxy);
 		rDebug2(("navigationAgent started"));
 		first = false;
 	}
@@ -153,6 +152,7 @@ void SpecificWorker::compute() {
 //	}
 
 	pathfinder.run(); //projector is comented because the social navigation cant acceded to the laser if the astraRGBD is working
+
 	//update viewer
 //	QVec robotpos = innerModel->transformS6D("world", robotname);
 //	viewer->ts_updateTransformValues(QString::fromStdString(robotname), robotpos);
@@ -297,7 +297,7 @@ void SpecificWorker::checkHumanBlock()
 
         try
         {
-            sendModificationProposal(newModel,worldModel , "block");
+            sendModificationProposal(worldModel,newModel, "block");
         }
         catch(...)
         {
@@ -322,6 +322,9 @@ float SpecificWorker::TrajectoryRobot2D_go(const TargetPose &target)
 	}
 	return 0.0;
 };
+
+
+
 
 // *****************************************************************************************
 // AGENT RELATED
@@ -403,9 +406,8 @@ void SpecificWorker::AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldMo
 	static bool first = true;
 	
 	AGMModelConverter::fromIceToInternal(modification, worldModel);
-	InnerModel *inner = AGMInner::extractInnerModel(worldModel, "world", false);
-	innerModel.reset(inner);
- 
+	innerModel = std::make_shared<InnerModel>(AGMInner::extractInnerModel(worldModel));
+
 
 	if (!first)
 	{
@@ -442,7 +444,7 @@ void SpecificWorker::AGMExecutiveTopic_symbolsUpdated(const RoboCompAGMWorldMode
 
 void SpecificWorker::AGMExecutiveTopic_edgesUpdated(const RoboCompAGMWorldModel::EdgeSequence &modifications)
 {
-// 	qDebug()<<"edgesUpdated";
+ 	qDebug()<<"edgesUpdated";
 	changepos=true;
 
 	QMutexLocker lockIM(mutex);
@@ -466,8 +468,8 @@ void SpecificWorker::AGMExecutiveTopic_edgesUpdated(const RoboCompAGMWorldModel:
 				vec[4] = str2float(edge->getAttribute("ry"));
 				vec[5] = str2float(edge->getAttribute("rz"));
 				innerModel->updateTransformValues(QString::fromStdString(songName), vec);
-				viewer->ts_updateTransformValues(QString::fromStdString(songName), vec);
-			}
+                viewer->ts_updateTransformValues(QString::fromStdString(songName), vec);
+            }
 			catch (...)
 			{
 				qDebug()<<"EXCEPTION,RT label connect to a symbol without imName\n";
@@ -561,7 +563,7 @@ bool SpecificWorker::setParametersAndPossibleActivation(const ParameterMap &prs,
 }
 
 
-void SpecificWorker::sendModificationProposal(AGMModel::SPtr &newModel, AGMModel::SPtr &worldModel, string m)
+void SpecificWorker::sendModificationProposal(AGMModel::SPtr &worldModel, AGMModel::SPtr &newModel,std::string m)
 {
 	QMutexLocker locker(mutex);
 	
@@ -585,3 +587,10 @@ void SpecificWorker::sendModificationProposal(AGMModel::SPtr &newModel, AGMModel
 		exit(1);
 	}
 }
+
+
+
+
+
+
+

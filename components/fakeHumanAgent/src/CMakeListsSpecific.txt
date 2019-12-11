@@ -10,7 +10,13 @@ SET ( SOURCES
 SET ( HEADERS
   specificworker.h
   specificmonitor.h
+    innerviewer.cpp
+
 )
 
-ADD_DEFINITIONS( -std=c++11 )
+SET(LIBS ${LIBS} -lagm )
 
+set(CMAKE_CXX_STANDARD 17)
+#ADD_DEFINITIONS( -std=c++11 )
+INCLUDE_DIRECTORIES( /usr/include/libxml2 )
+SET (LIBS ${LIBS} -L/usr/local/lib/ pthread osg osgViewer osgGA fcl  )

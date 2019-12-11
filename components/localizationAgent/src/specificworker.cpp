@@ -70,7 +70,7 @@ SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
 	active = false;
 	worldModel = AGMModel::SPtr(new AGMModel());
 	worldModel->name = "worldModel";
-	innerModel = new InnerModel();
+    innerModel = std::make_shared<InnerModel>();
 }
 
 /**
@@ -90,7 +90,7 @@ bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 	{
 		RoboCompCommonBehavior::Parameter par = params.at("InnerModelPath");
 		std::string innermodel_path = par.value;
-		innerModel = new InnerModel(innermodel_path);
+		innerModel = std::make_shared<InnerModel>(innermodel_path);
 	}
 	catch(std::exception e) { qFatal("Error reading config params"); }
 
@@ -112,6 +112,7 @@ void SpecificWorker::initialize(int period)
 {
 	std::cout << "Initialize worker" << std::endl;
 	this->Period = period;
+	timer.start(Period);
 }
 
 void SpecificWorker::compute()
@@ -467,8 +468,7 @@ void SpecificWorker::AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldMo
 	QMutexLocker lockIM(mutex);
  	AGMModelConverter::fromIceToInternal(w, worldModel);
  
-	delete innerModel;
-	innerModel = AGMInner::extractInnerModel(worldModel);
+	innerModel = std::make_shared<InnerModel>(AGMInner::extractInnerModel(worldModel));
 }
 
 void SpecificWorker::AGMExecutiveTopic_edgesUpdated(const RoboCompAGMWorldModel::EdgeSequence &modifications)
@@ -478,7 +478,7 @@ void SpecificWorker::AGMExecutiveTopic_edgesUpdated(const RoboCompAGMWorldModel:
 	for (auto modification : modifications)
 	{
 		AGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);
-		AGMInner::updateImNodeFromEdge(worldModel, modification, innerModel);
+		AGMInner::updateImNodeFromEdge(worldModel, modification, innerModel.get());
 	}
 
 }
@@ -488,7 +488,7 @@ void SpecificWorker::AGMExecutiveTopic_edgeUpdated(const RoboCompAGMWorldModel::
 //subscribesToCODE
 	QMutexLocker locker(mutex);
 	AGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);
-	AGMInner::updateImNodeFromEdge(worldModel, modification, innerModel);
+	AGMInner::updateImNodeFromEdge(worldModel, modification, innerModel.get());
 
 }
 

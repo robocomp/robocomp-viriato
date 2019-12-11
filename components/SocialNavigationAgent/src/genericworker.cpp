@@ -1,5 +1,5 @@
 /*
- *    Copyright (C)2018 by YOUR NAME HERE
+ *    Copyright (C)2019 by YOUR NAME HERE
  *
  *    This file is part of RoboComp
  *
@@ -28,11 +28,12 @@ QObject()
 #endif
 
 {
-	socialnavigationgaussian_proxy = (*(SocialNavigationGaussianPrx*)mprx["SocialNavigationGaussianProxy"]);
-	omnirobot_proxy = (*(OmniRobotPrx*)mprx["OmniRobotProxy"]);
-	laser_proxy = (*(LaserPrx*)mprx["LaserProxy"]);
+
 	agmexecutive_proxy = (*(AGMExecutivePrx*)mprx["AGMExecutiveProxy"]);
-	logger_proxy = (*(LoggerPrx*)mprx["LoggerPub"]);
+	laser_proxy = (*(LaserPrx*)mprx["LaserProxy"]);
+	omnirobot_proxy = (*(OmniRobotPrx*)mprx["OmniRobotProxy"]);
+	socialnavigationgaussian_proxy = (*(SocialNavigationGaussianPrx*)mprx["SocialNavigationGaussianProxy"]);
+	logger_pubproxy = (*(LoggerPrx*)mprx["LoggerPub"]);
 
 	mutex = new QMutex(QMutex::Recursive);
 
@@ -42,7 +43,7 @@ QObject()
 	#endif
 	Period = BASIC_PERIOD;
 	connect(&timer, SIGNAL(timeout()), this, SLOT(compute()));
-	timer.start(Period);
+
 }
 
 /**

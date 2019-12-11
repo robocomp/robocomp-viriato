@@ -35,14 +35,12 @@ SET ( SOURCES
 
 #ROBOCOMP
 ROBOCOMP_INITIALIZE( $ENV{ROBOCOMP}/ )
-ROBOCOMP_WRAP_ICE( CommonBehavior TrajectoryRobot2D  Logger  OmniRobot  GenericBase  SocialNavigationGaussian  Laser  GenericBase  AGMExecutive AGMWorldModel Planning AGMCommonBehavior )
+ROBOCOMP_WRAP_ICE( CommonBehavior Planning GenericBase TrajectoryRobot2D Laser OmniRobot SocialNavigationGaussian Logger AGMCommonBehavior AGMExecutive AGMWorldModel AGMExecutive AGMExecutiveTopic AGMWorldModel Planning AGMCommonBehavior )
 SET (EXECUTABLE_OUTPUT_PATH ${RC_COMPONENT_DEVEL_PATH}/bin)
 
 QT_WRAP_UI( UI_HEADERS mainUI.ui )
 
 # Specify construction and link process
-SET(LIBS ${LIBS} -lagm)
-ADD_DEFINITIONS( -I/usr/include/libxml2/ )
 ADD_EXECUTABLE( SocialNavigationAgent ${SOURCES} ${MOC_SOURCES} ${RC_SOURCES} ${UI_HEADERS} )
 TARGET_LINK_LIBRARIES( SocialNavigationAgent ${LIBS} ${STATIC_LIBS} ${SPECIFIC_LIBS} ${QT_LIBRARIES} ${Ice_LIBRARIES})
 INSTALL(FILES ${EXECUTABLE_OUTPUT_PATH}/SocialNavigationAgent DESTINATION ${RC_COMPONENT_INSTALL_PATH}/bin/ PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )

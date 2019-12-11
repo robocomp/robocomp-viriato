@@ -124,7 +124,7 @@ private:
 
 	bool haveTarget;
 	QTimer trajReader;
-	AGMModel::SPtr world;
+//	AGMModel::SPtr world;
 	RoboCompTrajectoryRobot2D::NavState planningState;
 	// Target info
 	RoboCompTrajectoryRobot2D::TargetPose currentTarget;
@@ -136,7 +136,7 @@ private:
 
 	std::string robotname = "robot";
 	RoboCompGenericBase::TBaseState bState;
-	InnerPtr innerModel;
+    InnerPtr innerModel;
 	#ifdef USE_QTGUI
 		InnerViewerPtr viewer;
 	#endif

@@ -22,14 +22,14 @@
 #include "config.h"
 #include <stdint.h>
 #include <qlog/qlog.h>
-
+#include <agm.h>
 #include <QStateMachine>
 #include <QState>
 #include <CommonBehavior.h>
 
+#include <JointMotor.h>
 #include <Planning.h>
 #include <GenericBase.h>
-#include <JointMotor.h>
 #include <FullPoseEstimation.h>
 #include <OmniRobot.h>
 #include <AprilTags.h>
@@ -37,15 +37,14 @@
 #include <AGMCommonBehavior.h>
 #include <AGMExecutive.h>
 #include <AGMWorldModel.h>
-#include <agm.h>
 
 #define CHECK_PERIOD 5000
 #define BASIC_PERIOD 100
 
 using namespace std;
+using namespace RoboCompJointMotor;
 using namespace RoboCompPlanning;
 using namespace RoboCompGenericBase;
-using namespace RoboCompJointMotor;
 using namespace RoboCompFullPoseEstimation;
 using namespace RoboCompOmniRobot;
 using namespace RoboCompAprilTags;
@@ -84,35 +83,35 @@ public:
 	FullPoseEstimationPrx fullposeestimation_proxy;
 	OmniRobotPrx omnirobot_proxy;
 
-	virtual bool AGMCommonBehavior_reloadConfigAgent() = 0;
 	virtual bool AGMCommonBehavior_activateAgent(const ParameterMap &prs) = 0;
-	virtual bool AGMCommonBehavior_setAgentParameters(const ParameterMap &prs) = 0;
-	virtual ParameterMap AGMCommonBehavior_getAgentParameters() = 0;
-	virtual void AGMCommonBehavior_killAgent() = 0;
-	virtual int AGMCommonBehavior_uptimeAgent() = 0;
 	virtual bool AGMCommonBehavior_deactivateAgent() = 0;
+	virtual ParameterMap AGMCommonBehavior_getAgentParameters() = 0;
 	virtual StateStruct AGMCommonBehavior_getAgentState() = 0;
-	virtual void AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldModel::World &w) = 0;
-	virtual void AGMExecutiveTopic_edgesUpdated(const RoboCompAGMWorldModel::EdgeSequence &modifications) = 0;
+	virtual void AGMCommonBehavior_killAgent() = 0;
+	virtual bool AGMCommonBehavior_reloadConfigAgent() = 0;
+	virtual bool AGMCommonBehavior_setAgentParameters(const ParameterMap &prs) = 0;
+	virtual int AGMCommonBehavior_uptimeAgent() = 0;
 	virtual void AGMExecutiveTopic_edgeUpdated(const RoboCompAGMWorldModel::Edge &modification) = 0;
+	virtual void AGMExecutiveTopic_edgesUpdated(const RoboCompAGMWorldModel::EdgeSequence &modifications) = 0;
+	virtual void AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldModel::World &w) = 0;
 	virtual void AGMExecutiveTopic_symbolUpdated(const RoboCompAGMWorldModel::Node &modification) = 0;
 	virtual void AGMExecutiveTopic_symbolsUpdated(const RoboCompAGMWorldModel::NodeSequence &modifications) = 0;
-	virtual void AprilTags_newAprilTagAndPose(const tagsList &tags, const RoboCompGenericBase::TBaseState &bState, const RoboCompJointMotor::MotorStateMap &hState) = 0;
 	virtual void AprilTags_newAprilTag(const tagsList &tags) = 0;
+	virtual void AprilTags_newAprilTagAndPose(const tagsList &tags, const RoboCompGenericBase::TBaseState &bState, const RoboCompJointMotor::MotorStateMap &hState) = 0;
 	virtual void FullPoseEstimationPub_newFullPose(const RoboCompFullPoseEstimation::FullPose &pose) = 0;
 
 protected:
 //State Machine
 	QStateMachine customMachine;
 
-	QState *publishState = new QState();
-	QState *pop_dataState = new QState();
-	QState *read_uwbState = new QState();
-	QState *read_rsState = new QState();
-	QState *read_aprilState = new QState();
-	QState *compute_poseState = new QState();
-	QState *initializeState = new QState();
-	QFinalState *finalizeState = new QFinalState();
+	QState *publishState;
+	QState *pop_dataState;
+	QState *read_uwbState;
+	QState *read_rsState;
+	QState *read_aprilState;
+	QState *compute_poseState;
+	QState *initializeState;
+	QFinalState *finalizeState;
 
 //-------------------------
 
@@ -156,8 +155,8 @@ signals:
 	void t_read_rs_to_compute_pose();
 	void t_compute_pose_to_publish();
 	void t_compute_pose_to_pop_data();
-	void t_pop_data_to_finalize();
 	void t_publish_to_pop_data();
+	void t_pop_data_to_finalize();
 
 //-------------------------
 };

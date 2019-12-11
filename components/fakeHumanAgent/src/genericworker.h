@@ -1,5 +1,5 @@
 /*
- *    Copyright (C) 2016 by YOUR NAME HERE
+ *    Copyright (C)2019 by YOUR NAME HERE
  *
  *    This file is part of RoboComp
  *
@@ -20,45 +20,48 @@
 #define GENERICWORKER_H
 
 #include "config.h"
-#include <QtGui>
 #include <stdint.h>
 #include <qlog/qlog.h>
 
+#if Qt5_FOUND
+	#include <QtWidgets>
+#else
+	#include <QtGui>
+#endif
 #include <ui_mainUI.h>
-
 #include <CommonBehavior.h>
-
-#include <InnerModelManager.h>
 #include <agm.h>
+#include <Planning.h>
+#include <InnerModelManager.h>
+#include <AGMCommonBehavior.h>
+#include <AGMExecutive.h>
+#include <AGMWorldModel.h>
 
 #define CHECK_PERIOD 5000
 #define BASIC_PERIOD 100
 
-typedef map <string,::IceProxy::Ice::Object*> MapPrx;
-
 using namespace std;
-
-using namespace RoboCompInnerModelManager;
 using namespace RoboCompPlanning;
-using namespace RoboCompAGMExecutive;
+using namespace RoboCompInnerModelManager;
 using namespace RoboCompAGMCommonBehavior;
+using namespace RoboCompAGMExecutive;
 using namespace RoboCompAGMWorldModel;
 
+typedef map <string,::IceProxy::Ice::Object*> MapPrx;
 
-struct BehaviorParameters 
+
+struct BehaviorParameters
 {
 	RoboCompPlanning::Action action;
 	std::vector< std::vector <std::string> > plan;
 };
 
-
-
-class GenericWorker : 
+class GenericWorker :
 #ifdef USE_QTGUI
-public QWidget, public Ui_guiDlg
+	public QWidget, public Ui_guiDlg
 #else
-public QObject
-#endif
+	public QObject
+ #endif
 {
 Q_OBJECT
 public:
@@ -66,32 +69,33 @@ public:
 	virtual ~GenericWorker();
 	virtual void killYourSelf();
 	virtual void setPeriod(int p);
-	
+
 	virtual bool setParams(RoboCompCommonBehavior::ParameterList params) = 0;
 	QMutex *mutex;
 	bool activate(const BehaviorParameters& parameters);
 	bool deactivate();
 	bool isActive() { return active; }
-	
 
-	InnerModelManagerPrx innermodelmanager_proxy;
+
 	AGMExecutivePrx agmexecutive_proxy;
+	InnerModelManagerPrx innermodelmanager_proxy;
 
-	virtual bool reloadConfigAgent() = 0;
-	virtual bool activateAgent(const ParameterMap &prs) = 0;
-	virtual bool setAgentParameters(const ParameterMap &prs) = 0;
-	virtual ParameterMap getAgentParameters() = 0;
-	virtual void killAgent() = 0;
-	virtual int uptimeAgent() = 0;
-	virtual bool deactivateAgent() = 0;
-	virtual StateStruct getAgentState() = 0;
-	virtual void structuralChange(const RoboCompAGMWorldModel::World &w) = 0;
-	virtual void edgesUpdated(const RoboCompAGMWorldModel::EdgeSequence &modification) = 0;
-	virtual void edgeUpdated(const RoboCompAGMWorldModel::Edge &modification) = 0;
-	virtual void symbolUpdated(const RoboCompAGMWorldModel::Node &modification) = 0;
-	virtual void symbolsUpdated(const RoboCompAGMWorldModel::NodeSequence &modification) = 0;
+	virtual bool AGMCommonBehavior_activateAgent(const ParameterMap &prs) = 0;
+	virtual bool AGMCommonBehavior_deactivateAgent() = 0;
+	virtual ParameterMap AGMCommonBehavior_getAgentParameters() = 0;
+	virtual StateStruct AGMCommonBehavior_getAgentState() = 0;
+	virtual void AGMCommonBehavior_killAgent() = 0;
+	virtual bool AGMCommonBehavior_reloadConfigAgent() = 0;
+	virtual bool AGMCommonBehavior_setAgentParameters(const ParameterMap &prs) = 0;
+	virtual int AGMCommonBehavior_uptimeAgent() = 0;
+	virtual void AGMExecutiveTopic_edgeUpdated(const RoboCompAGMWorldModel::Edge &modification) = 0;
+	virtual void AGMExecutiveTopic_edgesUpdated(const RoboCompAGMWorldModel::EdgeSequence &modifications) = 0;
+	virtual void AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldModel::World &w) = 0;
+	virtual void AGMExecutiveTopic_symbolUpdated(const RoboCompAGMWorldModel::Node &modification) = 0;
+	virtual void AGMExecutiveTopic_symbolsUpdated(const RoboCompAGMWorldModel::NodeSequence &modifications) = 0;
 
 protected:
+
 	QTimer timer;
 	int Period;
 	bool active;
@@ -99,7 +103,7 @@ protected:
 	BehaviorParameters p;
 	ParameterMap params;
 	int iter;
-	bool setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated);
+	bool setParametersAndPossibleActivation(const RoboCompAGMCommonBehavior::ParameterMap &prs, bool &reactivated);
 	RoboCompPlanning::Action createAction(std::string s);
 
 private:
@@ -107,6 +111,8 @@ private:
 
 public slots:
 	virtual void compute() = 0;
+    virtual void initialize(int period) = 0;
+	
 signals:
 	void kill();
 };

@@ -18,7 +18,7 @@
 #include <vector>
 #include "projector.h"
 
-using namespace std::chrono_literals;
+using namespace std::literals::chrono_literals;
 
 void Projector::initialize( const InnerPtr &innerModel_, 
 							const shared_ptr< CurrentTarget> &currenttarget_,

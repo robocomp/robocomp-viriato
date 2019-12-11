@@ -1,5 +1,5 @@
 /*
- *    Copyright (C)2018 by YOUR NAME HERE
+ *    Copyright (C)2019 by YOUR NAME HERE
  *
  *    This file is part of RoboComp
  *
@@ -34,14 +34,14 @@ public:
 TrajectoryRobot2DI(GenericWorker *_worker);
 	~TrajectoryRobot2DI();
 
-	NavState getState(const Ice::Current&);
-	float goBackwards(const TargetPose  &target, const Ice::Current&);
-	void stop(const Ice::Current&);
-	void setHumanSpace(const PolyLineList  &polyList, const Ice::Current&);
-	float goReferenced(const TargetPose  &target, const float  xRef, const float  zRef, const float  threshold, const Ice::Current&);
 	float changeTarget(const TargetPose  &target, const Ice::Current&);
+	NavState getState(const Ice::Current&);
 	float go(const TargetPose  &target, const Ice::Current&);
+	float goBackwards(const TargetPose  &target, const Ice::Current&);
+	float goReferenced(const TargetPose  &target, const float  xRef, const float  zRef, const float  threshold, const Ice::Current&);
 	void mapBasedTarget(const NavigationParameterMap  &parameters, const Ice::Current&);
+	void setHumanSpace(const PolyLineList  &polyList, const Ice::Current&);
+	void stop(const Ice::Current&);
 
 private:
 

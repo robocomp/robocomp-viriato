@@ -28,7 +28,7 @@ SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
 	active = false;
 	worldModel = AGMModel::SPtr(new AGMModel());
 	worldModel->name = "worldModel";
-	innerModel = new InnerModel();
+	innerModel = std::make_shared<InnerModel>();
 
 	
 	setWindowTitle("FakeHumanAgent");
@@ -46,6 +46,13 @@ SpecificWorker::~SpecificWorker()
 {
 }
 
+void SpecificWorker::initialize(int period)
+{
+    std::cout << "Initialize worker" << std::endl;
+    this->Period = period;
+    timer.start(Period);
+
+}
 bool SpecificWorker::includeInRCIS(int id, const RoboCompInnerModelManager::Pose3D &pose, std::string meshName)
 {
 	printf("includeInRCIS begins\n");
@@ -327,7 +334,7 @@ bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 	try        
 	{
 		RoboCompAGMWorldModel::World w = agmexecutive_proxy->getModel();
-		structuralChange(w);
+		AGMExecutiveTopic_structuralChange(w);
 	}
 	catch(...)
 	{
@@ -631,7 +638,7 @@ void SpecificWorker::compute()
 	if (firstTime) //retrieve model after initialization
 	{
 		RoboCompAGMWorldModel::World w = agmexecutive_proxy->getModel();
-		structuralChange(w);
+		AGMExecutiveTopic_structuralChange(w);
 		firstTime = false;
 		//add robot ID to interaction comboBox
 		try{
@@ -712,6 +719,12 @@ void SpecificWorker::compute()
 	lastCompute = QTime::currentTime();
 
 */
+
+//#ifdef USE_QTGUI
+//	if (innerModelViewer) innerModelViewer->update();
+////	osgView->frame();
+//#endif
+
 }
 
 void SpecificWorker::setPose()
@@ -731,12 +744,12 @@ void SpecificWorker::setPose()
 //		AGENT RELATED
 //***************************
 
-bool SpecificWorker::reloadConfigAgent()
+bool SpecificWorker::AGMCommonBehavior_reloadConfigAgent()
 {
 	return true;
 }
 
-bool SpecificWorker::activateAgent(const ParameterMap &prs)
+bool SpecificWorker::AGMCommonBehavior_activateAgent(const ParameterMap &prs)
 {
 	bool activated = false;
 	if (setParametersAndPossibleActivation(prs, activated))
@@ -753,33 +766,33 @@ bool SpecificWorker::activateAgent(const ParameterMap &prs)
 	return true;
 }
 
-bool SpecificWorker::setAgentParameters(const ParameterMap &prs)
+bool SpecificWorker::AGMCommonBehavior_setAgentParameters(const ParameterMap &prs)
 {
 	bool activated = false;
 	return setParametersAndPossibleActivation(prs, activated);
 }
 
-ParameterMap SpecificWorker::getAgentParameters()
+ParameterMap SpecificWorker::AGMCommonBehavior_getAgentParameters()
 {
 	return params;
 }
 
-void SpecificWorker::killAgent()
+void SpecificWorker::AGMCommonBehavior_killAgent()
 {
 
 }
 
-int SpecificWorker::uptimeAgent()
+int SpecificWorker::AGMCommonBehavior_uptimeAgent()
 {
 	return 0;
 }
 
-bool SpecificWorker::deactivateAgent()
+bool SpecificWorker::AGMCommonBehavior_deactivateAgent()
 {
 	return deactivate();
 }
 
-StateStruct SpecificWorker::getAgentState()
+StateStruct SpecificWorker::AGMCommonBehavior_getAgentState()
 {
 	StateStruct s;
 	if (isActive())
@@ -794,45 +807,56 @@ StateStruct SpecificWorker::getAgentState()
 	return s;
 }
 
-void SpecificWorker::structuralChange(const RoboCompAGMWorldModel::World &w)
+void SpecificWorker::AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldModel::World &w)
 {
 	mutex->lock();
+	QMutexLocker lockIM(mutex);
  	AGMModelConverter::fromIceToInternal(w, worldModel);
-	delete innerModel;
-	innerModel = AGMInner::extractInnerModel(worldModel);
+ 
+	innerModel = std::make_shared<InnerModel>(AGMInner::extractInnerModel(worldModel));
+//	regenerateInnerModelViewer();
 	mutex->unlock();
 }
 
-void SpecificWorker::edgesUpdated(const RoboCompAGMWorldModel::EdgeSequence &modifications)
+void SpecificWorker::AGMExecutiveTopic_edgesUpdated(const RoboCompAGMWorldModel::EdgeSequence &modifications)
 {
 	QMutexLocker locker(mutex);
 	for (auto modification : modifications)
 	{
 		AGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);
-		AGMInner::updateImNodeFromEdge(worldModel, modification, innerModel);
+		AGMInner::updateImNodeFromEdge(worldModel, modification, innerModel.get());
 	}
 }
 
-void SpecificWorker::edgeUpdated(const RoboCompAGMWorldModel::Edge &modification)
+void SpecificWorker::AGMExecutiveTopic_edgeUpdated(const RoboCompAGMWorldModel::Edge &modification)
 {
 	QMutexLocker locker(mutex);
 	AGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);
-	AGMInner::updateImNodeFromEdge(worldModel, modification, innerModel);
+	AGMInner::updateImNodeFromEdge(worldModel, modification, innerModel.get());
 }
 
-void SpecificWorker::symbolUpdated(const RoboCompAGMWorldModel::Node &modification)
+void SpecificWorker::AGMExecutiveTopic_symbolUpdated(const RoboCompAGMWorldModel::Node &modification)
 {
 	QMutexLocker locker(mutex);
 	AGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);
 }
 
-void SpecificWorker::symbolsUpdated(const RoboCompAGMWorldModel::NodeSequence &modifications)
+void SpecificWorker::AGMExecutiveTopic_symbolsUpdated(const RoboCompAGMWorldModel::NodeSequence &modifications)
 {
 	QMutexLocker l(mutex);
 	for (auto modification : modifications)
 		AGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);
 }
 
+//void SpecificWorker::regenerateInnerModelViewer()
+//{
+////    if (innerModelViewer)
+////    {
+////        osgView->getRootGroup()->removeChild(innerModelViewer);
+////    }
+////
+////    innerModelViewer = new InnerModelViewer(innerModel, "root", osgView->getRootGroup(), true);
+//}
 
 
 bool SpecificWorker::setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated)
@@ -843,6 +867,7 @@ bool SpecificWorker::setParametersAndPossibleActivation(const ParameterMap &prs,
 	reactivated = false;
 
 	// Update parameters
+	params.clear();
 	params.clear();
 	for (ParameterMap::const_iterator it=prs.begin(); it!=prs.end(); it++)
 	{

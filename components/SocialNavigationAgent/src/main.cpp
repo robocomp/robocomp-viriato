@@ -1,5 +1,5 @@
 /*
- *    Copyright (C) 2018 by YOUR NAME HERE
+ *    Copyright (C) 2019 by YOUR NAME HERE
  *
  *    This file is part of RoboComp
  *
@@ -85,12 +85,7 @@
 #include <trajectoryrobot2dI.h>
 #include <agmexecutivetopicI.h>
 
-#include <TrajectoryRobot2D.h>
-#include <Logger.h>
-#include <OmniRobot.h>
-#include <GenericBase.h>
-#include <SocialNavigationGaussian.h>
-#include <Laser.h>
+#include <Planning.h>
 #include <GenericBase.h>
 
 
@@ -143,11 +138,11 @@ int ::SocialNavigationAgent::run(int argc, char* argv[])
 
 	int status=EXIT_SUCCESS;
 
-	SocialNavigationGaussianPrx socialnavigationgaussian_proxy;
-	LaserPrx laser_proxy;
-	LoggerPrx logger_proxy;
-	OmniRobotPrx omnirobot_proxy;
+	LoggerPrx logger_pubproxy;
 	AGMExecutivePrx agmexecutive_proxy;
+	LaserPrx laser_proxy;
+	OmniRobotPrx omnirobot_proxy;
+	SocialNavigationGaussianPrx socialnavigationgaussian_proxy;
 
 	string proxy, tmp;
 	initialize();
@@ -155,20 +150,20 @@ int ::SocialNavigationAgent::run(int argc, char* argv[])
 
 	try
 	{
-		if (not GenericMonitor::configGetString(communicator(), prefix, "SocialNavigationGaussianProxy", proxy, ""))
+		if (not GenericMonitor::configGetString(communicator(), prefix, "AGMExecutiveProxy", proxy, ""))
 		{
-			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy SocialNavigationGaussianProxy\n";
+			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy AGMExecutiveProxy\n";
 		}
-		socialnavigationgaussian_proxy = SocialNavigationGaussianPrx::uncheckedCast( communicator()->stringToProxy( proxy ) );
+		agmexecutive_proxy = AGMExecutivePrx::uncheckedCast( communicator()->stringToProxy( proxy ) );
 	}
 	catch(const Ice::Exception& ex)
 	{
-		cout << "[" << PROGRAM_NAME << "]: Exception creating proxy SocialNavigationGaussian: " << ex;
+		cout << "[" << PROGRAM_NAME << "]: Exception creating proxy AGMExecutive: " << ex;
 		return EXIT_FAILURE;
 	}
-	rInfo("SocialNavigationGaussianProxy initialized Ok!");
+	rInfo("AGMExecutiveProxy initialized Ok!");
 
-	mprx["SocialNavigationGaussianProxy"] = (::IceProxy::Ice::Object*)(&socialnavigationgaussian_proxy);//Remote server proxy creation example
+	mprx["AGMExecutiveProxy"] = (::IceProxy::Ice::Object*)(&agmexecutive_proxy);//Remote server proxy creation example
 
 	try
 	{
@@ -206,20 +201,20 @@ int ::SocialNavigationAgent::run(int argc, char* argv[])
 
 	try
 	{
-		if (not GenericMonitor::configGetString(communicator(), prefix, "AGMExecutiveProxy", proxy, ""))
+		if (not GenericMonitor::configGetString(communicator(), prefix, "SocialNavigationGaussianProxy", proxy, ""))
 		{
-			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy AGMExecutiveProxy\n";
+			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy SocialNavigationGaussianProxy\n";
 		}
-		agmexecutive_proxy = AGMExecutivePrx::uncheckedCast( communicator()->stringToProxy( proxy ) );
+		socialnavigationgaussian_proxy = SocialNavigationGaussianPrx::uncheckedCast( communicator()->stringToProxy( proxy ) );
 	}
 	catch(const Ice::Exception& ex)
 	{
-		cout << "[" << PROGRAM_NAME << "]: Exception creating proxy AGMExecutive: " << ex;
+		cout << "[" << PROGRAM_NAME << "]: Exception creating proxy SocialNavigationGaussian: " << ex;
 		return EXIT_FAILURE;
 	}
-	rInfo("AGMExecutiveProxy initialized Ok!");
+	rInfo("SocialNavigationGaussianProxy initialized Ok!");
 
-	mprx["AGMExecutiveProxy"] = (::IceProxy::Ice::Object*)(&agmexecutive_proxy);//Remote server proxy creation example
+	mprx["SocialNavigationGaussianProxy"] = (::IceProxy::Ice::Object*)(&socialnavigationgaussian_proxy);//Remote server proxy creation example
 	IceStorm::TopicManagerPrx topicManager;
 	try
 	{
@@ -253,8 +248,8 @@ int ::SocialNavigationAgent::run(int argc, char* argv[])
 	}
 
 	Ice::ObjectPrx logger_pub = logger_topic->getPublisher()->ice_oneway();
-	logger_proxy = LoggerPrx::uncheckedCast(logger_pub);
-	mprx["LoggerPub"] = (::IceProxy::Ice::Object*)(&logger_proxy);
+	logger_pubproxy = LoggerPrx::uncheckedCast(logger_pub);
+	mprx["LoggerPub"] = (::IceProxy::Ice::Object*)(&logger_pubproxy);
 
 	SpecificWorker *worker = new SpecificWorker(mprx);
 	//Monitor thread

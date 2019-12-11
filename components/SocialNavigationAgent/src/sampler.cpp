@@ -348,7 +348,7 @@ bool Sampler::checkRobotValidDirectionToTarget(const QVec & origin , const QVec 
 	for(uint i=1 ; i<=nSteps; i++)
 	{
 		point = (origin * (1-landa)) + (target * landa);
-		if (std::get<bool>(checkRobotValidStateAtTarget(point, QVec::zeros(3))) ) 
+		if (std::get<bool>(checkRobotValidStateAtTarget(point, QVec::zeros(3))) )
 		{
 			lastPoint  = point;
 			landa = landa + step;

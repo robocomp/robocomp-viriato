@@ -30,10 +30,19 @@
 
 #include <genericworker.h>
 #include <innermodel/innermodel.h>
-#include <qjoystick/qjoystick.h>
+//#include <qjoystick/qjoystick.h>
+#include <QMessageBox>
+#include <QFileDialog>
 
 #define HUMANADVVEL 50
 #define HUMANROTVEL 0.1
+
+//#ifdef USE_QTGUI
+//    #include <osgviewer/osgview.h>
+//  #include <innermodel/innermodelviewer.h>
+//#endif
+
+
 
 Q_DECLARE_METATYPE(AGMModelEdge)
 
@@ -76,14 +85,10 @@ Q_OBJECT
 
 
 public:
-  
-	void move();
-	void movePerson(TPerson *person, RoboCompInnerModelManager::coord3D coordInItem, bool global = false);
-	RoboCompInnerModelManager::coord3D autoMovePerson(TPerson person);
-	
 	SpecificWorker(MapPrx& mprx);
 	~SpecificWorker();
 	bool setParams(RoboCompCommonBehavior::ParameterList params);
+
 	void initializeUI();
 	bool includeInRCIS(int id, const RoboCompInnerModelManager::Pose3D &pose, std::string mesh);
 	bool removeFromRCIS(int id);
@@ -91,28 +96,34 @@ public:
 	bool removeFromAGM(int id);
 	void changePersonRoom(int personID, int roomID);
 	void cleanListWidget(int personID);
-	
-	bool setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated);
-	bool sendModificationProposal(AGMModel::SPtr &worldModel, AGMModel::SPtr &newModel);
-	bool reloadConfigAgent();
-	bool activateAgent(const ParameterMap &prs);
-	bool setAgentParameters(const ParameterMap &prs);
-	ParameterMap getAgentParameters();
-	void killAgent();
-	int uptimeAgent();
-	bool deactivateAgent();
-	StateStruct getAgentState();
-	void structuralChange(const RoboCompAGMWorldModel::World &w);
-	void edgesUpdated(const RoboCompAGMWorldModel::EdgeSequence &modification);
-	void edgeUpdated(const RoboCompAGMWorldModel::Edge &modification);
-	void symbolUpdated(const RoboCompAGMWorldModel::Node &modification);
-	void symbolsUpdated(const RoboCompAGMWorldModel::NodeSequence &modification);
+
+	void move();
+	void movePerson(TPerson *person, RoboCompInnerModelManager::coord3D coordInItem, bool global = false);
+	RoboCompInnerModelManager::coord3D autoMovePerson(TPerson person);
+
 	TInteraction string2Interaction(std::string interaction);
 	void pointsChanged();
 	void updatePersonInterfaz(bool enable);
 
+
+	bool AGMCommonBehavior_activateAgent(const ParameterMap &prs);
+	bool AGMCommonBehavior_deactivateAgent();
+	ParameterMap AGMCommonBehavior_getAgentParameters();
+	StateStruct AGMCommonBehavior_getAgentState();
+	void AGMCommonBehavior_killAgent();
+	bool AGMCommonBehavior_reloadConfigAgent();
+	bool AGMCommonBehavior_setAgentParameters(const ParameterMap &prs);
+	int AGMCommonBehavior_uptimeAgent();
+	void AGMExecutiveTopic_edgeUpdated(const RoboCompAGMWorldModel::Edge &modification);
+	void AGMExecutiveTopic_edgesUpdated(const RoboCompAGMWorldModel::EdgeSequence &modifications);
+	void AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldModel::World &w);
+	void AGMExecutiveTopic_symbolUpdated(const RoboCompAGMWorldModel::Node &modification);
+	void AGMExecutiveTopic_symbolsUpdated(const RoboCompAGMWorldModel::NodeSequence &modifications);
+
 public slots:
 	void compute();
+    void initialize(int period);
+
 	void setPose();
 	//void receivedJoyStickEvent(int value, int type, int number);
 	
@@ -140,14 +151,24 @@ public slots:
 	void moverandom();
 
 private:
-	InnerModel *innerModel;
+	std::shared_ptr<InnerModel> innerModel;
+//#ifdef USE_QTGUI
+//    OsgView *osgView;
+//
+//#endif
+
+//    InnerModelViewer *innerModelViewer;
 	std::string action;
 	ParameterMap params;
 	AGMModel::SPtr worldModel;
 	bool active;
 	
-	QTime lastJoystickEvent;
-	QJoyStick *joystick;
+//	QTime lastJoystickEvent;
+//	QJoyStick *joystick;
+
+//	void regenerateInnerModelViewer();
+	bool setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated);
+	bool sendModificationProposal(AGMModel::SPtr &worldModel, AGMModel::SPtr &newModel);
 };
 
 #endif

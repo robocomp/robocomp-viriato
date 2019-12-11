@@ -1,5 +1,5 @@
 /*
- *    Copyright (C) 2018 by YOUR NAME HERE
+ *    Copyright (C) 2019 by YOUR NAME HERE
  *
  *    This file is part of RoboComp
  *
@@ -28,9 +28,9 @@ AGMExecutiveTopicI::~AGMExecutiveTopicI()
 {
 }
 
-void AGMExecutiveTopicI::structuralChange(const RoboCompAGMWorldModel::World  &w, const Ice::Current&)
+void AGMExecutiveTopicI::edgeUpdated(const RoboCompAGMWorldModel::Edge  &modification, const Ice::Current&)
 {
-	worker->AGMExecutiveTopic_structuralChange(w);
+	worker->AGMExecutiveTopic_edgeUpdated(modification);
 }
 
 void AGMExecutiveTopicI::edgesUpdated(const RoboCompAGMWorldModel::EdgeSequence  &modifications, const Ice::Current&)
@@ -38,9 +38,9 @@ void AGMExecutiveTopicI::edgesUpdated(const RoboCompAGMWorldModel::EdgeSequence 
 	worker->AGMExecutiveTopic_edgesUpdated(modifications);
 }
 
-void AGMExecutiveTopicI::edgeUpdated(const RoboCompAGMWorldModel::Edge  &modification, const Ice::Current&)
+void AGMExecutiveTopicI::structuralChange(const RoboCompAGMWorldModel::World  &w, const Ice::Current&)
 {
-	worker->AGMExecutiveTopic_edgeUpdated(modification);
+	worker->AGMExecutiveTopic_structuralChange(w);
 }
 
 void AGMExecutiveTopicI::symbolUpdated(const RoboCompAGMWorldModel::Node  &modification, const Ice::Current&)

@@ -25,6 +25,25 @@ QObject()
 {
 
 //Initialization State machine
+	publishState = new QState(QState::ExclusiveStates);
+	customMachine.addState(publishState);
+	pop_dataState = new QState(QState::ExclusiveStates);
+	customMachine.addState(pop_dataState);
+	read_uwbState = new QState(QState::ExclusiveStates);
+	customMachine.addState(read_uwbState);
+	read_rsState = new QState(QState::ExclusiveStates);
+	customMachine.addState(read_rsState);
+	read_aprilState = new QState(QState::ExclusiveStates);
+	customMachine.addState(read_aprilState);
+	compute_poseState = new QState(QState::ExclusiveStates);
+	customMachine.addState(compute_poseState);
+	initializeState = new QState(QState::ExclusiveStates);
+	customMachine.addState(initializeState);
+	finalizeState = new QFinalState();
+	customMachine.addState(finalizeState);
+
+	customMachine.setInitialState(initializeState);
+
 	initializeState->addTransition(this, SIGNAL(t_initialize_to_pop_data()), pop_dataState);
 	pop_dataState->addTransition(this, SIGNAL(t_pop_data_to_pop_data()), pop_dataState);
 	pop_dataState->addTransition(this, SIGNAL(t_pop_data_to_read_uwb()), read_uwbState);
@@ -35,19 +54,8 @@ QObject()
 	read_rsState->addTransition(this, SIGNAL(t_read_rs_to_compute_pose()), compute_poseState);
 	compute_poseState->addTransition(this, SIGNAL(t_compute_pose_to_publish()), publishState);
 	compute_poseState->addTransition(this, SIGNAL(t_compute_pose_to_pop_data()), pop_dataState);
-	pop_dataState->addTransition(this, SIGNAL(t_pop_data_to_finalize()), finalizeState);
 	publishState->addTransition(this, SIGNAL(t_publish_to_pop_data()), pop_dataState);
-
-	customMachine.addState(publishState);
-	customMachine.addState(pop_dataState);
-	customMachine.addState(read_uwbState);
-	customMachine.addState(read_rsState);
-	customMachine.addState(read_aprilState);
-	customMachine.addState(compute_poseState);
-	customMachine.addState(initializeState);
-	customMachine.addState(finalizeState);
-
-	customMachine.setInitialState(initializeState);
+	pop_dataState->addTransition(this, SIGNAL(t_pop_data_to_finalize()), finalizeState);
 
 	QObject::connect(publishState, SIGNAL(entered()), this, SLOT(sm_publish()));
 	QObject::connect(pop_dataState, SIGNAL(entered()), this, SLOT(sm_pop_data()));
@@ -66,7 +74,6 @@ QObject()
 	mutex = new QMutex(QMutex::Recursive);
 
 	Period = BASIC_PERIOD;
-	connect(&timer, SIGNAL(timeout()), this, SLOT(compute()));
 
 }
 

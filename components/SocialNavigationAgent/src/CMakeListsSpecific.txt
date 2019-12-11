@@ -16,8 +16,10 @@ SET ( SOURCES
   controller.cpp
   actionexecution.cpp
   socialrules.cpp
-)
 
+
+)
+set(CMAKE_CXX_STANDARD 17)
 ADD_DEFINITIONS( -g -std=c++17)
 INCLUDE_DIRECTORIES( /usr/include/libxml2 )
 SET (LIBS ${LIBS} -L/usr/local/lib/ pthread osg osgViewer osgDB fcl  )
