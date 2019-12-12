@@ -1,0 +1,14 @@
+
+Component humanObserverAgent
+{
+    Communications
+    {
+
+    };
+	language Cpp;
+	gui Qt(QWidget);
+	options agmagent;
+	
+	statemachine "statemachine.smdsl";
+};
+
