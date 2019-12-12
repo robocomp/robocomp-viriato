@@ -33,7 +33,7 @@
 			</transform>	
 			
 
-			<transform id="camera_astra_1" tx="0" tz="0" ty="920" ry="0" > 
+			<!-- <transform id="camera_astra_1" tx="0" tz="0" ty="920" ry="0" > 
 				<mesh id="astraRGBD_mesh_1" file="/home/robocomp/robocomp/files/osgModels/basics/cube2.3ds" 
 				scale="200,200,200"  collide="1" />
 			</transform>
@@ -41,7 +41,7 @@
 			<transform id="camera_astra_2" tx="0" tz="0" ty="970" ry="0" > 
 				<mesh id="astraRGBD_mesh_2" file="/home/robocomp/robocomp/files/osgModels/basics/cube2.3ds" 
 				scale="200,200,200"  collide="1" />
-			</transform>	
+			</transform> -->	
 
 		
 			<!-- TABLE D MESA REDONDA DEL COMEDOR>

@@ -86,7 +86,7 @@ class InnerViewer: public QThread
 		QSettings *settings ;
 		osgGA::TrackballManipulator *tb;
 		uint period;
-         osg::Group *root;
+		osg::Group *root;
 };
 
 #endif

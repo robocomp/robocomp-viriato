@@ -64,53 +64,35 @@ void PathFinder::initialize( const std::shared_ptr<InnerModel> &innerModel_,
 	innerModel = innerModel_;
 	viewer = viewer_;
 	configparams = configparams_;
-	
-	//Initialize global state class 
+	//Initialize global state class
 	state = std::make_shared<NavigationState>();
-	
 	/// Initialize the elastic road
 	road.initialize(innerModel, state, configparams);
-	
 	/// Initialize currentarget
 	currenttarget = std::make_shared<CurrentTarget>();
-
 	/// Initialize the Planner
 	pathplanner.initialize(currenttarget, innerModel, state, configparams);
-	
 	/// Initialize the Projector
-//	projector.initialize(innerModel, currenttarget, state, configparams, laser_prx);
-
+	projector.initialize(innerModel, currenttarget, state, configparams, laser_prx);
+    qDebug()<<"--------------Controller---------------";
 	/// Initialize the low level controller that drives the robot on the road	
 	controller.initialize(innerModel, laser_prx, configparams, omnirobot_proxy);
 
-	rDebug2(("PathFinder: All objects initialized"));
-		
-	/// Threads
-	//thread_planner = std::thread(&PathPlanner::run, &pathplanner, std::bind(&PathFinder::getRoad, this), std::bind(&PathFinder::releaseRoad, this));
-	
-	//thread_projector = std::thread(&Projector::run, &projector, std::bind(&PathFinder::getRoad, this), std::bind(&PathFinder::releaseRoad, this));
-	
-	//thread_controller = std::thread(&Controller::run, &controller, std::bind(&PathFinder::getRoad, this), std::bind(&PathFinder::releaseRoad, this));
-	
-	std::cout << __FUNCTION__ << "PathFinder: All threads initialized" << std::endl;
-	rDebug2(("PathFinder: All threads initialized"));
+	qDebug()<<"PathFinder: All objects initialized";
+
 }
 
 void PathFinder::run()
 {
 
- 	//while(true)
-	{	
-		road.update();
-//        projector.update(road); //este no se conecta
-		controller.update(road);
-		pathplanner.update(road);
-		//TODO Revisar para pasar un shared_ptr
-		drawroad.draw(road, viewer.get(), currenttarget);		
-		drawroad.drawmap(pathplanner, viewer.get(), pathplanner.fmap);
-		
-	//	std::this_thread::sleep_for(200ms);
-	}
+    road.update();
+    projector.update(road); //este no se conecta
+    controller.update(road);
+    pathplanner.update(road);
+    //TODO Revisar para pasar un shared_ptr
+    drawroad.draw(road, viewer.get(), currenttarget);
+    drawroad.drawmap(pathplanner, viewer.get(), pathplanner.fmap);
+
 }
 
 
@@ -123,8 +105,8 @@ void PathFinder::innerModelChanged (const std::shared_ptr<InnerModel> &innerMode
 		pathplanner.reloadInnerModel(innerModel_) ;
 		pathplanner.modifyGraph(intimate, personal,social, object,objectsblocking);
 		road.reloadInnerModel( innerModel_ ) ;  
-//		projector.reloadInnerModel(innerModel_) ;
-//		projector.update_polyline(personal); //para el laser
+		projector.reloadInnerModel(innerModel_) ;
+		projector.update_polyline(personal); //para el laser
 		controller.reloadInnerModel( innerModel_ );
 	releaseRoad();
 //	qDebug()<<__FUNCTION__<< "--------------TERMINA GET ROAD -----------------------";

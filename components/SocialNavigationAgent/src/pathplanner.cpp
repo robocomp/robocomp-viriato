@@ -144,7 +144,7 @@ void PathPlanner::run(std::function<Road&()> getRoad, std::function<void()> rele
 		}
 		else
 			releaseRoad();
-		std::this_thread::sleep_for(1s);
+//		std::this_thread::sleep_for(1s);
 	}
 }
 

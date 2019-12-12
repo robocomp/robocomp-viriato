@@ -69,9 +69,9 @@ namespace robocomp
 				Road road;
 				PathPlanner pathplanner;
 				
-				std::thread thread_planner;
-				std::thread thread_projector;
-				std::thread thread_controller;
+//				std::thread thread_planner;
+//				std::thread thread_projector;
+//				std::thread thread_controller;
 
 			public:
                 PathFinder() = default;

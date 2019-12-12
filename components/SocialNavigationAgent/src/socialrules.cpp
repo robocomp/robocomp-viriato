@@ -438,18 +438,12 @@ void SocialRules::goToPerson()
 void SocialRules::checkRobotmov()
 {
     qDebug()<<__FUNCTION__;
-    qDebug()<< worldModel->size();
-    qDebug()<<"------1--------";
 	robotSymbolId = worldModel->getIdentifierByType("robot");
-    qDebug()<<"------2--------";
 	AGMModelSymbol::SPtr robotparent = worldModel->getParentByLink(robotSymbolId, "RT");
-    qDebug()<<"------3--------";
 	AGMModelEdge &edgeRTrobot  = worldModel->getEdgeByIdentifiers(robotparent->identifier, robotSymbolId, "RT");
-    qDebug()<<"------4--------";
 	robot.x=str2float(edgeRTrobot.attributes["tx"])/1000;
 	robot.z=str2float(edgeRTrobot.attributes["tz"])/1000;
 	robot.angle=str2float(edgeRTrobot.attributes["ry"]);
-    qDebug()<<"------5--------";
 
 	qDebug()<< "POSE ROBOT" << robot.x <<robot.z <<robot.angle;
 

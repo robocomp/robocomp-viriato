@@ -140,7 +140,7 @@ private:
 	#ifdef USE_QTGUI
 		InnerViewerPtr viewer;
 	#endif
-
+	std::shared_ptr<RoboCompCommonBehavior::ParameterList> confParams;
 
 //CHECK
 	//void updateRobotsCognitiveLocation();

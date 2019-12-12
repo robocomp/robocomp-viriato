@@ -41,8 +41,9 @@ InnerViewer::InnerViewer( const InnerPtr &innerModel_, const std::string &name_,
 	viewer.getLight()->setAmbient(osg::Vec4(0.2, 0.2, 0.2, 1.0));
 	//viewer.getLight()->setDiffuse(osg::Vec4(0.7, 0.4, 0.6, 1.0));
 	viewer.getLight()->setSpecular(osg::Vec4(1.0, 1.0, 1.0, 1.0));
-	
-	innerModel = std::make_shared<InnerModel>(*innerModel_);
+
+	//Asignamos a innerModel el puntero smart
+	innerModel = innerModel_;
 	innerModelViewer = new InnerModelViewer(innerModel, "root", root, true);
 	
  	viewer.setSceneData(root);
@@ -66,21 +67,26 @@ InnerViewer::InnerViewer( const InnerPtr &innerModel_, const std::string &name_,
 	 	
 	viewer.realize();
 }
-
+//
+//void InnerViewer::run()
+//{
+//	//while(true)
+//	{
+//		if(!stop.load())
+//		{
+//            guard gl(mutex);
+//            innerModelViewer->update();
+//			viewer.frame();
+//		}
+//		else
+//			stopped.store(true);
+//	}
+//}
 void InnerViewer::run()
 {
-	//while(true)
-	{
-		if(!stop.load())
-		{
-            guard gl(mutex);
-            innerModelViewer->update(); 
-			viewer.frame();
-			std::this_thread::sleep_for(std::chrono::microseconds(period));
-		}
-		else
-			stopped.store(true);
-	}
+        guard gl(mutex);
+        innerModelViewer->update();
+        viewer.frame();
 }
 
 void InnerViewer::reloadInnerModel(const InnerPtr &other)
@@ -88,13 +94,14 @@ void InnerViewer::reloadInnerModel(const InnerPtr &other)
 //	stop.store(true);
 //	while(stopped.load() != true);
 	guard gl(mutex);
-	innerModel.reset(other.get()->copy());
+//	innerModel.reset(other.get()->copy());
+	innerModel = other;
 
 	root->removeChild(innerModelViewer);
 	innerModelViewer = new InnerModelViewer(innerModel, "root", root, true);
 
-	stop.store(false);
-	stopped.store(false);
+//	stop.store(false);
+//	stopped.store(false);
 }
 
 void InnerViewer::updateTransformValues(const QString item, const QVec &pos, const QString &parent)

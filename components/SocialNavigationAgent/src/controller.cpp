@@ -34,12 +34,14 @@ void Controller::initialize(const std::shared_ptr<InnerModel> &innerModel_,
 	this->delay = delay*1000;	//msecs
 	
 	//compute offsets from laser center to the border of the robot base
+	//COMENTADO --> PETABA
+//	RoboCompLaser::TLaserData laserData;
+//	try{ laserData = laser_prx->getLaserData();
+////        baseOffsets = computeRobotOffsets(innerModel, laserData);
+//	}
+//	catch(const Ice::Exception &e){ std::cout <<e.what()<< std::endl;}
 
-	RoboCompLaser::TLaserData laserData;
-	try{ laserData = laser_prx->getLaserData();}
-	catch(const Ice::Exception &e){ std::cout <<e.what()<< std::endl;}
 
-	baseOffsets = computeRobotOffsets(innerModel, laserData);
 	try
 	{
 		MAX_ADV_SPEED = QString::fromStdString(configparams->at("MaxZSpeed").value).toFloat();
@@ -72,7 +74,7 @@ void Controller::run(std::function<Road&()> getRoad, std::function<void()> relea
 		if(road.isNotEmpty())
 				update(innerModel, omnirobot_proxy, road);
 		releaseRoad();
-		std::this_thread::sleep_for(150ms);
+//		std::this_thread::sleep_for(150ms);
 	}
 }
 

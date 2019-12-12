@@ -63,65 +63,62 @@ SpecificWorker::~SpecificWorker()
 
 bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList paramsL)
 {
+    //Extract robot name
+    try{ robotname = paramsL.at("RobotName").value;}
+    catch(const std::exception &e){ std::cout << e.what() << "SpecificWorker::SpecificWorker - Robot name defined in config. Using default 'robot' " << std::endl;}
 
-	//Extract robot name 
-	try{ robotname = paramsL.at("RobotName").value;} 
-	catch(const std::exception &e){ std::cout << e.what() << "SpecificWorker::SpecificWorker - Robot name defined in config. Using default 'robot' " << std::endl;}
-	
-	
-	#ifdef USE_QTGUI
-		viewer = std::make_shared<InnerViewer>(innerModel, "Social Navigation");  //InnerViewer copies internally innerModel so it has to be resynchronized
-		viewer->start();
+    confParams  = std::make_shared<RoboCompCommonBehavior::ParameterList>(paramsL);
 
-	#endif
-
-	std::shared_ptr<RoboCompCommonBehavior::ParameterList> configparams = std::make_shared<RoboCompCommonBehavior::ParameterList>(paramsL);
-
-//   	innerModel = std::make_shared<InnerModel>("/home/robocomp/robocomp/components/robocomp-araceli/etcSim/simulation.xml");
-// 	innerModel->getNode<InnerModelJoint>("armX1")->setAngle(-1);
-// 	innerModel->getNode<InnerModelJoint>("armX2")->setAngle(2.5);
-	
-	try
-	{
-		RoboCompAGMWorldModel::World w = agmexecutive_proxy->getModel();
-        AGMExecutiveTopic_structuralChange(w);
-        // Initializing PathFinder
-        qDebug()<<"....1....";
-        pathfinder.initialize(innerModel, viewer, configparams, laser_proxy, omnirobot_proxy);
-        qDebug()<<"....2....";
-        // Initializing SocialRules
-        socialrules.initialize(socialnavigationgaussian_proxy, agmexecutive_proxy, mutex, &pathfinder, worldModel, innerModel);
-
-		AGMExecutiveTopic_structuralChange(w);
-		rDebug2(("Leaving Structural Change"));
-	}		
-	catch(...)
-	{	rDebug2(("SetParams ---- The executive is probably not running, waiting for first AGM model publication...")); }
-
-	// releasing pathfinder
-	//thread_pathfinder = std::thread(&robocomp::pathfinder::PathFinder::run, &pathfinder);
-	//rDebug2(("Pathfinder up and running"));
-
-
-//	qLog::getInstance()->setProxy("both", logger_pubproxy);
-	rDebug2(("NavigationAgent started"));
-	
-	//Proxies for actionExecution
-	//aE.logger_proxy = logger_proxy;
-	//aE.agmexecutive_proxy = agmexecutive_proxy;
-	//aE.omnirobot_proxy = omnirobot_proxy;
-	//aE.trajectoryn2d_proxy = trajectoryrobot2d_proxy;
-		
-	rDebug2(("Leaving setParams"));
-	
 	return true;
 }
 
 void SpecificWorker::initialize(int period)
 {
 	std::cout << "Initialize worker" << std::endl;
-	this->Period = period;
-	timer.start(Period);
+
+#ifdef USE_QTGUI
+    viewer = std::make_shared<InnerViewer>(innerModel, "Social Navigation");  //InnerViewer copies internally innerModel so it has to be resynchronized
+#endif
+
+
+    try
+    {
+        RoboCompAGMWorldModel::World w = agmexecutive_proxy->getModel();
+        AGMExecutiveTopic_structuralChange(w);
+        // Initializing PathFinder
+        qDebug()<<"....1....";
+        pathfinder.initialize(innerModel, viewer, confParams, laser_proxy, omnirobot_proxy);
+        qDebug()<<"....2....";
+        // Initializing SocialRules
+        socialrules.initialize(socialnavigationgaussian_proxy, agmexecutive_proxy, mutex, &pathfinder, worldModel, innerModel);
+
+        AGMExecutiveTopic_structuralChange(w);
+        rDebug2(("Leaving Structural Change"));
+    }
+
+        catch(...)
+        {	rDebug2(("SetParams ---- The executive is probably not running, waiting for first AGM model publication...")); }
+
+
+    // releasing pathfinder
+    //thread_pathfinder = std::thread(&robocomp::pathfinder::PathFinder::run, &pathfinder);
+    //rDebug2(("Pathfinder up and running"));
+
+
+//	qLog::getInstance()->setProxy("both", logger_pubproxy);
+    rDebug2(("NavigationAgent started"));
+
+    //Proxies for actionExecution
+    //aE.logger_proxy = logger_proxy;
+    //aE.agmexecutive_proxy = agmexecutive_proxy;
+    //aE.omnirobot_proxy = omnirobot_proxy;
+    //aE.trajectoryn2d_proxy = trajectoryrobot2d_proxy;
+
+    rDebug2(("Leaving setParams"));
+
+
+    this->Period = period;
+    timer.start(Period);
 }
 
 
@@ -136,33 +133,14 @@ void SpecificWorker::compute() {
 	if (first) {
 //		qLog::getInstance()->setProxy("both", logger_pubproxy);
 		rDebug2(("navigationAgent started"));
+		qDebug()<<"saving innerModel";
 		first = false;
 	}
 
-//	// PROVISIONAL read robot position from proxy
-//	try {
-//
-//		omnirobot_proxy->getBaseState(bState);
-//		innerModel->updateTransformValues("robot", bState.x, 0, bState.z, 0, bState.alpha, 0);
-//		//	qDebug() << "SpecificWorker::compute" << bState.x << bState.z << bState.alpha;
-//	}
-//	catch (const Ice::Exception &ex) {
-//		printf("Reading robot position-----The executive is probably not running, waiting for first AGM model publication...");
-//		std::cout << ex << std::endl;
-//	}
 
-	pathfinder.run(); //projector is comented because the social navigation cant acceded to the laser if the astraRGBD is working
-
-	//update viewer
-//	QVec robotpos = innerModel->transformS6D("world", robotname);
-//	viewer->ts_updateTransformValues(QString::fromStdString(robotname), robotpos);
-
+	pathfinder.run();
     viewer->run();
- 
 
-// 	qDebug()<<"Update actionEx";
-// 	aE.Update(action,params);
-// 	
 
     if (changepos) {
         socialrules.checkMovement();
@@ -412,7 +390,8 @@ void SpecificWorker::AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldMo
 	if (!first)
 	{
 		socialrules.checkNewPersonInModel(worldModel);
-		socialrules.innerModelChanged(innerModel);
+        qDebug()<<"Structural Change --- SR innerModelChanged";
+        socialrules.innerModelChanged(innerModel);
 		innerModel->save("/home/robocomp/robocomp/components/robocomp-viriato/etcSim/innermodel.xml");
 	}
 	else

@@ -95,7 +95,7 @@ void Projector::run(std::function<Road&()> getRoad, std::function<void()> releas
 		Road &road = getRoad();
 			update(road, laserData, polyline, 0);
 		releaseRoad();
-		std::this_thread::sleep_for(200ms);
+//		std::this_thread::sleep_for(200ms);
 	}
 }
 
