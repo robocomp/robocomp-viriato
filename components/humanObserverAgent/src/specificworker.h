@@ -31,6 +31,7 @@
 #include <genericworker.h>
 #include <innermodel/innermodel.h>
 
+
 class SpecificWorker : public GenericWorker
 {
 Q_OBJECT
@@ -43,26 +44,45 @@ public:
 	 bool AGMCommonBehavior_activateAgent(const ParameterMap &prs);
 	 bool AGMCommonBehavior_deactivateAgent();
 	 ParameterMap AGMCommonBehavior_getAgentParameters();
-	 StateStruct AGMCommonBehavior_getAgentState();
-	 void AGMCommonBehavior_killAgent();
-	 bool AGMCommonBehavior_reloadConfigAgent();
-	 bool AGMCommonBehavior_setAgentParameters(const ParameterMap &prs);
-	 int AGMCommonBehavior_uptimeAgent();
-	 void AGMExecutiveTopic_edgeUpdated(const RoboCompAGMWorldModel::Edge &modification);
-	 void AGMExecutiveTopic_edgesUpdated(const RoboCompAGMWorldModel::EdgeSequence &modifications);
-	 void AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldModel::World &w);
-	 void AGMExecutiveTopic_symbolUpdated(const RoboCompAGMWorldModel::Node &modification);
+    StateStruct AGMCommonBehavior_getAgentState();
+    void AGMCommonBehavior_killAgent();
+    bool AGMCommonBehavior_reloadConfigAgent();
+    bool AGMCommonBehavior_setAgentParameters(const ParameterMap &prs);
+    int AGMCommonBehavior_uptimeAgent();
+    void AGMExecutiveTopic_edgeUpdated(const RoboCompAGMWorldModel::Edge &modification);
+    void AGMExecutiveTopic_edgesUpdated(const RoboCompAGMWorldModel::EdgeSequence &modifications);
+    void AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldModel::World &w);
+    void AGMExecutiveTopic_symbolUpdated(const RoboCompAGMWorldModel::Node &modification);
 	 void AGMExecutiveTopic_symbolsUpdated(const RoboCompAGMWorldModel::NodeSequence &modifications);
 
 
 
+    bool worldModelChanged = false;
+    bool ourModelChanged = false;
+    std::vector<AGMModelSymbol::SPtr> previousPersonsList;
+    struct PersonType
+    {
+        int id;
+        float x;
+        float z;
+        float rot;
+
+    };
+
+    vector<PersonType> totalPersons;
+
+    void loadPersonsFromAGM();
+    void checkHumanInteraction();
+
+
 public slots:
-	void compute();
-	void initialize(int period);
+    void compute();
+    void initialize(int period);
 //Specification slot methods State Machine
 	void sm_compute();
 	void sm_initialize();
 	void sm_finalize();
+
 
 //--------------------
 private:

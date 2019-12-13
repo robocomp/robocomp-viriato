@@ -40,18 +40,6 @@ SpecificWorker::~SpecificWorker()
 
 bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 {
-//       THE FOLLOWING IS JUST AN EXAMPLE
-//	To use innerModelPath parameter you should uncomment specificmonitor.cpp readConfig method content
-//	try
-//	{
-//		RoboCompCommonBehavior::Parameter par = params.at("InnerModelPath");
-//		std::string innermodel_path = par.value;
-//		innerModel = new InnerModel(innermodel_path);
-//	}
-//	catch(const std::exception &e) { qFatal("Error reading config params"); }
-
-
-
 	defaultMachine.start();
 	
 
@@ -73,30 +61,37 @@ void SpecificWorker::initialize(int period)
 	std::cout << "Initialize worker" << std::endl;
 	this->Period = period;
 	timer.start(Period);
-	emit this->t_initialize_to_compute();
+
+    previousPersonsList.clear();
+
+    emit this->t_initialize_to_compute();
+
 
 }
 
 void SpecificWorker::compute()
 {
-//computeCODE
-//QMutexLocker locker(mutex);
-//	try
-//	{
-//		camera_proxy->getYImage(0,img, cState, bState);
-//		memcpy(image_gray.data, &img[0], m_width*m_height*sizeof(uchar));
-//		searchTags(image_gray);
-//	}
-//	catch(const Ice::Exception &e)
-//	{
-//		std::cout << "Error reading from Camera" << e << std::endl;
-//	}
+    QMutexLocker l(mutex);
+
+//    qDebug()<<"worldModelchanged:"<<worldModelChanged;
+    //solo queremos mirar las personas cuando otro agente modifica el AGM. Si somos nosotros quien lo modifica no volvemos a observar las personas.
+    if (worldModelChanged and ourModelChanged==false )
+    {
+            loadPersonsFromAGM();
+    }
+    else if (worldModelChanged) {
+        ourModelChanged=false;
+    }
+    worldModelChanged = false;
+
+
+
 }
 
 
 void SpecificWorker::sm_compute()
 {
-	std::cout<<"Entered state compute"<<std::endl;
+//	std::cout<<"Entered state compute"<<std::endl;
 	compute();
 }
 
@@ -111,8 +106,90 @@ void SpecificWorker::sm_finalize()
 }
 
 
+void SpecificWorker::loadPersonsFromAGM()
+{
 
 
+    auto vectorPersons = worldModel->getSymbolsByType("person");
+
+    cout<<"previousPerson diferente a vectorPersons\n";
+    totalPersons.clear();
+
+    for (auto p: vectorPersons)
+    {
+        PersonType person;
+        std::cout<<"Person type " <<p->symbolType <<" Person Identifier: "<< p->identifier<<"\n";
+
+        auto id =  p->identifier;
+        AGMModelSymbol::SPtr personParent = worldModel->getParentByLink(id, "RT");
+        AGMModelEdge &edgeRT = worldModel->getEdgeByIdentifiers(personParent->identifier, id, "RT");
+
+        person.id = id;
+        person.x = str2float(edgeRT.attributes["tx"]);
+        person.z = str2float(edgeRT.attributes["tz"]);
+		person.rot = str2float(edgeRT.attributes["ry"]);
+
+		cout<< person.id<< ": "<<person.x <<" "<<person.z <<" "<<person.rot <<endl;
+        totalPersons.push_back(person);
+    }
+
+    if (totalPersons.size() > 1)
+    {
+		checkHumanInteraction();
+    }
+
+    previousPersonsList = vectorPersons;
+
+}
+
+void SpecificWorker::checkHumanInteraction()
+{
+	std::cout<<"Entered checkHumanInteraction"<<std::endl;
+    AGMModel::SPtr newModel = AGMModel::SPtr(new AGMModel(worldModel));
+
+	for (int i=0; i<totalPersons.size(); i++)
+    {
+        cout<< "i: " <<i <<endl;
+        for (int j=i; j<totalPersons.size(); j++)
+        {
+            cout<< "j: " <<j <<endl;
+
+            if (i==j) { continue; }
+
+            cout<<totalPersons[i].id << " interact " << totalPersons[j].id<<endl;
+
+            try
+            {
+                newModel->addEdgeByIdentifiers(totalPersons[i].id, totalPersons[j].id, "interacting");
+            }
+
+            catch(...)
+            {
+                std::cout<<__FUNCTION__<<"No se puede añadir el enlace"<<std::endl;
+            }
+
+        }
+    }
+
+	try
+	{
+		sendModificationProposal(worldModel,newModel);
+		ourModelChanged = true;
+	}
+	catch(...)
+	{
+		std::cout<<"No se puede actualizar worldModel"<<std::endl;
+	}
+
+}
+
+
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////
 
 bool SpecificWorker::AGMCommonBehavior_activateAgent(const ParameterMap &prs)
 {
@@ -191,6 +268,7 @@ void SpecificWorker::AGMExecutiveTopic_edgeUpdated(const RoboCompAGMWorldModel::
 	QMutexLocker locker(mutex);
 	AGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);
 	AGMInner::updateImNodeFromEdge(worldModel, modification, innerModel.get());
+    worldModelChanged = true;
 
 }
 
@@ -204,6 +282,7 @@ void SpecificWorker::AGMExecutiveTopic_edgesUpdated(const RoboCompAGMWorldModel:
 		AGMInner::updateImNodeFromEdge(worldModel, modification, innerModel.get());
 	}
 
+    worldModelChanged = true;
 }
 
 void SpecificWorker::AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldModel::World &w)
@@ -213,6 +292,9 @@ void SpecificWorker::AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldMo
  	AGMModelConverter::fromIceToInternal(w, worldModel);
  
 	innerModel = std::make_shared<InnerModel>(AGMInner::extractInnerModel(worldModel));
+
+    worldModelChanged = true;
+
 }
 
 void SpecificWorker::AGMExecutiveTopic_symbolUpdated(const RoboCompAGMWorldModel::Node &modification)
