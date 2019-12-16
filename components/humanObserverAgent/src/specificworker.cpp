@@ -59,7 +59,7 @@ bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 void SpecificWorker::initialize(int period)
 {
 	std::cout << "Initialize worker" << std::endl;
-	this->Period = period;
+	this->Period = 1000;
 	timer.start(Period);
 
     previousPersonsList.clear();
@@ -118,18 +118,19 @@ void SpecificWorker::loadPersonsFromAGM()
     for (auto p: vectorPersons)
     {
         PersonType person;
-        std::cout<<"Person type " <<p->symbolType <<" Person Identifier: "<< p->identifier<<"\n";
+//        std::cout<<"Person type " <<p->symbolType <<" Person Identifier: "<< p->identifier<<"\n";
 
         auto id =  p->identifier;
         AGMModelSymbol::SPtr personParent = worldModel->getParentByLink(id, "RT");
         AGMModelEdge &edgeRT = worldModel->getEdgeByIdentifiers(personParent->identifier, id, "RT");
 
         person.id = id;
-        person.x = str2float(edgeRT.attributes["tx"]);
+       	person.imName = QString::fromStdString( p->getAttribute("imName"));
+       	person.x = str2float(edgeRT.attributes["tx"]);
         person.z = str2float(edgeRT.attributes["tz"]);
 		person.rot = str2float(edgeRT.attributes["ry"]);
 
-		cout<< person.id<< ": "<<person.x <<" "<<person.z <<" "<<person.rot <<endl;
+		cout<< "PERSON " <<person.id<< " x = "<<person.x <<" z = "<<person.z <<" rot "<<person.rot <<endl;
         totalPersons.push_back(person);
     }
 
@@ -142,50 +143,74 @@ void SpecificWorker::loadPersonsFromAGM()
 
 }
 
+
 void SpecificWorker::checkHumanInteraction()
 {
-	std::cout<<"Entered checkHumanInteraction"<<std::endl;
+    std::cout<<"Entered checkHumanInteraction"<<std::endl;
     AGMModel::SPtr newModel = AGMModel::SPtr(new AGMModel(worldModel));
 
-	for (int i=0; i<totalPersons.size(); i++)
+    for (int i=0; i<totalPersons.size(); i++)
     {
-        cout<< "i: " <<i <<endl;
-        for (int j=i; j<totalPersons.size(); j++)
+
+        for (int j=0; j<totalPersons.size(); j++)
         {
-            cout<< "j: " <<j <<endl;
+            if (i==j) { continue; } // no calculamos la interacción de una persona consigo misma
 
-            if (i==j) { continue; }
-
-            cout<<totalPersons[i].id << " interact " << totalPersons[j].id<<endl;
 
             try
             {
-                newModel->addEdgeByIdentifiers(totalPersons[i].id, totalPersons[j].id, "interacting");
+                newModel->removeEdgeByIdentifiers(totalPersons[i].id, totalPersons[j].id, "interacting");
+//                newModel->removeEdgeByIdentifiers(totalPersons[j].id, totalPersons[i].id, "interacting");
             }
 
             catch(...)
             {
-                std::cout<<__FUNCTION__<<"No se puede añadir el enlace"<<std::endl;
+                std::cout<<__FUNCTION__<<" No existe el enlace"<<std::endl;
+            }
+
+            cout<< "Checking interaction between "<< totalPersons[i].id << " and " << totalPersons[j].id<<endl;
+
+            QVec pose1from2 = innerModel->transform(totalPersons[i].imName ,totalPersons[j].imName);
+            auto angle1 = atan2 (pose1from2.x(),pose1from2.z());
+
+            QVec pose2from1 = innerModel->transform(totalPersons[j].imName ,totalPersons[i].imName );
+            auto angle2 = atan2 (pose2from1.x(),pose2from1.z());
+
+            QVec VI = QVec::vec2((totalPersons[i].x -totalPersons[j].x),(totalPersons[i].z -totalPersons[j].z));
+            qDebug()<< "Distancia " << VI.norm2();
+
+            if(abs(angle1) < threshold_angle and (abs(angle2) < threshold_angle) and (VI.norm2() < threshold_dist))
+            {
+                qDebug()<<totalPersons[i].id<< "and"<<totalPersons[j].id<< "INTERACTING";
+
+                try
+                {
+                    newModel->addEdgeByIdentifiers(totalPersons[i].id, totalPersons[j].id, "interacting");
+//                    newModel->addEdgeByIdentifiers(totalPersons[j].id, totalPersons[i].id, "interacting");
+                }
+
+                catch(...)
+                {
+                    std::cout<<__FUNCTION__<<" Ya existe el enlace"<<std::endl;
+                }
+
             }
 
         }
     }
 
-	try
-	{
-		sendModificationProposal(worldModel,newModel);
-		ourModelChanged = true;
-	}
-	catch(...)
-	{
-		std::cout<<"No se puede actualizar worldModel"<<std::endl;
-	}
+
+    try
+    {
+        sendModificationProposal(worldModel,newModel);
+        ourModelChanged = true;
+    }
+    catch(...)
+    {
+        std::cout<<"No se puede actualizar worldModel"<<std::endl;
+    }
 
 }
-
-
-
-
 
 
 

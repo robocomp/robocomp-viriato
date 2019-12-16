@@ -244,5 +244,18 @@
   <radius value="10.0" />
   <color value="#33FF33" />
  </node>
+
+ <node alias="humanObserver" endpoint="agmcommonbehavior:tcp -h localhost -p 14330">
+  <dependence alias="humanFakeA" />
+
+  <workingDir path="/home/robocomp/" />
+  <upCommand command="rcremote localhost humanObserver /home/robocomp/robocomp/components/robocomp-viriato/components/humanObserverAgent ./bin/humanObserverAgent /home/robocomp/robocomp/components/robocomp-viriato/etcSim/humanObserverAgent.conf" />
+  <downCommand command="killall -9 humanObserverAgent" />
+  <configFile path="/home/robocomp/robocomp/components/robocomp-viriato/etcSim/humanObserverAgent.conf" />
+  <xpos value="-400.9789855056" />
+  <ypos value="-240.5106363282" />
+  <radius value="10.0" />
+  <color value="#33FF33" />
+ </node>
  
 </rcmanager>

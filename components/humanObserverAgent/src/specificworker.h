@@ -28,9 +28,10 @@
 #ifndef SPECIFICWORKER_H
 #define SPECIFICWORKER_H
 
+#include <cmath>
+
 #include <genericworker.h>
 #include <innermodel/innermodel.h>
-
 
 class SpecificWorker : public GenericWorker
 {
@@ -63,6 +64,7 @@ public:
     struct PersonType
     {
         int id;
+        QString imName; //Nombre del nodo geometrico en AGM
         float x;
         float z;
         float rot;
@@ -71,8 +73,14 @@ public:
 
     vector<PersonType> totalPersons;
 
+    float threshold_angle = (45*M_PI)/180;
+    float threshold_dist = 3000;
+
+
+
     void loadPersonsFromAGM();
     void checkHumanInteraction();
+
 
 
 public slots:
