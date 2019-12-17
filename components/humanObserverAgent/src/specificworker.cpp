@@ -77,7 +77,7 @@ void SpecificWorker::compute()
     //solo queremos mirar las personas cuando otro agente modifica el AGM. Si somos nosotros quien lo modifica no volvemos a observar las personas.
     if (worldModelChanged and ourModelChanged==false )
     {
-            loadPersonsFromAGM();
+    	loadInfoFromAGM();
     }
     else if (worldModelChanged) {
         ourModelChanged=false;
@@ -106,14 +106,12 @@ void SpecificWorker::sm_finalize()
 }
 
 
-void SpecificWorker::loadPersonsFromAGM()
+void SpecificWorker::loadInfoFromAGM()
 {
+	totalPersons.clear();
+	totalObjects.clear();
 
-
-    auto vectorPersons = worldModel->getSymbolsByType("person");
-
-    cout<<"previousPerson diferente a vectorPersons\n";
-    totalPersons.clear();
+	auto vectorPersons = worldModel->getSymbolsByType("person");
 
     for (auto p: vectorPersons)
     {
@@ -134,12 +132,58 @@ void SpecificWorker::loadPersonsFromAGM()
         totalPersons.push_back(person);
     }
 
-    if (totalPersons.size() > 1)
-    {
-		checkHumanInteraction();
-    }
+	auto vectorObjects = worldModel->getSymbolsByType("object");
+    for (auto obj : vectorObjects)
+	{
+		ObjectType object;
+		auto id =  obj->identifier;
 
-    previousPersonsList = vectorPersons;
+
+		try
+		{
+			worldModel->getEdge(obj,obj,"interactive");
+		}
+
+		catch(...)
+		{
+			//El objeto no es interactivo
+			continue;
+		}
+
+
+		AGMModelSymbol::SPtr objectParent = worldModel->getParentByLink(id, "RT");
+		AGMModelEdge &edgeRT  = worldModel->getEdgeByIdentifiers(objectParent->identifier,id, "RT");
+		object.id = id;
+		object.imName = QString::fromStdString( obj->getAttribute("imName"));
+		object.x = str2float(edgeRT.attributes["tx"]);
+		object.z = str2float(edgeRT.attributes["tz"]);
+		object.rot=str2float(edgeRT.attributes["ry"]);
+		object.inter_space=str2float(worldModel->getSymbolByIdentifier(id)->getAttribute("inter_space"));
+
+		cout<< "OBJECT - interaction space " <<object.inter_space << "mm"<< " x = "<<object.x <<" z = "<<object.z <<" rot "<<object.rot << endl;
+
+		totalObjects.push_back(object);
+
+	}
+
+	qDebug()<<"interaction objects "<< totalObjects.size();
+
+
+	newModel = AGMModel::SPtr(new AGMModel(worldModel));
+
+	checkHumanInteraction();
+	checkObjectInteraction();
+
+	try
+	{
+		sendModificationProposal(worldModel,newModel);
+		ourModelChanged = true;
+	}
+	catch(...)
+	{
+		std::cout<<"No se puede actualizar worldModel"<<std::endl;
+	}
+
 
 }
 
@@ -147,7 +191,6 @@ void SpecificWorker::loadPersonsFromAGM()
 void SpecificWorker::checkHumanInteraction()
 {
     std::cout<<"Entered checkHumanInteraction"<<std::endl;
-    AGMModel::SPtr newModel = AGMModel::SPtr(new AGMModel(worldModel));
 
     for (int i=0; i<totalPersons.size(); i++)
     {
@@ -179,7 +222,7 @@ void SpecificWorker::checkHumanInteraction()
             QVec VI = QVec::vec2((totalPersons[i].x -totalPersons[j].x),(totalPersons[i].z -totalPersons[j].z));
             qDebug()<< "Distancia " << VI.norm2();
 
-            if(abs(angle1) < threshold_angle and (abs(angle2) < threshold_angle) and (VI.norm2() < threshold_dist))
+            if(abs(angle1) < thr_angle_humans and (abs(angle2) < thr_angle_humans) and (VI.norm2() < threshold_dist))
             {
                 qDebug()<<totalPersons[i].id<< "and"<<totalPersons[j].id<< "INTERACTING";
 
@@ -200,18 +243,47 @@ void SpecificWorker::checkHumanInteraction()
     }
 
 
-    try
-    {
-        sendModificationProposal(worldModel,newModel);
-        ourModelChanged = true;
-    }
-    catch(...)
-    {
-        std::cout<<"No se puede actualizar worldModel"<<std::endl;
-    }
 
 }
 
+//Se esta haciendo en base al angulo y a la distancia... volvemos a crear trapecio?
+void SpecificWorker::checkObjectInteraction()
+{
+	for (auto person : totalPersons)
+	{
+		for (auto object : totalObjects)
+		{
+			try
+			{
+				newModel->removeEdgeByIdentifiers(person.id, object.id, "interacting");
+			}
+
+			catch(...)
+			{
+				std::cout<<__FUNCTION__<<" No existe el enlace"<<std::endl;
+			}
+
+            QVec VI = QVec::vec2((person.x -object.x),(person.z -object.z));
+            QVec poseObjFromPerson = innerModel->transform(person.imName ,object.imName);
+            poseObjFromPerson.print("poseObjfromperson");
+            //buscar otra forma
+            if((poseObjFromPerson.z()>0) and VI.norm2() < object.inter_space )
+			{
+            	qDebug()<<"OBJECT INTERACTIOOOOON";
+				try
+				{
+					newModel->addEdgeByIdentifiers(person.id, object.id, "interacting");
+				}
+
+				catch(...)
+				{
+					std::cout<<__FUNCTION__<<" Ya existe el enlace"<<std::endl;
+				}
+			}
+
+        }
+	}
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////////////

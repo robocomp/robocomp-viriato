@@ -73,13 +73,27 @@ public:
 
     vector<PersonType> totalPersons;
 
-    float threshold_angle = (45*M_PI)/180;
-    float threshold_dist = 3000;
+    struct ObjectType
+    {
+        QString imName; //Nombre del nodo geometrico en AGM
+        int id;
+        float x;
+        float z;
+        float rot;
+        float inter_space;
+    };
+
+    vector<ObjectType> totalObjects;
 
 
+    float thr_angle_humans = (45*M_PI)/180; //buscar angulo adecuado
+    float thr_angle_objects = (60*M_PI)/180; //buscar angulo adecuado
+    float threshold_dist = 3000; //reducir
 
-    void loadPersonsFromAGM();
+
+    void loadInfoFromAGM();
     void checkHumanInteraction();
+    void checkObjectInteraction();
 
 
 
@@ -97,7 +111,7 @@ private:
 	std::shared_ptr<InnerModel> innerModel;
 	std::string action;
 	ParameterMap params;
-	AGMModel::SPtr worldModel;
+	AGMModel::SPtr worldModel,newModel;
 	bool active;
 	bool setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated);
 	void sendModificationProposal(AGMModel::SPtr &worldModel, AGMModel::SPtr &newModel);
