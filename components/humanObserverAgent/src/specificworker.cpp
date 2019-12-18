@@ -158,7 +158,9 @@ void SpecificWorker::loadInfoFromAGM()
 		object.x = str2float(edgeRT.attributes["tx"]);
 		object.z = str2float(edgeRT.attributes["tz"]);
 		object.rot=str2float(edgeRT.attributes["ry"]);
+		object.width=str2float(worldModel->getSymbolByIdentifier(id)->getAttribute("width"));
 		object.inter_space=str2float(worldModel->getSymbolByIdentifier(id)->getAttribute("inter_space"));
+		object.inter_angle=str2float(worldModel->getSymbolByIdentifier(id)->getAttribute("inter_angle"));
 
 		cout<< "OBJECT - interaction space " <<object.inter_space << "mm"<< " x = "<<object.x <<" z = "<<object.z <<" rot "<<object.rot << endl;
 
@@ -203,7 +205,7 @@ void SpecificWorker::checkHumanInteraction()
             try
             {
                 newModel->removeEdgeByIdentifiers(totalPersons[i].id, totalPersons[j].id, "interacting");
-//                newModel->removeEdgeByIdentifiers(totalPersons[j].id, totalPersons[i].id, "interacting");
+                newModel->removeEdgeByIdentifiers(totalPersons[j].id, totalPersons[i].id, "interacting");
             }
 
             catch(...)
@@ -229,7 +231,7 @@ void SpecificWorker::checkHumanInteraction()
                 try
                 {
                     newModel->addEdgeByIdentifiers(totalPersons[i].id, totalPersons[j].id, "interacting");
-//                    newModel->addEdgeByIdentifiers(totalPersons[j].id, totalPersons[i].id, "interacting");
+                    newModel->addEdgeByIdentifiers(totalPersons[j].id, totalPersons[i].id, "interacting");
                 }
 
                 catch(...)
@@ -246,28 +248,33 @@ void SpecificWorker::checkHumanInteraction()
 
 }
 
-//Se esta haciendo en base al angulo y a la distancia... volvemos a crear trapecio?
 void SpecificWorker::checkObjectInteraction()
 {
-	for (auto person : totalPersons)
+    cout<<"Entered checkObjectInteraction"<<endl;
+
+    for (auto person : totalPersons)
 	{
 		for (auto object : totalObjects)
 		{
-			try
-			{
-				newModel->removeEdgeByIdentifiers(person.id, object.id, "interacting");
-			}
 
-			catch(...)
-			{
-				std::cout<<__FUNCTION__<<" No existe el enlace"<<std::endl;
-			}
+            try
+            {
+                newModel->removeEdgeByIdentifiers(person.id, object.id, "interacting");
+            }
 
-            QVec VI = QVec::vec2((person.x -object.x),(person.z -object.z));
-            QVec poseObjFromPerson = innerModel->transform(person.imName ,object.imName);
-            poseObjFromPerson.print("poseObjfromperson");
-            //buscar otra forma
-            if((poseObjFromPerson.z()>0) and VI.norm2() < object.inter_space )
+            catch(...)
+            {
+                std::cout<<__FUNCTION__<<" No existe el enlace"<<std::endl;
+            }
+
+            QVec VI = QVec::vec2((person.x - object.x),(person.z -object.z));
+            auto affordance = calculateAffordance(object);
+            bool inside_affordance = affordance.containsPoint(QPointF(person.x,person.z),Qt::OddEvenFill);
+
+            QVec pose2from1 = innerModel->transform6D(person.imName ,object.imName );
+            auto angle = atan2 (pose2from1.x(),pose2from1.z());
+
+            if(inside_affordance and (abs(angle) < thr_angle_humans)) 
 			{
             	qDebug()<<"OBJECT INTERACTIOOOOON";
 				try
@@ -285,6 +292,31 @@ void SpecificWorker::checkObjectInteraction()
 	}
 }
 
+QPolygonF SpecificWorker::calculateAffordance(ObjectType obj)
+{
+    cout << "Entered calculateAffordance"<<endl;
+    QPolygonF aff_qp;
+
+
+    auto left_angle = obj.rot + obj.inter_angle/2;
+    auto right_angle = obj.rot -+ obj.inter_angle/2;
+
+    auto point_x_left = obj.x + obj.inter_space*(cos(M_PI_2 - left_angle));
+    auto point_z_left = obj.z + obj.inter_space*(sin( M_PI_2 - left_angle));
+
+    auto point_x_right = obj.x + obj.inter_space*(cos(M_PI_2 - right_angle));
+    auto point_z_right = obj.z + obj.inter_space*(sin(M_PI_2 - right_angle));
+
+    aff_qp << QPointF(obj.x - obj.width/2,obj.z);
+    aff_qp << QPointF(obj.x + obj.width/2,obj.z);
+    aff_qp << QPointF(point_x_left,point_z_left);
+    aff_qp << QPointF(point_x_right,point_z_right);
+
+   qDebug()<<aff_qp;
+
+    return aff_qp;
+
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////
 

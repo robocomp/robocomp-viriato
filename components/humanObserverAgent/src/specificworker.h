@@ -80,20 +80,22 @@ public:
         float x;
         float z;
         float rot;
+        float width;
         float inter_space;
+        float inter_angle;
     };
 
     vector<ObjectType> totalObjects;
 
 
     float thr_angle_humans = (45*M_PI)/180; //buscar angulo adecuado
-    float thr_angle_objects = (60*M_PI)/180; //buscar angulo adecuado
     float threshold_dist = 3000; //reducir
 
 
     void loadInfoFromAGM();
     void checkHumanInteraction();
     void checkObjectInteraction();
+    QPolygonF calculateAffordance(ObjectType obj);
 
 
 
