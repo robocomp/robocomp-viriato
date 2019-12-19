@@ -52,14 +52,15 @@ public:
 	int32_t objectSymbolId;
 	int32_t personSymbolId;
 	vector <int32_t> pSymbolId = {};
-	vector <vector<int32_t>> interactingId = {};
-	
+
 	SNGPerson robot;
 	SNGPerson person;
-	SNGPersonSeq totalpersons;
 
-	vector <SNGPersonSeq> interactingpersons;
-	SNGPersonSeq quietperson; // quiet person
+	SNGPersonSeq totalpersons;
+	std::map<int32_t, SNGPerson> mapIdPersons;
+
+	vector <SNGPersonSeq> interactingpersons; //vector de grupos que interactuan
+
 	SNGPersonSeq movperson; //moving person
 
 
@@ -75,7 +76,7 @@ public:
         float inter_angle;
     };
 
-    SNGObjectSeq objects;
+
 	////////////////////////////
 	SNGPolylineSeq seq;
 	SNGPolylineSeq intimate_seq;
@@ -108,11 +109,13 @@ public:
 	void  structuralChange(const RoboCompAGMWorldModel::World & modification);
 	bool checkHRI(SNGPerson p, int ind, InnerPtr &i, AGMModel::SPtr w);
 
-	void checkNewPersonInModel(AGMModel::SPtr worldModel_);
-	void checkMovement();
+	void checkModificationsInModel(AGMModel::SPtr worldModel_);
+    void updatePeopleInModel();
+
 	void checkRobotmov();
-	void checkInteraction();
     SNGPolyline calculateAffordance(ObjectType obj);
+    void checkInteractions();
+    vector <vector<int32_t>> groupInteractingPeople(int32_t id, int32_t pairId,vector<vector<int32_t>> &interactingId);
 
 public slots:
     void checkstate();
@@ -122,7 +125,8 @@ public slots:
     void accompanyPerson();
 	SNGPolylineSeq calculateGauss(bool draw = true, float h = 0.1);
 	SNGPolylineSeq PassOnRight(bool draw = true);
-	void objectInteraction(bool d = true);
+
+	void checkObjectAffordance(bool d = true);
 	
 private:
 	AGMModel::SPtr worldModel;

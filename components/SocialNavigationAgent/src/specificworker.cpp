@@ -39,7 +39,7 @@ SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
 //	connect(&trajReader, SIGNAL(timeout()), &aE, SLOT(readTrajState()));
 	connect(gaussiana,SIGNAL(clicked()),&socialrules, SLOT(calculateGauss()));
 //	connect(por,SIGNAL(clicked()),&socialrules, SLOT(PassOnRight()));
-	connect(objint,SIGNAL(clicked()),&socialrules, SLOT(objectInteraction()));
+	connect(objint,SIGNAL(clicked()),&socialrules, SLOT(checkObjectAffordance()));
 	connect(datos,SIGNAL(clicked()),&socialrules, SLOT(saveData()));
 	
 	connect(gotoperson,SIGNAL(clicked()),&socialrules, SLOT(goToPerson()));
@@ -143,7 +143,7 @@ void SpecificWorker::compute() {
 
 
     if (changepos) {
-        socialrules.checkMovement();
+        socialrules.updatePeopleInModel();
         socialrules.checkRobotmov();
         changepos = false;
 	}
@@ -389,8 +389,7 @@ void SpecificWorker::AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldMo
 
 	if (!first)
 	{
-		socialrules.checkNewPersonInModel(worldModel);
-        qDebug()<<"Structural Change --- SR innerModelChanged";
+		socialrules.checkModificationsInModel(worldModel);
         socialrules.innerModelChanged(innerModel);
 		innerModel->save("/home/robocomp/robocomp/components/robocomp-viriato/etcSim/innermodel.xml");
 	}
