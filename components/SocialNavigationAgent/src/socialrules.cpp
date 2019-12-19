@@ -40,7 +40,7 @@ void SocialRules::checkNewPersonInModel(AGMModel::SPtr worldModel_)
 	worldModel = worldModel_;
 	idselected->clear();
 	pSymbolId.clear();
-	//Check if the person is in the model. Con humanAgent en vez de fakeHuman sustituir i<100 porque los id empiezan en 0
+
  	for (uint i=0; i < 5000; i++)
 	{
 		std::string name = "person" + std::to_string(i);
@@ -74,6 +74,7 @@ void SocialRules::checkInteraction()
 
 	for (auto id : pSymbolId)
 	{
+	    qDebug()<<"Checking interactions of person "<< id;
 		AGMModelSymbol::SPtr personAGM = worldModel->getSymbol(id);
 		int32_t pairId = -1;
 		for (auto edge = personAGM->edgesBegin(worldModel); edge != personAGM->edgesEnd(worldModel); edge++)
@@ -82,12 +83,15 @@ void SocialRules::checkInteraction()
 			if (edge->getLabel() == "interacting")
 			{
 				const string secondType = worldModel->getSymbol(symbolPair.second)->symbolType;
+				qDebug()<<"symbolPair.first"<<symbolPair.first;
 				if (symbolPair.first == id and secondType == "person")
 				{
 					pairId = symbolPair.second;
 					qDebug()<<"INTERACTING" << symbolPair.first <<"AND " <<symbolPair.second;
 					break;
 				}
+
+
 			}
 		}
 
@@ -165,8 +169,8 @@ void SocialRules::checkMovement()
 				AGMModelEdge &edgeRT = newM->getEdgeByIdentifiers(personParent->identifier, id, "RT");
 
                 person.id = id;
-                person.x = str2float(edgeRT.attributes["tx"])/1000;
-                person.z = str2float(edgeRT.attributes["tz"])/1000;
+                person.x = str2float(edgeRT.attributes["tx"]);
+                person.z = str2float(edgeRT.attributes["tz"]);
                 person.angle = str2float(edgeRT.attributes["ry"]);
                 //person.vel=str2float(edgeRT.attributes["velocity"]);
                 person.vel = 0;
@@ -232,27 +236,18 @@ SNGPolylineSeq SocialRules::ApplySocialRules()
 	
 		}
 
-
 		catch( const Ice::Exception &e)
 		{
 			std::cout << e << std::endl;
 		}
 	}
-	
-	if (!objects.empty())	
-	{
-        object_seq = socialnavigationgaussian_proxy->getObjectInteraction(totalpersons,objects,false,false);
 
-		SNGPolylineSeq secuenciaobj = objectInteraction(false);
-		for(auto s: secuenciaobj)
-			objectblock_seq.push_back(s);
+	objectInteraction(false);
 
-	}
 
 	pathfinder->innerModelChanged(innerModel, totalpersons, intimate_seq, personal_seq, social_seq, object_seq,objectblock_seq);
 
-	//SNGPolylineSeq seqpoints = socialnavigationgaussian_proxy->RemovePoints(seq);
-	
+
 	return seq;
 }
 
@@ -292,42 +287,62 @@ SNGPolylineSeq SocialRules::PassOnRight(bool draw)
 	
 	return seq;	
 }
- 
-SNGPolylineSeq SocialRules::objectInteraction(bool d)
+
+
+void SocialRules::objectInteraction(bool d)
 {
 //	qDebug()<<__FUNCTION__;
-	
-	RoboCompAGMWorldModel::World w = agmexecutive_proxy->getModel();
-	AGMModelConverter::fromIceToInternal(w, worldModel);
-	
-	objects.clear();
-	SNGPolylineSeq sequenceObj;
-	try
-	{
-		int idx=0;
-		while ((objectSymbolId = worldModel->getIdentifierByType("object_interaction", idx++)) != -1)
-		{	
-			
-			AGMModelSymbol::SPtr objectP = worldModel->getParentByLink(objectSymbolId, "RT");
-			AGMModelEdge &edgeRT  = worldModel->getEdgeByIdentifiers(objectP->identifier,objectSymbolId, "RT");
-			SNGObject object;
-			object.x = str2float(edgeRT.attributes["tx"])/1000;
-			object.z = str2float(edgeRT.attributes["tz"])/1000;
-			object.angle=str2float(edgeRT.attributes["ry"]);
-			object.space=str2float(worldModel->getSymbolByIdentifier(objectSymbolId)->getAttribute("interaction"));
-		
-			objects.push_back(object);
-			
-//			qDebug()<<"Object"<<"Pose x"<<object.x<<"Pose z"<<object.z<<"Angle"<<object.angle<<"Space"<<object.space;
+
+    RoboCompAGMWorldModel::World w = agmexecutive_proxy->getModel();
+    AGMModelConverter::fromIceToInternal(w, worldModel);
+
+    object_seq.clear();
+    objectblock_seq.clear();
+
+	auto vectorObjects = worldModel->getSymbolsByType("object");
+
+    for (auto obj : vectorObjects) {
+        ObjectType object;
+        auto id = obj->identifier;
+
+        try {
+            worldModel->getEdge(obj, obj, "interactive");
+        }
+
+        catch (...) {
+            continue;
+        }
+
+        AGMModelSymbol::SPtr objectParent = worldModel->getParentByLink(id, "RT");
+        AGMModelEdge &edgeRT  = worldModel->getEdgeByIdentifiers(objectParent->identifier,id, "RT");
+        object.id = id;
+        object.imName = QString::fromStdString( obj->getAttribute("imName"));
+        object.x = str2float(edgeRT.attributes["tx"]);
+        object.z = str2float(edgeRT.attributes["tz"]);
+        object.rot=str2float(edgeRT.attributes["ry"]);
+        object.width=str2float(worldModel->getSymbolByIdentifier(id)->getAttribute("width"));
+        object.inter_space=str2float(worldModel->getSymbolByIdentifier(id)->getAttribute("inter_space"));
+        object.inter_angle=str2float(worldModel->getSymbolByIdentifier(id)->getAttribute("inter_angle"));
+
+        auto affordance = calculateAffordance(object);
+        object_seq.push_back(affordance);
+
+		for (AGMModelSymbol::iterator it=obj->edgesBegin(worldModel); it != obj->edgesEnd(worldModel); it++)
+		{
+			AGMModelEdge edge = *it;
+			if(edge->getLabel() == "interacting")
+            {
+                objectblock_seq.push_back(affordance);
+                break;
+            }
+
+            else continue;
+
+
 		}
 
-		sequenceObj = socialnavigationgaussian_proxy->getObjectInteraction(totalpersons,objects,true,d);
+    }
 
-	}
-	catch(...){}
-	
-	return sequenceObj;
-	
 }
 
 void SocialRules::checkstate()
@@ -437,15 +452,13 @@ void SocialRules::goToPerson()
 
 void SocialRules::checkRobotmov()
 {
-    qDebug()<<__FUNCTION__;
 	robotSymbolId = worldModel->getIdentifierByType("robot");
 	AGMModelSymbol::SPtr robotparent = worldModel->getParentByLink(robotSymbolId, "RT");
 	AGMModelEdge &edgeRTrobot  = worldModel->getEdgeByIdentifiers(robotparent->identifier, robotSymbolId, "RT");
-	robot.x=str2float(edgeRTrobot.attributes["tx"])/1000;
-	robot.z=str2float(edgeRTrobot.attributes["tz"])/1000;
+	robot.x=str2float(edgeRTrobot.attributes["tx"]);
+	robot.z=str2float(edgeRTrobot.attributes["tz"]);
 	robot.angle=str2float(edgeRTrobot.attributes["ry"]);
 
-	qDebug()<< "POSE ROBOT" << robot.x <<robot.z <<robot.angle;
 
 	point.x=robot.x;
 	point.z=robot.z;
@@ -464,76 +477,11 @@ void SocialRules::checkRobotmov()
 
 	poserobot.push_back(point);
 
-	qDebug()<<"FIN checkrobotmov";
 }
 
 /**
  * \brief The innerModel is extracted from the AGM and the polylines are inserted on it as a set of planes.
  */
-
-void SocialRules::UpdateInnerModel(SNGPolylineSeq seq)
-{
-// 	QMutexLocker locker(mutex);
-// 	qDebug() << "----------------------"<< __FUNCTION__ << "----------------------";
-// 	
-// 	// Extract innerModel
-// 	InnerModel *inner  = AGMInner::extractInnerModel(worldModel, "world", false); f
-// 
-// 	int count = 0;
-// 
-// 	for (auto s:seq)
-// 	{
-// 		auto previousPoint = s[s.size()-1];
-// 		for (auto currentPoint:s)
-// 		{
-// 			QString name = QString("polyline_obs_")+QString::number(count,10);
-// 			qDebug() << __FUNCTION__ << "nombre"<<name;
-// 			QVec ppoint = QVec::vec3(previousPoint.x*1000, 1000, previousPoint.z*1000);
-// 			QVec cpoint = QVec::vec3(currentPoint.x*1000, 1000, currentPoint.z*1000);
-// 			QVec center = (cpoint + ppoint).operator*(0.5);
-// 
-// 			QVec normal = (cpoint-ppoint);
-// 			float dist = normal.norm2();	
-// 			float temp = normal(2);
-// 			normal(2) = normal(0);
-// 			normal(0) = -temp;
-// 
-// 			if (inner->getNode(name))
-// 			{
-// 				try
-// 				{
-// 					inner->removeNode(name);
-// 				}
-// 
-// 				catch(QString es){ qDebug() << "EXCEPCION" << es;}
-// 			}
-// 
-// 			InnerModelNode *parent = inner->getNode(QString("world"));
-// 			if (parent == NULL)
-// 				printf("%s: parent does not exist\n", __FUNCTION__);
-// 			else
-// 			{			
-// 				InnerModelPlane *plane;
-// 				try
-// 				{
-// 					plane  = inner-> newPlane(name, parent, QString("#FFFF00"), dist, 2000, 90, 1, normal(0), normal(1), normal(2), center(0), center(1), center(2), true);
-// 					parent->addChild(plane); 
-// 				}
-// 				catch(QString es)
-// 				{ 
-// 					qDebug() << "EXCEPCION" << es;}
-// 			}
-// 			count++;
-// 			previousPoint=currentPoint;
-// 		}
-// 	}
-
-// 	innerModel.reset(inner);
-// 	pathfinder.innerModelChanged(innerModel, polyLineList);
-// 	
-// 	viewer->reloadInnerModel(innerModel);
-}
-
 
 
 void SocialRules::saveData()
@@ -597,13 +545,13 @@ void SocialRules::saveData()
 
 
 bool SocialRules::checkHRI(SNGPerson p, int ind , InnerPtr &i, AGMModel::SPtr w)
-{	
+{
 	worldModel = w;
 	bool changes = false;
 	/////////////////////Checking if the person is close and looking at the robot
 	std::string type = "person";
 	std::string name = "person" + std::to_string(ind);
-		
+
 	qDebug()<<QString::fromStdString(type)<<"-"<<QString::fromStdString(name);
 
 	bool looking = false;
@@ -615,13 +563,13 @@ bool SocialRules::checkHRI(SNGPerson p, int ind , InnerPtr &i, AGMModel::SPtr w)
 
 	float dist = sqrt(pose.x()*pose.x()+pose.z()*pose.z());
 	float angle = atan2(pose.x(),pose.z());
-	
+
 	qDebug()<<"pose x"<<pose.x()<<"pose z"<<pose.z();
 	qDebug()<<"dist"<<dist<<"angle"<<abs(angle/0.0175);
-	
+
 	if (abs(angle)<20*0.0175)
 		looking = true;
-	
+
 	if (dist<2000.0)
 		close = true;
 	
@@ -661,4 +609,42 @@ bool SocialRules::checkHRI(SNGPerson p, int ind , InnerPtr &i, AGMModel::SPtr w)
 		}
 	}
 	return changes;
+}
+
+
+
+SNGPolyline SocialRules::calculateAffordance(ObjectType obj)
+{
+    cout << "Entered calculateAffordance"<<endl;
+    QPolygonF aff_qp;
+
+    auto left_angle = obj.rot + obj.inter_angle/2;
+    auto right_angle = obj.rot - obj.inter_angle/2;
+
+    SNGPolyline polyline;
+
+    SNGPoint2D point1;
+        point1.x  = obj.x + obj.width/2;
+        point1.z = obj.z;
+	polyline.push_back(point1);
+
+	SNGPoint2D point2;
+		point2.x  = obj.x - obj.width/2;
+		point2.z = obj.z;
+	polyline.push_back(point2);
+
+	SNGPoint2D point3;
+		point3.x  = obj.x + obj.inter_space*(cos(M_PI_2 - left_angle));
+		point3.z = obj.z + obj.inter_space*(sin(M_PI_2 - left_angle));
+	polyline.push_back(point3);
+
+	SNGPoint2D point4;
+		point4.x  = obj.x + obj.inter_space*(cos(M_PI_2 - right_angle));
+		point4.z = obj.z + obj.inter_space*(sin(M_PI_2 - right_angle));
+	polyline.push_back(point4);
+
+
+
+    return polyline;
+
 }

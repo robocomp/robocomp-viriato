@@ -211,7 +211,7 @@ bool PathPlanner::checkHumanSoftBlock(std::list<QVec> currentPath) //devuelve tr
     {
         QPolygonF qp;
         for (auto p:poly)
-            qp << QPointF(p.x * 1000, p.z * 1000);
+            qp << QPointF(p.x, p.z);
 
         for (auto p:currentPath)
         {
@@ -227,9 +227,9 @@ bool PathPlanner::checkHumanSoftBlock(std::list<QVec> currentPath) //devuelve tr
     {
         for (auto p:persons)
         {
-            if (polygon.containsPoint(QPointF(p.x* 1000, p.z* 1000), Qt::OddEvenFill))
+            if (polygon.containsPoint(QPointF(p.x, p.z), Qt::OddEvenFill))
             {
-                qDebug () <<"La persona situada en " <<p.x*1000 << " "<< p.z*1000 << "bloquea SUAVEMEEEEEENTE el camino. CON ID" << p.id ;
+                qDebug () <<"La persona situada en " <<p.x << " "<< p.z << "bloquea SUAVEMEEEEEENTE el camino. CON ID" << p.id ;
                 pId_softblocking.push_back(p.id);
             }
         }
@@ -265,7 +265,7 @@ bool PathPlanner::checkHumanBlock(Road &road)
 		{
 			qp.clear();
 			for (auto p:poly)
-				qp << QPointF(p.x * 1000, p.z * 1000);
+				qp << QPointF(p.x, p.z);
 
 			for (FMap::iterator iter = fmap.begin(); iter != fmap.end(); ++iter)
 			{
@@ -296,9 +296,9 @@ bool PathPlanner::checkHumanBlock(Road &road)
 
 			for (auto p:persons)
 			{
-				if (qp.containsPoint(QPointF(p.x* 1000, p.z* 1000), Qt::OddEvenFill))
+				if (qp.containsPoint(QPointF(p.x, p.z), Qt::OddEvenFill))
 				{
-					qDebug () <<"La persona situada en " <<p.x*1000 << " "<< p.z*1000 << "bloquea el camino. CON ID" << p.id ;
+					qDebug () <<"La persona situada en " <<p.x << " "<< p.z << "bloquea el camino. CON ID" << p.id ;
 					pId_blocking.push_back(p.id);
 				}
 			}
@@ -331,7 +331,7 @@ bool PathPlanner::checkAffordancesBlock(Road &road)
 		{
 			qp.clear();
 			for (auto p:poly)
-				qp << QPointF(p.x * 1000, p.z * 1000);
+				qp << QPointF(p.x, p.z);
 
 			for (FMap::iterator iter = fmap.begin(); iter != fmap.end(); ++iter)
 			{
@@ -356,9 +356,9 @@ bool PathPlanner::checkAffordancesBlock(Road &road)
 
 	    for (auto p:persons)
         {
-            if (qp.containsPoint(QPointF(p.x* 1000, p.z* 1000), Qt::OddEvenFill))
+            if (qp.containsPoint(QPointF(p.x, p.z), Qt::OddEvenFill))
             {
-                qDebug () <<"La persona situada en " <<p.x*1000 << " "<< p.z*1000 << " esta en un AFFORFANCE y bloquea el camino. CON ID" << p.id ;
+                qDebug () <<"La persona situada en " <<p.x << " "<< p.z << " esta en un AFFORFANCE y bloquea el camino. CON ID" << p.id ;
                 pId_affblocking.push_back(p.id);
             }
         }
@@ -608,7 +608,7 @@ void PathPlanner::modifyCost(SNGPolylineSeq personal, SNGPolylineSeq social, SNG
         QPolygonF qp_object;
 
         for (auto p: poly)
-            qp_object << QPointF(p.x*1000,p.z*1000);
+            qp_object << QPointF(p.x,p.z);
 
         for(FMap::iterator iter = fmap.begin(); iter != fmap.end(); ++iter)
         {
@@ -628,7 +628,7 @@ void PathPlanner::modifyCost(SNGPolylineSeq personal, SNGPolylineSeq social, SNG
 		QPolygonF qp_social;
 		
 		for (auto p: poly)
-			qp_social << QPointF(p.x*1000,p.z*1000);
+			qp_social << QPointF(p.x,p.z);
 		
 		for(FMap::iterator iter = fmap.begin(); iter != fmap.end(); ++iter)
 		{
@@ -648,7 +648,7 @@ void PathPlanner::modifyCost(SNGPolylineSeq personal, SNGPolylineSeq social, SNG
 		QPolygonF qp_personal;
 		
 		for (auto p: poly)
-			qp_personal << QPointF(p.x*1000,p.z*1000);
+			qp_personal << QPointF(p.x,p.z);
 		
 			
 		for(FMap::iterator iter = fmap.begin(); iter != fmap.end(); ++iter)
@@ -695,7 +695,7 @@ void PathPlanner::modifyGraph(SNGPolylineSeq intimate, SNGPolylineSeq personal, 
 		QPolygonF qp;					
 		for (auto p:poly)
 		{
-			qp << QPointF(p.x*1000,p.z*1000);
+			qp << QPointF(p.x,p.z);
 		}	
 		
 		for(FMap::iterator iter = fmap.begin(); iter != fmap.end(); ++iter)
@@ -716,7 +716,7 @@ void PathPlanner::modifyGraph(SNGPolylineSeq intimate, SNGPolylineSeq personal, 
 		QPolygonF qp;
 		for (auto p:bl)
 		{
-			qp << QPointF(p.x*1000,p.z*1000);
+			qp << QPointF(p.x,p.z);
 		}
 
 		for(FMap::iterator iter = fmap.begin(); iter != fmap.end(); ++iter)

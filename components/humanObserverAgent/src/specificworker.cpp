@@ -271,8 +271,13 @@ void SpecificWorker::checkObjectInteraction()
             auto affordance = calculateAffordance(object);
             bool inside_affordance = affordance.containsPoint(QPointF(person.x,person.z),Qt::OddEvenFill);
 
+            if(inside_affordance) qDebug() <<"Person " << person.id << " is inside the affordance of object " << object.imName;
+
             QVec pose2from1 = innerModel->transform6D(person.imName ,object.imName );
+            pose2from1.print("Object from person");
             auto angle = atan2 (pose2from1.x(),pose2from1.z());
+            qDebug()<<"Angle of view "<< angle;
+
 
             if(inside_affordance and (abs(angle) < thr_angle_humans)) 
 			{
@@ -299,7 +304,7 @@ QPolygonF SpecificWorker::calculateAffordance(ObjectType obj)
 
 
     auto left_angle = obj.rot + obj.inter_angle/2;
-    auto right_angle = obj.rot -+ obj.inter_angle/2;
+    auto right_angle = obj.rot - obj.inter_angle/2;
 
     auto point_x_left = obj.x + obj.inter_space*(cos(M_PI_2 - left_angle));
     auto point_z_left = obj.z + obj.inter_space*(sin( M_PI_2 - left_angle));

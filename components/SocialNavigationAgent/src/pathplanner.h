@@ -42,7 +42,7 @@ using std::chrono::milliseconds;
 
 
 
-#define TILE_SIZE 300 // grid discrtization step
+#define TILE_SIZE 250 // grid discrtization step
  
 template<class T> auto operator<<(std::ostream& os, const T& t) -> decltype(t.print(os), os) 
 { 

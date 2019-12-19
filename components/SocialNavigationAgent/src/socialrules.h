@@ -61,8 +61,21 @@ public:
 	vector <SNGPersonSeq> interactingpersons;
 	SNGPersonSeq quietperson; // quiet person
 	SNGPersonSeq movperson; //moving person
-	
-	SNGObjectSeq objects;
+
+
+    struct ObjectType
+    {
+        QString imName; //Nombre del nodo geometrico en AGM
+        int id;
+        float x;
+        float z;
+        float rot;
+        float width;
+        float inter_space;
+        float inter_angle;
+    };
+
+    SNGObjectSeq objects;
 	////////////////////////////
 	SNGPolylineSeq seq;
 	SNGPolylineSeq intimate_seq;
@@ -99,17 +112,17 @@ public:
 	void checkMovement();
 	void checkRobotmov();
 	void checkInteraction();
-	
+    SNGPolyline calculateAffordance(ObjectType obj);
+
 public slots:
     void checkstate();
 	void saveData();
 	void goToPerson();
     void followPerson();
     void accompanyPerson();
-	void UpdateInnerModel(SNGPolylineSeq seq);
 	SNGPolylineSeq calculateGauss(bool draw = true, float h = 0.1);
 	SNGPolylineSeq PassOnRight(bool draw = true);
-	SNGPolylineSeq objectInteraction(bool d = true);
+	void objectInteraction(bool d = true);
 	
 private:
 	AGMModel::SPtr worldModel;

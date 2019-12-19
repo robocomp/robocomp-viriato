@@ -245,7 +245,7 @@ class SpecificWorker(GenericWorker):
         normals = []
 
         for p in persons:
-            pn = Person(p.x, p.z, p.angle)
+            pn = Person(p.x/1000, p.z/1000, p.angle)
             #print('Pose x', pn.x, 'Pose z', pn.y, 'Rotacion', pn.th)
             pn.draw(2.,1,4./3.,pi/2 - pn.th, drawPersonalSpace=dibujar)
             #normals.append(Normal(mu=[[pn.x], [pn.y]], sigma=[-pn.th - pi/2, 2.0, 2.0, 2.0], elliptical=True))
@@ -284,8 +284,8 @@ class SpecificWorker(GenericWorker):
             polyline = []
             for pnt in pol:
                 punto = SNGPoint2D()
-                punto.x = pnt[0]
-                punto.z = pnt[1]
+                punto.x = pnt[0]*1000
+                punto.z = pnt[1]*1000
                 polyline.append(punto)
             polylines.append(polyline)
 
@@ -376,12 +376,6 @@ class SpecificWorker(GenericWorker):
 
 
 
-
-
-
-
-
-
     def getPassOnRight(self, persons,h, dibujar):
 
         plt.close("all")
@@ -395,7 +389,7 @@ class SpecificWorker(GenericWorker):
         normals = []
 
         for p in persons:
-            pn = Person(p.x, p.z, p.angle, p.vel)
+            pn = Person(p.x/1000, p.z/1000, p.angle, p.vel)
 
             # pn.draw((50/((7*pn.vel/50)+43)*4), (50/((7*pn.vel/50)+43)*4)/2, 2*(50/((7*pn.vel/50)+43)*4)/3,pi/2-pn.th, drawPersonalSpace=dibujar)
             # pn.draw(4, 1.5, 10/3, pi - pn.th, drawPersonalSpace=dibujar)
@@ -410,7 +404,7 @@ class SpecificWorker(GenericWorker):
         # h = prox / 100
         resolution = 0.1
         limits = [[lx_inf, lx_sup], [ly_inf, ly_sup]]
-        _, z = Normal.makeGrid(normals, h, 2, limits=limits, resolution=resolution)
+        _, z = Normal.makeGrid(normals, h, 2, limits=limits, resolution=resolution) #Las posiciones de las personas tienen que estar en metros
         grid = GM.filterEdges(z, h)
 
         if (dibujar):
@@ -429,8 +423,8 @@ class SpecificWorker(GenericWorker):
             polyline = []
             for pnt in pol:
                 punto = SNGPoint2D()
-                punto.x = pnt[0]
-                punto.z = pnt[1]
+                punto.x = pnt[0]*1000
+                punto.z = pnt[1]*1000
                 polyline.append(punto)
             polylines.append(polyline)
         plt.show()

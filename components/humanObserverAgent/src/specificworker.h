@@ -63,8 +63,8 @@ public:
     std::vector<AGMModelSymbol::SPtr> previousPersonsList;
     struct PersonType
     {
-        int id;
         QString imName; //Nombre del nodo geometrico en AGM
+        int id;
         float x;
         float z;
         float rot;
