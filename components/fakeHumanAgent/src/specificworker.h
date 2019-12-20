@@ -90,6 +90,7 @@ public:
 	bool setParams(RoboCompCommonBehavior::ParameterList params);
 
 	void initializeUI();
+	void readPersonsFromAGM();
 	bool includeInRCIS(int id, const RoboCompInnerModelManager::Pose3D &pose, std::string mesh);
 	bool removeFromRCIS(int id);
 	int includeInAGM(int id,const RoboCompInnerModelManager::Pose3D &pose, std::string mesh);

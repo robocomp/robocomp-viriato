@@ -44,15 +44,72 @@ SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
 */
 SpecificWorker::~SpecificWorker()
 {
+
 }
 
 void SpecificWorker::initialize(int period)
 {
     std::cout << "Initialize worker" << std::endl;
+
+    try
+    {
+        RoboCompAGMWorldModel::World w = agmexecutive_proxy->getModel();
+        AGMExecutiveTopic_structuralChange(w);
+    }
+    catch(...)
+    {
+        printf("The executive is probably not running, waiting for first AGM model publication...");
+    }
+
+    readPersonsFromAGM();
+
     this->Period = period;
     timer.start(Period);
 
 }
+
+void SpecificWorker::readPersonsFromAGM()
+{
+	auto vectorPersons = worldModel->getSymbolsByType("person");
+
+	for (auto p: vectorPersons)
+	{
+		TPerson person;
+
+		auto id =  p->identifier;
+		AGMModelSymbol::SPtr personParent = worldModel->getParentByLink(id, "RT");
+		AGMModelEdge &edgeRT = worldModel->getEdgeByIdentifiers(personParent->identifier, id, "RT");
+
+		person.personSymbolId = id;
+		person.autoMovement = false;
+		person.currentPoint = 0;
+		person.speed = 0;
+		person.name = p->attributes["imName"];
+        qDebug()<<"PERSONA "<< QString::fromStdString (person.name);
+        RoboCompInnerModelManager::Pose3D pose_person;
+		pose_person.x = str2float(edgeRT.attributes["tx"]);
+		pose_person.y = 0.f;
+		pose_person.z = str2float(edgeRT.attributes["tz"]);
+		pose_person.rx = 0.f;
+		pose_person.ry = str2float(edgeRT.attributes["ry"]);
+		pose_person.rz = 0.f;
+
+		person.pose = pose_person;
+        personMap[id] = person;
+
+        int1_cb->addItem(QString::number(id));
+        int2_cb->addItem(QString::number(id));
+        person_cb->addItem(QString::number(id));
+        int index = person_cb->findText(QString::number(id));
+        person_cb->setCurrentIndex(index);
+        updatePersonInterfaz(true);
+
+	}
+
+
+}
+
+
 bool SpecificWorker::includeInRCIS(int id, const RoboCompInnerModelManager::Pose3D &pose, std::string meshName)
 {
 	printf("includeInRCIS begins\n");
@@ -70,16 +127,30 @@ bool SpecificWorker::includeInRCIS(int id, const RoboCompInnerModelManager::Pose
 	mesh.render = 0;
 	mesh.meshPath = "/home/robocomp/robocomp/components/robocomp-araceli/models/" + meshName;
 
-	try
-	{
-		innermodelmanager_proxy->addTransform(name, "static", "root", pose);
-		innermodelmanager_proxy->addMesh(name+"_mesh", name, mesh);
-	}
-	catch (...)
-	{
-		printf("Can't create fake peson\n");
-		return false;
-	}
+
+    try
+    {
+        innermodelmanager_proxy->addTransform(name, "static", "root", pose);
+    }
+    catch (InnerModelManagerError e)
+    {
+        if (e.err != ErrorType::NodeAlreadyExists)
+        {
+            printf("Can't create fake peson\n");
+            return false;
+        }
+    }
+    try
+    {
+        innermodelmanager_proxy->addMesh(name+"_mesh", name, mesh);
+    }
+    catch (InnerModelManagerError e)
+    {
+        if (e.err != ErrorType::NodeAlreadyExists) {
+            printf("Can't create fake peson\n");
+            return false;
+        }
+    }
 	printf("includeInRCIS ends\n");
 	return true;
 }
@@ -133,21 +204,9 @@ int SpecificWorker::includeInAGM(int id,const RoboCompInnerModelManager::Pose3D 
 	printf("Got personSymbolId: %d\n", personSymbolId);
 	person->setAttribute("imName", imName);
 	person->setAttribute("imType", "transform");
-	AGMModelSymbol::SPtr personSt = newModel->newSymbol("personSt" + std::to_string(id));
-	printf("person %d status %d\n", person->identifier, personSt->identifier);
-
-	newModel->addEdge(person, personSt, "hasStatus");
-	newModel->addEdge(person, personSt, "noReach");
-	newModel->addEdge(person, personSt, name);
+    newModel->addEdgeByIdentifiers(person->identifier, 3, "in");
 
 
-	//Add person in room ==> It has to be fixed to allow use it in different scenarios
-	if (pose.z < 0 )
-	{
-		newModel->addEdgeByIdentifiers(person->identifier, 5, "in");
-	}else{
-		newModel->addEdgeByIdentifiers(person->identifier, 3, "in");
-	}
 
 	// Geometric part
 	std::map<std::string, std::string> edgeRTAtrs;
@@ -315,7 +374,7 @@ void SpecificWorker::initializeUI(){
 	connect(save_pb, SIGNAL(clicked()), this, SLOT(savePoints()));
 	connect(load_pb, SIGNAL(clicked()), this, SLOT(loadPoints()));
 
-//	connect(person_cb, SIGNAL(currentIndexChanged(int)), this, SLOT(cbIndexChanged(int)));
+	connect(person_cb, SIGNAL(currentIndexChanged(int)), this, SLOT(cbIndexChanged(int)));
 
 	connect(interaction_cb, SIGNAL(currentIndexChanged(int)), this, SLOT(interactionChanged(int)));
 	connect(autoM_cb, SIGNAL(clicked()),this, SLOT(autoMovement()));
@@ -331,15 +390,7 @@ void SpecificWorker::initializeUI(){
 
 bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 {
-	try        
-	{
-		RoboCompAGMWorldModel::World w = agmexecutive_proxy->getModel();
-		AGMExecutiveTopic_structuralChange(w);
-	}
-	catch(...)
-	{
-		printf("The executive is probably not running, waiting for first AGM model publication...");
-	}
+
 
     outerRegion.setLeft(std::stoi(params["OuterRegionLeft"].value));
     outerRegion.setRight(std::stoi(params["OuterRegionRight"].value));
@@ -365,9 +416,8 @@ bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 	
 */
 
-	timer.start(Period);
-	
-	 
+
+
 	return true;
 }
 
@@ -430,6 +480,16 @@ void SpecificWorker::cbIndexChanged(int index)
 	{
 		TPerson *person = &personMap[person_cb->currentText().toInt()];
 		giro->QAbstractSlider::setSliderPosition(person->pose.ry);
+
+		qDebug() << person->pose.x << person->pose.z << person->pose.ry;
+
+        x_sb->setValue(person->pose.x);
+        z_sb->setValue(person->pose.z);
+        rot_sb->setValue(person->pose.ry);
+
+        x_lb->setText(  QString::number(person->pose.x) );
+        z_lb->setText(  QString::number(person->pose.z));
+        rot_lb->setText(  QString::number(person->pose.ry));
 	}
 }
 
@@ -551,6 +611,10 @@ void SpecificWorker::move()
 
 		movePerson(person, coordInItem, setPoseFlag);
 
+        x_sb->setValue(person->pose.x);
+        z_sb->setValue(person->pose.z);
+        rot_sb->setValue(person->pose.ry);
+
 		x_lb->setText(  QString::number(person->pose.x) );
         z_lb->setText(  QString::number(person->pose.z));
         rot_lb->setText(  QString::number(person->pose.ry));
@@ -568,7 +632,11 @@ void SpecificWorker::movePerson(TPerson *person, RoboCompInnerModelManager::coor
 		if (global)
 			innermodelmanager_proxy->transform("root", "world", coordInItem, coordInWorld);
 		else
-			innermodelmanager_proxy->transform("root", person->name, coordInItem, coordInWorld);
+        {
+            qDebug()<<"PERSON NAME IN MOVE" << QString::fromStdString(person->name);
+
+            innermodelmanager_proxy->transform("root", person->name, coordInItem, coordInWorld);
+        }
 	}
 	catch (std::exception& e)
 	{
@@ -912,7 +980,7 @@ bool SpecificWorker::sendModificationProposal(AGMModel::SPtr &worldModel, AGMMod
 	try
 	{	qDebug()<<"Intentando sendModificationProposal";
 		AGMMisc::publishModification(newModel, agmexecutive_proxy, "fakeHumanAgentAgent");
-		qDebug()<<"sendModificationProposal";
+		qDebug()<<"sendModificationProposal done";
 		result = true;
 	}
 	catch(const RoboCompAGMExecutive::Locked &e)
@@ -1187,7 +1255,9 @@ void SpecificWorker::updatePersonInterfaz(bool enable)
 {
 	move_gb->setEnabled(enable);
 	interacion_gb->setEnabled(enable);
-	pose_gb->setEnabled(enable);
+//	pose_gb->setEnabled(enable);
+    setPose_pb->setEnabled(enable);
+    random->setEnabled(enable);
 	points_gb->setEnabled(enable);
 }
 

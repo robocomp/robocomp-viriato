@@ -80,15 +80,12 @@ void SpecificWorker::initialize(int period)
     viewer = std::make_shared<InnerViewer>(innerModel, "Social Navigation");  //InnerViewer copies internally innerModel so it has to be resynchronized
 #endif
 
-
     try
     {
         RoboCompAGMWorldModel::World w = agmexecutive_proxy->getModel();
         AGMExecutiveTopic_structuralChange(w);
         // Initializing PathFinder
-        qDebug()<<"....1....";
         pathfinder.initialize(innerModel, viewer, confParams, laser_proxy, omnirobot_proxy);
-        qDebug()<<"....2....";
         // Initializing SocialRules
         socialrules.initialize(socialnavigationgaussian_proxy, agmexecutive_proxy, mutex, &pathfinder, worldModel, innerModel);
 
@@ -100,20 +97,7 @@ void SpecificWorker::initialize(int period)
         {	rDebug2(("SetParams ---- The executive is probably not running, waiting for first AGM model publication...")); }
 
 
-    // releasing pathfinder
-    //thread_pathfinder = std::thread(&robocomp::pathfinder::PathFinder::run, &pathfinder);
-    //rDebug2(("Pathfinder up and running"));
-
-
-//	qLog::getInstance()->setProxy("both", logger_pubproxy);
     rDebug2(("NavigationAgent started"));
-
-    //Proxies for actionExecution
-    //aE.logger_proxy = logger_proxy;
-    //aE.agmexecutive_proxy = agmexecutive_proxy;
-    //aE.omnirobot_proxy = omnirobot_proxy;
-    //aE.trajectoryn2d_proxy = trajectoryrobot2d_proxy;
-
     rDebug2(("Leaving setParams"));
 
 
@@ -131,7 +115,6 @@ void SpecificWorker::compute() {
 
 	static bool first = true;
 	if (first) {
-//		qLog::getInstance()->setProxy("both", logger_pubproxy);
 		rDebug2(("navigationAgent started"));
 		qDebug()<<"saving innerModel";
 		first = false;
@@ -142,10 +125,10 @@ void SpecificWorker::compute() {
     viewer->run();
 
 
-    if (changepos) {
-        socialrules.updatePeopleInModel();
+    if (worldModelChanged) {
+        socialrules.update(worldModel);
         socialrules.checkRobotmov();
-        changepos = false;
+        worldModelChanged = false;
 	}
 
 	if (!socialrules.pSymbolId.empty()) {
@@ -389,8 +372,7 @@ void SpecificWorker::AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldMo
 
 	if (!first)
 	{
-		socialrules.checkModificationsInModel(worldModel);
-        socialrules.innerModelChanged(innerModel);
+		socialrules.update(worldModel);
 		innerModel->save("/home/robocomp/robocomp/components/robocomp-viriato/etcSim/innermodel.xml");
 	}
 	else
@@ -423,7 +405,7 @@ void SpecificWorker::AGMExecutiveTopic_symbolsUpdated(const RoboCompAGMWorldMode
 void SpecificWorker::AGMExecutiveTopic_edgesUpdated(const RoboCompAGMWorldModel::EdgeSequence &modifications)
 {
  	qDebug()<<"edgesUpdated";
-	changepos=true;
+	worldModelChanged=true;
 
 	QMutexLocker lockIM(mutex);
 	for (auto modification : modifications)
@@ -463,7 +445,7 @@ void SpecificWorker::AGMExecutiveTopic_edgesUpdated(const RoboCompAGMWorldModel:
 void SpecificWorker::AGMExecutiveTopic_edgeUpdated(const RoboCompAGMWorldModel::Edge& modification)
 {
  	qDebug() << "edgeUpdated";
-	changepos = true;
+	worldModelChanged = true;
 	QMutexLocker lockIM(mutex);
 	AGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);
 	AGMModelEdge edge;

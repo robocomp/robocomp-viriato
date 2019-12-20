@@ -47,8 +47,8 @@ public:
 
 	float h = 0.1; //umbral
 	QMutex *mux;
-	
-	int32_t robotSymbolId;	
+
+	int32_t robotSymbolId;
 	int32_t objectSymbolId;
 	int32_t personSymbolId;
 	vector <int32_t> pSymbolId = {};
@@ -102,14 +102,12 @@ public:
 			robocomp::pathfinder::PathFinder *pathfinder_,
 			AGMModel::SPtr worldModel_, 
 			const std::shared_ptr<InnerModel> &innerModel_);
-	
-	void innerModelChanged(const std::shared_ptr<InnerModel> &innerModel_);
-	
+
 	SNGPolylineSeq ApplySocialRules();
 	void  structuralChange(const RoboCompAGMWorldModel::World & modification);
 	bool checkHRI(SNGPerson p, int ind, InnerPtr &i, AGMModel::SPtr w);
 
-	void checkModificationsInModel(AGMModel::SPtr worldModel_);
+	void update(AGMModel::SPtr worldModel_);
     void updatePeopleInModel();
 
 	void checkRobotmov();

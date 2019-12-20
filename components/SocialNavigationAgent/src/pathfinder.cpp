@@ -107,7 +107,7 @@ void PathFinder::innerModelChanged (const std::shared_ptr<InnerModel> &innerMode
 		road.reloadInnerModel( innerModel_ ) ;  
 		projector.reloadInnerModel(innerModel_) ;
 		projector.update_polyline(personal); //para el laser
-		controller.reloadInnerModel( innerModel_ );
+    controller.reloadInnerModel( innerModel_ );
 	releaseRoad();
 //	qDebug()<<__FUNCTION__<< "--------------TERMINA GET ROAD -----------------------";
 }

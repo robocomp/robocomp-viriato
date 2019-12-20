@@ -65,8 +65,7 @@ public:
 	~SpecificWorker();
 	bool setParams(RoboCompCommonBehavior::ParameterList params);
 
-//bool para indicar si se ha movido la persona, lo utilizare para imprimir la coordenada de la persona cada vez que se mueva
-	bool changepos = false;
+	bool worldModelChanged = false;
 
 	ActionExecution aE; //Class ActionExecution
 	SocialRules socialrules; //Class SocialRules

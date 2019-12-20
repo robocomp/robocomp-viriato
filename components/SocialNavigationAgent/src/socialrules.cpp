@@ -24,27 +24,19 @@ void SocialRules::initialize(SocialNavigationGaussianPrx socialnavigationgaussia
 	checkObjectAffordance(false);
 }
 
-void SocialRules::innerModelChanged(const std::shared_ptr<InnerModel> &innerModel_)
-{
-	qDebug()<<__FUNCTION__;
-	
-	innerModel = innerModel_;
-	pathfinder->innerModelChanged(innerModel, totalpersons, intimate_seq, personal_seq, social_seq, object_seq, objectblock_seq);
-}
 
-
-void SocialRules::checkModificationsInModel(AGMModel::SPtr worldModel_)
+void SocialRules::update(AGMModel::SPtr worldModel_)
 {
 
-	qDebug()<<__FUNCTION__;
 	worldModel = worldModel_;
-
+	innerModel = std::make_shared<InnerModel>(AGMInner::extractInnerModel(worldModel));
 
 	updatePeopleInModel();
-	checkObjectAffordance(false);
-
+    checkInteractions();
+    checkObjectAffordance(false);
 	ApplySocialRules();
-}
+
+	pathfinder->innerModelChanged(innerModel, totalpersons, intimate_seq, personal_seq, social_seq, object_seq, objectblock_seq);}
 
 void SocialRules::updatePeopleInModel()
 {
@@ -71,7 +63,7 @@ void SocialRules::updatePeopleInModel()
 		person.x = str2float(edgeRT.attributes["tx"]);
 		person.z = str2float(edgeRT.attributes["tz"]);
 		person.angle = str2float(edgeRT.attributes["ry"]);
-		cout << "PERSON " << person.id << " x = " << person.x << " z = " << person.z << " rot " << person.angle << endl;
+		cout << "[FOUND] Person " << person.id << " x = " << person.x << " z = " << person.z << " rot " << person.angle << endl;
 
 		idselected->addItem(QString::number(person.id));
 
@@ -79,7 +71,6 @@ void SocialRules::updatePeopleInModel()
 		totalpersons.push_back(person);
     }
 
-	checkInteractions();
 
 }
 
@@ -95,7 +86,6 @@ void SocialRules::checkInteractions()
 	for (auto p: totalpersons) {
 		auto id = p.id;
 		AGMModelSymbol::SPtr personAGM = worldModel->getSymbol(id);
-		qDebug() << "-------------- COMPROBANDO ENLACES DE LA PERSONA " << id << "-------------- ";
 		int32_t pairId = -1;
 
 		for (AGMModelSymbol::iterator edge = personAGM->edgesBegin(worldModel);
@@ -103,16 +93,16 @@ void SocialRules::checkInteractions()
 			 edge++) {
 			if (edge->getLabel()=="interacting") {
 				const std::pair<int32_t, int32_t> symbolPair = edge->getSymbolPair();
-				qDebug() << "symbolPair.first " << symbolPair.first << "symbolPair.second " << symbolPair.second;
 				const string secondType = worldModel->getSymbol(symbolPair.second)->symbolType;
 
 				if (symbolPair.first==id and secondType=="person") {
 					pairId = symbolPair.second;
-					qDebug() << "INTERACTING" << symbolPair.first << "AND " << symbolPair.second;
+					qDebug() << "Person " << symbolPair.first << " is interacting with " << symbolPair.second;
 					break;
 				}
 			}
 		}
+
 		groupInteractingPeople(id, pairId, interactingId);
 
 	}
@@ -124,7 +114,6 @@ void SocialRules::checkInteractions()
         }
 
         interactingpersons.push_back(persons);
-
     }
 }
 
@@ -177,10 +166,6 @@ SNGPolylineSeq SocialRules::ApplySocialRules()
 			std::cout << e << std::endl;
 		}
 	}
-
-//    qDebug()<<"innerModel changed to pathfinder";
-//	pathfinder->innerModelChanged(innerModel, totalpersons, intimate_seq, personal_seq, social_seq, object_seq,objectblock_seq);
-
 
 	return seq;
 }
@@ -255,7 +240,6 @@ vector <vector<int32_t>> SocialRules::groupInteractingPeople(int32_t id, int32_t
 SNGPolylineSeq SocialRules::calculateGauss(bool draw, float h)
 {
 	
-//	qDebug()<<__FUNCTION__ << "con h = " << h;
 	if (!interactingpersons.empty())
 	{
 		seq.clear();

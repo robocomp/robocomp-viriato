@@ -91,7 +91,7 @@ void Projector::run(std::function<Road&()> getRoad, std::function<void()> releas
 	RoboCompLaser::TLaserData laserData;
 	while(true)
 	{
-		try{ laserData  = laser_proxy->getLaserData();} catch(const Ice::Exception &e){std::cout <<"SHIT" <<e.what() << std::endl;};
+		try{ laserData  = laser_proxy->getLaserData();} catch(const Ice::Exception &e){std::cout <<"Cant get laser " <<e.what() << std::endl;};
 		Road &road = getRoad();
 			update(road, laserData, polyline, 0);
 		releaseRoad();
@@ -103,12 +103,14 @@ bool Projector::update(Road &road,  const RoboCompLaser::TLaserData &laserData, 
 {
 	//qDebug() << "Projector::" << __FUNCTION__ << "road size"<<  road.size();
 	// Preconditions
-	if (road.empty())
+
+
+    if (road.empty())
 		return false;
 	if (road.isFinished())
 		return false;
-	
-	RoboCompLaser::TLaserData laserMod = modifyLaser(laserData, seq);
+
+    RoboCompLaser::TLaserData laserMod = modifyLaser(laserData, seq);
 	/////////////////////////////////////////////
 	//Tags all points in the road ar visible or blocked, depending on laser visibility. Only visible points are processed in this iteration
 	/////////////////////////////////////////////
@@ -158,7 +160,6 @@ bool Projector::update(Road &road,  const RoboCompLaser::TLaserData &laserData, 
  */
 void Projector::reloadInnerModel(const InnerPtr &innerModel_)
 {
-// 	innerModel.reset(innerModel_.get());
 	innerModel = innerModel_;
 }
 
@@ -219,8 +220,7 @@ RoboCompLaser::TLaserData Projector::modifyLaser(RoboCompLaser::TLaserData laser
 // 	acho[1].z = 0;
 // 	l.push_back(acho);
 	
-// 	qDebug()<<__FUNCTION__<< "Size of polyline = "<< l.size();
-	
+
 	RoboCompLaser::TLaserData laserCombined; 
 	laserCombined = laserData;
 	
@@ -232,7 +232,7 @@ RoboCompLaser::TLaserData Projector::modifyLaser(RoboCompLaser::TLaserData laser
 		for (auto polylinePoint: polyline)
 		{
 			LocalPointPol lPol;
-			QVec pInLaser = innerModel->transform("laser", QVec::vec3(polylinePoint.x*1000, 0, polylinePoint.z*1000), "world");
+			QVec pInLaser = innerModel->transform("laser", QVec::vec3(polylinePoint.x, 0, polylinePoint.z), "world");
 			lPol.angle = atan2(pInLaser.x(), pInLaser.z());
 			if( lPol.angle < min ) min = lPol.angle;
 			if( lPol.angle > max ) max = lPol.angle;
@@ -256,7 +256,7 @@ RoboCompLaser::TLaserData Projector::modifyLaser(RoboCompLaser::TLaserData laser
 				
 				for (auto polylinePoint: polyline)
 				{
-					QVec currentPointInLaser = innerModel->transform("laser", (QVec::vec3(polylinePoint.x*1000, 0, polylinePoint.z*1000)), "world");
+					QVec currentPointInLaser = innerModel->transform("laser", (QVec::vec3(polylinePoint.x, 0, polylinePoint.z)), "world");
 			
 					QVec intersection = laserline.intersectionPoint(QLine2D(QVec::vec2(previousPointInLaser.x(),previousPointInLaser.z()),QVec::vec2(currentPointInLaser.x(),currentPointInLaser.z())));
 					
