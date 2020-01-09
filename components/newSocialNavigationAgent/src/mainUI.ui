@@ -6,13 +6,125 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>548</width>
+    <height>157</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>socialNavigationAgent</string>
+   <string>navigationComp</string>
   </property>
+  <widget class="QGroupBox" name="interacion_gb">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>261</width>
+     <height>131</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>Human Interaction</string>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout_7" stretch="0">
+    <item>
+     <layout class="QVBoxLayout" name="verticalLayout_8">
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout_11">
+          <item>
+           <widget class="QComboBox" name="idselect_combobox"/>
+          </item>
+          <item>
+           <widget class="QPushButton" name="gotoperson_button">
+            <property name="text">
+             <string>Go to person</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout">
+          <item>
+           <widget class="QCheckBox" name="follow_checkbox">
+            <property name="text">
+             <string>Follow</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="accompany_checkbox">
+            <property name="text">
+             <string>Accompany</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="passonright_checkbox">
+            <property name="text">
+             <string>Pass on Right</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QGroupBox" name="interacion_gb_2">
+   <property name="geometry">
+    <rect>
+     <x>270</x>
+     <y>10</y>
+     <width>261</width>
+     <height>131</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>Data</string>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout_9" stretch="0">
+    <item>
+     <layout class="QVBoxLayout" name="verticalLayout_10">
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout_2">
+          <item>
+           <widget class="QPushButton" name="draw_gaussian_button">
+            <property name="text">
+             <string>Personal Space</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="draw_objects_button">
+            <property name="text">
+             <string>Object Affordances</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QPushButton" name="save_data_button">
+          <property name="text">
+           <string>Record data</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <zorder>interacion_gb_2</zorder>
+  <zorder>interacion_gb</zorder>
  </widget>
  <resources/>
  <connections/>

@@ -27,6 +27,8 @@ SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
 	active = false;
 	worldModel = AGMModel::SPtr(new AGMModel());
 	worldModel->name = "worldModel";
+    innerModel = std::make_shared<InnerModel>();
+
 }
 
 /**
@@ -40,63 +42,80 @@ SpecificWorker::~SpecificWorker()
 
 bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 {
-//       THE FOLLOWING IS JUST AN EXAMPLE
-//	To use innerModelPath parameter you should uncomment specificmonitor.cpp readConfig method content
-//	try
-//	{
-//		RoboCompCommonBehavior::Parameter par = params.at("InnerModelPath");
-//		std::string innermodel_path = par.value;
-//		innerModel = new InnerModel(innermodel_path);
-//	}
-//	catch(const std::exception &e) { qFatal("Error reading config params"); }
+    try{ robotname = params.at("RobotName").value;}
+    catch(const std::exception &e){ std::cout << e.what() << "SpecificWorker::SpecificWorker - Robot name defined in config. Using default 'robot' " << std::endl;}
 
+    confParams  = std::make_shared<RoboCompCommonBehavior::ParameterList>(params);
 
 
 	defaultMachine.start();
-	
-
-	try
-	{
-		RoboCompAGMWorldModel::World w = agmexecutive_proxy->getModel();
-		AGMExecutiveTopic_structuralChange(w);
-	}
-	catch(...)
-	{
-		printf("The executive is probably not running, waiting for first AGM model publication...");
-	}
 
 	return true;
 }
 
 void SpecificWorker::initialize(int period)
 {
+
 	std::cout << "Initialize worker" << std::endl;
+
+    connect(draw_gaussian_button,SIGNAL(clicked()),&socialrules, SLOT(calculateGauss()));
+    connect(draw_objects_button,SIGNAL(clicked()),&socialrules, SLOT(checkObjectAffordance()));
+    connect(save_data_button,SIGNAL(clicked()),&socialrules, SLOT(saveData()));
+    connect(gotoperson_button,SIGNAL(clicked()),&socialrules, SLOT(goToPerson()));
+    connect(follow_checkbox, SIGNAL (clicked()),&socialrules,SLOT(checkstate()));
+    connect(accompany_checkbox, SIGNAL (clicked()),&socialrules,SLOT(checkstate()));
+    connect(passonright_checkbox, SIGNAL (clicked()),&socialrules,SLOT(checkstate()));
+
+    socialrules.idselect_combobox = idselect_combobox;
+    socialrules.follow_checkbox = follow_checkbox;
+    socialrules.accompany_checkbox = accompany_checkbox;
+    socialrules.passonright_checkbox = passonright_checkbox;
+
+
+#ifdef USE_QTGUI
+	viewer = std::make_shared<InnerViewer>(innerModel, "Social Navigation");  //InnerViewer copies internally innerModel so it has to be resynchronized
+#endif
+
+    try
+    {
+        RoboCompAGMWorldModel::World w = agmexecutive_proxy->getModel();
+        AGMExecutiveTopic_structuralChange(w);
+    }
+    catch(...)
+    {
+        printf("The executive is probably not running, waiting for first AGM model publication...");
+    }
+
+
+    socialrules.initialize(socialnavigationgaussian_proxy, worldModel);
+
+
+
 	this->Period = period;
 	timer.start(Period);
-	emit this->t_initialize_to_compute();
+    emit this->t_initialize_to_compute();
+
 
 }
 
 void SpecificWorker::compute()
 {
-//computeCODE
-//QMutexLocker locker(mutex);
-//	try
-//	{
-//		camera_proxy->getYImage(0,img, cState, bState);
-//		memcpy(image_gray.data, &img[0], m_width*m_height*sizeof(uchar));
-//		searchTags(image_gray);
-//	}
-//	catch(const Ice::Exception &e)
-//	{
-//		std::cout << "Error reading from Camera" << e << std::endl;
-//	}
+QMutexLocker locker(mutex);
+
+    viewer->run();
+
+    if (worldModelChanged) {
+        socialrules.update(worldModel);
+        socialrules.checkRobotmov();
+        worldModelChanged = false;
+    }
+
 }
 
 
 void SpecificWorker::sm_compute()
 {
-	std::cout<<"Entered state compute"<<std::endl;
+//	std::cout<<"Entered state compute"<<std::endl;
 	compute();
 }
 
@@ -192,11 +211,15 @@ void SpecificWorker::AGMExecutiveTopic_edgeUpdated(const RoboCompAGMWorldModel::
 	AGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);
 	AGMInner::updateImNodeFromEdge(worldModel, modification, innerModel.get());
 
+    worldModelChanged = true;
+
+
 }
 
 void SpecificWorker::AGMExecutiveTopic_edgesUpdated(const RoboCompAGMWorldModel::EdgeSequence &modifications)
 {
 //subscribesToCODE
+
 	QMutexLocker lockIM(mutex);
 	for (auto modification : modifications)
 	{
@@ -204,15 +227,32 @@ void SpecificWorker::AGMExecutiveTopic_edgesUpdated(const RoboCompAGMWorldModel:
 		AGMInner::updateImNodeFromEdge(worldModel, modification, innerModel.get());
 	}
 
+    worldModelChanged = true;
+
 }
 
 void SpecificWorker::AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldModel::World &w)
 {
-//subscribesToCODE
+	qDebug()<<"StructuralChange";
+
 	QMutexLocker lockIM(mutex);
- 	AGMModelConverter::fromIceToInternal(w, worldModel);
- 
+	static bool first = true;
+
+	AGMModelConverter::fromIceToInternal(w, worldModel);
 	innerModel = std::make_shared<InnerModel>(AGMInner::extractInnerModel(worldModel));
+
+	if (!first)
+	{
+		socialrules.update(worldModel);
+		innerModel->save("/home/robocomp/robocomp/components/robocomp-viriato/etcSim/innermodel.xml");
+	}
+	else
+		first = false;
+
+
+	viewer->reloadInnerModel(innerModel);
+    worldModelChanged = true;
+
 }
 
 void SpecificWorker::AGMExecutiveTopic_symbolUpdated(const RoboCompAGMWorldModel::Node &modification)
@@ -220,6 +260,7 @@ void SpecificWorker::AGMExecutiveTopic_symbolUpdated(const RoboCompAGMWorldModel
 //subscribesToCODE
 	QMutexLocker locker(mutex);
 	AGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);
+
 
 }
 

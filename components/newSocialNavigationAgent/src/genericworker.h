@@ -35,7 +35,7 @@
 
 #include <Planning.h>
 #include <GenericBase.h>
-#include <DifferentialRobot.h>
+#include <Laser.h>
 #include <OmniRobot.h>
 #include <SocialNavigationGaussian.h>
 #include <AGMCommonBehavior.h>
@@ -49,7 +49,7 @@
 using namespace std;
 using namespace RoboCompPlanning;
 using namespace RoboCompGenericBase;
-using namespace RoboCompDifferentialRobot;
+using namespace RoboCompLaser;
 using namespace RoboCompOmniRobot;
 using namespace RoboCompSocialNavigationGaussian;
 using namespace RoboCompAGMCommonBehavior;
@@ -87,8 +87,7 @@ public:
 
 
 	AGMExecutivePrx agmexecutive_proxy;
-	DifferentialRobotPrx differentialrobot_proxy;
-	GenericBasePrx genericbase_proxy;
+	LaserPrx laser_proxy;
 	OmniRobotPrx omnirobot_proxy;
 	SocialNavigationGaussianPrx socialnavigationgaussian_proxy;
 

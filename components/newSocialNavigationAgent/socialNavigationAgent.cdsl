@@ -1,12 +1,13 @@
 import "SocialNavigationGaussian.idsl";
 import "DifferentialRobot.idsl";
 import "OmniRobot.idsl";
+import "Laser.idsl";
 
 Component socialNavigationAgent
 {
     Communications
     {
-		  requires SocialNavigationGaussian, DifferentialRobot, OmniRobot, GenericBase;
+		  requires SocialNavigationGaussian, OmniRobot, Laser;
     };
     language Cpp;
     gui Qt(QWidget);

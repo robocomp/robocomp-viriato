@@ -31,6 +31,18 @@
 #include <genericworker.h>
 #include <innermodel/innermodel.h>
 
+#include <socialrules.h>
+#include <boost/format.hpp>
+
+
+
+using namespace std;
+
+#define USE_QTGUI
+#ifdef USE_QTGUI
+	#include "innerviewer.h"
+#endif
+
 class SpecificWorker : public GenericWorker
 {
 Q_OBJECT
@@ -53,6 +65,16 @@ public:
 	void AGMExecutiveTopic_symbolUpdated(const RoboCompAGMWorldModel::Node &modification);
 	void AGMExecutiveTopic_symbolsUpdated(const RoboCompAGMWorldModel::NodeSequence &modifications);
 
+
+	using InnerPtr = std::shared_ptr<InnerModel>;
+	#ifdef USE_QTGUI
+		using InnerViewerPtr = std::shared_ptr<InnerViewer>;
+	#endif
+
+	SocialRules socialrules;
+	bool worldModelChanged = false;
+
+
 public slots:
 	void compute();
 	void initialize(int period);
@@ -63,13 +85,19 @@ public slots:
 
 //--------------------
 private:
-	std::shared_ptr<InnerModel> innerModel;
+	InnerPtr innerModel;
 	std::string action;
 	ParameterMap params;
 	AGMModel::SPtr worldModel;
 	bool active;
 	bool setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated);
 	void sendModificationProposal(AGMModel::SPtr &worldModel, AGMModel::SPtr &newModel);
+
+	#ifdef USE_QTGUI
+		InnerViewerPtr viewer;
+	#endif
+	std::string robotname = "robot";
+	std::shared_ptr<RoboCompCommonBehavior::ParameterList> confParams;
 
 };
 
