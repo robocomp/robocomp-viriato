@@ -35,23 +35,23 @@ class SpecificWorker : public GenericWorker
 {
 Q_OBJECT
 public:
-	SpecificWorker(TuplePrx tprx);
+	SpecificWorker(MapPrx& mprx);
 	~SpecificWorker();
 	bool setParams(RoboCompCommonBehavior::ParameterList params);
 
-	bool AGMCommonBehavior_activateAgent(ParameterMap prs);
+	bool AGMCommonBehavior_activateAgent(const ParameterMap &prs);
 	bool AGMCommonBehavior_deactivateAgent();
 	ParameterMap AGMCommonBehavior_getAgentParameters();
 	StateStruct AGMCommonBehavior_getAgentState();
 	void AGMCommonBehavior_killAgent();
 	bool AGMCommonBehavior_reloadConfigAgent();
-	bool AGMCommonBehavior_setAgentParameters(ParameterMap prs);
+	bool AGMCommonBehavior_setAgentParameters(const ParameterMap &prs);
 	int AGMCommonBehavior_uptimeAgent();
-	void AGMExecutiveTopic_edgeUpdated(RoboCompAGMWorldModel::Edge modification);
-	void AGMExecutiveTopic_edgesUpdated(RoboCompAGMWorldModel::EdgeSequence modifications);
-	void AGMExecutiveTopic_structuralChange(RoboCompAGMWorldModel::World w);
-	void AGMExecutiveTopic_symbolUpdated(RoboCompAGMWorldModel::Node modification);
-	void AGMExecutiveTopic_symbolsUpdated(RoboCompAGMWorldModel::NodeSequence modifications);
+	void AGMExecutiveTopic_edgeUpdated(const RoboCompAGMWorldModel::Edge &modification);
+	void AGMExecutiveTopic_edgesUpdated(const RoboCompAGMWorldModel::EdgeSequence &modifications);
+	void AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldModel::World &w);
+	void AGMExecutiveTopic_symbolUpdated(const RoboCompAGMWorldModel::Node &modification);
+	void AGMExecutiveTopic_symbolsUpdated(const RoboCompAGMWorldModel::NodeSequence &modifications);
 
 public slots:
 	void compute();

@@ -8,7 +8,7 @@ Component socialNavigationAgent
     {
 		  requires SocialNavigationGaussian, DifferentialRobot, OmniRobot, GenericBase;
     };
-    language Cpp11;
+    language Cpp;
     gui Qt(QWidget);
     options agmagent;
 	statemachine "statemachine.smdsl";

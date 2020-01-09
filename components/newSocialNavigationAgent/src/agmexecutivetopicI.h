@@ -34,11 +34,11 @@ public:
 AGMExecutiveTopicI(GenericWorker *_worker);
 	~AGMExecutiveTopicI();
 
-	void edgeUpdated(RoboCompAGMWorldModel::Edge modification, const Ice::Current&);
-	void edgesUpdated(RoboCompAGMWorldModel::EdgeSequence modifications, const Ice::Current&);
-	void structuralChange(RoboCompAGMWorldModel::World w, const Ice::Current&);
-	void symbolUpdated(RoboCompAGMWorldModel::Node modification, const Ice::Current&);
-	void symbolsUpdated(RoboCompAGMWorldModel::NodeSequence modifications, const Ice::Current&);
+	void edgeUpdated(const RoboCompAGMWorldModel::Edge  &modification, const Ice::Current&);
+	void edgesUpdated(const RoboCompAGMWorldModel::EdgeSequence  &modifications, const Ice::Current&);
+	void structuralChange(const RoboCompAGMWorldModel::World  &w, const Ice::Current&);
+	void symbolUpdated(const RoboCompAGMWorldModel::Node  &modification, const Ice::Current&);
+	void symbolsUpdated(const RoboCompAGMWorldModel::NodeSequence  &modifications, const Ice::Current&);
 
 private:
 

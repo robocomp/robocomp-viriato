@@ -84,8 +84,8 @@
 #include <agmcommonbehaviorI.h>
 #include <agmexecutivetopicI.h>
 
-#include <GenericBase.h>
 #include <Planning.h>
+#include <GenericBase.h>
 
 
 // User includes here
@@ -101,7 +101,7 @@ public:
 private:
 	void initialize();
 	std::string prefix;
-	TuplePrx tprx;
+	MapPrx mprx;
 
 public:
 	virtual int run(int, char*[]);
@@ -137,11 +137,11 @@ int ::socialNavigationAgent::run(int argc, char* argv[])
 
 	int status=EXIT_SUCCESS;
 
-	AGMExecutivePrxPtr agmexecutive_proxy;
-	DifferentialRobotPrxPtr differentialrobot_proxy;
-	GenericBasePrxPtr genericbase_proxy;
-	OmniRobotPrxPtr omnirobot_proxy;
-	SocialNavigationGaussianPrxPtr socialnavigationgaussian_proxy;
+	AGMExecutivePrx agmexecutive_proxy;
+	DifferentialRobotPrx differentialrobot_proxy;
+	GenericBasePrx genericbase_proxy;
+	OmniRobotPrx omnirobot_proxy;
+	SocialNavigationGaussianPrx socialnavigationgaussian_proxy;
 
 	string proxy, tmp;
 	initialize();
@@ -153,7 +153,7 @@ int ::socialNavigationAgent::run(int argc, char* argv[])
 		{
 			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy AGMExecutiveProxy\n";
 		}
-		agmexecutive_proxy = Ice::uncheckedCast<AGMExecutivePrx>( communicator()->stringToProxy( proxy ) );
+		agmexecutive_proxy = AGMExecutivePrx::uncheckedCast( communicator()->stringToProxy( proxy ) );
 	}
 	catch(const Ice::Exception& ex)
 	{
@@ -162,6 +162,7 @@ int ::socialNavigationAgent::run(int argc, char* argv[])
 	}
 	rInfo("AGMExecutiveProxy initialized Ok!");
 
+	mprx["AGMExecutiveProxy"] = (::IceProxy::Ice::Object*)(&agmexecutive_proxy);//Remote server proxy creation example
 
 	try
 	{
@@ -169,7 +170,7 @@ int ::socialNavigationAgent::run(int argc, char* argv[])
 		{
 			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy DifferentialRobotProxy\n";
 		}
-		differentialrobot_proxy = Ice::uncheckedCast<DifferentialRobotPrx>( communicator()->stringToProxy( proxy ) );
+		differentialrobot_proxy = DifferentialRobotPrx::uncheckedCast( communicator()->stringToProxy( proxy ) );
 	}
 	catch(const Ice::Exception& ex)
 	{
@@ -178,6 +179,7 @@ int ::socialNavigationAgent::run(int argc, char* argv[])
 	}
 	rInfo("DifferentialRobotProxy initialized Ok!");
 
+	mprx["DifferentialRobotProxy"] = (::IceProxy::Ice::Object*)(&differentialrobot_proxy);//Remote server proxy creation example
 
 	try
 	{
@@ -185,7 +187,7 @@ int ::socialNavigationAgent::run(int argc, char* argv[])
 		{
 			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy GenericBaseProxy\n";
 		}
-		genericbase_proxy = Ice::uncheckedCast<GenericBasePrx>( communicator()->stringToProxy( proxy ) );
+		genericbase_proxy = GenericBasePrx::uncheckedCast( communicator()->stringToProxy( proxy ) );
 	}
 	catch(const Ice::Exception& ex)
 	{
@@ -194,6 +196,7 @@ int ::socialNavigationAgent::run(int argc, char* argv[])
 	}
 	rInfo("GenericBaseProxy initialized Ok!");
 
+	mprx["GenericBaseProxy"] = (::IceProxy::Ice::Object*)(&genericbase_proxy);//Remote server proxy creation example
 
 	try
 	{
@@ -201,7 +204,7 @@ int ::socialNavigationAgent::run(int argc, char* argv[])
 		{
 			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy OmniRobotProxy\n";
 		}
-		omnirobot_proxy = Ice::uncheckedCast<OmniRobotPrx>( communicator()->stringToProxy( proxy ) );
+		omnirobot_proxy = OmniRobotPrx::uncheckedCast( communicator()->stringToProxy( proxy ) );
 	}
 	catch(const Ice::Exception& ex)
 	{
@@ -210,6 +213,7 @@ int ::socialNavigationAgent::run(int argc, char* argv[])
 	}
 	rInfo("OmniRobotProxy initialized Ok!");
 
+	mprx["OmniRobotProxy"] = (::IceProxy::Ice::Object*)(&omnirobot_proxy);//Remote server proxy creation example
 
 	try
 	{
@@ -217,7 +221,7 @@ int ::socialNavigationAgent::run(int argc, char* argv[])
 		{
 			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy SocialNavigationGaussianProxy\n";
 		}
-		socialnavigationgaussian_proxy = Ice::uncheckedCast<SocialNavigationGaussianPrx>( communicator()->stringToProxy( proxy ) );
+		socialnavigationgaussian_proxy = SocialNavigationGaussianPrx::uncheckedCast( communicator()->stringToProxy( proxy ) );
 	}
 	catch(const Ice::Exception& ex)
 	{
@@ -226,10 +230,11 @@ int ::socialNavigationAgent::run(int argc, char* argv[])
 	}
 	rInfo("SocialNavigationGaussianProxy initialized Ok!");
 
-	IceStorm::TopicManagerPrxPtr topicManager;
+	mprx["SocialNavigationGaussianProxy"] = (::IceProxy::Ice::Object*)(&socialnavigationgaussian_proxy);//Remote server proxy creation example
+	IceStorm::TopicManagerPrx topicManager;
 	try
 	{
-		topicManager = Ice::checkedCast<IceStorm::TopicManagerPrx>(communicator()->propertyToProxy("TopicManager.Proxy"));
+		topicManager = IceStorm::TopicManagerPrx::checkedCast(communicator()->propertyToProxy("TopicManager.Proxy"));
 	}
 	catch (const Ice::Exception &ex)
 	{
@@ -237,8 +242,7 @@ int ::socialNavigationAgent::run(int argc, char* argv[])
 		return EXIT_FAILURE;
 	}
 
-	tprx = std::make_tuple(agmexecutive_proxy,differentialrobot_proxy,genericbase_proxy,omnirobot_proxy,socialnavigationgaussian_proxy);
-	SpecificWorker *worker = new SpecificWorker(tprx);
+	SpecificWorker *worker = new SpecificWorker(mprx);
 	//Monitor thread
 	SpecificMonitor *monitor = new SpecificMonitor(worker,communicator());
 	QObject::connect(monitor, SIGNAL(kill()), &a, SLOT(quit()));
@@ -261,7 +265,7 @@ int ::socialNavigationAgent::run(int argc, char* argv[])
 				cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy CommonBehavior\n";
 			}
 			Ice::ObjectAdapterPtr adapterCommonBehavior = communicator()->createObjectAdapterWithEndpoints("commonbehavior", tmp);
-			auto commonbehaviorI = std::make_shared<CommonBehaviorI>(monitor);
+			CommonBehaviorI *commonbehaviorI = new CommonBehaviorI(monitor);
 			adapterCommonBehavior->add(commonbehaviorI, Ice::stringToIdentity("commonbehavior"));
 			adapterCommonBehavior->activate();
 		}
@@ -284,7 +288,7 @@ int ::socialNavigationAgent::run(int argc, char* argv[])
 				cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy AGMCommonBehavior";
 			}
 			Ice::ObjectAdapterPtr adapterAGMCommonBehavior = communicator()->createObjectAdapterWithEndpoints("AGMCommonBehavior", tmp);
-			auto agmcommonbehavior = std::make_shared<AGMCommonBehaviorI>(worker);
+			AGMCommonBehaviorI *agmcommonbehavior = new AGMCommonBehaviorI(worker);
 			adapterAGMCommonBehavior->add(agmcommonbehavior, Ice::stringToIdentity("agmcommonbehavior"));
 			adapterAGMCommonBehavior->activate();
 			cout << "[" << PROGRAM_NAME << "]: AGMCommonBehavior adapter created in port " << tmp << endl;
@@ -296,8 +300,8 @@ int ::socialNavigationAgent::run(int argc, char* argv[])
 
 
 		// Server adapter creation and publication
-		std::shared_ptr<IceStorm::TopicPrx> agmexecutivetopic_topic;
-		Ice::ObjectPrxPtr agmexecutivetopic;
+		IceStorm::TopicPrx agmexecutivetopic_topic;
+		Ice::ObjectPrx agmexecutivetopic;
 		try
 		{
 			if (not GenericMonitor::configGetString(communicator(), prefix, "AGMExecutiveTopicTopic.Endpoints", tmp, ""))
@@ -305,8 +309,8 @@ int ::socialNavigationAgent::run(int argc, char* argv[])
 				cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy AGMExecutiveTopicProxy";
 			}
 			Ice::ObjectAdapterPtr AGMExecutiveTopic_adapter = communicator()->createObjectAdapterWithEndpoints("agmexecutivetopic", tmp);
-			AGMExecutiveTopicPtr agmexecutivetopicI_ =  std::make_shared <AGMExecutiveTopicI>(worker);
-			auto agmexecutivetopic = AGMExecutiveTopic_adapter->addWithUUID(agmexecutivetopicI_)->ice_oneway();
+			AGMExecutiveTopicPtr agmexecutivetopicI_ =  new AGMExecutiveTopicI(worker);
+			Ice::ObjectPrx agmexecutivetopic = AGMExecutiveTopic_adapter->addWithUUID(agmexecutivetopicI_)->ice_oneway();
 			if(!agmexecutivetopic_topic)
 			{
 				try {

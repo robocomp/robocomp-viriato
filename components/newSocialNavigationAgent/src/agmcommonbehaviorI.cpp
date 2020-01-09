@@ -28,7 +28,7 @@ AGMCommonBehaviorI::~AGMCommonBehaviorI()
 {
 }
 
-bool AGMCommonBehaviorI::activateAgent(ParameterMap prs, const Ice::Current&)
+bool AGMCommonBehaviorI::activateAgent(const ParameterMap  &prs, const Ice::Current&)
 {
 	return worker->AGMCommonBehavior_activateAgent(prs);
 }
@@ -58,7 +58,7 @@ bool AGMCommonBehaviorI::reloadConfigAgent(const Ice::Current&)
 	return worker->AGMCommonBehavior_reloadConfigAgent();
 }
 
-bool AGMCommonBehaviorI::setAgentParameters(ParameterMap prs, const Ice::Current&)
+bool AGMCommonBehaviorI::setAgentParameters(const ParameterMap  &prs, const Ice::Current&)
 {
 	return worker->AGMCommonBehavior_setAgentParameters(prs);
 }

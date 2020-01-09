@@ -33,8 +33,8 @@
 #include <QState>
 #include <CommonBehavior.h>
 
-#include <GenericBase.h>
 #include <Planning.h>
+#include <GenericBase.h>
 #include <DifferentialRobot.h>
 #include <OmniRobot.h>
 #include <SocialNavigationGaussian.h>
@@ -47,8 +47,8 @@
 #define BASIC_PERIOD 100
 
 using namespace std;
-using namespace RoboCompGenericBase;
 using namespace RoboCompPlanning;
+using namespace RoboCompGenericBase;
 using namespace RoboCompDifferentialRobot;
 using namespace RoboCompOmniRobot;
 using namespace RoboCompSocialNavigationGaussian;
@@ -56,7 +56,7 @@ using namespace RoboCompAGMCommonBehavior;
 using namespace RoboCompAGMExecutive;
 using namespace RoboCompAGMWorldModel;
 
-using TuplePrx = std::tuple<RoboCompAGMExecutive::AGMExecutivePrxPtr,RoboCompDifferentialRobot::DifferentialRobotPrxPtr,RoboCompGenericBase::GenericBasePrxPtr,RoboCompOmniRobot::OmniRobotPrxPtr,RoboCompSocialNavigationGaussian::SocialNavigationGaussianPrxPtr>;
+typedef map <string,::IceProxy::Ice::Object*> MapPrx;
 
 
 struct BehaviorParameters
@@ -74,7 +74,7 @@ class GenericWorker :
 {
 Q_OBJECT
 public:
-	GenericWorker(TuplePrx tprx);
+	GenericWorker(MapPrx& mprx);
 	virtual ~GenericWorker();
 	virtual void killYourSelf();
 	virtual void setPeriod(int p);
@@ -86,25 +86,25 @@ public:
 	bool isActive() { return active; }
 
 
-	AGMExecutivePrxPtr agmexecutive_proxy;
-	DifferentialRobotPrxPtr differentialrobot_proxy;
-	GenericBasePrxPtr genericbase_proxy;
-	OmniRobotPrxPtr omnirobot_proxy;
-	SocialNavigationGaussianPrxPtr socialnavigationgaussian_proxy;
+	AGMExecutivePrx agmexecutive_proxy;
+	DifferentialRobotPrx differentialrobot_proxy;
+	GenericBasePrx genericbase_proxy;
+	OmniRobotPrx omnirobot_proxy;
+	SocialNavigationGaussianPrx socialnavigationgaussian_proxy;
 
-	virtual bool AGMCommonBehavior_activateAgent(ParameterMap prs) = 0;
+	virtual bool AGMCommonBehavior_activateAgent(const ParameterMap &prs) = 0;
 	virtual bool AGMCommonBehavior_deactivateAgent() = 0;
 	virtual ParameterMap AGMCommonBehavior_getAgentParameters() = 0;
 	virtual StateStruct AGMCommonBehavior_getAgentState() = 0;
 	virtual void AGMCommonBehavior_killAgent() = 0;
 	virtual bool AGMCommonBehavior_reloadConfigAgent() = 0;
-	virtual bool AGMCommonBehavior_setAgentParameters(ParameterMap prs) = 0;
+	virtual bool AGMCommonBehavior_setAgentParameters(const ParameterMap &prs) = 0;
 	virtual int AGMCommonBehavior_uptimeAgent() = 0;
-	virtual void AGMExecutiveTopic_edgeUpdated(RoboCompAGMWorldModel::Edge modification) = 0;
-	virtual void AGMExecutiveTopic_edgesUpdated(RoboCompAGMWorldModel::EdgeSequence modifications) = 0;
-	virtual void AGMExecutiveTopic_structuralChange(RoboCompAGMWorldModel::World w) = 0;
-	virtual void AGMExecutiveTopic_symbolUpdated(RoboCompAGMWorldModel::Node modification) = 0;
-	virtual void AGMExecutiveTopic_symbolsUpdated(RoboCompAGMWorldModel::NodeSequence modifications) = 0;
+	virtual void AGMExecutiveTopic_edgeUpdated(const RoboCompAGMWorldModel::Edge &modification) = 0;
+	virtual void AGMExecutiveTopic_edgesUpdated(const RoboCompAGMWorldModel::EdgeSequence &modifications) = 0;
+	virtual void AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldModel::World &w) = 0;
+	virtual void AGMExecutiveTopic_symbolUpdated(const RoboCompAGMWorldModel::Node &modification) = 0;
+	virtual void AGMExecutiveTopic_symbolsUpdated(const RoboCompAGMWorldModel::NodeSequence &modifications) = 0;
 
 protected:
 //State Machine

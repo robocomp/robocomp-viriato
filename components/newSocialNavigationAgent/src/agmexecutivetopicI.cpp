@@ -28,27 +28,27 @@ AGMExecutiveTopicI::~AGMExecutiveTopicI()
 {
 }
 
-void AGMExecutiveTopicI::edgeUpdated(RoboCompAGMWorldModel::Edge modification, const Ice::Current&)
+void AGMExecutiveTopicI::edgeUpdated(const RoboCompAGMWorldModel::Edge  &modification, const Ice::Current&)
 {
 	worker->AGMExecutiveTopic_edgeUpdated(modification);
 }
 
-void AGMExecutiveTopicI::edgesUpdated(RoboCompAGMWorldModel::EdgeSequence modifications, const Ice::Current&)
+void AGMExecutiveTopicI::edgesUpdated(const RoboCompAGMWorldModel::EdgeSequence  &modifications, const Ice::Current&)
 {
 	worker->AGMExecutiveTopic_edgesUpdated(modifications);
 }
 
-void AGMExecutiveTopicI::structuralChange(RoboCompAGMWorldModel::World w, const Ice::Current&)
+void AGMExecutiveTopicI::structuralChange(const RoboCompAGMWorldModel::World  &w, const Ice::Current&)
 {
 	worker->AGMExecutiveTopic_structuralChange(w);
 }
 
-void AGMExecutiveTopicI::symbolUpdated(RoboCompAGMWorldModel::Node modification, const Ice::Current&)
+void AGMExecutiveTopicI::symbolUpdated(const RoboCompAGMWorldModel::Node  &modification, const Ice::Current&)
 {
 	worker->AGMExecutiveTopic_symbolUpdated(modification);
 }
 
-void AGMExecutiveTopicI::symbolsUpdated(RoboCompAGMWorldModel::NodeSequence modifications, const Ice::Current&)
+void AGMExecutiveTopicI::symbolsUpdated(const RoboCompAGMWorldModel::NodeSequence  &modifications, const Ice::Current&)
 {
 	worker->AGMExecutiveTopic_symbolsUpdated(modifications);
 }

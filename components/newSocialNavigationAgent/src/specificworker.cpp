@@ -21,7 +21,7 @@
 /**
 * \brief Default constructor
 */
-SpecificWorker::SpecificWorker(TuplePrx tprx) : GenericWorker(tprx)
+SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
 {
 
 	active = false;
@@ -114,7 +114,7 @@ void SpecificWorker::sm_finalize()
 
 
 
-bool SpecificWorker::AGMCommonBehavior_activateAgent(ParameterMap prs)
+bool SpecificWorker::AGMCommonBehavior_activateAgent(const ParameterMap &prs)
 {
 //implementCODE
 	bool activated = false;
@@ -172,7 +172,7 @@ bool SpecificWorker::AGMCommonBehavior_reloadConfigAgent()
 	return true;
 }
 
-bool SpecificWorker::AGMCommonBehavior_setAgentParameters(ParameterMap prs)
+bool SpecificWorker::AGMCommonBehavior_setAgentParameters(const ParameterMap &prs)
 {
 //implementCODE
 	bool activated = false;
@@ -185,7 +185,7 @@ int SpecificWorker::AGMCommonBehavior_uptimeAgent()
 	return 0;
 }
 
-void SpecificWorker::AGMExecutiveTopic_edgeUpdated(RoboCompAGMWorldModel::Edge modification)
+void SpecificWorker::AGMExecutiveTopic_edgeUpdated(const RoboCompAGMWorldModel::Edge &modification)
 {
 //subscribesToCODE
 	QMutexLocker locker(mutex);
@@ -194,7 +194,7 @@ void SpecificWorker::AGMExecutiveTopic_edgeUpdated(RoboCompAGMWorldModel::Edge m
 
 }
 
-void SpecificWorker::AGMExecutiveTopic_edgesUpdated(RoboCompAGMWorldModel::EdgeSequence modifications)
+void SpecificWorker::AGMExecutiveTopic_edgesUpdated(const RoboCompAGMWorldModel::EdgeSequence &modifications)
 {
 //subscribesToCODE
 	QMutexLocker lockIM(mutex);
@@ -206,7 +206,7 @@ void SpecificWorker::AGMExecutiveTopic_edgesUpdated(RoboCompAGMWorldModel::EdgeS
 
 }
 
-void SpecificWorker::AGMExecutiveTopic_structuralChange(RoboCompAGMWorldModel::World w)
+void SpecificWorker::AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldModel::World &w)
 {
 //subscribesToCODE
 	QMutexLocker lockIM(mutex);
@@ -215,7 +215,7 @@ void SpecificWorker::AGMExecutiveTopic_structuralChange(RoboCompAGMWorldModel::W
 	innerModel = std::make_shared<InnerModel>(AGMInner::extractInnerModel(worldModel));
 }
 
-void SpecificWorker::AGMExecutiveTopic_symbolUpdated(RoboCompAGMWorldModel::Node modification)
+void SpecificWorker::AGMExecutiveTopic_symbolUpdated(const RoboCompAGMWorldModel::Node &modification)
 {
 //subscribesToCODE
 	QMutexLocker locker(mutex);
@@ -223,7 +223,7 @@ void SpecificWorker::AGMExecutiveTopic_symbolUpdated(RoboCompAGMWorldModel::Node
 
 }
 
-void SpecificWorker::AGMExecutiveTopic_symbolsUpdated(RoboCompAGMWorldModel::NodeSequence modifications)
+void SpecificWorker::AGMExecutiveTopic_symbolsUpdated(const RoboCompAGMWorldModel::NodeSequence &modifications)
 {
 //subscribesToCODE
 	QMutexLocker l(mutex);
@@ -282,7 +282,7 @@ void SpecificWorker::sendModificationProposal(AGMModel::SPtr &worldModel, AGMMod
 {
 	try
 	{
-		AGMMisc::publishModification(newModel, *agmexecutive_proxy.get(), "socialNavigationAgentAgent");
+		AGMMisc::publishModification(newModel, agmexecutive_proxy, "socialNavigationAgentAgent");
 	}
 /*	catch(const RoboCompAGMExecutive::Locked &e)
 	{

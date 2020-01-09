@@ -20,7 +20,7 @@
 /**
 * \brief Default constructor
 */
-GenericWorker::GenericWorker(TuplePrx tprx) :
+GenericWorker::GenericWorker(MapPrx& mprx) :
 #ifdef USE_QTGUI
 Ui_guiDlg()
 #else
@@ -49,11 +49,11 @@ QObject()
 	QObject::connect(&timer, SIGNAL(timeout()), this, SIGNAL(t_compute_to_compute()));
 
 //------------------
-	agmexecutive_proxy = std::get<0>(tprx);
-	differentialrobot_proxy = std::get<1>(tprx);
-	genericbase_proxy = std::get<2>(tprx);
-	omnirobot_proxy = std::get<3>(tprx);
-	socialnavigationgaussian_proxy = std::get<4>(tprx);
+	agmexecutive_proxy = (*(AGMExecutivePrx*)mprx["AGMExecutiveProxy"]);
+	differentialrobot_proxy = (*(DifferentialRobotPrx*)mprx["DifferentialRobotProxy"]);
+	genericbase_proxy = (*(GenericBasePrx*)mprx["GenericBaseProxy"]);
+	omnirobot_proxy = (*(OmniRobotPrx*)mprx["OmniRobotProxy"]);
+	socialnavigationgaussian_proxy = (*(SocialNavigationGaussianPrx*)mprx["SocialNavigationGaussianProxy"]);
 
 	mutex = new QMutex(QMutex::Recursive);
 

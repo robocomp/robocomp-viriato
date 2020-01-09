@@ -34,13 +34,13 @@ public:
 AGMCommonBehaviorI(GenericWorker *_worker);
 	~AGMCommonBehaviorI();
 
-	bool activateAgent(ParameterMap prs, const Ice::Current&);
+	bool activateAgent(const ParameterMap  &prs, const Ice::Current&);
 	bool deactivateAgent(const Ice::Current&);
 	ParameterMap getAgentParameters(const Ice::Current&);
 	StateStruct getAgentState(const Ice::Current&);
 	void killAgent(const Ice::Current&);
 	bool reloadConfigAgent(const Ice::Current&);
-	bool setAgentParameters(ParameterMap prs, const Ice::Current&);
+	bool setAgentParameters(const ParameterMap  &prs, const Ice::Current&);
 	int uptimeAgent(const Ice::Current&);
 
 private:
