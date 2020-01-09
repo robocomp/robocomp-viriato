@@ -86,10 +86,27 @@ bool SpecificMonitor::sendParamsToWorker(RoboCompCommonBehavior::ParameterList p
 ///We need to supply a list of accepted values to each call
 void SpecificMonitor::readConfig(RoboCompCommonBehavior::ParameterList &params )
 {
-//	RoboCompCommonBehavior::Parameter aux;
-//	aux.editable = true;
-//	configGetString( "","InnerModelPath", aux.value, "nofile");
-//	params["InnerModelPath"] = aux;
+	RoboCompCommonBehavior::Parameter aux;
+	aux.editable = false;
+	configGetString( "NavigationAgent","OuterRegionLeft", aux.value,"0");
+	params["OuterRegionLeft"] = aux;
+
+	aux.editable = false;
+	configGetString( "NavigationAgent","OuterRegionRight", aux.value,"6000");
+	params["OuterRegionRight"] = aux;
+
+	aux.editable = false;
+	configGetString( "NavigationAgent","OuterRegionBottom", aux.value,"-4250");
+	params["OuterRegionBottom"] = aux;
+
+	aux.editable = false;
+	configGetString( "NavigationAgent","OuterRegionTop", aux.value,"4250");
+	params["OuterRegionTop"] = aux;
+
+    aux.editable = false;
+    configGetString( "NavigationAgent","ExcludedObjectsInCollisionCheck", aux.value,"floor_plane");
+    params["ExcludedObjectsInCollisionCheck"] = aux;
+
 }
 
 //Check parameters and transform them to worker structure

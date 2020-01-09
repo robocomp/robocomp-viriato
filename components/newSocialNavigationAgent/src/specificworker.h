@@ -32,9 +32,7 @@
 #include <innermodel/innermodel.h>
 
 #include <socialrules.h>
-#include <boost/format.hpp>
-
-
+#include <trajectory.h>
 
 using namespace std;
 
@@ -72,6 +70,7 @@ public:
 	#endif
 
 	SocialRules socialrules;
+    Trajectory trajectory;
 	bool worldModelChanged = false;
 
 
@@ -88,7 +87,8 @@ private:
 	InnerPtr innerModel;
 	std::string action;
 	ParameterMap params;
-	AGMModel::SPtr worldModel;
+
+    AGMModel::SPtr worldModel;
 	bool active;
 	bool setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated);
 	void sendModificationProposal(AGMModel::SPtr &worldModel, AGMModel::SPtr &newModel);

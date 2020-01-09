@@ -86,7 +86,7 @@ void SpecificWorker::initialize(int period)
         printf("The executive is probably not running, waiting for first AGM model publication...");
     }
 
-
+    trajectory.initialize(innerModel, viewer, confParams, laser_proxy, omnirobot_proxy);
     socialrules.initialize(socialnavigationgaussian_proxy, worldModel);
 
 

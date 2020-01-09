@@ -23,26 +23,24 @@
 #include <QObject>
 #include <vector>
 
-
 class SocialRules :public QObject
 {
 Q_OBJECT
 public:
-    SocialRules() = default;
-    ~SocialRules() = default;
 
-    using InnerPtr = std::shared_ptr<InnerModel>;
-    SocialNavigationGaussianPrx socialnavigationgaussian_proxy;
-	AGMExecutivePrx agmexecutive_proxy;
+//	robocomp::pathfinder::PathFinder *pathfinder;
+
+	using InnerPtr = std::shared_ptr<InnerModel>;
+	SocialNavigationGaussianPrx socialnavigationgaussian_proxy;
 
 	QComboBox* idselect_combobox;
-    QCheckBox* follow_checkbox;
-    QCheckBox* accompany_checkbox;
-    QCheckBox* passonright_checkbox;
+	QCheckBox* follow_checkbox;
+	QCheckBox* accompany_checkbox;
+	QCheckBox* passonright_checkbox;
 
-    bool followpulsed = false;
-    bool accompanypulsed = false;
-    bool porpulsed = false;
+	bool followpulsed = false;
+	bool accompanypulsed = false;
+	bool porpulsed = false;
 
 	bool first = true;
 
@@ -59,17 +57,17 @@ public:
 
 	SNGPersonSeq movperson; //moving person
 
-    struct ObjectType
-    {
-        QString imName; //Nombre del nodo geometrico en AGM
-        int id;
-        float x;
-        float z;
-        float rot;
-        float width;
-        float inter_space;
-        float inter_angle;
-    };
+	struct ObjectType
+	{
+		QString imName; //Nombre del nodo geometrico en AGM
+		int id;
+		float x;
+		float z;
+		float rot;
+		float width;
+		float inter_space;
+		float inter_angle;
+	};
 
 
 	////////////////////////////
@@ -78,33 +76,41 @@ public:
 	SNGPolylineSeq personal_seq;
 	SNGPolylineSeq social_seq;
 
-    SNGPolylineSeq object_seq;
-    SNGPolylineSeq objectblock_seq;
+	SNGPolylineSeq object_seq;
+	SNGPolylineSeq objectblock_seq;
 
-    //PARA GUARDAR LOS DATOS EN UN ARCHIVO
+
+	//PARA GUARDAR LOS DATOS EN UN ARCHIVO
 	struct Point {float x;float z;};
 	Point point;
 	vector <Point> poserobot;
-	
+
 	//PARA GUARDAR LA DISTANCIA RECORRIDA
 	float totaldist = 0;
 
 
-	/// METODOS ///
+
+    SocialRules() = default;
+    ~SocialRules() = default;
 
 	void initialize(SocialNavigationGaussianPrx socialnavigationgaussian_proxy_,
 //			robocomp::pathfinder::PathFinder *pathfinder_,
 			AGMModel::SPtr worldModel_);
-    void update(AGMModel::SPtr worldModel_);
+	void update(AGMModel::SPtr worldModel_);
 
-    void updatePeopleInModel();
-    void checkInteractions();
-    vector <vector<int32_t>> groupInteractingPeople(int32_t id, int32_t pairId,vector<vector<int32_t>> &interactingId);
+	void updatePeopleInModel();
+	void checkInteractions();
+	vector <vector<int32_t>> groupInteractingPeople(int32_t id, int32_t pairId,vector<vector<int32_t>> &interactingId);
 
-    SNGPolyline calculateAffordance(ObjectType obj);
-    SNGPolylineSeq ApplySocialRules();
-    void checkRobotmov();
-    bool checkHRI(SNGPerson p, int ind, InnerPtr &i, AGMModel::SPtr w);
+	SNGPolyline calculateAffordance(ObjectType obj);
+	SNGPolylineSeq ApplySocialRules();
+	void checkRobotmov();
+	bool checkHRI(SNGPerson p, int ind, InnerPtr &i, AGMModel::SPtr w);
+
+private:
+	AGMModel::SPtr worldModel;
+
+
 
 
 public slots:
@@ -116,12 +122,7 @@ public slots:
 	SNGPolylineSeq calculateGauss(bool draw = true, float h = 0.1);
 	SNGPolylineSeq PassOnRight(bool draw = true);
 	void checkObjectAffordance(bool d = true);
-	
-private:
-	AGMModel::SPtr worldModel;
 
-public:
-//	robocomp::pathfinder::PathFinder *pathfinder;
 
 
 };
