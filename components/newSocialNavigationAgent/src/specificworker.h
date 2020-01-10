@@ -33,6 +33,7 @@
 
 #include <socialrules.h>
 #include <trajectory.h>
+#include <grid.h>
 
 using namespace std;
 

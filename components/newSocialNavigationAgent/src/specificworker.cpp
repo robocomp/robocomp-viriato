@@ -87,7 +87,7 @@ void SpecificWorker::initialize(int period)
     }
 
     trajectory.initialize(innerModel, viewer, confParams, laser_proxy, omnirobot_proxy);
-    socialrules.initialize(socialnavigationgaussian_proxy, worldModel);
+    socialrules.initialize(worldModel, &trajectory, socialnavigationgaussian_proxy);
 
 
 
@@ -100,13 +100,13 @@ void SpecificWorker::initialize(int period)
 
 void SpecificWorker::compute()
 {
-QMutexLocker locker(mutex);
 
     viewer->run();
 
     if (worldModelChanged) {
         socialrules.update(worldModel);
         socialrules.checkRobotmov();
+
         worldModelChanged = false;
     }
 
@@ -233,7 +233,7 @@ void SpecificWorker::AGMExecutiveTopic_edgesUpdated(const RoboCompAGMWorldModel:
 
 void SpecificWorker::AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldModel::World &w)
 {
-	qDebug()<<"StructuralChange";
+	qDebug()<<"---StructuralChange---";
 
 	QMutexLocker lockIM(mutex);
 	static bool first = true;
@@ -243,12 +243,10 @@ void SpecificWorker::AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldMo
 
 	if (!first)
 	{
-		socialrules.update(worldModel);
 		innerModel->save("/home/robocomp/robocomp/components/robocomp-viriato/etcSim/innermodel.xml");
 	}
 	else
 		first = false;
-
 
 	viewer->reloadInnerModel(innerModel);
     worldModelChanged = true;

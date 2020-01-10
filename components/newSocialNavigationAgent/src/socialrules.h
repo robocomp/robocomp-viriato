@@ -22,13 +22,14 @@
 #include <boost/format.hpp>
 #include <QObject>
 #include <vector>
+#include <trajectory.h>
 
 class SocialRules :public QObject
 {
 Q_OBJECT
 public:
 
-//	robocomp::pathfinder::PathFinder *pathfinder;
+    Trajectory *trajectory;
 
 	using InnerPtr = std::shared_ptr<InnerModel>;
 	SocialNavigationGaussianPrx socialnavigationgaussian_proxy;
@@ -93,9 +94,7 @@ public:
     SocialRules() = default;
     ~SocialRules() = default;
 
-	void initialize(SocialNavigationGaussianPrx socialnavigationgaussian_proxy_,
-//			robocomp::pathfinder::PathFinder *pathfinder_,
-			AGMModel::SPtr worldModel_);
+	void initialize(AGMModel::SPtr worldModel_, Trajectory *trajectory_, SocialNavigationGaussianPrx socialnavigationgaussian_proxy_);
 	void update(AGMModel::SPtr worldModel_);
 
 	void updatePeopleInModel();
@@ -109,7 +108,6 @@ public:
 
 private:
 	AGMModel::SPtr worldModel;
-
 
 
 

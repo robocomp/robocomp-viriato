@@ -3,15 +3,12 @@
 
 #define PI M_PI
 
-void SocialRules::initialize(SocialNavigationGaussianPrx socialnavigationgaussian_proxy_,
-//			     robocomp::pathfinder::PathFinder *pathfinder_,
-			     AGMModel::SPtr worldModel_)
-
+void SocialRules::initialize(AGMModel::SPtr worldModel_, Trajectory *trajectory_, SocialNavigationGaussianPrx socialnavigationgaussian_proxy_)
 {
 	qDebug()<<__FUNCTION__;
 
 	socialnavigationgaussian_proxy = socialnavigationgaussian_proxy_;
-//	pathfinder = pathfinder_;
+    trajectory = trajectory_;
 	worldModel = worldModel_;
 
 
@@ -30,8 +27,7 @@ void SocialRules::update(AGMModel::SPtr worldModel_)
 	checkObjectAffordance(false);
 	ApplySocialRules();
 
-//	pathfinder->innerModelChanged(innerModel, totalpersons, intimate_seq, personal_seq, social_seq, object_seq, objectblock_seq);}
-
+	trajectory->updatePolylines(innerModel, totalpersons, intimate_seq, personal_seq, social_seq, object_seq, objectblock_seq);
 }
 
 void SocialRules::updatePeopleInModel()

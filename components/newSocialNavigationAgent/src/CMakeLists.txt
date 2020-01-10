@@ -27,7 +27,7 @@ SET ( SOURCES
   genericworker.cpp
   agmcommonbehaviorI.cpp
   agmexecutivetopicI.cpp
-  )
+        sampler.cpp sampler.h)
 
 
 

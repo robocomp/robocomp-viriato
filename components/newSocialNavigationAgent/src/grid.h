@@ -25,6 +25,7 @@
 #include <cppitertools/range.hpp>
 #include "innerviewer.h"
 
+#include <trajectory.h>
 
 
 template <class T>
@@ -41,12 +42,13 @@ auto operator>>(std::istream &is, T &t) -> decltype(t.read(is), is)
 };
 
 template <typename T>
+
 class Grid
 {
 public:
 	struct Dimensions
 	{
-		int TILE_SIZE = 50;
+		int TILE_SIZE = 10;
 		float HMIN = -2500, VMIN = -2500, WIDTH = 2500, HEIGHT = 2500;
 	};
 
@@ -116,6 +118,7 @@ public:
 	typename FMap::const_iterator end() const { return fmap.begin(); };
 	size_t size() const { return fmap.size(); };
 
+
 	void initialize(const Dimensions &dim_, T &&initValue)
 	{
 		dim = dim_;
@@ -127,8 +130,26 @@ public:
             }
 
 		fmap_aux = fmap;
+        fmap_initial = fmap;
 		std::cout << "Grid::Initialize. Grid initialized to map size: " << fmap.size() << std::endl;
 	}
+
+
+//    void initialize(const Dimensions &dim_, Trajectory *trajectory)
+//    {
+//        dim = dim_;
+//        fmap.clear();
+//        for (int i = dim.HMIN; i < dim.HMIN + dim.WIDTH; i += dim.TILE_SIZE)
+//            for (int j = dim.VMIN; j < dim.VMIN + dim.HEIGHT; j += dim.TILE_SIZE)
+//            {
+//                bool free = trajectory->checkRobotValidStateAtTargetFast(QVec::vec3(i,10,j),QVec::zeros(3));
+//                fmap.emplace(Key(i, j), T{0, true, false, 1.f});
+//            }
+//
+//        fmap_aux = fmap;
+//        fmap_initial = fmap;
+//        std::cout << "Grid::Initialize. Grid initialized to map size: " << fmap.size() << std::endl;
+//    }
 
 	template <typename Q>
 	void insert(const Key &key, const Q &value)
@@ -235,18 +256,43 @@ public:
 
 	void setFree(const Key &k)
 	{
-		fmap_aux.at(k).free = true;
-		fmap.at(k).g_item->setBrush(Qt::transparent);
+	    if(isInsideWorld(k))
+		    fmap_aux.at(k).free = true;
 	}
 	void setOccupied(const Key &k)
 	{
-		fmap_aux.at(k).free = false;
-		fmap.at(k).g_item->setBrush(QColor("Red"));
+        if(isInsideWorld(k))
+            fmap_aux.at(k).free = false;
+	}
+    void setCost(const Key &k,float cost)
+	{
+        if(isInsideWorld(k))
+            fmap_aux.at(k).cost = cost;
 	}
 
+	bool isInsideWorld(const Key &k)
+    {
+	    bool condition1;
+	    bool condition2;
+
+	    if(k.x > dim.HMIN and k.z > dim.VMIN) {
+            condition1 = true;
+        }else condition1 = false;
+
+        if(k.x < dim.HMIN + dim.WIDTH  and k.z <  dim.VMIN + dim.HEIGHT ) {
+            condition2 = true;
+        }else condition2 = false;
+
+        if (condition1 and condition2) return true;
+        else
+            return false;
+
+
+    }
 	// if true area becomes free
 	void markAreaInGridAs(const QPolygonF &poly, bool free)
 	{
+
 		const qreal step = dim.TILE_SIZE / 4;
 		QRectF box = poly.boundingRect();
 		for (auto &&x : iter::range(box.x() - step / 2, box.x() + box.width() + step / 2, step))
@@ -261,6 +307,19 @@ public:
 				}
 			}
 	}
+    void modifyCostInGrid(const QPolygonF &poly, float cost)
+    {
+        const qreal step = dim.TILE_SIZE / 4;
+        QRectF box = poly.boundingRect();
+        for (auto &&x : iter::range(box.x() - step / 2, box.x() + box.width() + step / 2, step))
+            for (auto &&y : iter::range(box.y() - step / 2, box.y() + box.height() + step / 2, step))
+            {
+                if (poly.containsPoint(QPointF(x, y), Qt::OddEvenFill))
+                {
+                        setCost(pointToGrid(x, y),cost);
+                }
+            }
+    }
 
 	std::vector<std::pair<Key, T>> neighboors(const Key &k, bool all = false)
 	{
@@ -311,27 +370,27 @@ public:
         {
             uint i=0;
             // Draw all points
-            for ( auto it = fmap.begin(); it != fmap.end(); ++it, i++ )
+            for ( auto it = fmap_aux.begin(); it != fmap_aux.end(); ++it, i++ )
             {
                 QString item = "IMV_fmap_point_" + QString::number(i);
                 if(it->second.free)
                 {
                     if (it->second.cost == 1.5) //affordance spaces
-                        viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(it->first.x, 20, it->first.z), QVec::vec3(1,0,0), "#FFA200", QVec::vec3(60,60,60));
+                        viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(it->first.x, 10, it->first.z), QVec::vec3(1,0,0), "#FFA200", QVec::vec3(60,60,60));
 
                     else if (it->second.cost == 2.0) //zona social
-                        viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(it->first.x, 20, it->first.z), QVec::vec3(1,0,0), "#00BFFF", QVec::vec3(60,60,60));
+                        viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(it->first.x, 10, it->first.z), QVec::vec3(1,0,0), "#00BFFF", QVec::vec3(60,60,60));
 
                     else if (it->second.cost == 4.0) //zona personal
-                        viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(it->first.x, 20, it->first.z), QVec::vec3(1,0,0), "#BF00FF", QVec::vec3(60,60,60));
+                        viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(it->first.x, 10, it->first.z), QVec::vec3(1,0,0), "#BF00FF", QVec::vec3(60,60,60));
 
 
                     else
-                        viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(it->first.x, 20, it->first.z), QVec::vec3(1,0,0), "#00FF00", QVec::vec3(60,60,60));
+                        viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(it->first.x, 10, it->first.z), QVec::vec3(1,0,0), "#00FF00", QVec::vec3(60,60,60));
                 }
 
                 else
-                    viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(it->first.x, 20, it->first.z), QVec::vec3(1,0,0), "#FF0000", QVec::vec3(60,60,60));
+                    viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(it->first.x, 10, it->first.z), QVec::vec3(1,0,0), "#FF0000", QVec::vec3(60,60,60));
 
             }
         }
@@ -339,10 +398,8 @@ public:
         {		qDebug() << s;	}
     }
 
-
-
 private:
-	FMap fmap, fmap_aux;
+	FMap fmap, fmap_aux, fmap_initial;
 	Dimensions dim;
 
 	/**
@@ -369,7 +426,6 @@ private:
 		return sqrt((a.x - b.x) * (a.x - b.x) + (a.z - b.z) * (a.z - b.z));
 	}
 };
-
 
 
 

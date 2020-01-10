@@ -15,8 +15,8 @@ SET ( HEADERS
   specificmonitor.h
   socialrules.h
   innerviewer.h
-  grid.h
   trajectory.h
+  grid.h
 
 )
 
