@@ -13,18 +13,43 @@ void Trajectory::initialize(const std::shared_ptr<InnerModel> &innerModel_,
 {
     qDebug()<<"Initializing Trajectory";
 
+
     innerModel = innerModel_;
     viewer = viewer_;
     configparams = configparams_;
+    qDebug()<<"-----1----";
+    laser_proxy = laser_prx;
 
-    checkInitialCollisions();
+    qDebug()<<"-----2----";
+    try{ robotname = configparams->at("RobotName").value;} catch(const std::exception &e){ std::cout << e.what() << " Sampler::initialize - No Robot name defined in config. Using default 'robot' " << std::endl;}
+    qDebug()<<"-----3----";
+
+    collisions =  std::make_shared<Collisions>();
+    collisions->initialize(innerModel, configparams);
     initGrid();
+
 
 }
 
 void Trajectory::update(const std::shared_ptr<InnerModel> &innerModel_)
 {
     innerModel = innerModel_;
+    RoboCompLaser::TLaserData laserData;
+    TBaseState baseState;
+
+    try{
+//        laserData  = laser_proxy->getLaserData();
+        laserData  =laser_proxy->getLaserAndBStateData(baseState);
+
+    }
+    catch(const Ice::Exception &e){std::cout <<"SHIT" <<e.what() << std::endl;};
+    computeLaser(laserData);
+//    modifyLaser(laserData);
+    //    computeVisibility(points, laser_polygon);
+//    cleanPath(); // might go in a faster timer
+//    controller();
+//    updateRobot();
+//    checkProgress();
 
 }
 
@@ -38,6 +63,8 @@ void Trajectory::updatePolylines(const std::shared_ptr<InnerModel> &innerModel_,
     polylines_objects_total.clear();
     polylines_objects_blocked.clear();
 
+    intimate_spaces.clear();
+    intimate_spaces = intimate_seq;
 
     for (auto intimate : intimate_seq)
     {
@@ -79,85 +106,9 @@ void Trajectory::updatePolylines(const std::shared_ptr<InnerModel> &innerModel_,
         polylines_objects_blocked.push_back(polygon);
     }
 
-
     updateFreeSpaceMap();
 
 
-}
-
-
-
-void Trajectory::checkInitialCollisions()
-{
-    QStringList ls = QString::fromStdString(configparams->at("ExcludedObjectsInCollisionCheck").value).replace(" ", "" ).split(',');
-    qDebug() << __FILE__ << __FUNCTION__ << ls.size() << "objects read for exclusion list";
-
-            foreach(const QString &s, ls)
-            excludedNodes.insert(s);
-
-    // Compute the list of meshes that correspond to robot, world and possibly some additionally excluded ones
-    robotNodes.clear(); restNodes.clear();
-    recursiveIncludeMeshes(innerModel->getRoot(), "robot", false, robotNodes, restNodes, excludedNodes);
-};
-
-void Trajectory::recursiveIncludeMeshes(InnerModelNode *node, QString robotId, bool inside, std::vector<QString> &in, std::vector<QString> &out, std::set<QString> &excluded)
-{
-
-    if (node->id == robotId)
-    {
-        inside = true;
-    }
-
-    InnerModelMesh *mesh;
-    InnerModelPlane *plane;
-    InnerModelTransform *transformation;
-
-    if ((transformation = dynamic_cast<InnerModelTransform *>(node)))
-    {
-        for (int i=0; i<node->children.size(); i++)
-        {
-            recursiveIncludeMeshes(node->children[i], robotId, inside, in, out, excluded);
-
-        }
-
-    }
-
-    else if ((mesh = dynamic_cast<InnerModelMesh *>(node)) or (plane = dynamic_cast<InnerModelPlane *>(node)))
-    {
-        if( std::find(excluded.begin(), excluded.end(), node->id) == excluded.end() )
-        {
-            if (inside)
-            {
-                in.push_back(node->id);
-            }
-            else
-            if(mesh or plane)
-                out.push_back(node->id);
-        }
-    }
-
-}
-
-bool Trajectory::checkRobotValidStateAtTargetFast(const QVec &targetPos, const QVec &targetRot) const
-{
-    //First we move the robot in our copy of innermodel to its current coordinates
-    innerModel->updateTransformValues("robot", targetPos.x(), targetPos.y(), targetPos.z(), targetRot.x(), targetRot.y(), targetRot.z());
-
-    ///////////////////////
-    //// Check if the robot at the target collides with any know object
-    ///////////////////////
-    for ( auto &in : robotNodes )
-    {
-        for ( auto &out : restNodes )
-        {
-            if ( innerModel->collide( in, out))
-            {
-                //qDebug() << __FUNCTION__ << "collision de " << in << " con " << out;
-                return false;
-            }
-        }
-    }
-    return true;
 }
 
 
@@ -167,10 +118,11 @@ void Trajectory::initGrid()
     try
     {
         dimensions.TILE_SIZE = int(TILE_SIZE_);
-        dimensions.HMIN = std::min(std::stof(configparams->at("OuterRegionLeft").value), std::stof(configparams->at("OuterRegionRight").value));
-        dimensions.WIDTH = std::max(std::stof(configparams->at("OuterRegionLeft").value), std::stof(configparams->at("OuterRegionRight").value)) - dimensions.HMIN;
-        dimensions.VMIN = std::min(std::stof(configparams->at("OuterRegionTop").value), std::stof(configparams->at("OuterRegionBottom").value));
-        dimensions.HEIGHT = std::max(std::stof(configparams->at("OuterRegionTop").value), std::stof(configparams->at("OuterRegionBottom").value)) - dimensions.VMIN;
+        dimensions.HMIN = std::min(collisions->outerRegion.left(), collisions->outerRegion.right());
+        dimensions.WIDTH = std::max(collisions->outerRegion.left(), collisions->outerRegion.right()) - dimensions.HMIN;
+        dimensions.VMIN = std::min(collisions->outerRegion.top(), collisions->outerRegion.bottom());
+        dimensions.HEIGHT = std::max(collisions->outerRegion.top(), collisions->outerRegion.bottom()) - dimensions.VMIN;
+
 
     }
     catch(const std::exception &e)
@@ -180,7 +132,8 @@ void Trajectory::initGrid()
         throw e;
     }
 
-    grid.initialize(dimensions, TCell{0, true, false, 1.f});
+    grid.initialize(dimensions,  collisions);
+//    grid.initialize(dimensions, TCell{0, true, false, 1.f});
     grid.draw(viewer.get());
 
 }
@@ -260,3 +213,141 @@ void Trajectory::updateFreeSpaceMap()
 
 
 
+void Trajectory::computeLaser(RoboCompLaser::TLaserData laserData)
+{
+    const float LASER_DIST_STEP = 0.05;
+
+    FILE *fd = fopen("entradaL.txt", "w");
+    auto lasernode = innerModel->getNode<InnerModelLaser>(QString("laser"));
+    for (const auto &laserSample: laserData)
+    {
+        QVec vv = lasernode->laserTo(QString("world"),laserSample.dist, laserSample.angle);
+//        QVec vv = innerModel->laserTo("world", "laser", laserSample.dist, laserSample.angle);
+//        QVec vv = innerModel->transform("world", QVec::vec3(laserSample.dist * sin(laserSample.angle), 0, laserSample.dist * cos(laserSample.angle)), "laser");
+        fprintf(fd, "%d %d\n", (int)vv(0), (int)vv(2));
+    }
+    fclose(fd);
+
+    for (auto &&l : laserData)
+    {
+//        QLineF line (QPointF(innerModel->transform("laser", QVec::vec3(0, 0, 0), "world")), QPointF(innerModel->transform("laser", QVec::vec3(l.dist * sin(l.angle), 0, l.dist * cos(l.angle)), "world")));
+        QLineF line (QPointF(innerModel->transform("world", QVec::vec3(0, 0, 0), "laser")), QPointF(innerModel->laserTo("world", "laser", l.dist, l.angle)));
+        float step = 100.f / line.length();
+        for (auto t : iter::range(0.f, 1.f, LASER_DIST_STEP))
+        {
+            auto point = line.pointAt(t);
+            auto pointInWorld = (QPointF(innerModel->transform("world", QVec::vec3(point.x(), 0, point.y()), "laser")));
+//            auto pointInWorld = (QPointF(innerModel->laserTo("world", "laser"), );
+
+
+            if (std::any_of(std::begin(polylines_intimate), std::end(polylines_intimate), [pointInWorld](auto &box) { return box.containsPoint(pointInWorld,Qt::OddEvenFill); }))
+            {
+                l.dist = QVector2D(point - line.pointAt(0)).length() - (step * 2);
+                break;
+            }
+        }
+    }
+
+    FILE *fd2 = fopen("salidaL.txt", "w");
+    for (auto &laserSample: laserData)
+    {
+//        QVec vv = innerModel->laserTo("world", "laser", laserSample.dist, laserSample.angle);
+        QVec vv = innerModel->transform("world", QVec::vec3(laserSample.dist * sin(laserSample.angle), 0, laserSample.dist * cos(laserSample.angle)), "laser");
+        fprintf(fd2, "%d %d\n", (int)vv(0), (int)vv(2));
+    }
+    fclose(fd2);
+
+
+
+}
+
+
+RoboCompLaser::TLaserData Trajectory::modifyLaser(RoboCompLaser::TLaserData laserData)
+{
+// 	SNGPolyline acho;
+// 	acho.resize(2);
+// 	acho[0].x = 0;
+// 	acho[0].z = 3000;
+// 	acho[1].x = 5000;
+// 	acho[1].z = 0;
+// 	l.push_back(acho);
+
+    FILE *fd = fopen("entradaL.txt", "w");
+    for (auto &laserSample: laserData)
+    {
+        QVec vv = innerModel->laserTo("world", "laser", laserSample.dist, laserSample.angle);
+        fprintf(fd, "%f %f\n", vv(0), vv(2));
+    }
+    fclose(fd);
+
+    RoboCompLaser::TLaserData laserCombined;
+    laserCombined = laserData;
+
+    for (auto polyline : intimate_spaces)
+    {
+        float min = std::numeric_limits<float>::max();
+        float max = std::numeric_limits<float>::min();
+
+        for (auto polylinePoint: polyline)
+        {
+            LocalPointPol lPol;
+            QVec pInLaser = innerModel->transform("laser", QVec::vec3(polylinePoint.x, 0, polylinePoint.z), "world");
+            lPol.angle = atan2(pInLaser.x(), pInLaser.z());
+            if( lPol.angle < min ) min = lPol.angle;
+            if( lPol.angle > max ) max = lPol.angle;
+        }
+// 		printf("MIN %f MAX %f\n", min, max);
+        //Recorremos todas las muestras del laser
+// 		auto laserSample = laserCombined[laserCombined.size()/2];
+        for (auto &laserSample: laserCombined)
+        {
+            //Compruebo que la muestra del laser corta a la polilinea. Es decir si esta comprendida entre el maximo y el minimo de antes
+// 			printf("LASER %f (%f)\n", laserSample.angle, laserSample.dist);
+            if (laserSample.angle >= min and laserSample.angle <= max and fabs(max-min) < 3.14)
+            {
+                QVec lasercart = innerModel->laserTo("laser", "laser", laserSample.dist, laserSample.angle);
+                //recta que une el 0,0 con el punto del laser
+                QLine2D laserline(QVec::vec2(0,0), QVec::vec2(lasercart.x(), lasercart.z()));
+
+                auto previousPoint = polyline[polyline.size()-1];
+                QVec previousPointInLaser = innerModel->transform("laser", (QVec::vec3(previousPoint.x, 0, previousPoint.z)), "world");
+                // For each polyline's point
+
+                for (auto polylinePoint: polyline)
+                {
+                    QVec currentPointInLaser = innerModel->transform("laser", (QVec::vec3(polylinePoint.x, 0, polylinePoint.z)), "world");
+
+                    QVec intersection = laserline.intersectionPoint(QLine2D(QVec::vec2(previousPointInLaser.x(),previousPointInLaser.z()),QVec::vec2(currentPointInLaser.x(),currentPointInLaser.z())));
+
+                    //Una vez sacada la interseccion se comprueba que esta dentro del segmento. Para ello se calculan los angulos de los puntos actual y previo
+                    float pAngle = atan2(previousPointInLaser.x(), previousPointInLaser.z());
+                    float cAngle = atan2(currentPointInLaser.x(), currentPointInLaser.z());
+
+                    const float m = std::min<float>(cAngle, pAngle);
+                    const float M = std::max<float>(cAngle, pAngle);
+// 					printf("angulo medida: %f   p:%f  c:%f\n", laserSample.angle, cAngle, pAngle);
+
+                    if (laserSample.angle >= m and laserSample.angle <= M and fabs(M-m) < 3.14)
+                    {
+                        float distint = sqrt (pow(intersection.x(),2)+pow(intersection.y(),2));
+                        if (distint<laserSample.dist) laserSample.dist= distint;
+                    }
+
+                    previousPointInLaser = currentPointInLaser;
+
+                }
+            }
+        }
+    }
+
+    FILE *fd3 = fopen("salidaL.txt", "w");
+    for (auto &laserSample: laserCombined)
+    {
+        QVec vv = innerModel->laserTo("world", "laser", laserSample.dist, laserSample.angle);
+        fprintf(fd3, "%f %f\n", vv(0), vv(2));
+    }
+    fclose(fd3);
+
+
+    return laserCombined;
+}

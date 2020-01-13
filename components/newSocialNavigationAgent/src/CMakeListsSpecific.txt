@@ -6,7 +6,6 @@ SET ( SOURCES
   socialrules.cpp
   innerviewer.cpp
   trajectory.cpp
-
 )
 
 # Headers set
@@ -17,6 +16,7 @@ SET ( HEADERS
   innerviewer.h
   trajectory.h
   grid.h
+  collisions.h
 
 )
 

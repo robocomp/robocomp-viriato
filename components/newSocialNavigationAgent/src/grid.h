@@ -25,7 +25,7 @@
 #include <cppitertools/range.hpp>
 #include "innerviewer.h"
 
-#include <trajectory.h>
+#include <collisions.h>
 
 
 template <class T>
@@ -135,21 +135,25 @@ public:
 	}
 
 
-//    void initialize(const Dimensions &dim_, Trajectory *trajectory)
-//    {
-//        dim = dim_;
-//        fmap.clear();
-//        for (int i = dim.HMIN; i < dim.HMIN + dim.WIDTH; i += dim.TILE_SIZE)
-//            for (int j = dim.VMIN; j < dim.VMIN + dim.HEIGHT; j += dim.TILE_SIZE)
-//            {
-//                bool free = trajectory->checkRobotValidStateAtTargetFast(QVec::vec3(i,10,j),QVec::zeros(3));
-//                fmap.emplace(Key(i, j), T{0, true, false, 1.f});
-//            }
-//
-//        fmap_aux = fmap;
-//        fmap_initial = fmap;
-//        std::cout << "Grid::Initialize. Grid initialized to map size: " << fmap.size() << std::endl;
-//    }
+
+	void initialize(const Dimensions &dim_,  std::shared_ptr<Collisions> collisions_)
+    {
+
+        dim = dim_;
+        fmap.clear();
+        for (int i = dim.HMIN; i < dim.HMIN + dim.WIDTH; i += dim.TILE_SIZE)
+            for (int j = dim.VMIN; j < dim.VMIN + dim.HEIGHT; j += dim.TILE_SIZE)
+            {
+                bool free = collisions_->checkRobotValidStateAtTargetFast(QVec::vec3(i,10,j),QVec::zeros(3));
+                fmap.emplace(Key(i, j), T{0, free, false, 1.f});
+            }
+
+		collisions_->checkRobotValidStateAtTargetFast(QVec::vec3(0,10,0),QVec::zeros(3)); //para devolver el robot a la posición 0,0
+
+		fmap_aux = fmap;
+        fmap_initial = fmap;
+        std::cout << "Grid::Initialize. Grid initialized to map size: " << fmap.size() << std::endl;
+    }
 
 	template <typename Q>
 	void insert(const Key &key, const Q &value)

@@ -22,15 +22,11 @@
 #include <boost/format.hpp>
 #include <QObject>
 #include <vector>
-#include <trajectory.h>
 
 class SocialRules :public QObject
 {
 Q_OBJECT
 public:
-
-    Trajectory *trajectory;
-
 	using InnerPtr = std::shared_ptr<InnerModel>;
 	SocialNavigationGaussianPrx socialnavigationgaussian_proxy;
 
@@ -76,10 +72,10 @@ public:
 	SNGPolylineSeq intimate_seq;
 	SNGPolylineSeq personal_seq;
 	SNGPolylineSeq social_seq;
-
 	SNGPolylineSeq object_seq;
 	SNGPolylineSeq objectblock_seq;
 
+    using RetPolys = std::tuple< SNGPersonSeq, SNGPolylineSeq,SNGPolylineSeq,SNGPolylineSeq,SNGPolylineSeq,SNGPolylineSeq>;
 
 	//PARA GUARDAR LOS DATOS EN UN ARCHIVO
 	struct Point {float x;float z;};
@@ -94,8 +90,10 @@ public:
     SocialRules() = default;
     ~SocialRules() = default;
 
-	void initialize(AGMModel::SPtr worldModel_, Trajectory *trajectory_, SocialNavigationGaussianPrx socialnavigationgaussian_proxy_);
-	void update(AGMModel::SPtr worldModel_);
+	void initialize(AGMModel::SPtr worldModel_, SocialNavigationGaussianPrx socialnavigationgaussian_proxy_);
+
+//	void update(AGMModel::SPtr worldModel_);
+    RetPolys update(AGMModel::SPtr worldModel_);
 
 	void updatePeopleInModel();
 	void checkInteractions();

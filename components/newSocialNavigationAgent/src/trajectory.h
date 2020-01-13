@@ -20,6 +20,7 @@
 #include <AGMCommonBehavior.h>
 #include <genericworker.h>
 #include "innerviewer.h"
+#include "collisions.h"
 
 #define TILE_SIZE_ 250
 
@@ -40,13 +41,6 @@ class Trajectory {
 
 public:
 
-    std::vector<QString> robotNodes;
-    std::vector<QString> restNodes;
-    std::set<QString> excludedNodes;
-    QList<QRectF> innerRegions;
-    QRectF outerRegion;
-
-
     void initialize(const std::shared_ptr<InnerModel> &innerModel_,
             const std::shared_ptr<InnerViewer> &viewer_,
             const std::shared_ptr< RoboCompCommonBehavior::ParameterList > &configparams_,
@@ -55,7 +49,6 @@ public:
     void update(const std::shared_ptr<InnerModel> &innerModel_);
     void updatePolylines(const std::shared_ptr<InnerModel> &innerModel_, SNGPersonSeq persons_, SNGPolylineSeq intimate,SNGPolylineSeq personal,SNGPolylineSeq social,SNGPolylineSeq object,SNGPolylineSeq objectsblocking);
 
-    bool checkRobotValidStateAtTargetFast(const QVec &targetPos, const QVec &targetRot) const;
 
 
 private:
@@ -65,6 +58,8 @@ private:
 
     Grid<TCell> grid;
 
+    std::shared_ptr<Collisions> collisions;
+
     std::shared_ptr<InnerModel> innerModel;
     std::shared_ptr<InnerViewer> viewer;
     std::shared_ptr<RoboCompCommonBehavior::ParameterList> configparams;
@@ -72,15 +67,22 @@ private:
     std::vector<QPolygonF> polylines_intimate,polylines_personal,polylines_social,polylines_objects_total,polylines_objects_blocked;
     std::vector<QPolygonF> prev_polylines_intimate = {},  prev_polylines_personal = {}, prev_polylines_social = {}, prev_polylines_objects_total = {}, prev_polylines_objects_blocked = {};
 
+    SNGPolylineSeq intimate_spaces;
+
     std::vector<QPolygonF> toSetFree;
     std::vector<QPolygonF> toResetCost;
 
-    void checkInitialCollisions();
-    void recursiveIncludeMeshes(InnerModelNode *node, QString robotId, bool inside, std::vector<QString> &in, std::vector<QString> &out, std::set<QString> &excluded);
+    std::string robotname = "robot";
+    typedef struct { float dist; float angle;} LocalPointPol;
+
+    LaserPrx laser_proxy;
 
     void initGrid();
     void resetGrid();
     void updateFreeSpaceMap();
+
+    void computeLaser(RoboCompLaser::TLaserData laserData);
+    RoboCompLaser::TLaserData modifyLaser (RoboCompLaser::TLaserData laserData);
 
 
 

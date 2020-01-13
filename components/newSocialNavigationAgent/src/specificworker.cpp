@@ -86,8 +86,9 @@ void SpecificWorker::initialize(int period)
         printf("The executive is probably not running, waiting for first AGM model publication...");
     }
 
+    qDebug()<<"initializing classes";
     trajectory.initialize(innerModel, viewer, confParams, laser_proxy, omnirobot_proxy);
-    socialrules.initialize(worldModel, &trajectory, socialnavigationgaussian_proxy);
+    socialrules.initialize(worldModel, socialnavigationgaussian_proxy);
 
 
 
@@ -102,9 +103,12 @@ void SpecificWorker::compute()
 {
 
     viewer->run();
+    trajectory.update(innerModel);
 
     if (worldModelChanged) {
-        socialrules.update(worldModel);
+		auto [ totalpersons, intimate_seq, personal_seq, social_seq, object_seq, objectblock_seq] = socialrules.update(worldModel);
+        trajectory.updatePolylines(innerModel, totalpersons, intimate_seq, personal_seq, social_seq, object_seq, objectblock_seq);
+		//deshacer tpla y actualizar trajectory
         socialrules.checkRobotmov();
 
         worldModelChanged = false;

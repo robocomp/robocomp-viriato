@@ -3,12 +3,11 @@
 
 #define PI M_PI
 
-void SocialRules::initialize(AGMModel::SPtr worldModel_, Trajectory *trajectory_, SocialNavigationGaussianPrx socialnavigationgaussian_proxy_)
+void SocialRules::initialize(AGMModel::SPtr worldModel_, SocialNavigationGaussianPrx socialnavigationgaussian_proxy_)
 {
 	qDebug()<<__FUNCTION__;
 
 	socialnavigationgaussian_proxy = socialnavigationgaussian_proxy_;
-    trajectory = trajectory_;
 	worldModel = worldModel_;
 
 
@@ -16,7 +15,7 @@ void SocialRules::initialize(AGMModel::SPtr worldModel_, Trajectory *trajectory_
 }
 
 
-void SocialRules::update(AGMModel::SPtr worldModel_)
+SocialRules::RetPolys SocialRules::update(AGMModel::SPtr worldModel_)
 {
 
 	worldModel = worldModel_;
@@ -27,7 +26,7 @@ void SocialRules::update(AGMModel::SPtr worldModel_)
 	checkObjectAffordance(false);
 	ApplySocialRules();
 
-	trajectory->updatePolylines(innerModel, totalpersons, intimate_seq, personal_seq, social_seq, object_seq, objectblock_seq);
+	return std::make_tuple(totalpersons, intimate_seq, personal_seq, social_seq, object_seq, objectblock_seq);
 }
 
 void SocialRules::updatePeopleInModel()
