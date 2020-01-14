@@ -43,11 +43,9 @@ public:
 
     void initialize(const std::shared_ptr<InnerModel> &innerModel_,
             const std::shared_ptr<InnerViewer> &viewer_,
-            const std::shared_ptr< RoboCompCommonBehavior::ParameterList > &configparams_,
-            LaserPrx laser_prx,
-            OmniRobotPrx omnirobot_proxy);
-    void update(const std::shared_ptr<InnerModel> &innerModel_);
-    void updatePolylines(const std::shared_ptr<InnerModel> &innerModel_, SNGPersonSeq persons_, SNGPolylineSeq intimate,SNGPolylineSeq personal,SNGPolylineSeq social,SNGPolylineSeq object,SNGPolylineSeq objectsblocking);
+            const std::shared_ptr< RoboCompCommonBehavior::ParameterList > &configparams_);
+    void update(RoboCompLaser::TLaserData laserData);
+    void updatePolylines(SNGPersonSeq persons_, SNGPolylineSeq intimate,SNGPolylineSeq personal,SNGPolylineSeq social,SNGPolylineSeq object,SNGPolylineSeq objectsblocking);
 
 
 

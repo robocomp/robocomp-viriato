@@ -1,5 +1,5 @@
 /*
- *    Copyright (C)2019 by YOUR NAME HERE
+ *    Copyright (C)2020 by YOUR NAME HERE
  *
  *    This file is part of RoboComp
  *
@@ -23,7 +23,6 @@
 #include <Ice/Ice.h>
 #include <AGMExecutiveTopic.h>
 
-
 #include <config.h>
 #include "genericworker.h"
 
@@ -37,6 +36,8 @@ AGMExecutiveTopicI(GenericWorker *_worker);
 
 	void edgeUpdated(const RoboCompAGMWorldModel::Edge  &modification, const Ice::Current&);
 	void edgesUpdated(const RoboCompAGMWorldModel::EdgeSequence  &modifications, const Ice::Current&);
+	void selfEdgeAdded(const int  nodeid, const string  &edgeType, const RoboCompAGMWorldModel::StringDictionary  &attributes, const Ice::Current&);
+	void selfEdgeDeleted(const int  nodeid, const string  &edgeType, const Ice::Current&);
 	void structuralChange(const RoboCompAGMWorldModel::World  &w, const Ice::Current&);
 	void symbolUpdated(const RoboCompAGMWorldModel::Node  &modification, const Ice::Current&);
 	void symbolsUpdated(const RoboCompAGMWorldModel::NodeSequence  &modifications, const Ice::Current&);

@@ -39,10 +39,7 @@ import ConcaveHull as CH
 import math
 
 
-
-
 def getPolyline(grid, resolution, lx_inf, ly_inf):
-
     totalpuntos = []
     for j in range(grid.shape[1]):
         for i in range(grid.shape[0]):
@@ -57,18 +54,18 @@ def getPolyline(grid, resolution, lx_inf, ly_inf):
 
     ret = []
     for lista in totalpuntos:
-        #los puntos en el grid sufren una traslacion, con esto los devolvemos a su posicion original
+        # los puntos en el grid sufren una traslacion, con esto los devolvemos a su posicion original
         for puntos in lista:
             puntos[0] = puntos[0] * resolution + lx_inf
             puntos[1] = puntos[1] * resolution + ly_inf
 
         points = np.asarray(lista)
         ##ConcaveHull --> Mas puntos pero la forma se aproxima mas
-        hull = CH.concaveHull(points,3)
-        ret.append(hull)
+        # hull = CH.concaveHull(points,3)
+        # ret.append(hull)
         # ## ConvexHull --> Menos puntos pero la forma es el contorno
-        # hull = ConvexHull(points)
-        # ret.append(points[hull.vertices])
+        hull = ConvexHull(points)
+        ret.append(points[hull.vertices])
 
     return ret
 
@@ -89,9 +86,8 @@ class Person(object):
         self.th = th
         self.vel = vel
 
-
-    def draw(self, sigma_h,sigma_r,sigma_s,rot, drawPersonalSpace=False):
-            # define grid.
+    def draw(self, sigma_h, sigma_r, sigma_s, rot, drawPersonalSpace=False):
+        # define grid.
         npts = 50
         x = np.linspace(self.x - 4, self.x + 4, npts)
         y = np.linspace(self.y - 4, self.y + 4, npts)
@@ -99,56 +95,50 @@ class Person(object):
         X, Y = np.meshgrid(x, y)
         # plt.plot(X, Y, '*')
 
-        Z = self._calculatePersonalSpace(X, Y,sigma_h,sigma_r,sigma_s,rot)
+        Z = self._calculatePersonalSpace(X, Y, sigma_h, sigma_r, sigma_s, rot)
 
         if (drawPersonalSpace):
-            # print(Z)
             # http://www.python-course.eu/matplotlib_contour_plot.php
             # https://es.mathworks.com/matlabcentral/answers/230934-how-to-extract-x-and-y-position-of-contour-line
-            #surf = ax.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap=cm.coolwarm, linewidth=0, antialiased=False)
+            # surf = ax.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap=cm.coolwarm, linewidth=0, antialiased=False)
 
             ##PROBLEMICA -> a partir de nc> 4 dibuja una linea de menos. Por eso en el caso de que v==100 he puesto que aprox=nc-2
 
             CS = plt.contour(X, Y, Z, 10)
 
+            # dat0 = CS.allsegs[5][0]
 
-            #dat0 = CS.allsegs[5][0]
-
-            #print(dat0)
+            # print(dat0)
 
             ##Dibujar la polilinea
-           # plt.plot(dat0[:, 0], dat0[:, 1], '*b-')
-
+            # plt.plot(dat0[:, 0], dat0[:, 1], '*b-')
 
             # CS = plt.contour(X, Y, Z, 10)
-            #surf = ax.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap=cm.coolwarm, linewidth=0, antialiased=False)
+            # surf = ax.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap=cm.coolwarm, linewidth=0, antialiased=False)
 
             # Corpo
             body = plt.Circle((self.x, self.y), radius=self._radius, fill=False)
             plt.gca().add_patch(body)
 
             # Orientacion
-           # print("alpha:")
-            x_aux = self.x + self._radius * cos(pi/2 - self.th);
-            #print(self.x)
-            #print(x_aux);
-            y_aux = self.y + self._radius * sin(pi/2 - self.th);
-            #print(self.y)
+            # print("alpha:")
+            x_aux = self.x + self._radius * cos(pi / 2 - self.th);
+            # print(self.x)
+            # print(x_aux);
+            y_aux = self.y + self._radius * sin(pi / 2 - self.th);
+            # print(self.y)
 
-            #print(y_aux)
+            # print(y_aux)
             heading = plt.Line2D((self.x, x_aux), (self.y, y_aux), lw=1, color='k')
             plt.gca().add_line(heading)
 
             plt.axis('equal')
 
-
         return Z
-
-
 
     """ Private Methods """
 
-    def _calculatePersonalSpace(self, x, y,sigma_h,sigma_r,sigma_s,rot):
+    def _calculatePersonalSpace(self, x, y, sigma_h, sigma_r, sigma_s, rot):
         """"",sigma_h
         sigma_h = 2.0
         sigma_r = 1.0
@@ -187,18 +177,10 @@ class SpecificWorker(GenericWorker):
         self.timer.timeout.connect(self.compute)
         self.Period = 2000
         self.timer.start(self.Period)
-       # plt.ion()
+
+    # plt.ion()
 
     def setParams(self, params):
-        # try:
-        #	par = params["InnerModelPath"]
-        #	innermodel_path=par.value
-        #	innermodel = InnerModel(innermodel_path)
-        # except:
-        #	traceback.print_exc()
-        #	print "Error reading config params"
-
-
         return True
 
     @QtCore.Slot()
@@ -209,18 +191,9 @@ class SpecificWorker(GenericWorker):
     #
     # getPersonalSPace
     #
-    def getPersonalSpace(self, persons, h, dibujar):
+    def SocialNavigationGaussian_getPersonalSpace(self, persons, h, dibujar):
 
         plt.close('all')
-       ##DESCOMENTAR EL FIGUREEE
-       # plt.figure()
-
-        #ax = fig.add_subplot(111, projection='3d')
-
-        #fig, ax = plt.subplots()
-        #ax.grid(True)
-      #  x = y = np.arange(-3.0, 3.0, 0.05)
-      #  X, Y = np.meshgrid(x, y)
 
         ##Limites de la representacion
 
@@ -228,53 +201,26 @@ class SpecificWorker(GenericWorker):
         lx_sup = 10
         ly_inf = -6
         ly_sup = 10
-        """""
-        ##cambio los limites para los otros valores de sigma
-        lx_inf = 0
-        lx_sup = 10
-        ly_inf = 0
-        ly_sup = 10
-        """""
-        # zs = np.array([fun(x,y) for x,y in zip(np.ravel(X), np.ravel(Y))])
-        # Z = zs.reshape(X.shape)
-
-
 
         ##########################################CLUSTERING##################################################
 
         normals = []
 
         for p in persons:
-            pn = Person(p.x/1000, p.z/1000, p.angle)
-            #print('Pose x', pn.x, 'Pose z', pn.y, 'Rotacion', pn.th)
-            pn.draw(2.,1,4./3.,pi/2 - pn.th, drawPersonalSpace=dibujar)
-            #normals.append(Normal(mu=[[pn.x], [pn.y]], sigma=[-pn.th - pi/2, 2.0, 2.0, 2.0], elliptical=True))
-            normals.append(Normal(mu=[[pn.x], [pn.y]], sigma=[-pn.th - pi/2., 2, 1, 4./3], elliptical=True))
-            #normals.append(Normal(mu=[[pn.x], [pn.y]], sigma=[-pn.th, 2, 1, 4. / 3], elliptical=True))
-        #print ("numero de gaussianas",len(normals))
+            pn = Person(p.x / 1000, p.z / 1000, p.angle)
+            # print('Pose x', pn.x, 'Pose z', pn.y, 'Rotacion', pn.th)
+            # pn.draw(2,1, 4./3.,pi/2 - pn.th, drawPersonalSpace=dibujar) #Valores originales
+            pn.draw(1.3, 1., 1.3, pi / 2 - pn.th, drawPersonalSpace=dibujar)
+            normals.append(Normal(mu=[[pn.x], [pn.y]], sigma=[-pn.th - pi / 2., 1.3, 1., 1.3], elliptical=True))
+            # normals.append(Normal(mu=[[pn.x], [pn.y]], sigma=[-pn.th - pi/2., 2, 1, 4. / 3], elliptical=True))
+        # print ("numero de gaussianas",len(normals))
 
-        # h = 0.1
-        # h = prox/100
 
         resolution = 0.1
         limits = [[lx_inf, lx_sup], [ly_inf, ly_sup]]
         _, z = Normal.makeGrid(normals, h, 2, limits=limits, resolution=resolution)
         grid = GM.filterEdges(z, h)
 
-        #plt.figure()
-        #plt.imshow(z, shape=grid.shape, interpolation='none', aspect='equal', origin='lower', cmap='Greys', vmin=0, vmax=2)
-
-        #plt.figure()
-        #plt.imshow(grid, shape=grid.shape, interpolation='none', aspect='equal', origin='lower', cmap='Greys', vmin=0, vmax=2)
-
-        # if (dibujar):
-        #     # plt.figure()
-        #     plt.imshow(grid, extent=[lx_inf, lx_sup, ly_inf, ly_sup], shape=grid.shape, interpolation='none', aspect='equal', origin='lower', cmap='Greys', vmin=0, vmax=2)
-        #     plt.xlabel('X')
-        #     plt.ylabel('Y')
-        #     plt.axis('equal')
-
-        np.savetxt('log.txt', grid, fmt='%i')
 
         ###########################LEO EL GRID Y SEPARO LAS POLILINEAS, DESPUES SE HACE CONVEXHULL####################################
         polylines = []
@@ -284,37 +230,12 @@ class SpecificWorker(GenericWorker):
             polyline = []
             for pnt in pol:
                 punto = SNGPoint2D()
-                punto.x = pnt[0]*1000
-                punto.z = pnt[1]*1000
+                punto.x = pnt[0] * 1000
+                punto.z = pnt[1] * 1000
                 polyline.append(punto)
             polylines.append(polyline)
 
-
         if (dibujar):
-            ##DIBUJO ZONA Social
-            _, z = Normal.makeGrid(normals, 0.1, 2, limits=limits, resolution=resolution)
-            grid = GM.filterEdges(z, 0.1)
-
-            polylines = []
-            totalpuntosorden = getPolyline(grid, resolution, lx_inf, ly_inf)
-
-            for pol in totalpuntosorden:
-                polyline = []
-                for pnt in pol:
-                    punto = SNGPoint2D()
-                    punto.x = pnt[0]
-                    punto.z = pnt[1]
-                    polyline.append(punto)
-                polylines.append(polyline)
-
-            for ps in polylines:
-                #plt.figure()
-                for p in ps:
-                    plt.plot(p.x, p.z, "oc-")
-                    plt.axis('equal')
-                    plt.xlabel('X')
-                    plt.ylabel('Y')
-            # plt.show()
 
             ###DIBUJO ZONA Personal
             _, z = Normal.makeGrid(normals, 0.4, 2, limits=limits, resolution=resolution)
@@ -332,16 +253,14 @@ class SpecificWorker(GenericWorker):
                     polyline.append(punto)
                 polylines.append(polyline)
 
-
             for ps in polylines:
-                 # plt.figure()
+                # plt.figure()
                 for p in ps:
                     plt.plot(p.x, p.z, "om-")
                     plt.axis('equal')
                     plt.xlabel('X')
                     plt.ylabel('Y')
                 # plt.show()
-
 
             ###DIBUJO ZONA INTIMA
             _, z = Normal.makeGrid(normals, 0.8, 2, limits=limits, resolution=resolution)
@@ -359,7 +278,6 @@ class SpecificWorker(GenericWorker):
                     polyline.append(punto)
                 polylines.append(polyline)
 
-
             for ps in polylines:
                 # plt.figure()
                 for p in ps:
@@ -369,17 +287,81 @@ class SpecificWorker(GenericWorker):
                     plt.ylabel('Y')
                 # plt.show()
 
+        plt.show()
+        return polylines
 
+    #
+    # getSocialSpace
+    #
+    def SocialNavigationGaussian_getSocialSpace(self, persons, h, draw):
+        plt.close('all')
+
+        ##Limites de la representacion
+
+        lx_inf = -6
+        lx_sup = 10
+        ly_inf = -6
+        ly_sup = 10
+
+        ##########################################CLUSTERING##################################################
+
+        normals = []
+
+        for p in persons:
+            pn = Person(p.x / 1000, p.z / 1000, p.angle)
+            pn.draw(3,1, 1.3,pi/2 - pn.th, drawPersonalSpace=draw) #Valores originales
+            normals.append(Normal(mu=[[pn.x], [pn.y]], sigma=[-pn.th - pi/2.,3, 1,1.3], elliptical=True))
+        # print ("numero de gaussianas",len(normals))
+
+        resolution = 0.1
+        limits = [[lx_inf, lx_sup], [ly_inf, ly_sup]]
+        _, z = Normal.makeGrid(normals, h, 2, limits=limits, resolution=resolution)
+        grid = GM.filterEdges(z, h)
+
+        ###########################LEO EL GRID Y SEPARO LAS POLILINEAS, DESPUES SE HACE CONVEXHULL####################################
+        polylines = []
+        totalpuntosorden = getPolyline(grid, resolution, lx_inf, ly_inf)
+
+        for pol in totalpuntosorden:
+            polyline = []
+            for pnt in pol:
+                punto = SNGPoint2D()
+                punto.x = pnt[0] * 1000
+                punto.z = pnt[1] * 1000
+                polyline.append(punto)
+            polylines.append(polyline)
+
+        if (draw):
+            ##DIBUJO ZONA Social
+            _, z = Normal.makeGrid(normals, 0.1, 2, limits=limits, resolution=resolution)
+            grid = GM.filterEdges(z, 0.1)
+
+            polylines = []
+            totalpuntosorden = getPolyline(grid, resolution, lx_inf, ly_inf)
+
+            for pol in totalpuntosorden:
+                polyline = []
+                for pnt in pol:
+                    punto = SNGPoint2D()
+                    punto.x = pnt[0]
+                    punto.z = pnt[1]
+                    polyline.append(punto)
+                polylines.append(polyline)
+
+            for ps in polylines:
+                # plt.figure()
+                for p in ps:
+                    plt.plot(p.x, p.z, "oc-")
+                    plt.axis('equal')
+                    plt.xlabel('X')
+                    plt.ylabel('Y')
 
         plt.show()
         return polylines
 
-
-
-    def getPassOnRight(self, persons,h, dibujar):
+    def SocialNavigationGaussian_getPassOnRight(self, persons, h, dibujar):
 
         plt.close("all")
-
 
         lx_inf = -6
         lx_sup = 8
@@ -389,27 +371,23 @@ class SpecificWorker(GenericWorker):
         normals = []
 
         for p in persons:
-            pn = Person(p.x/1000, p.z/1000, p.angle, p.vel)
-
-            # pn.draw((50/((7*pn.vel/50)+43)*4), (50/((7*pn.vel/50)+43)*4)/2, 2*(50/((7*pn.vel/50)+43)*4)/3,pi/2-pn.th, drawPersonalSpace=dibujar)
-            # pn.draw(4, 1.5, 10/3, pi - pn.th, drawPersonalSpace=dibujar)
-            #
-            # normals.append(Normal(mu=[[pn.x], [pn.y]], sigma=[-pn.th + pi/2, (50/((7*pn.vel/50)+43)*4), (50/((7*pn.vel/50)+43)*4)/2, 2*(50/((7*pn.vel/50)+43)*4)/3], elliptical=True))
-            # normals.append(Normal(mu=[[pn.x], [pn.y]], sigma=[-pn.th , 4, 1.5, 10/3], elliptical=True))
+            pn = Person(p.x / 1000, p.z / 1000, p.angle, p.vel)
             pn.draw(2., 1, 4. / 3., pi / 2 - pn.th, drawPersonalSpace=dibujar)
-            pn.draw(2., 1, 4./3., pi  - pn.th, drawPersonalSpace=dibujar)
+            pn.draw(2., 1, 4. / 3., pi - pn.th, drawPersonalSpace=dibujar)
             normals.append(Normal(mu=[[pn.x], [pn.y]], sigma=[-pn.th - pi / 2., 2, 1, 4. / 3], elliptical=True))
             normals.append(Normal(mu=[[pn.x], [pn.y]], sigma=[-pn.th, 2, 0.75, 4. / 3], elliptical=True))
-        #h = 0.4
+        # h = 0.4
         # h = prox / 100
         resolution = 0.1
         limits = [[lx_inf, lx_sup], [ly_inf, ly_sup]]
-        _, z = Normal.makeGrid(normals, h, 2, limits=limits, resolution=resolution) #Las posiciones de las personas tienen que estar en metros
+        _, z = Normal.makeGrid(normals, h, 2, limits=limits,
+                               resolution=resolution)  # Las posiciones de las personas tienen que estar en metros
         grid = GM.filterEdges(z, h)
 
         if (dibujar):
             plt.figure()
-            plt.imshow(grid, extent=[lx_inf, lx_sup, ly_inf, ly_sup], shape=grid.shape, interpolation='none', aspect='equal', origin='lower', cmap='Greys', vmin=0, vmax=2)
+            plt.imshow(grid, extent=[lx_inf, lx_sup, ly_inf, ly_sup], shape=grid.shape, interpolation='none',
+                       aspect='equal', origin='lower', cmap='Greys', vmin=0, vmax=2)
             plt.xlabel('X')
             plt.ylabel('Y')
             plt.axis('equal')
@@ -423,19 +401,17 @@ class SpecificWorker(GenericWorker):
             polyline = []
             for pnt in pol:
                 punto = SNGPoint2D()
-                punto.x = pnt[0]*1000
-                punto.z = pnt[1]*1000
+                punto.x = pnt[0] * 1000
+                punto.z = pnt[1] * 1000
                 polyline.append(punto)
             polylines.append(polyline)
         plt.show()
         return polylines
 
-
-
     #
     # getObjectInteraction
     #
-    def getObjectInteraction(self, persons, objects, interaction, d):
+    def SocialNavigationGaussian_getObjectInteraction(self, persons, objects, interaction, d):
 
         # print("getObjectInteration")
         plt.close('all')
@@ -449,7 +425,7 @@ class SpecificWorker(GenericWorker):
             ##para dibujarlo
             if d:
                 plt.figure('ObjectSpace')
-                rect = plt.Rectangle((obj.x-0.25,obj.y-0.25),0.5,0.5,fill=False)
+                rect = plt.Rectangle((obj.x - 0.25, obj.y - 0.25), 0.5, 0.5, fill=False)
 
                 plt.gca().add_patch(rect)
                 x_aux = obj.x + 0.25 * cos(pi / 2 - obj.th)
@@ -458,7 +434,7 @@ class SpecificWorker(GenericWorker):
                 plt.gca().add_line(heading)
 
             w = 1.0
-            #print (obj.x,obj.y)
+            # print (obj.x,obj.y)
             ##para calcular el rectangulo
             s = QRectF(QPointF(0, 0), QSizeF(w, obj.sp))
 
@@ -471,19 +447,18 @@ class SpecificWorker(GenericWorker):
             space = QPolygonF()
             space.append(s.topLeft())
             space.append(s.topRight())
-            space.append(QPointF(s.bottomRight().x()+ obj.sp/4, s.bottomRight().y()))
-            space.append(QPointF(s.bottomLeft().x()-obj.sp/4,s.bottomLeft().y()))
-
+            space.append(QPointF(s.bottomRight().x() + obj.sp / 4, s.bottomRight().y()))
+            space.append(QPointF(s.bottomLeft().x() - obj.sp / 4, s.bottomLeft().y()))
 
             t = QTransform()
-            t.translate(-w/2, 0)
+            t.translate(-w / 2, 0)
             space = t.map(space)
             t = QTransform()
             t.rotateRadians(-obj.th)
             space = t.map(space)
 
             t = QTransform()
-            t.translate(obj.x,obj.y)
+            t.translate(obj.x, obj.y)
             space = t.map(space)
 
             # points = []
@@ -492,7 +467,6 @@ class SpecificWorker(GenericWorker):
             #     print ("valor", point)
             #     points.append([point.x(),point.y()])
             #     plt.plot(point.x(),point.y(),"go")
-
 
             polyline = []
 
@@ -508,7 +482,6 @@ class SpecificWorker(GenericWorker):
 
             polylines_object.append(polyline)
 
-
             for p in persons:
                 pn = Person(p.x, p.z, p.angle)
                 # print("PERSONA", persons.index(p)+1)
@@ -522,20 +495,18 @@ class SpecificWorker(GenericWorker):
                     plt.gca().add_line(heading)
                     plt.axis('equal')
 
-
                 ##CHECKING THE ORIENTATION
-                a = abs(obj.th - abs(pn.th-math.pi))
+                a = abs(obj.th - abs(pn.th - math.pi))
                 if a < math.radians(45):
                     checkangle = True
                 else:
                     checkangle = False
 
                 ##CHECKING IF THE PERSON IS INSIDE THE POLYGON
-                if space.containsPoint(QPointF(pn.x,pn.y),Qt.OddEvenFill) and checkangle:
+                if space.containsPoint(QPointF(pn.x, pn.y), Qt.OddEvenFill) and checkangle:
                     # print("DENTROOOOO Y MIRANDO")
                     if not polyline in polylines_interacting:
                         polylines_interacting.append(polyline)
-
 
         if d:
             for ps in polylines_interacting:
@@ -553,83 +524,3 @@ class SpecificWorker(GenericWorker):
         else:
             return polylines_object
 
-
-
-    #
-    # removePoints
-    #
-    def removePoints(self, listp):
-        print ("Remove Points")
-        print("--------------------------------------------------------")
-        print("Entran", len(listp), "polilineas")
-        #######################################################################
-        poligon_list = []
-
-        for poliline in listp:
-            qp = QPolygonF()
-            for p in poliline:
-                qp.append(QPointF(p.x, p.z))
-            poligon_list.append(qp)
-
-        print("Hay ", len(poligon_list), "poligonos")
-        resulting_list = recursiP(poligon_list)
-        polylines = []
-
-        for element in resulting_list:
-            polyline = []
-            for pnt in element:
-                punto = SNGPoint2D()
-                punto.x = pnt.x()
-                punto.z = pnt.y()
-                polyline.append(punto)
-            polylines.append(polyline)
-
-        print("Salen", len(polylines), "polilineas")
-        print("--------------------------------------------------------")
-        return polylines
-
-
-        #
-        # print("--------------------------------------------------------")
-        # # plt.figure()
-        # # for ps in polylines:
-        # #     for p in ps:
-        # #         plt.plot(p.x, p.z, "*r-")
-        # #         plt.axis('equal')
-        # #         plt.xlabel('X')
-        # #         plt.ylabel('Y')
-        # # plt.show()
-
-
-
-def recursiP(poligon_list):
-    print("--------------------------------------------------------")
-    print ("Recursividad")
-
-    union_list = []
-    index_list = []
-    change = False
-
-    print("Recursividad -- Entran ", len(poligon_list), "poligonos")
-    #for poli in poligon_list:
-        #print ("Poligono ",poligon_list.index(poli),"=", poli)
-
-    for index1, poligon1 in enumerate(poligon_list):
-        if not poligon1 in index_list:
-            resulting_poligon = poligon1
-            for index2, poligon2 in enumerate(poligon_list[index1+1:]):
-
-                if poligon2.intersected(resulting_poligon):
-                    change = True
-                    resulting_poligon = resulting_poligon.united(poligon2)
-                    index_list.append(poligon1)
-                    index_list.append(poligon2)
-
-            union_list.append(resulting_poligon)
-
-    if change:
-        union_list = recursiP(union_list)
-
-    print("Recursividad -- Salen ", len(union_list), "poligonos")
-    print("--------------------------------------------------------")
-    return union_list

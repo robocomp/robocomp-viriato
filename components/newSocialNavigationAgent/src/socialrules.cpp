@@ -15,11 +15,10 @@ void SocialRules::initialize(AGMModel::SPtr worldModel_, SocialNavigationGaussia
 }
 
 
-SocialRules::RetPolys SocialRules::update(AGMModel::SPtr worldModel_)
+SocialRules::retPolylines SocialRules::update(AGMModel::SPtr worldModel_)
 {
 
 	worldModel = worldModel_;
-    InnerPtr innerModel = std::make_shared<InnerModel>(AGMInner::extractInnerModel(worldModel));
 
 	updatePeopleInModel();
 	checkInteractions();
@@ -136,7 +135,7 @@ SNGPolylineSeq SocialRules::ApplySocialRules()
 				}
 				else
 				{
-					seq = socialnavigationgaussian_proxy-> getPersonalSpace(per, 0.1, false);
+					seq = socialnavigationgaussian_proxy-> getSocialSpace(per, 0.1, false);
 					for (auto s:seq) {social_seq.push_back(s);}
 
 					seq = socialnavigationgaussian_proxy-> getPersonalSpace(per, 0.4, false);
@@ -236,7 +235,8 @@ SNGPolylineSeq SocialRules::calculateGauss(bool draw, float h)
 		seq.clear();
 		for (auto per: interactingpersons)
 		{
-			seq = socialnavigationgaussian_proxy-> getPersonalSpace(per, h, draw);
+//			seq = socialnavigationgaussian_proxy-> getPersonalSpace(per, h, draw);
+			seq = socialnavigationgaussian_proxy-> getSocialSpace(per, h, draw);
 		}
 		
 	}

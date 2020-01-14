@@ -87,7 +87,7 @@ void SpecificWorker::initialize(int period)
     }
 
     qDebug()<<"initializing classes";
-    trajectory.initialize(innerModel, viewer, confParams, laser_proxy, omnirobot_proxy);
+    trajectory.initialize(innerModel, viewer, confParams);
     socialrules.initialize(worldModel, socialnavigationgaussian_proxy);
 
 
@@ -103,11 +103,21 @@ void SpecificWorker::compute()
 {
 
     viewer->run();
-    trajectory.update(innerModel);
+    try{
+
+      RoboCompLaser::TLaserData  laserData  = laser_proxy->getLaserData();
+      trajectory.update(laserData);
+
+    }
+
+    catch(const Ice::Exception &e){
+        std::cout <<"Can't connect to laser" <<e.what() << std::endl;
+    };
+
 
     if (worldModelChanged) {
 		auto [ totalpersons, intimate_seq, personal_seq, social_seq, object_seq, objectblock_seq] = socialrules.update(worldModel);
-        trajectory.updatePolylines(innerModel, totalpersons, intimate_seq, personal_seq, social_seq, object_seq, objectblock_seq);
+        trajectory.updatePolylines(totalpersons, intimate_seq, personal_seq, social_seq, object_seq, objectblock_seq);
 		//deshacer tpla y actualizar trajectory
         socialrules.checkRobotmov();
 
@@ -207,6 +217,25 @@ int SpecificWorker::AGMCommonBehavior_uptimeAgent()
 //implementCODE
 	return 0;
 }
+
+void SpecificWorker::AGMExecutiveTopic_selfEdgeAdded(const int nodeid, const string &edgeType, const RoboCompAGMWorldModel::StringDictionary &attributes)
+{
+//subscribesToCODE
+	QMutexLocker lockIM(mutex);
+	try { worldModel->addEdgeByIdentifiers(nodeid, nodeid, edgeType, attributes); } catch(...){ printf("Couldn't add an edge. Duplicate?\n"); }
+
+	try { innerModel = std::make_shared<InnerModel>(AGMInner::extractInnerModel(worldModel)); } catch(...) { printf("Can't extract an InnerModel from the current model.\n"); }
+}
+
+void SpecificWorker::AGMExecutiveTopic_selfEdgeDeleted(const int nodeid, const string &edgeType)
+{
+//subscribesToCODE
+	QMutexLocker lockIM(mutex);
+	try { worldModel->removeEdgeByIdentifiers(nodeid, nodeid, edgeType); } catch(...) { printf("Couldn't remove an edge\n"); }
+
+	try { innerModel = std::make_shared<InnerModel>(AGMInner::extractInnerModel(worldModel)); } catch(...) { printf("Can't extract an InnerModel from the current model.\n"); }
+}
+
 
 void SpecificWorker::AGMExecutiveTopic_edgeUpdated(const RoboCompAGMWorldModel::Edge &modification)
 {

@@ -6,23 +6,16 @@
 
 void Trajectory::initialize(const std::shared_ptr<InnerModel> &innerModel_,
         const std::shared_ptr<InnerViewer> &viewer_,
-        const std::shared_ptr< RoboCompCommonBehavior::ParameterList > &configparams_,
-        LaserPrx laser_prx,
-        OmniRobotPrx omnirobot_proxy)
+        const std::shared_ptr< RoboCompCommonBehavior::ParameterList > &configparams_)
 
 {
     qDebug()<<"Initializing Trajectory";
 
-
     innerModel = innerModel_;
     viewer = viewer_;
     configparams = configparams_;
-    qDebug()<<"-----1----";
-    laser_proxy = laser_prx;
 
-    qDebug()<<"-----2----";
-    try{ robotname = configparams->at("RobotName").value;} catch(const std::exception &e){ std::cout << e.what() << " Sampler::initialize - No Robot name defined in config. Using default 'robot' " << std::endl;}
-    qDebug()<<"-----3----";
+    try{ robotname = configparams->at("RobotName").value;} catch(const std::exception &e){ std::cout << e.what() << " Trajectory::initialize - No Robot name defined in config. Using default 'robot' " << std::endl;}
 
     collisions =  std::make_shared<Collisions>();
     collisions->initialize(innerModel, configparams);
@@ -31,18 +24,8 @@ void Trajectory::initialize(const std::shared_ptr<InnerModel> &innerModel_,
 
 }
 
-void Trajectory::update(const std::shared_ptr<InnerModel> &innerModel_)
+void Trajectory::update(RoboCompLaser::TLaserData laserData)
 {
-    innerModel = innerModel_;
-    RoboCompLaser::TLaserData laserData;
-    TBaseState baseState;
-
-    try{
-//        laserData  = laser_proxy->getLaserData();
-        laserData  =laser_proxy->getLaserAndBStateData(baseState);
-
-    }
-    catch(const Ice::Exception &e){std::cout <<"SHIT" <<e.what() << std::endl;};
     computeLaser(laserData);
 //    modifyLaser(laserData);
     //    computeVisibility(points, laser_polygon);
@@ -53,9 +36,8 @@ void Trajectory::update(const std::shared_ptr<InnerModel> &innerModel_)
 
 }
 
-void Trajectory::updatePolylines(const std::shared_ptr<InnerModel> &innerModel_, SNGPersonSeq persons_, SNGPolylineSeq intimate_seq,SNGPolylineSeq personal_seq,SNGPolylineSeq social_seq,SNGPolylineSeq object_seq,SNGPolylineSeq objectsblocking_seq)
+void Trajectory::updatePolylines(SNGPersonSeq persons_, SNGPolylineSeq intimate_seq,SNGPolylineSeq personal_seq,SNGPolylineSeq social_seq,SNGPolylineSeq object_seq,SNGPolylineSeq objectsblocking_seq)
 {
-    innerModel = innerModel_;
 
     polylines_intimate.clear();
     polylines_personal.clear();
@@ -264,13 +246,6 @@ void Trajectory::computeLaser(RoboCompLaser::TLaserData laserData)
 
 RoboCompLaser::TLaserData Trajectory::modifyLaser(RoboCompLaser::TLaserData laserData)
 {
-// 	SNGPolyline acho;
-// 	acho.resize(2);
-// 	acho[0].x = 0;
-// 	acho[0].z = 3000;
-// 	acho[1].x = 5000;
-// 	acho[1].z = 0;
-// 	l.push_back(acho);
 
     FILE *fd = fopen("entradaL.txt", "w");
     for (auto &laserSample: laserData)

@@ -40,7 +40,10 @@
 #include <SocialNavigationGaussian.h>
 #include <AGMCommonBehavior.h>
 #include <AGMExecutive.h>
+#include <AGMExecutiveTopic.h>
 #include <AGMWorldModel.h>
+#include <agm.h>
+
 #include <agm.h>
 
 #define CHECK_PERIOD 5000
@@ -54,6 +57,7 @@ using namespace RoboCompOmniRobot;
 using namespace RoboCompSocialNavigationGaussian;
 using namespace RoboCompAGMCommonBehavior;
 using namespace RoboCompAGMExecutive;
+using namespace RoboCompAGMExecutiveTopic;
 using namespace RoboCompAGMWorldModel;
 
 typedef map <string,::IceProxy::Ice::Object*> MapPrx;
@@ -101,6 +105,8 @@ public:
 	virtual int AGMCommonBehavior_uptimeAgent() = 0;
 	virtual void AGMExecutiveTopic_edgeUpdated(const RoboCompAGMWorldModel::Edge &modification) = 0;
 	virtual void AGMExecutiveTopic_edgesUpdated(const RoboCompAGMWorldModel::EdgeSequence &modifications) = 0;
+	virtual void AGMExecutiveTopic_selfEdgeAdded(const int nodeid, const string &edgeType, const RoboCompAGMWorldModel::StringDictionary &attributes) = 0;
+	virtual void AGMExecutiveTopic_selfEdgeDeleted(const int nodeid, const string &edgeType) = 0;
 	virtual void AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldModel::World &w) = 0;
 	virtual void AGMExecutiveTopic_symbolUpdated(const RoboCompAGMWorldModel::Node &modification) = 0;
 	virtual void AGMExecutiveTopic_symbolsUpdated(const RoboCompAGMWorldModel::NodeSequence &modifications) = 0;

@@ -95,11 +95,11 @@ public:
 	void AGMExecutiveTopic_edgeUpdated(const RoboCompAGMWorldModel::Edge &modification);
 	void AGMExecutiveTopic_symbolUpdated(const RoboCompAGMWorldModel::Node &modification);
 	void AGMExecutiveTopic_symbolsUpdated(const RoboCompAGMWorldModel::NodeSequence &modifications);
-
+   	void AGMExecutiveTopic_selfEdgeAdded(const int nodeid, const string &edgeType, const RoboCompAGMWorldModel::StringDictionary &attributes);
+	void AGMExecutiveTopic_selfEdgeDeleted(const int nodeid, const string &edgeType);
 	void checkHumanBlock();
 	vector <int32_t> previous_blockinglist = {};
 	vector <int32_t> previous_softblockinglist = {};
-
 	vector <int32_t> previous_affordanceslist = {};
 
 

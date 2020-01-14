@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2018 by YOUR NAME HERE
+# Copyright (C) 2020 by YOUR NAME HERE
 #
 #    This file is part of RoboComp
 #
@@ -23,10 +23,10 @@ ROBOCOMP = ''
 try:
 	ROBOCOMP = os.environ['ROBOCOMP']
 except:
-	print '$ROBOCOMP environment variable not set, using the default value /opt/robocomp'
+	print('$ROBOCOMP environment variable not set, using the default value /opt/robocomp')
 	ROBOCOMP = '/opt/robocomp'
 if len(ROBOCOMP)<1:
-	print 'ROBOCOMP environment variable not set! Exiting.'
+	print('ROBOCOMP environment variable not set! Exiting.')
 	sys.exit()
 
 additionalPathStr = ''
@@ -38,21 +38,21 @@ try:
 		icePaths.append(p)
 		additionalPathStr += ' -I' + p + ' '
 except:
-	print 'SLICE_PATH environment variable was not exported. Using only the default paths'
+	print('SLICE_PATH environment variable was not exported. Using only the default paths')
 	pass
 
 ice_SocialNavigationGaussian = False
 for p in icePaths:
-	print 'Trying', p, 'to load SocialNavigationGaussian.ice'
+	print('Trying', p, 'to load SocialNavigationGaussian.ice')
 	if os.path.isfile(p+'/SocialNavigationGaussian.ice'):
-		print 'Using', p, 'to load SocialNavigationGaussian.ice'
+		print('Using', p, 'to load SocialNavigationGaussian.ice')
 		preStr = "-I/opt/robocomp/interfaces/ -I"+ROBOCOMP+"/interfaces/ " + additionalPathStr + " --all "+p+'/'
 		wholeStr = preStr+"SocialNavigationGaussian.ice"
 		Ice.loadSlice(wholeStr)
 		ice_SocialNavigationGaussian = True
 		break
 if not ice_SocialNavigationGaussian:
-	print 'Couldn\'t load SocialNavigationGaussian'
+	print('Couldn\'t load SocialNavigationGaussian')
 	sys.exit(-1)
 from RoboCompSocialNavigationGaussian import *
 
@@ -60,11 +60,11 @@ class SocialNavigationGaussianI(SocialNavigationGaussian):
 	def __init__(self, worker):
 		self.worker = worker
 
-	def getPassOnRight(self, persons, v, d, c):
-		return self.worker.getPassOnRight(persons, v, d)
-	def removePoints(self, l, c):
-		return self.worker.removePoints(l)
-	def getPersonalSpace(self, persons, v, d, c):
-		return self.worker.getPersonalSpace(persons, v, d)
 	def getObjectInteraction(self, persons, objects, d, interact, c):
-		return self.worker.getObjectInteraction(persons, objects, d, interact)
+		return self.worker.SocialNavigationGaussian_getObjectInteraction(persons, objects, d, interact)
+	def getPassOnRight(self, persons, v, d, c):
+		return self.worker.SocialNavigationGaussian_getPassOnRight(persons, v, d)
+	def getPersonalSpace(self, persons, v, d, c):
+		return self.worker.SocialNavigationGaussian_getPersonalSpace(persons, v, d)
+	def getSocialSpace(self, persons, v, d, c):
+		return self.worker.SocialNavigationGaussian_getSocialSpace(persons, v, d)

@@ -63,7 +63,8 @@ public:
 	void AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldModel::World &w);
 	void AGMExecutiveTopic_symbolUpdated(const RoboCompAGMWorldModel::Node &modification);
 	void AGMExecutiveTopic_symbolsUpdated(const RoboCompAGMWorldModel::NodeSequence &modifications);
-
+    void AGMExecutiveTopic_selfEdgeAdded(const int nodeid, const string &edgeType, const RoboCompAGMWorldModel::StringDictionary &attributes);
+    void AGMExecutiveTopic_selfEdgeDeleted(const int nodeid, const string &edgeType);
 
 	using InnerPtr = std::shared_ptr<InnerModel>;
 	#ifdef USE_QTGUI

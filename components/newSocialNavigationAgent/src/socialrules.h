@@ -75,7 +75,7 @@ public:
 	SNGPolylineSeq object_seq;
 	SNGPolylineSeq objectblock_seq;
 
-    using RetPolys = std::tuple< SNGPersonSeq, SNGPolylineSeq,SNGPolylineSeq,SNGPolylineSeq,SNGPolylineSeq,SNGPolylineSeq>;
+    using retPolylines = std::tuple< SNGPersonSeq, SNGPolylineSeq,SNGPolylineSeq,SNGPolylineSeq,SNGPolylineSeq,SNGPolylineSeq>;
 
 	//PARA GUARDAR LOS DATOS EN UN ARCHIVO
 	struct Point {float x;float z;};
@@ -85,15 +85,8 @@ public:
 	//PARA GUARDAR LA DISTANCIA RECORRIDA
 	float totaldist = 0;
 
-
-
-    SocialRules() = default;
-    ~SocialRules() = default;
-
 	void initialize(AGMModel::SPtr worldModel_, SocialNavigationGaussianPrx socialnavigationgaussian_proxy_);
-
-//	void update(AGMModel::SPtr worldModel_);
-    RetPolys update(AGMModel::SPtr worldModel_);
+	retPolylines update(AGMModel::SPtr worldModel_);
 
 	void updatePeopleInModel();
 	void checkInteractions();
