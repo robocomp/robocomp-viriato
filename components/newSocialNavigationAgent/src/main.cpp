@@ -84,8 +84,8 @@
 #include <agmcommonbehaviorI.h>
 #include <agmexecutivetopicI.h>
 
-#include <Planning.h>
 #include <GenericBase.h>
+#include <Planning.h>
 
 
 // User includes here

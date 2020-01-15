@@ -81,40 +81,24 @@ class Person(object):
     """ Public Methods """
 
     def __init__(self, x=0, y=0, th=0, vel=0):
-        self.x = x
-        self.y = y
+        self.x = x/1000
+        self.y = y/1000
         self.th = th
         self.vel = vel
 
-    def draw(self, sigma_h, sigma_r, sigma_s, rot, drawPersonalSpace=False):
+    def draw(self, sigma_h, sigma_r, sigma_s, rot, drawPersonalSpace = False):
+        print("Drawing personal space")
         # define grid.
         npts = 50
         x = np.linspace(self.x - 4, self.x + 4, npts)
         y = np.linspace(self.y - 4, self.y + 4, npts)
 
         X, Y = np.meshgrid(x, y)
-        # plt.plot(X, Y, '*')
-
         Z = self._calculatePersonalSpace(X, Y, sigma_h, sigma_r, sigma_s, rot)
 
-        if (drawPersonalSpace):
-            # http://www.python-course.eu/matplotlib_contour_plot.php
-            # https://es.mathworks.com/matlabcentral/answers/230934-how-to-extract-x-and-y-position-of-contour-line
-            # surf = ax.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap=cm.coolwarm, linewidth=0, antialiased=False)
-
-            ##PROBLEMICA -> a partir de nc> 4 dibuja una linea de menos. Por eso en el caso de que v==100 he puesto que aprox=nc-2
-
-            CS = plt.contour(X, Y, Z, 10)
-
-            # dat0 = CS.allsegs[5][0]
-
-            # print(dat0)
-
-            ##Dibujar la polilinea
-            # plt.plot(dat0[:, 0], dat0[:, 1], '*b-')
-
-            # CS = plt.contour(X, Y, Z, 10)
-            # surf = ax.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap=cm.coolwarm, linewidth=0, antialiased=False)
+        if drawPersonalSpace:
+            print("drawPersonalSpace")
+            plt.contour(X, Y, Z, 10)
 
             # Corpo
             body = plt.Circle((self.x, self.y), radius=self._radius, fill=False)
@@ -139,13 +123,6 @@ class Person(object):
     """ Private Methods """
 
     def _calculatePersonalSpace(self, x, y, sigma_h, sigma_r, sigma_s, rot):
-        """"",sigma_h
-        sigma_h = 2.0
-        sigma_r = 1.0
-        sigma_s = 4/3
-        """
-        ##he cambiado el valor de las sigmas porque la gaussiana que dibujaba con las anteriores era muy grande
-
         alpha = np.arctan2(y - self.y, x - self.x) - rot - pi / 2
         nalpha = np.arctan2(np.sin(alpha), np.cos(alpha))  # Normalizando no intervalo [-pi, pi)
 
@@ -185,8 +162,94 @@ class SpecificWorker(GenericWorker):
 
     @QtCore.Slot()
     def compute(self):
-
         return True
+
+    #
+    # getAllPersonalSpaces
+    #
+    def SocialNavigationGaussian_getAllPersonalSpaces(self, persons, represent):
+
+        intimate = []
+        personal = []
+        social = []
+
+        personal_spaces = ["intimate", "personal", "social"]
+        # sigma_h, sigma_r, sigma_s, h, polyline
+        dict_space_param = {"intimate": [1.3, 1., 1.3, 0.8],
+                            "personal": [1.3, 1., 1.3, 0.4],
+                            "social": [3., 1., 1.3, 0.1],
+                            }
+
+        ##Limites de la representacion
+        lx_inf = -6
+        lx_sup = 10
+        ly_inf = -6
+        ly_sup = 10
+
+        for space in personal_spaces:
+            normals = []
+            for p in persons:
+                person = Person(p.x, p.z, p.angle)
+                # print('Pose x', person.x, 'Pose z', person.y, 'Rotacion', person.th)
+                # person.draw(2,1, 4./3.,pi/2 - person.th, drawPersonalSpace=dibujar) #Valores originales
+                person.draw(dict_space_param[space][0], dict_space_param[space][1], dict_space_param[space][2],
+                            pi / 2 - person.th, drawPersonalSpace=represent)
+                normals.append(Normal(mu=[[person.x], [person.y]],
+                                      sigma=[-person.th - pi / 2., dict_space_param[space][0],
+                                             dict_space_param[space][1],
+                                             dict_space_param[space][2]], elliptical=True))
+            # print ("numero de gaussianas",len(normals))
+
+            resolution = 0.1
+            limits = [[lx_inf, lx_sup], [ly_inf, ly_sup]]
+            _, z = Normal.makeGrid(normals, dict_space_param[space][3], 2, limits=limits, resolution=resolution)
+            grid = GM.filterEdges(z, dict_space_param[space][3])
+
+            totalpuntosorden = getPolyline(grid, resolution, lx_inf, ly_inf)
+
+            for pol in totalpuntosorden:
+                polyline = []
+                for pnt in pol:
+                    punto = SNGPoint2D()
+                    punto.x = pnt[0] * 1000
+                    punto.z = pnt[1] * 1000
+                    polyline.append(punto)
+
+                if space == "intimate":
+                    intimate.append(polyline)
+                if space == "personal":
+                    personal.append(polyline)
+                if space == "social":
+                    social.append(polyline)
+
+        if represent:
+            for ps in social:
+                # plt.figure()
+                for p in ps:
+                    plt.plot(p.x/1000, p.z/1000, "oc-")
+                    plt.axis('equal')
+                    plt.xlabel('X')
+                    plt.ylabel('Y')
+
+            for ps in personal:
+                # plt.figure()
+                for p in ps:
+                    plt.plot(p.x/1000, p.z/1000, "om-")
+                    plt.axis('equal')
+                    plt.xlabel('X')
+                    plt.ylabel('Y')
+
+            for ps in intimate:
+                # plt.figure()
+                for p in ps:
+                    plt.plot(p.x/1000, p.z/1000, "or-")
+                    plt.axis('equal')
+                    plt.xlabel('X')
+                    plt.ylabel('Y')
+
+            plt.show()
+
+        return (intimate, personal, social)
 
     #
     # getPersonalSPace
@@ -196,7 +259,6 @@ class SpecificWorker(GenericWorker):
         plt.close('all')
 
         ##Limites de la representacion
-
         lx_inf = -6
         lx_sup = 10
         ly_inf = -6
@@ -215,12 +277,10 @@ class SpecificWorker(GenericWorker):
             # normals.append(Normal(mu=[[pn.x], [pn.y]], sigma=[-pn.th - pi/2., 2, 1, 4. / 3], elliptical=True))
         # print ("numero de gaussianas",len(normals))
 
-
         resolution = 0.1
         limits = [[lx_inf, lx_sup], [ly_inf, ly_sup]]
         _, z = Normal.makeGrid(normals, h, 2, limits=limits, resolution=resolution)
         grid = GM.filterEdges(z, h)
-
 
         ###########################LEO EL GRID Y SEPARO LAS POLILINEAS, DESPUES SE HACE CONVEXHULL####################################
         polylines = []
@@ -309,8 +369,8 @@ class SpecificWorker(GenericWorker):
 
         for p in persons:
             pn = Person(p.x / 1000, p.z / 1000, p.angle)
-            pn.draw(3,1, 1.3,pi/2 - pn.th, drawPersonalSpace=draw) #Valores originales
-            normals.append(Normal(mu=[[pn.x], [pn.y]], sigma=[-pn.th - pi/2.,3, 1,1.3], elliptical=True))
+            pn.draw(3, 1, 1.3, pi / 2 - pn.th, drawPersonalSpace=draw)  # Valores originales
+            normals.append(Normal(mu=[[pn.x], [pn.y]], sigma=[-pn.th - pi / 2., 3, 1, 1.3], elliptical=True))
         # print ("numero de gaussianas",len(normals))
 
         resolution = 0.1
@@ -523,4 +583,3 @@ class SpecificWorker(GenericWorker):
             return polylines_interacting
         else:
             return polylines_object
-

@@ -68,7 +68,6 @@ public:
 
 
 	////////////////////////////
-	SNGPolylineSeq seq;
 	SNGPolylineSeq intimate_seq;
 	SNGPolylineSeq personal_seq;
 	SNGPolylineSeq social_seq;

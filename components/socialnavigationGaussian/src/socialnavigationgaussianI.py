@@ -60,6 +60,8 @@ class SocialNavigationGaussianI(SocialNavigationGaussian):
 	def __init__(self, worker):
 		self.worker = worker
 
+	def getAllPersonalSpaces(self, persons, represent, c):
+		return self.worker.SocialNavigationGaussian_getAllPersonalSpaces(persons, represent)
 	def getObjectInteraction(self, persons, objects, d, interact, c):
 		return self.worker.SocialNavigationGaussian_getObjectInteraction(persons, objects, d, interact)
 	def getPassOnRight(self, persons, v, d, c):

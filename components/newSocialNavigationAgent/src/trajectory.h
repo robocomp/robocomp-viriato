@@ -21,6 +21,8 @@
 #include <genericworker.h>
 #include "innerviewer.h"
 #include "collisions.h"
+#include <QPolygonF>
+#include <cppitertools/sliding_window.hpp>
 
 #define TILE_SIZE_ 250
 
@@ -44,7 +46,7 @@ public:
     void initialize(const std::shared_ptr<InnerModel> &innerModel_,
             const std::shared_ptr<InnerViewer> &viewer_,
             const std::shared_ptr< RoboCompCommonBehavior::ParameterList > &configparams_);
-    void update(RoboCompLaser::TLaserData laserData);
+    void update(const RoboCompLaser::TLaserData &laserData);
     void updatePolylines(SNGPersonSeq persons_, SNGPolylineSeq intimate,SNGPolylineSeq personal,SNGPolylineSeq social,SNGPolylineSeq object,SNGPolylineSeq objectsblocking);
 
 

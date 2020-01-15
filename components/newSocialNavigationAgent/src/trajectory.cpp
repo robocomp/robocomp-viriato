@@ -24,7 +24,7 @@ void Trajectory::initialize(const std::shared_ptr<InnerModel> &innerModel_,
 
 }
 
-void Trajectory::update(RoboCompLaser::TLaserData laserData)
+void Trajectory::update(const RoboCompLaser::TLaserData &laserData)
 {
     computeLaser(laserData);
 //    modifyLaser(laserData);
@@ -194,64 +194,16 @@ void Trajectory::updateFreeSpaceMap()
 
 
 
-
-void Trajectory::computeLaser(RoboCompLaser::TLaserData laserData)
-{
-    const float LASER_DIST_STEP = 0.05;
-
-    FILE *fd = fopen("entradaL.txt", "w");
-    auto lasernode = innerModel->getNode<InnerModelLaser>(QString("laser"));
-    for (const auto &laserSample: laserData)
-    {
-        QVec vv = lasernode->laserTo(QString("world"),laserSample.dist, laserSample.angle);
-//        QVec vv = innerModel->laserTo("world", "laser", laserSample.dist, laserSample.angle);
-//        QVec vv = innerModel->transform("world", QVec::vec3(laserSample.dist * sin(laserSample.angle), 0, laserSample.dist * cos(laserSample.angle)), "laser");
-        fprintf(fd, "%d %d\n", (int)vv(0), (int)vv(2));
-    }
-    fclose(fd);
-
-    for (auto &&l : laserData)
-    {
-//        QLineF line (QPointF(innerModel->transform("laser", QVec::vec3(0, 0, 0), "world")), QPointF(innerModel->transform("laser", QVec::vec3(l.dist * sin(l.angle), 0, l.dist * cos(l.angle)), "world")));
-        QLineF line (QPointF(innerModel->transform("world", QVec::vec3(0, 0, 0), "laser")), QPointF(innerModel->laserTo("world", "laser", l.dist, l.angle)));
-        float step = 100.f / line.length();
-        for (auto t : iter::range(0.f, 1.f, LASER_DIST_STEP))
-        {
-            auto point = line.pointAt(t);
-            auto pointInWorld = (QPointF(innerModel->transform("world", QVec::vec3(point.x(), 0, point.y()), "laser")));
-//            auto pointInWorld = (QPointF(innerModel->laserTo("world", "laser"), );
-
-
-            if (std::any_of(std::begin(polylines_intimate), std::end(polylines_intimate), [pointInWorld](auto &box) { return box.containsPoint(pointInWorld,Qt::OddEvenFill); }))
-            {
-                l.dist = QVector2D(point - line.pointAt(0)).length() - (step * 2);
-                break;
-            }
-        }
-    }
-
-    FILE *fd2 = fopen("salidaL.txt", "w");
-    for (auto &laserSample: laserData)
-    {
-//        QVec vv = innerModel->laserTo("world", "laser", laserSample.dist, laserSample.angle);
-        QVec vv = innerModel->transform("world", QVec::vec3(laserSample.dist * sin(laserSample.angle), 0, laserSample.dist * cos(laserSample.angle)), "laser");
-        fprintf(fd2, "%d %d\n", (int)vv(0), (int)vv(2));
-    }
-    fclose(fd2);
-
-
-
-}
-
-
 RoboCompLaser::TLaserData Trajectory::modifyLaser(RoboCompLaser::TLaserData laserData)
 {
 
     FILE *fd = fopen("entradaL.txt", "w");
+    auto lasernode = innerModel->getNode<InnerModelLaser>(QString("laser"));
+
     for (auto &laserSample: laserData)
     {
-        QVec vv = innerModel->laserTo("world", "laser", laserSample.dist, laserSample.angle);
-        fprintf(fd, "%f %f\n", vv(0), vv(2));
+        QVec vv = lasernode->laserTo(QString("world"),laserSample.dist, laserSample.angle);
+        fprintf(fd, "%d %d\n", (int)vv(0), (int)vv(2));
     }
     fclose(fd);
 
@@ -318,11 +270,95 @@ RoboCompLaser::TLaserData Trajectory::modifyLaser(RoboCompLaser::TLaserData lase
     FILE *fd3 = fopen("salidaL.txt", "w");
     for (auto &laserSample: laserCombined)
     {
-        QVec vv = innerModel->laserTo("world", "laser", laserSample.dist, laserSample.angle);
-        fprintf(fd3, "%f %f\n", vv(0), vv(2));
+        QVec vv = lasernode->laserTo(QString("world"),laserSample.dist, laserSample.angle);
+        fprintf(fd3, "%d %d\n", (int)vv(0), (int)vv(2));
     }
     fclose(fd3);
 
 
     return laserCombined;
+}
+
+void Trajectory::computeLaser(RoboCompLaser::TLaserData laserData)
+{
+    FILE *fd = fopen("entradaL.txt", "w");
+    auto lasernode = innerModel->getNode<InnerModelLaser>(QString("laser"));
+
+    for (auto &laserSample: laserData)
+    {
+        QVec vv = lasernode->laserTo(QString("world"),laserSample.dist, laserSample.angle);
+        fprintf(fd, "%d %d\n", (int)vv(0), (int)vv(2));
+    }
+    fclose(fd);
+
+    RoboCompLaser::TLaserData laserCombined;
+    laserCombined = laserData;
+
+    float LASER_DIST_STEP = 0.05;
+
+
+    for (auto &&l : laserCombined)
+    {
+        QVec lasercart = innerModel->laserTo("laser", "laser", l.dist, l.angle);
+//        QLine2D line(QVec::vec2(0,0), QVec::vec2(lasercart.x(), lasercart.z()));
+        QLineF line((QPointF(0, 0)), QPointF(lasercart.x(), lasercart.z()));
+
+
+//        float step = 100.f/line.length();
+
+        FILE *fd3 = fopen("polygonL.txt", "w");
+
+        for (auto poly: polylines_intimate)
+        {
+            for (auto p: poly)
+            {
+                fprintf(fd3, "%d %d\n", (int)p.x(), (int)p.y());
+            }
+
+            for (auto &&pair : iter::sliding_window(poly, 2))
+            {
+                QLineF polygonLine(QPointF(pair[0].x(), pair[0].y()), QPointF(pair[1].x(), pair[1].y()));
+
+                QPointF intersection;
+                auto intersectionType = line.intersect(polygonLine, &intersection);
+
+                if (intersectionType == QLineF::BoundedIntersection)
+                {
+                    if (QVector2D(intersection).length()<l.dist)
+                    {
+                        l.dist= QVector2D(intersection).length() -10;
+                    }
+
+                }
+
+
+            }
+
+//            for (auto t : iter::range(0.f, 1.f, LASER_DIST_STEP))
+//            {
+//                auto point = line.pointAt(t);
+//
+//                if (poly.containsPoint(QPointF(point), Qt::OddEvenFill))
+//                {
+//                    l.dist = QVector2D(point - line.pointAt(0)).length() - (step * 2);
+//                    break;
+//                }
+//
+//            }
+
+        }
+
+        fclose(fd3);
+
+    }
+
+    FILE *fd2 = fopen("salidaL.txt", "w");
+    for (auto &laserSample: laserCombined)
+    {
+        QVec vv = lasernode->laserTo(QString("world"),laserSample.dist, laserSample.angle);
+        fprintf(fd2, "%d %d\n", (int)vv(0), (int)vv(2));
+    }
+    fclose(fd2);
+
+
 }

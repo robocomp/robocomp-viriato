@@ -115,6 +115,8 @@ SNGPolylineSeq SocialRules::ApplySocialRules()
     personal_seq.clear();
     intimate_seq.clear();
 
+    SNGPolylineSeq seq;
+
 	if(!interactingpersons.empty())
 	{
 		try
@@ -135,14 +137,14 @@ SNGPolylineSeq SocialRules::ApplySocialRules()
 				}
 				else
 				{
-					seq = socialnavigationgaussian_proxy-> getSocialSpace(per, 0.1, false);
-					for (auto s:seq) {social_seq.push_back(s);}
+                    SNGPolylineSeq initmate_result, personal_result, social_result;
+                    socialnavigationgaussian_proxy-> getAllPersonalSpaces(per, false, initmate_result, personal_result, social_result);
 
-					seq = socialnavigationgaussian_proxy-> getPersonalSpace(per, 0.4, false);
-					for (auto s:seq) {personal_seq.push_back(s);}
+                    for (auto s:initmate_result) {intimate_seq.push_back(s);}
+                    for (auto s:personal_result) {personal_seq.push_back(s);}
+                    for (auto s:social_result) {social_seq.push_back(s);}
 
-                    seq = socialnavigationgaussian_proxy-> getPersonalSpace(per, 0.8, false);
-                    for (auto s:seq) {intimate_seq.push_back(s);}
+
 				}
 			}
 
@@ -229,14 +231,14 @@ vector <vector<int32_t>> SocialRules::groupInteractingPeople(int32_t id, int32_t
 
 SNGPolylineSeq SocialRules::calculateGauss(bool draw, float h)
 {
-	
-	if (!interactingpersons.empty())
+    SNGPolylineSeq seq;
+
+    if (!interactingpersons.empty())
 	{
-		seq.clear();
 		for (auto per: interactingpersons)
 		{
-//			seq = socialnavigationgaussian_proxy-> getPersonalSpace(per, h, draw);
-			seq = socialnavigationgaussian_proxy-> getSocialSpace(per, h, draw);
+            SNGPolylineSeq initmate_result, personal_result, social_result;
+            socialnavigationgaussian_proxy-> getAllPersonalSpaces(per, true, initmate_result, personal_result, social_result);
 		}
 		
 	}
@@ -246,10 +248,11 @@ SNGPolylineSeq SocialRules::calculateGauss(bool draw, float h)
 
 SNGPolylineSeq SocialRules::PassOnRight(bool draw)
 {
+    SNGPolylineSeq seq;
+
 //	qDebug()<<__FUNCTION__;
 	if (!movperson.empty())
 	{
-		seq.clear();
 		seq = socialnavigationgaussian_proxy-> getPassOnRight(movperson, h, draw);
 	}
 	
