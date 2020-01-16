@@ -22,6 +22,7 @@
 #include "innerviewer.h"
 #include "collisions.h"
 #include <QPolygonF>
+#include <QPointF>
 #include <cppitertools/sliding_window.hpp>
 
 #define TILE_SIZE_ 250
@@ -67,10 +68,7 @@ private:
     std::vector<QPolygonF> polylines_intimate,polylines_personal,polylines_social,polylines_objects_total,polylines_objects_blocked;
     std::vector<QPolygonF> prev_polylines_intimate = {},  prev_polylines_personal = {}, prev_polylines_social = {}, prev_polylines_objects_total = {}, prev_polylines_objects_blocked = {};
 
-    SNGPolylineSeq intimate_spaces;
-
-    std::vector<QPolygonF> toSetFree;
-    std::vector<QPolygonF> toResetCost;
+    std::vector<QPolygonF> toSetFree, toResetCost, toAvoidLaser;
 
     std::string robotname = "robot";
     typedef struct { float dist; float angle;} LocalPointPol;
@@ -81,8 +79,7 @@ private:
     void resetGrid();
     void updateFreeSpaceMap();
 
-    void computeLaser(RoboCompLaser::TLaserData laserData);
-    RoboCompLaser::TLaserData modifyLaser (RoboCompLaser::TLaserData laserData);
+    RoboCompLaser::TLaserData  computeLaser(RoboCompLaser::TLaserData laserData);
 
 
 

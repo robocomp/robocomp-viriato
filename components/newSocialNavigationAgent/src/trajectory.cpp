@@ -26,8 +26,7 @@ void Trajectory::initialize(const std::shared_ptr<InnerModel> &innerModel_,
 
 void Trajectory::update(const RoboCompLaser::TLaserData &laserData)
 {
-    computeLaser(laserData);
-//    modifyLaser(laserData);
+    RoboCompLaser::TLaserData laserMod = computeLaser(laserData);
     //    computeVisibility(points, laser_polygon);
 //    cleanPath(); // might go in a faster timer
 //    controller();
@@ -45,8 +44,7 @@ void Trajectory::updatePolylines(SNGPersonSeq persons_, SNGPolylineSeq intimate_
     polylines_objects_total.clear();
     polylines_objects_blocked.clear();
 
-    intimate_spaces.clear();
-    intimate_spaces = intimate_seq;
+    toAvoidLaser.clear();
 
     for (auto intimate : intimate_seq)
     {
@@ -87,6 +85,9 @@ void Trajectory::updatePolylines(SNGPersonSeq persons_, SNGPolylineSeq intimate_
             polygon << QPointF(ob.x, ob.z);
         polylines_objects_blocked.push_back(polygon);
     }
+
+    toAvoidLaser.insert(toAvoidLaser.end(), polylines_objects_blocked.begin(),polylines_objects_blocked.end());
+    toAvoidLaser.insert(toAvoidLaser.end(), polylines_intimate.begin(),polylines_intimate.end());
 
     updateFreeSpaceMap();
 
@@ -194,7 +195,7 @@ void Trajectory::updateFreeSpaceMap()
 
 
 
-RoboCompLaser::TLaserData Trajectory::modifyLaser(RoboCompLaser::TLaserData laserData)
+RoboCompLaser::TLaserData Trajectory::computeLaser(RoboCompLaser::TLaserData laserData)
 {
 
     FILE *fd = fopen("entradaL.txt", "w");
@@ -210,7 +211,7 @@ RoboCompLaser::TLaserData Trajectory::modifyLaser(RoboCompLaser::TLaserData lase
     RoboCompLaser::TLaserData laserCombined;
     laserCombined = laserData;
 
-    for (auto polyline : intimate_spaces)
+    for (auto polyline : toAvoidLaser)
     {
         float min = std::numeric_limits<float>::max();
         float max = std::numeric_limits<float>::min();
@@ -218,47 +219,35 @@ RoboCompLaser::TLaserData Trajectory::modifyLaser(RoboCompLaser::TLaserData lase
         for (auto polylinePoint: polyline)
         {
             LocalPointPol lPol;
-            QVec pInLaser = innerModel->transform("laser", QVec::vec3(polylinePoint.x, 0, polylinePoint.z), "world");
+            QVec pInLaser = innerModel->transform("laser", QVec::vec3(polylinePoint.x(), 0, polylinePoint.y()), "world");
             lPol.angle = atan2(pInLaser.x(), pInLaser.z());
             if( lPol.angle < min ) min = lPol.angle;
             if( lPol.angle > max ) max = lPol.angle;
         }
-// 		printf("MIN %f MAX %f\n", min, max);
+
         //Recorremos todas las muestras del laser
-// 		auto laserSample = laserCombined[laserCombined.size()/2];
         for (auto &laserSample: laserCombined)
         {
             //Compruebo que la muestra del laser corta a la polilinea. Es decir si esta comprendida entre el maximo y el minimo de antes
-// 			printf("LASER %f (%f)\n", laserSample.angle, laserSample.dist);
             if (laserSample.angle >= min and laserSample.angle <= max and fabs(max-min) < 3.14)
             {
-                QVec lasercart = innerModel->laserTo("laser", "laser", laserSample.dist, laserSample.angle);
-                //recta que une el 0,0 con el punto del laser
-                QLine2D laserline(QVec::vec2(0,0), QVec::vec2(lasercart.x(), lasercart.z()));
+                QVec lasercart = lasernode->laserTo(QString("laser"),laserSample.dist, laserSample.angle);
+                //recta que une el 0,0 con el punto del laser ---  NO DEBERIA SER DESDE EL ROBOT AL PUNTO DEL LASER¿?¿?¿?¿?
+                QLineF laserline((QPointF(0, 0)), QPointF(lasercart.x(), lasercart.z()));
 
                 auto previousPoint = polyline[polyline.size()-1];
-                QVec previousPointInLaser = innerModel->transform("laser", (QVec::vec3(previousPoint.x, 0, previousPoint.z)), "world");
-                // For each polyline's point
+                QVec previousPointInLaser = innerModel->transform("laser", (QVec::vec3(previousPoint.x(), 0, previousPoint.y())), "world");
 
                 for (auto polylinePoint: polyline)
                 {
-                    QVec currentPointInLaser = innerModel->transform("laser", (QVec::vec3(polylinePoint.x, 0, polylinePoint.z)), "world");
+                    QVec currentPointInLaser = innerModel->transform("laser", (QVec::vec3(polylinePoint.x(), 0, polylinePoint.y())), "world");
+                    QLineF polygonLine(QPointF(previousPointInLaser.x(), previousPointInLaser.z()), QPointF(currentPointInLaser.x(), currentPointInLaser.z()));
 
-                    QVec intersection = laserline.intersectionPoint(QLine2D(QVec::vec2(previousPointInLaser.x(),previousPointInLaser.z()),QVec::vec2(currentPointInLaser.x(),currentPointInLaser.z())));
+                    QPointF intersection;
+                    auto intersectionType = laserline.intersect(polygonLine, &intersection);
 
-                    //Una vez sacada la interseccion se comprueba que esta dentro del segmento. Para ello se calculan los angulos de los puntos actual y previo
-                    float pAngle = atan2(previousPointInLaser.x(), previousPointInLaser.z());
-                    float cAngle = atan2(currentPointInLaser.x(), currentPointInLaser.z());
-
-                    const float m = std::min<float>(cAngle, pAngle);
-                    const float M = std::max<float>(cAngle, pAngle);
-// 					printf("angulo medida: %f   p:%f  c:%f\n", laserSample.angle, cAngle, pAngle);
-
-                    if (laserSample.angle >= m and laserSample.angle <= M and fabs(M-m) < 3.14)
-                    {
-                        float distint = sqrt (pow(intersection.x(),2)+pow(intersection.y(),2));
-                        if (distint<laserSample.dist) laserSample.dist= distint;
-                    }
+                    if ((intersectionType == QLineF::BoundedIntersection) and (QVector2D(intersection).length()<laserSample.dist))
+                        laserSample.dist =  QVector2D(intersection).length();
 
                     previousPointInLaser = currentPointInLaser;
 
@@ -279,86 +268,3 @@ RoboCompLaser::TLaserData Trajectory::modifyLaser(RoboCompLaser::TLaserData lase
     return laserCombined;
 }
 
-void Trajectory::computeLaser(RoboCompLaser::TLaserData laserData)
-{
-    FILE *fd = fopen("entradaL.txt", "w");
-    auto lasernode = innerModel->getNode<InnerModelLaser>(QString("laser"));
-
-    for (auto &laserSample: laserData)
-    {
-        QVec vv = lasernode->laserTo(QString("world"),laserSample.dist, laserSample.angle);
-        fprintf(fd, "%d %d\n", (int)vv(0), (int)vv(2));
-    }
-    fclose(fd);
-
-    RoboCompLaser::TLaserData laserCombined;
-    laserCombined = laserData;
-
-    float LASER_DIST_STEP = 0.05;
-
-
-    for (auto &&l : laserCombined)
-    {
-        QVec lasercart = innerModel->laserTo("laser", "laser", l.dist, l.angle);
-//        QLine2D line(QVec::vec2(0,0), QVec::vec2(lasercart.x(), lasercart.z()));
-        QLineF line((QPointF(0, 0)), QPointF(lasercart.x(), lasercart.z()));
-
-
-//        float step = 100.f/line.length();
-
-        FILE *fd3 = fopen("polygonL.txt", "w");
-
-        for (auto poly: polylines_intimate)
-        {
-            for (auto p: poly)
-            {
-                fprintf(fd3, "%d %d\n", (int)p.x(), (int)p.y());
-            }
-
-            for (auto &&pair : iter::sliding_window(poly, 2))
-            {
-                QLineF polygonLine(QPointF(pair[0].x(), pair[0].y()), QPointF(pair[1].x(), pair[1].y()));
-
-                QPointF intersection;
-                auto intersectionType = line.intersect(polygonLine, &intersection);
-
-                if (intersectionType == QLineF::BoundedIntersection)
-                {
-                    if (QVector2D(intersection).length()<l.dist)
-                    {
-                        l.dist= QVector2D(intersection).length() -10;
-                    }
-
-                }
-
-
-            }
-
-//            for (auto t : iter::range(0.f, 1.f, LASER_DIST_STEP))
-//            {
-//                auto point = line.pointAt(t);
-//
-//                if (poly.containsPoint(QPointF(point), Qt::OddEvenFill))
-//                {
-//                    l.dist = QVector2D(point - line.pointAt(0)).length() - (step * 2);
-//                    break;
-//                }
-//
-//            }
-
-        }
-
-        fclose(fd3);
-
-    }
-
-    FILE *fd2 = fopen("salidaL.txt", "w");
-    for (auto &laserSample: laserCombined)
-    {
-        QVec vv = lasernode->laserTo(QString("world"),laserSample.dist, laserSample.angle);
-        fprintf(fd2, "%d %d\n", (int)vv(0), (int)vv(2));
-    }
-    fclose(fd2);
-
-
-}
