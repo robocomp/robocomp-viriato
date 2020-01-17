@@ -34,6 +34,7 @@
 #include <socialrules.h>
 #include <trajectory.h>
 #include <grid.h>
+#include <navigation.h>
 
 using namespace std;
 
@@ -100,6 +101,8 @@ private:
 	#endif
 	std::string robotname = "robot";
 	std::shared_ptr<RoboCompCommonBehavior::ParameterList> confParams;
+
+	Navigation<Grid<> > navigation;
 
 };
 

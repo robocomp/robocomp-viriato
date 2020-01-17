@@ -41,7 +41,20 @@ auto operator>>(std::istream &is, T &t) -> decltype(t.read(is), is)
 	return is;
 };
 
-template <typename T>
+// Map
+struct TCellDefault
+{
+    std::uint32_t id;
+    bool free;
+    bool visited;
+    float cost;
+
+    // method to save the value
+    void save(std::ostream &os) const {	os << free << " " << visited; };
+    void read(std::istream &is) {	is >> free >> visited ;};
+};
+
+template <typename T = TCellDefault>
 
 class Grid
 {

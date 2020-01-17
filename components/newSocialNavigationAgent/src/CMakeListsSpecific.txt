@@ -6,6 +6,7 @@ SET ( SOURCES
   socialrules.cpp
   innerviewer.cpp
   trajectory.cpp
+  navigation.cpp
 )
 
 # Headers set
@@ -17,7 +18,7 @@ SET ( HEADERS
   trajectory.h
   grid.h
   collisions.h
-
+  nabigation.h
 )
 
 set(CMAKE_CXX_STANDARD 17)
