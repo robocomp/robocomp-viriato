@@ -48,7 +48,7 @@ public:
 	SNGPerson robot;
 	SNGPerson person;
 
-	SNGPersonSeq totalpersons;
+	SNGPersonSeq totalpersons, prevpersons = {};
 	std::map<int32_t, SNGPerson> mapIdPersons;
 	vector <SNGPersonSeq> interactingpersons; //vector de grupos que interactuan
 
@@ -74,7 +74,7 @@ public:
 	SNGPolylineSeq object_seq;
 	SNGPolylineSeq objectblock_seq;
 
-    using retPolylines = std::tuple< SNGPersonSeq, SNGPolylineSeq,SNGPolylineSeq,SNGPolylineSeq,SNGPolylineSeq,SNGPolylineSeq>;
+    using retPolylines = std::tuple< bool, SNGPersonSeq, SNGPolylineSeq,SNGPolylineSeq,SNGPolylineSeq,SNGPolylineSeq,SNGPolylineSeq>;
 
 	//PARA GUARDAR LOS DATOS EN UN ARCHIVO
 	struct Point {float x;float z;};
@@ -88,6 +88,7 @@ public:
 	retPolylines update(AGMModel::SPtr worldModel_);
 
 	void updatePeopleInModel();
+	bool peopleChanged();
 	void checkInteractions();
 	vector <vector<int32_t>> groupInteractingPeople(int32_t id, int32_t pairId,vector<vector<int32_t>> &interactingId);
 

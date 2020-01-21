@@ -19,22 +19,27 @@ SocialRules::retPolylines SocialRules::update(AGMModel::SPtr worldModel_)
 {
 
 	worldModel = worldModel_;
-
 	updatePeopleInModel();
-	checkInteractions();
-	checkObjectAffordance(false);
-	ApplySocialRules();
 
-	return std::make_tuple(totalpersons, intimate_seq, personal_seq, social_seq, object_seq, objectblock_seq);
+	if(peopleChanged())
+	{
+        checkInteractions();
+        checkObjectAffordance(false);
+        ApplySocialRules();
+
+        return std::make_tuple(true,totalpersons, intimate_seq, personal_seq, social_seq, object_seq, objectblock_seq);
+	}
+	else return std::make_tuple(false,totalpersons, intimate_seq, personal_seq, social_seq, object_seq, objectblock_seq);
 }
 
 void SocialRules::updatePeopleInModel()
 {
-	qDebug()<<__FUNCTION__;
+	qDebug() << __PRETTY_FUNCTION__;
 
 	idselect_combobox->clear();
 	totalpersons.clear();
 	mapIdPersons.clear();
+
 
 	auto vectorPersons = worldModel->getSymbolsByType("person");
 
@@ -60,18 +65,42 @@ void SocialRules::updatePeopleInModel()
 		mapIdPersons[person.id] = person; //para acceder a la persona teniendo su id
 		totalpersons.push_back(person);
     }
-
-
 }
 
+bool SocialRules::peopleChanged()
+{
+	qDebug() << __PRETTY_FUNCTION__;
 
+	bool changes = false;
+
+    if(prevpersons.size() == totalpersons.size())
+    {
+        for(int i = 0; i<prevpersons.size(); i++)
+        {
+            auto prev = prevpersons[i];
+            auto curr = totalpersons[i];
+
+            if(prev.id != curr.id or prev.x != curr.x or prev.z != curr.z or prev.angle != curr.angle)
+            {
+                changes = true;
+                break;
+            }
+        }
+    }
+
+    else changes = true;
+	prevpersons = totalpersons;
+
+    return changes;
+
+}
 
 void SocialRules::checkInteractions()
 {
     vector<vector<int32_t>> interactingId;
     interactingpersons.clear();
 
-	qDebug() << __FUNCTION__;
+    qDebug() << __PRETTY_FUNCTION__;
 
 	for (auto p: totalpersons) {
 		auto id = p.id;
@@ -109,7 +138,7 @@ void SocialRules::checkInteractions()
 
 SNGPolylineSeq SocialRules::ApplySocialRules()
 {
-    qDebug()<<__FUNCTION__;
+    qDebug() << __PRETTY_FUNCTION__;
 
     social_seq.clear();
     personal_seq.clear();
@@ -262,7 +291,7 @@ SNGPolylineSeq SocialRules::PassOnRight(bool draw)
 
 void SocialRules::checkObjectAffordance(bool d)
 {
-//	qDebug()<<__FUNCTION__;
+    qDebug() << __PRETTY_FUNCTION__;
 
     object_seq.clear();
     objectblock_seq.clear();
@@ -277,9 +306,11 @@ void SocialRules::checkObjectAffordance(bool d)
             worldModel->getEdge(obj, obj, "interactive");
         }
 
-        catch (...) {
+        catch (const Ice::Exception &e) {
+        	std::cout <<"Not interactive" <<e.what() << std::endl;
             continue;
         }
+
 
         AGMModelSymbol::SPtr objectParent = worldModel->getParentByLink(id, "RT");
         AGMModelEdge &edgeRT  = worldModel->getEdgeByIdentifiers(objectParent->identifier,id, "RT");
@@ -291,6 +322,9 @@ void SocialRules::checkObjectAffordance(bool d)
         object.width=str2float(worldModel->getSymbolByIdentifier(id)->getAttribute("width"));
         object.inter_space=str2float(worldModel->getSymbolByIdentifier(id)->getAttribute("inter_space"));
         object.inter_angle=str2float(worldModel->getSymbolByIdentifier(id)->getAttribute("inter_angle"));
+
+        qDebug()<< "[FOUND INTERACTIVE OBJECT] "<< object.imName << " with pose " << object.x<<object.z<<object.rot<<
+        "and attributes "<< object.width<< object.inter_space <<object.inter_angle ;
 
         auto affordance = calculateAffordance(object);
         object_seq.push_back(affordance);
@@ -316,11 +350,11 @@ void SocialRules::checkObjectAffordance(bool d)
 
 SNGPolyline SocialRules::calculateAffordance(ObjectType obj)
 {
-    cout << "Entered calculateAffordance"<<endl;
     QPolygonF aff_qp;
 
     auto left_angle = obj.rot + obj.inter_angle/2;
     auto right_angle = obj.rot - obj.inter_angle/2;
+
 
     SNGPolyline polyline;
 

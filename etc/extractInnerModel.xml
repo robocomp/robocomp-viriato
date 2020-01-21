@@ -7,7 +7,7 @@
 			<transform id="robot" tx="0" ty="0" tz="0"  rx="0" ry="0" rz="0">
 				<plane id="base_mesh" texture="#666666" size="540,220,460" repeat="1000" nx="0" ny="0" nz="-1" px="0" py="137.5" pz="0" collide="1" />
 				<transform id="laser1Pose" tx="11" ty="300" tz="200"  rx="0" ry="0" rz="0">
-					<laser id="laser1" port="10003" min="100" max="30000" measures="100" angle="4.199999809" ifconfig="" />
+					<laser id="laser" port="10003" min="100" max="30000" measures="100" angle="4.199999809" ifconfig="" />
 				</transform>
 				<mesh id="barracolumna" file="/home/robocomp/robocomp/files/osgModels/basics/cube.3ds" scale="40,500,30" tx="0" ty="700" tz="15" rx="0" ry="0" rz="0" collide="1" />
 				<mesh id="barrahombro" file="/home/robocomp/robocomp/files/osgModels/robexarm/barrahombro.3ds" scale="1000,1000,1000" tx="-150" ty="1180" tz="30" rx="0" ry="-1.570799947" rz="0" collide="1" />

@@ -273,39 +273,20 @@ public:
 
 	void setFree(const Key &k)
 	{
-	    if(isInsideWorld(k))
+	    if((k.x >= dim.HMIN and k.x < dim.HMIN + dim.WIDTH and k.z >= dim.VMIN and k.z < dim.VMIN + dim.HEIGHT))
 		    fmap_aux.at(k).free = true;
 	}
 	void setOccupied(const Key &k)
 	{
-        if(isInsideWorld(k))
+        if((k.x >= dim.HMIN and k.x < dim.HMIN + dim.WIDTH and k.z >= dim.VMIN and k.z < dim.VMIN + dim.HEIGHT))
             fmap_aux.at(k).free = false;
 	}
     void setCost(const Key &k,float cost)
 	{
-        if(isInsideWorld(k))
+        if((k.x >= dim.HMIN and k.x < dim.HMIN + dim.WIDTH and k.z >= dim.VMIN and k.z < dim.VMIN + dim.HEIGHT))
             fmap_aux.at(k).cost = cost;
 	}
 
-	bool isInsideWorld(const Key &k)
-    {
-	    bool condition1;
-	    bool condition2;
-
-	    if(k.x > dim.HMIN and k.z > dim.VMIN) {
-            condition1 = true;
-        }else condition1 = false;
-
-        if(k.x < dim.HMIN + dim.WIDTH  and k.z <  dim.VMIN + dim.HEIGHT ) {
-            condition2 = true;
-        }else condition2 = false;
-
-        if (condition1 and condition2) return true;
-        else
-            return false;
-
-
-    }
 	// if true area becomes free
 	void markAreaInGridAs(const QPolygonF &poly, bool free)
 	{

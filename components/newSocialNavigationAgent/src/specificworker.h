@@ -93,8 +93,12 @@ private:
 
     AGMModel::SPtr worldModel;
 	bool active;
+	RoboCompLaser::TLaserData laserData;
+
+	void updateLaser();
 	bool setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated);
 	void sendModificationProposal(AGMModel::SPtr &worldModel, AGMModel::SPtr &newModel);
+
 
 	#ifdef USE_QTGUI
 		InnerViewerPtr viewer;

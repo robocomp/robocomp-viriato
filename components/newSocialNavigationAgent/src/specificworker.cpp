@@ -89,7 +89,7 @@ void SpecificWorker::initialize(int period)
     qDebug()<<"initializing classes";
     trajectory.initialize(innerModel, viewer, confParams);
     socialrules.initialize(worldModel, socialnavigationgaussian_proxy);
-
+    qDebug()<<"End initialize classes";
 
 
 	this->Period = period;
@@ -102,29 +102,36 @@ void SpecificWorker::initialize(int period)
 void SpecificWorker::compute()
 {
 
-    viewer->run();
-    try{
-
-      RoboCompLaser::TLaserData  laserData  = laser_proxy->getLaserData();
-      trajectory.update(laserData);
-
-    }
-
-    catch(const Ice::Exception &e){
-        std::cout <<"Can't connect to laser" <<e.what() << std::endl;
-    };
+	updateLaser();
 
 
     if (worldModelChanged) {
-		auto [ totalpersons, intimate_seq, personal_seq, social_seq, object_seq, objectblock_seq] = socialrules.update(worldModel);
-        trajectory.updatePolylines(totalpersons, intimate_seq, personal_seq, social_seq, object_seq, objectblock_seq);
-		//deshacer tpla y actualizar trajectory
+		auto [changes, totalpersons, intimate_seq, personal_seq, social_seq, object_seq, objectblock_seq] = socialrules.update(worldModel);
+		if (changes) //se comprueba si alguna de las personas ha cambiado de posicion
+            trajectory.updatePolylines(totalpersons, intimate_seq, personal_seq, social_seq, object_seq, objectblock_seq);
+
         socialrules.checkRobotmov();
 
         worldModelChanged = false;
     }
 
+    viewer->run();
+
 }
+void SpecificWorker::updateLaser()
+{
+    try{
+
+    laserData  = laser_proxy->getLaserData();
+    trajectory.update(laserData);
+}
+
+catch(const Ice::Exception &e){
+    std::cout <<"Can't connect to laser --" <<e.what() << std::endl;
+};
+
+}
+
 
 
 void SpecificWorker::sm_compute()
@@ -145,7 +152,7 @@ void SpecificWorker::sm_finalize()
 
 
 
-
+///////////////////////////////////////////////////////////////////////////////////////
 
 bool SpecificWorker::AGMCommonBehavior_activateAgent(const ParameterMap &prs)
 {
@@ -240,11 +247,17 @@ void SpecificWorker::AGMExecutiveTopic_selfEdgeDeleted(const int nodeid, const s
 void SpecificWorker::AGMExecutiveTopic_edgeUpdated(const RoboCompAGMWorldModel::Edge &modification)
 {
 //subscribesToCODE
+
 	QMutexLocker locker(mutex);
+
 	AGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);
 	AGMInner::updateImNodeFromEdge(worldModel, modification, innerModel.get());
 
-    worldModelChanged = true;
+    auto symbol1 = worldModel->getSymbolByIdentifier(modification.a);
+    auto symbol2 = worldModel->getSymbolByIdentifier(modification.b);
+
+    if(symbol1.get()->symbolType == "person" or symbol2.get()->symbolType == "person")
+        worldModelChanged = true;
 
 
 }
@@ -256,17 +269,22 @@ void SpecificWorker::AGMExecutiveTopic_edgesUpdated(const RoboCompAGMWorldModel:
 	QMutexLocker lockIM(mutex);
 	for (auto modification : modifications)
 	{
+	    auto symbol1 = worldModel->getSymbolByIdentifier(modification.a);
+        auto symbol2 = worldModel->getSymbolByIdentifier(modification.b);
+
+        if(symbol1.get()->symbolType == "person" or symbol2.get()->symbolType == "person")
+            worldModelChanged = true;
+
 		AGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);
 		AGMInner::updateImNodeFromEdge(worldModel, modification, innerModel.get());
 	}
 
-    worldModelChanged = true;
 
 }
 
 void SpecificWorker::AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldModel::World &w)
 {
-	qDebug()<<"---StructuralChange---";
+	qDebug()<<__PRETTY_FUNCTION__;
 
 	QMutexLocker lockIM(mutex);
 	static bool first = true;

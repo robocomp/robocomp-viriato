@@ -5,7 +5,7 @@
         
         <!-- laser position -->
         <transform id="laser1Pose" tx="11" ty="300" tz="200" ry="0" >
-            <laser id="laser1" measures="100" min="100" max="30000" angle="4.2" port="10003" />
+            <laser id="laser" measures="100" min="100" max="30000" angle="4.2" port="10003" />
         </transform>
 	 <!--<transform id="laser1Pose" tx="11" ty="300" tz="200" ry="0.785398" >
             <laser id="laser1" measures="100" min="100" max="30000" angle="4.2" port="10003" />
