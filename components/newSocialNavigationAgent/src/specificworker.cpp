@@ -86,10 +86,9 @@ void SpecificWorker::initialize(int period)
         printf("The executive is probably not running, waiting for first AGM model publication...");
     }
 
-    qDebug()<<"initializing classes";
-    trajectory.initialize(innerModel, viewer, confParams);
+//    trajectory.initialize(innerModel, viewer, confParams);
+    navigation.initialize(innerModel, viewer, confParams);
     socialrules.initialize(worldModel, socialnavigationgaussian_proxy);
-    qDebug()<<"End initialize classes";
 
 
 	this->Period = period;
@@ -104,11 +103,10 @@ void SpecificWorker::compute()
 
 	updateLaser();
 
-
     if (worldModelChanged) {
 		auto [changes, totalpersons, intimate_seq, personal_seq, social_seq, object_seq, objectblock_seq] = socialrules.update(worldModel);
 		if (changes) //se comprueba si alguna de las personas ha cambiado de posicion
-            trajectory.updatePolylines(totalpersons, intimate_seq, personal_seq, social_seq, object_seq, objectblock_seq);
+            navigation.updatePolylines(totalpersons, intimate_seq, personal_seq, social_seq, object_seq, objectblock_seq);
 
         socialrules.checkRobotmov();
 
@@ -123,12 +121,13 @@ void SpecificWorker::updateLaser()
     try{
 
     laserData  = laser_proxy->getLaserData();
-    trajectory.update(laserData);
-}
+    navigation.update(laserData);
 
-catch(const Ice::Exception &e){
-    std::cout <<"Can't connect to laser --" <<e.what() << std::endl;
-};
+    }
+
+    catch(const Ice::Exception &e){
+        std::cout <<"Can't connect to laser --" <<e.what() << std::endl;
+    };
 
 }
 

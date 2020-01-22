@@ -27,6 +27,7 @@
 
 #include <collisions.h>
 
+#define TILE_SIZE_ 250
 
 template <class T>
 auto operator<<(std::ostream &os, const T &t) -> decltype(t.save(os), os)
@@ -131,28 +132,32 @@ public:
 	typename FMap::const_iterator end() const { return fmap.begin(); };
 	size_t size() const { return fmap.size(); };
 
+//
+//	void initialize(const Dimensions &dim_, T &&initValue)
+//	{
+//		dim = dim_;
+//		fmap.clear();
+//		for (int i = dim.HMIN; i < dim.HMIN + dim.WIDTH; i += dim.TILE_SIZE)
+//			for (int j = dim.VMIN; j < dim.VMIN + dim.HEIGHT; j += dim.TILE_SIZE)
+//            {
+//                fmap.emplace(Key(i, j), initValue);
+//            }
+//
+//		fmap_aux = fmap;
+//        fmap_initial = fmap;
+//		std::cout << "Grid::Initialize. Grid initialized to map size: " << fmap.size() << std::endl;
+//	}
 
-	void initialize(const Dimensions &dim_, T &&initValue)
-	{
-		dim = dim_;
-		fmap.clear();
-		for (int i = dim.HMIN; i < dim.HMIN + dim.WIDTH; i += dim.TILE_SIZE)
-			for (int j = dim.VMIN; j < dim.VMIN + dim.HEIGHT; j += dim.TILE_SIZE)
-            {
-                fmap.emplace(Key(i, j), initValue);
-            }
-
-		fmap_aux = fmap;
-        fmap_initial = fmap;
-		std::cout << "Grid::Initialize. Grid initialized to map size: " << fmap.size() << std::endl;
-	}
 
 
-
-	void initialize(const Dimensions &dim_,  std::shared_ptr<Collisions> collisions_)
+	void initialize(std::shared_ptr<Collisions> collisions_)
     {
+		dim.TILE_SIZE = int(TILE_SIZE_);
+		dim.HMIN = std::min(collisions_->outerRegion.left(), collisions_->outerRegion.right());
+		dim.WIDTH = std::max(collisions_->outerRegion.left(), collisions_->outerRegion.right()) - dim.HMIN;
+		dim.VMIN = std::min(collisions_->outerRegion.top(), collisions_->outerRegion.bottom());
+		dim.HEIGHT = std::max(collisions_->outerRegion.top(), collisions_->outerRegion.bottom()) - dim.VMIN;
 
-        dim = dim_;
         fmap.clear();
         for (int i = dim.HMIN; i < dim.HMIN + dim.WIDTH; i += dim.TILE_SIZE)
             for (int j = dim.VMIN; j < dim.VMIN + dim.HEIGHT; j += dim.TILE_SIZE)

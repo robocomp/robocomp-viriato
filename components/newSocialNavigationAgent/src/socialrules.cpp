@@ -311,7 +311,6 @@ void SocialRules::checkObjectAffordance(bool d)
             continue;
         }
 
-
         AGMModelSymbol::SPtr objectParent = worldModel->getParentByLink(id, "RT");
         AGMModelEdge &edgeRT  = worldModel->getEdgeByIdentifiers(objectParent->identifier,id, "RT");
         object.id = id;
@@ -323,8 +322,7 @@ void SocialRules::checkObjectAffordance(bool d)
         object.inter_space=str2float(worldModel->getSymbolByIdentifier(id)->getAttribute("inter_space"));
         object.inter_angle=str2float(worldModel->getSymbolByIdentifier(id)->getAttribute("inter_angle"));
 
-        qDebug()<< "[FOUND INTERACTIVE OBJECT] "<< object.imName << " with pose " << object.x<<object.z<<object.rot<<
-        "and attributes "<< object.width<< object.inter_space <<object.inter_angle ;
+        qDebug()<< "[FOUND] Interactive Object"<< object.imName;
 
         auto affordance = calculateAffordance(object);
         object_seq.push_back(affordance);

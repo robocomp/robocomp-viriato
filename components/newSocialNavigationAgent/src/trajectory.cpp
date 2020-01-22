@@ -112,7 +112,7 @@ void Trajectory::initGrid()
         throw e;
     }
 
-    grid.initialize(dimensions,  collisions);
+//    grid.initialize(dimensions,  collisions);
     grid.draw(viewer.get());
 
 }
@@ -184,7 +184,7 @@ RoboCompLaser::TLaserData Trajectory::computeLaser(RoboCompLaser::TLaserData las
     laserCombined = laserData;
 
     FILE *fd = fopen("entradaL.txt", "w");
-    for (auto &laserSample: laserData)
+    for (const auto &laserSample: laserData)
     {
         QVec vv =  lasernode->laserTo(QString("world"), laserSample.dist, laserSample.angle);
         fprintf(fd, "%d %d\n", (int)vv(0), (int)vv(2));
@@ -211,7 +211,7 @@ RoboCompLaser::TLaserData Trajectory::computeLaser(RoboCompLaser::TLaserData las
             if( lPol.angle < min ) min = lPol.angle;
             if( lPol.angle > max ) max = lPol.angle;
 
-            fprintf(fd3, "%d %d\n", (int)polylinePoint.x(), (int)polylinePoint.y());
+            fprintf(fd3, "%d %d\n", (int)pInLaser.x(), (int)pInLaser.z());
 
         }
 
@@ -219,11 +219,13 @@ RoboCompLaser::TLaserData Trajectory::computeLaser(RoboCompLaser::TLaserData las
         for (auto &laserSample: laserCombined)
         {
             //Compruebo que la muestra del laser corta a la polilinea. Es decir si esta comprendida entre el maximo y el minimo de antes
-            if (laserSample.angle >= min and laserSample.angle <= max and fabs(max-min) < 3.14)
+            if (laserSample.angle >= min and laserSample.angle <= max and fabs(max-min) < 3.14 )
             {
                 QVec lasercart = lasernode->laserTo(QString("laser"),laserSample.dist, laserSample.angle);
                 //recta que une el 0,0 con el punto del laser
-                auto laser_in_robot = innerModel->transform("robot", "laser");
+                auto laser_in_robot = innerModel->transform("world", "laser");
+//                auto laser_in_robot = innerModel->transform("world", "robot"); //robotPose
+
                 QLineF laserline(QPointF(laser_in_robot.x(), laser_in_robot.z()), QPointF(lasercart.x(), lasercart.z()));
 //                QLineF laserline(QPointF(0, 0), QPointF(lasercart.x(), lasercart.z()));
 //
@@ -237,11 +239,11 @@ RoboCompLaser::TLaserData Trajectory::computeLaser(RoboCompLaser::TLaserData las
 
                     QPointF intersection;
                     auto intersectionType = laserline.intersect(polygonLine, &intersection);
+                    float dist = QVector2D(intersection.x()-laser_in_robot.x(),intersection.y()-laser_in_robot.z()).length();
 
-                    if ((intersectionType == QLineF::BoundedIntersection) and (QVector2D(intersection).length()<laserSample.dist))
-                    {
-                        laserSample.dist =  QVector2D(intersection.x()-laser_in_robot.x(),intersection.y()-laser_in_robot.z()).length();
-                    }
+                    if ((intersectionType == QLineF::BoundedIntersection) and (dist<laserSample.dist))
+                        laserSample.dist =  dist;
+
 
                     previousPointInLaser = currentPointInLaser;
 

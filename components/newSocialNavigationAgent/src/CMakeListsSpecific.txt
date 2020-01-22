@@ -6,7 +6,7 @@ SET ( SOURCES
   socialrules.cpp
   innerviewer.cpp
   trajectory.cpp
-  navigation.cpp
+
 )
 
 # Headers set

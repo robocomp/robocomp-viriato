@@ -35,6 +35,7 @@
 #include <trajectory.h>
 #include <grid.h>
 #include <navigation.h>
+#include <algorithm>
 
 using namespace std;
 
@@ -95,18 +96,20 @@ private:
 	bool active;
 	RoboCompLaser::TLaserData laserData;
 
-	void updateLaser();
+    #ifdef USE_QTGUI
+        InnerViewerPtr viewer;
+    #endif
+    std::string robotname = "robot";
+    std::shared_ptr<RoboCompCommonBehavior::ParameterList> confParams;
+
+    Navigation<Grid<> > navigation;
+
+    void updateLaser();
 	bool setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated);
 	void sendModificationProposal(AGMModel::SPtr &worldModel, AGMModel::SPtr &newModel);
 
 
-	#ifdef USE_QTGUI
-		InnerViewerPtr viewer;
-	#endif
-	std::string robotname = "robot";
-	std::shared_ptr<RoboCompCommonBehavior::ParameterList> confParams;
 
-	Navigation<Grid<> > navigation;
 
 };
 
