@@ -83,6 +83,7 @@
 
 #include <agmcommonbehaviorI.h>
 #include <agmexecutivetopicI.h>
+#include <rcismousepickerI.h>
 
 #include <GenericBase.h>
 #include <Planning.h>
@@ -322,6 +323,46 @@ int ::socialNavigationAgent::run(int argc, char* argv[])
 		}
 
 		// Server adapter creation and publication
+		IceStorm::TopicPrx rcismousepicker_topic;
+		Ice::ObjectPrx rcismousepicker;
+		try
+		{
+			if (not GenericMonitor::configGetString(communicator(), prefix, "RCISMousePickerTopic.Endpoints", tmp, ""))
+			{
+				cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy RCISMousePickerProxy";
+			}
+			Ice::ObjectAdapterPtr RCISMousePicker_adapter = communicator()->createObjectAdapterWithEndpoints("rcismousepicker", tmp);
+			RCISMousePickerPtr rcismousepickerI_ =  new RCISMousePickerI(worker);
+			Ice::ObjectPrx rcismousepicker = RCISMousePicker_adapter->addWithUUID(rcismousepickerI_)->ice_oneway();
+			if(!rcismousepicker_topic)
+			{
+				try {
+					rcismousepicker_topic = topicManager->create("RCISMousePicker");
+				}
+				catch (const IceStorm::TopicExists&) {
+					//Another client created the topic
+					try{
+						cout << "[" << PROGRAM_NAME << "]: Probably other client already opened the topic. Trying to connect.\n";
+						rcismousepicker_topic = topicManager->retrieve("RCISMousePicker");
+					}
+					catch(const IceStorm::NoSuchTopic&)
+					{
+						cout << "[" << PROGRAM_NAME << "]: Topic doesn't exists and couldn't be created.\n";
+						//Error. Topic does not exist
+					}
+				}
+				IceStorm::QoS qos;
+				rcismousepicker_topic->subscribeAndGetPublisher(qos, rcismousepicker);
+			}
+			RCISMousePicker_adapter->activate();
+		}
+		catch(const IceStorm::NoSuchTopic&)
+		{
+			cout << "[" << PROGRAM_NAME << "]: Error creating RCISMousePicker topic.\n";
+			//Error. Topic does not exist
+		}
+
+		// Server adapter creation and publication
 		cout << SERVER_FULL_NAME " started" << endl;
 
 		// User defined QtGui elements ( main window, dialogs, etc )
@@ -341,6 +382,15 @@ int ::socialNavigationAgent::run(int argc, char* argv[])
 		catch(const Ice::Exception& ex)
 		{
 			std::cout << "ERROR Unsubscribing topic: agmexecutivetopic " <<std::endl;
+		}
+		try
+		{
+			std::cout << "Unsubscribing topic: rcismousepicker " <<std::endl;
+			rcismousepicker_topic->unsubscribe( rcismousepicker );
+		}
+		catch(const Ice::Exception& ex)
+		{
+			std::cout << "ERROR Unsubscribing topic: rcismousepicker " <<std::endl;
 		}
 
 		status = EXIT_SUCCESS;

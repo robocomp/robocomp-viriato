@@ -150,7 +150,12 @@ void SpecificWorker::sm_finalize()
 }
 
 
+void SpecificWorker::RCISMousePicker_setPick(const Pick &myPick)
+{
+//subscribesToCODE
+    qDebug()<< __FUNCTION__<<QString::fromStdString(myPick.objectName) << myPick.x << myPick.y << myPick.z ;
 
+}
 ///////////////////////////////////////////////////////////////////////////////////////
 
 bool SpecificWorker::AGMCommonBehavior_activateAgent(const ParameterMap &prs)

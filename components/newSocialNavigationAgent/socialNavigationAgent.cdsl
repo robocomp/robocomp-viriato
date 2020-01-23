@@ -2,12 +2,14 @@ import "SocialNavigationGaussian.idsl";
 import "DifferentialRobot.idsl";
 import "OmniRobot.idsl";
 import "Laser.idsl";
+import "RCISMousePicker.idsl";
 
 Component socialNavigationAgent
 {
     Communications
     {
-		  requires SocialNavigationGaussian, OmniRobot, Laser;
+		requires SocialNavigationGaussian, OmniRobot, Laser;
+		subscribesTo RCISMousePicker;
     };
     language Cpp;
     gui Qt(QWidget);

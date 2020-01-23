@@ -135,7 +135,7 @@ class Navigation
         resetGrid();
 
         //To set occupied
-        for (auto &&poly_intimate : iter::chain(polylines_intimate,polylines_objects_blocked))
+        for (auto &&poly_intimate : iter::chain(polylines_intimate, polylines_objects_blocked))
             grid.markAreaInGridAs(poly_intimate, false);
 
         //To modify cost
@@ -143,10 +143,10 @@ class Navigation
             grid.modifyCostInGrid(poly_object, 1.5);
 
         for (auto &&poly_soc : polylines_social)
-            grid.modifyCostInGrid(poly_soc, 2.0);
+            grid.modifyCostInGrid(poly_soc, 4.0);
 
         for (auto &&poly_per : polylines_personal)
-            grid.modifyCostInGrid(poly_per, 4.0);
+            grid.modifyCostInGrid(poly_per, 6.0);
 
 
         grid.draw(viewer.get());
@@ -219,7 +219,6 @@ class Navigation
                     QVec lasercart = lasernode->laserTo(QString("laser"),laserSample.dist, laserSample.angle);
                     //recta que une el 0,0 con el punto del laser
                     auto robotL = innerModel->transform("robot", "laser");
-
                     QLineF laserline(QPointF(robotL.x(), robotL.z()), QPointF(lasercart.x(), lasercart.z()));
 
                     auto previousPoint = polyline[polyline.size()-1];
@@ -236,7 +235,6 @@ class Navigation
 
                         if ((intersectionType == QLineF::BoundedIntersection) and (dist<laserSample.dist))
                             laserSample.dist =  dist;
-
 
                         previousPointInLaser = currentPointInLaser;
 
@@ -256,9 +254,6 @@ class Navigation
 
         return laserCombined;
     }
-
-
-
 
 };
 

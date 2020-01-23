@@ -38,6 +38,7 @@
 #include <Laser.h>
 #include <OmniRobot.h>
 #include <SocialNavigationGaussian.h>
+#include <RCISMousePicker.h>
 #include <AGMCommonBehavior.h>
 #include <AGMExecutive.h>
 #include <AGMExecutiveTopic.h>
@@ -55,6 +56,7 @@ using namespace RoboCompPlanning;
 using namespace RoboCompLaser;
 using namespace RoboCompOmniRobot;
 using namespace RoboCompSocialNavigationGaussian;
+using namespace RoboCompRCISMousePicker;
 using namespace RoboCompAGMCommonBehavior;
 using namespace RoboCompAGMExecutive;
 using namespace RoboCompAGMExecutiveTopic;
@@ -110,6 +112,7 @@ public:
 	virtual void AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldModel::World &w) = 0;
 	virtual void AGMExecutiveTopic_symbolUpdated(const RoboCompAGMWorldModel::Node &modification) = 0;
 	virtual void AGMExecutiveTopic_symbolsUpdated(const RoboCompAGMWorldModel::NodeSequence &modifications) = 0;
+	virtual void RCISMousePicker_setPick(const Pick &myPick) = 0;
 
 protected:
 //State Machine

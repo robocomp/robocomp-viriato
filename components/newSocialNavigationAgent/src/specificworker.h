@@ -68,6 +68,7 @@ public:
     void AGMExecutiveTopic_selfEdgeAdded(const int nodeid, const string &edgeType, const RoboCompAGMWorldModel::StringDictionary &attributes);
     void AGMExecutiveTopic_selfEdgeDeleted(const int nodeid, const string &edgeType);
 
+	void RCISMousePicker_setPick(const Pick &myPick);
 	using InnerPtr = std::shared_ptr<InnerModel>;
 	#ifdef USE_QTGUI
 		using InnerViewerPtr = std::shared_ptr<InnerViewer>;

@@ -381,10 +381,10 @@ public:
                     if (it->second.cost == 1.5) //affordance spaces
                         viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(it->first.x, 10, it->first.z), QVec::vec3(1,0,0), "#FFA200", QVec::vec3(60,60,60));
 
-                    else if (it->second.cost == 2.0) //zona social
+                    else if (it->second.cost == 4.0) //zona social
                         viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(it->first.x, 10, it->first.z), QVec::vec3(1,0,0), "#00BFFF", QVec::vec3(60,60,60));
 
-                    else if (it->second.cost == 4.0) //zona personal
+                    else if (it->second.cost == 6.0) //zona personal
                         viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(it->first.x, 10, it->first.z), QVec::vec3(1,0,0), "#BF00FF", QVec::vec3(60,60,60));
 
 
