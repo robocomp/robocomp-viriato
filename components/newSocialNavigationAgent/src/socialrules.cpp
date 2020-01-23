@@ -256,12 +256,8 @@ vector <vector<int32_t>> SocialRules::groupInteractingPeople(int32_t id, int32_t
 * The function returns a sequence of polylines.
 */
 
-
-
-SNGPolylineSeq SocialRules::calculateGauss(bool draw, float h)
+void SocialRules::drawGauss()
 {
-    SNGPolylineSeq seq;
-
     if (!interactingpersons.empty())
 	{
 		for (auto per: interactingpersons)
@@ -271,7 +267,6 @@ SNGPolylineSeq SocialRules::calculateGauss(bool draw, float h)
 		}
 		
 	}
-	return seq;
 }
 
 

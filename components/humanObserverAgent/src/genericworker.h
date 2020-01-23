@@ -1,5 +1,5 @@
 /*
- *    Copyright (C)2019 by YOUR NAME HERE
+ *    Copyright (C)2020 by YOUR NAME HERE
  *
  *    This file is part of RoboComp
  *
@@ -32,11 +32,15 @@
 #include <QStateMachine>
 #include <QState>
 #include <CommonBehavior.h>
-#include <agm.h>
+
 #include <Planning.h>
 #include <AGMCommonBehavior.h>
 #include <AGMExecutive.h>
+#include <AGMExecutiveTopic.h>
 #include <AGMWorldModel.h>
+#include <agm.h>
+
+#include <agm.h>
 
 #define CHECK_PERIOD 5000
 #define BASIC_PERIOD 100
@@ -45,6 +49,7 @@ using namespace std;
 using namespace RoboCompPlanning;
 using namespace RoboCompAGMCommonBehavior;
 using namespace RoboCompAGMExecutive;
+using namespace RoboCompAGMExecutiveTopic;
 using namespace RoboCompAGMWorldModel;
 
 typedef map <string,::IceProxy::Ice::Object*> MapPrx;
@@ -89,6 +94,8 @@ public:
 	virtual int AGMCommonBehavior_uptimeAgent() = 0;
 	virtual void AGMExecutiveTopic_edgeUpdated(const RoboCompAGMWorldModel::Edge &modification) = 0;
 	virtual void AGMExecutiveTopic_edgesUpdated(const RoboCompAGMWorldModel::EdgeSequence &modifications) = 0;
+	virtual void AGMExecutiveTopic_selfEdgeAdded(const int nodeid, const string &edgeType, const RoboCompAGMWorldModel::StringDictionary &attributes) = 0;
+	virtual void AGMExecutiveTopic_selfEdgeDeleted(const int nodeid, const string &edgeType) = 0;
 	virtual void AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldModel::World &w) = 0;
 	virtual void AGMExecutiveTopic_symbolUpdated(const RoboCompAGMWorldModel::Node &modification) = 0;
 	virtual void AGMExecutiveTopic_symbolsUpdated(const RoboCompAGMWorldModel::NodeSequence &modifications) = 0;

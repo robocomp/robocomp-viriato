@@ -40,9 +40,6 @@ SpecificWorker::~SpecificWorker()
 
 bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 {
-	defaultMachine.start();
-	
-
 	try
 	{
 		RoboCompAGMWorldModel::World w = agmexecutive_proxy->getModel();
@@ -53,6 +50,7 @@ bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 		printf("The executive is probably not running, waiting for first AGM model publication...");
 	}
 
+	defaultMachine.start();
 	return true;
 }
 
@@ -75,16 +73,14 @@ void SpecificWorker::compute()
 
 //    qDebug()<<"worldModelchanged:"<<worldModelChanged;
     //solo queremos mirar las personas cuando otro agente modifica el AGM. Si somos nosotros quien lo modifica no volvemos a observar las personas.
-    if (worldModelChanged and ourModelChanged==false )
+    if (worldModelChanged and !ourModelChanged)
     {
     	loadInfoFromAGM();
     }
     else if (worldModelChanged) {
-        ourModelChanged=false;
+        ourModelChanged = false;
     }
     worldModelChanged = false;
-
-
 
 }
 
@@ -173,45 +169,30 @@ void SpecificWorker::loadInfoFromAGM()
 
 	newModel = AGMModel::SPtr(new AGMModel(worldModel));
 
-	checkHumanInteraction();
-	checkObjectInteraction();
-
-	try
-	{
-		sendModificationProposal(worldModel,newModel);
-		ourModelChanged = true;
-	}
-	catch(...)
-	{
-		std::cout<<"No se puede actualizar worldModel"<<std::endl;
-	}
-
-
+	if (checkHumanInteraction() or checkObjectInteraction())
+    {
+        try
+        {
+            qDebug()<<"Trying to update worldModel";
+            sendModificationProposal(worldModel,newModel);
+            ourModelChanged = true;
+        }
+        catch(...) { std::cout<<"No se puede actualizar worldModel"<<std::endl; }
+    }
 }
 
 
-void SpecificWorker::checkHumanInteraction()
+bool SpecificWorker::checkHumanInteraction()
 {
     std::cout<<"Entered checkHumanInteraction"<<std::endl;
 
+    bool changeInEdges = false;
+
     for (int i=0; i<totalPersons.size(); i++)
     {
-
         for (int j=0; j<totalPersons.size(); j++)
         {
             if (i==j) { continue; } // no calculamos la interacción de una persona consigo misma
-
-
-            try
-            {
-                newModel->removeEdgeByIdentifiers(totalPersons[i].id, totalPersons[j].id, "interacting");
-                newModel->removeEdgeByIdentifiers(totalPersons[j].id, totalPersons[i].id, "interacting");
-            }
-
-            catch(...)
-            {
-                std::cout<<__FUNCTION__<<" No existe el enlace"<<std::endl;
-            }
 
             cout<< "Checking interaction between "<< totalPersons[i].id << " and " << totalPersons[j].id<<endl;
 
@@ -232,41 +213,40 @@ void SpecificWorker::checkHumanInteraction()
                 {
                     newModel->addEdgeByIdentifiers(totalPersons[i].id, totalPersons[j].id, "interacting");
                     newModel->addEdgeByIdentifiers(totalPersons[j].id, totalPersons[i].id, "interacting");
+                    changeInEdges = true;
                 }
 
-                catch(...)
+                catch(...) { std::cout<<__FUNCTION__<<" Ya existe el enlace"<<std::endl; }
+            }
+
+            else
+            {
+                try
                 {
-                    std::cout<<__FUNCTION__<<" Ya existe el enlace"<<std::endl;
+                    newModel->removeEdgeByIdentifiers(totalPersons[i].id, totalPersons[j].id, "interacting");
+                    newModel->removeEdgeByIdentifiers(totalPersons[j].id, totalPersons[i].id, "interacting");
+                    changeInEdges = true;
                 }
 
+                catch(...) { std::cout<<__FUNCTION__<<" No existe el enlace"<<std::endl; }
             }
 
         }
     }
 
-
-
+    return changeInEdges;
 }
 
-void SpecificWorker::checkObjectInteraction()
+bool SpecificWorker::checkObjectInteraction()
 {
     cout<<"Entered checkObjectInteraction"<<endl;
+
+    bool changeInEdges = false;
 
     for (auto person : totalPersons)
 	{
 		for (auto object : totalObjects)
 		{
-
-            try
-            {
-                newModel->removeEdgeByIdentifiers(person.id, object.id, "interacting");
-            }
-
-            catch(...)
-            {
-                std::cout<<__FUNCTION__<<" No existe el enlace"<<std::endl;
-            }
-
             QVec VI = QVec::vec2((person.x - object.x),(person.z -object.z));
             auto affordance = calculateAffordance(object);
             bool inside_affordance = affordance.containsPoint(QPointF(person.x,person.z),Qt::OddEvenFill);
@@ -281,20 +261,29 @@ void SpecificWorker::checkObjectInteraction()
 
             if(inside_affordance and (abs(angle) < thr_angle_humans)) 
 			{
-            	qDebug()<<"OBJECT INTERACTIOOOOON";
+            	qDebug()<<"OBJECT INTERACTION";
 				try
 				{
 					newModel->addEdgeByIdentifiers(person.id, object.id, "interacting");
-				}
+                    changeInEdges = true;
+                }
 
-				catch(...)
-				{
-					std::cout<<__FUNCTION__<<" Ya existe el enlace"<<std::endl;
-				}
+				catch(...) { std::cout<<__FUNCTION__<<" Ya existe el enlace"<<std::endl; }
 			}
 
+            else
+            {
+                try
+                {
+                    newModel->removeEdgeByIdentifiers(person.id, object.id, "interacting");
+                    changeInEdges = true;
+                }
+                catch(...) { std::cout<<__FUNCTION__<<" No existe el enlace"<<std::endl; }
+            }
         }
 	}
+
+	return changeInEdges;
 }
 
 QPolygonF SpecificWorker::calculateAffordance(ObjectType obj)
@@ -395,6 +384,25 @@ int SpecificWorker::AGMCommonBehavior_uptimeAgent()
 //implementCODE
 	return 0;
 }
+
+void SpecificWorker::AGMExecutiveTopic_selfEdgeAdded(const int nodeid, const string &edgeType, const RoboCompAGMWorldModel::StringDictionary &attributes)
+{
+//subscribesToCODE
+    QMutexLocker lockIM(mutex);
+    try { worldModel->addEdgeByIdentifiers(nodeid, nodeid, edgeType, attributes); } catch(...){ printf("Couldn't add an edge. Duplicate?\n"); }
+
+    try { innerModel = std::make_shared<InnerModel>(AGMInner::extractInnerModel(worldModel)); } catch(...) { printf("Can't extract an InnerModel from the current model.\n"); }
+}
+
+void SpecificWorker::AGMExecutiveTopic_selfEdgeDeleted(const int nodeid, const string &edgeType)
+{
+//subscribesToCODE
+    QMutexLocker lockIM(mutex);
+    try { worldModel->removeEdgeByIdentifiers(nodeid, nodeid, edgeType); } catch(...) { printf("Couldn't remove an edge\n"); }
+
+    try { innerModel = std::make_shared<InnerModel>(AGMInner::extractInnerModel(worldModel)); } catch(...) { printf("Can't extract an InnerModel from the current model.\n"); }
+}
+
 
 void SpecificWorker::AGMExecutiveTopic_edgeUpdated(const RoboCompAGMWorldModel::Edge &modification)
 {

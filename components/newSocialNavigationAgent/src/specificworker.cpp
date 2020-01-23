@@ -58,7 +58,7 @@ void SpecificWorker::initialize(int period)
 
 	std::cout << "Initialize worker" << std::endl;
 
-    connect(draw_gaussian_button,SIGNAL(clicked()),&socialrules, SLOT(calculateGauss()));
+    connect(draw_gaussian_button,SIGNAL(clicked()),&socialrules, SLOT(drawGauss()));
     connect(draw_objects_button,SIGNAL(clicked()),&socialrules, SLOT(checkObjectAffordance()));
     connect(save_data_button,SIGNAL(clicked()),&socialrules, SLOT(saveData()));
     connect(gotoperson_button,SIGNAL(clicked()),&socialrules, SLOT(goToPerson()));

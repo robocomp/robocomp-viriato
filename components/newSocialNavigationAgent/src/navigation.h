@@ -135,11 +135,8 @@ class Navigation
         resetGrid();
 
         //To set occupied
-        for (auto &&poly_intimate : polylines_intimate)
+        for (auto &&poly_intimate : iter::chain(polylines_intimate,polylines_objects_blocked))
             grid.markAreaInGridAs(poly_intimate, false);
-
-        for (auto &&poly_object_block : polylines_objects_blocked)
-            grid.markAreaInGridAs(poly_object_block, false);
 
         //To modify cost
         for (auto &&poly_object : polylines_objects_total)
@@ -151,13 +148,6 @@ class Navigation
         for (auto &&poly_per : polylines_personal)
             grid.modifyCostInGrid(poly_per, 4.0);
 
-
-
-        prev_polylines_intimate = polylines_intimate;
-        prev_polylines_personal = polylines_personal;
-        prev_polylines_social = polylines_social;
-        prev_polylines_objects_total = polylines_objects_total;
-        prev_polylines_objects_blocked = polylines_objects_blocked;
 
         grid.draw(viewer.get());
 
@@ -174,6 +164,12 @@ class Navigation
         {
             grid.modifyCostInGrid(prev_cost, 1.0);
         }
+
+        prev_polylines_intimate = polylines_intimate;
+        prev_polylines_personal = polylines_personal;
+        prev_polylines_social = polylines_social;
+        prev_polylines_objects_total = polylines_objects_total;
+        prev_polylines_objects_blocked = polylines_objects_blocked;
     }
 
     ////////// CONTROLLER RELATED METHODS //////////
@@ -222,12 +218,10 @@ class Navigation
                 {
                     QVec lasercart = lasernode->laserTo(QString("laser"),laserSample.dist, laserSample.angle);
                     //recta que une el 0,0 con el punto del laser
-                    auto laser_in_robot = innerModel->transform("robot", "laser");
-//                auto laser_in_robot = innerModel->transform("world", "robot"); //robotPose
+                    auto robotL = innerModel->transform("robot", "laser");
 
-                    QLineF laserline(QPointF(laser_in_robot.x(), laser_in_robot.z()), QPointF(lasercart.x(), lasercart.z()));
-//                QLineF laserline(QPointF(0, 0), QPointF(lasercart.x(), lasercart.z()));
-//
+                    QLineF laserline(QPointF(robotL.x(), robotL.z()), QPointF(lasercart.x(), lasercart.z()));
+
                     auto previousPoint = polyline[polyline.size()-1];
                     QVec previousPointInLaser = innerModel->transform("laser", (QVec::vec3(previousPoint.x(), 0, previousPoint.y())), "world");
 
@@ -238,7 +232,7 @@ class Navigation
 
                         QPointF intersection;
                         auto intersectionType = laserline.intersect(polygonLine, &intersection);
-                        float dist = QVector2D(intersection.x()-laser_in_robot.x(),intersection.y()-laser_in_robot.z()).length();
+                        float dist = QVector2D(intersection.x()-robotL.x(),intersection.y()-robotL.z()).length();
 
                         if ((intersectionType == QLineF::BoundedIntersection) and (dist<laserSample.dist))
                             laserSample.dist =  dist;

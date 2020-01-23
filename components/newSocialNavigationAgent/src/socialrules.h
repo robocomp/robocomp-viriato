@@ -108,7 +108,7 @@ public slots:
 	void goToPerson();
     void followPerson();
     void accompanyPerson();
-	SNGPolylineSeq calculateGauss(bool draw = true, float h = 0.1);
+	void drawGauss();
 	SNGPolylineSeq PassOnRight(bool draw = true);
 	void checkObjectAffordance(bool d = true);
 
