@@ -47,6 +47,8 @@ class Navigation
             grid.initialize(collisions);
             grid.draw(viewer.get());
 
+            controller.initialize(innerModel,configparams);
+
         };
 
         void update(const RoboCompLaser::TLaserData &laserData_){

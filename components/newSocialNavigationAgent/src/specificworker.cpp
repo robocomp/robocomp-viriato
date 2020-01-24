@@ -55,7 +55,6 @@ bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 
 void SpecificWorker::initialize(int period)
 {
-
 	std::cout << "Initialize worker" << std::endl;
 
     connect(draw_gaussian_button,SIGNAL(clicked()),&socialrules, SLOT(drawGauss()));
@@ -103,7 +102,8 @@ void SpecificWorker::compute()
 
 	updateLaser();
 
-    if (worldModelChanged) {
+    if (worldModelChanged)
+    {
 		auto [changes, totalpersons, intimate_seq, personal_seq, social_seq, object_seq, objectblock_seq] = socialrules.update(worldModel);
 		if (changes) //se comprueba si alguna de las personas ha cambiado de posicion
             navigation.updatePolylines(totalpersons, intimate_seq, personal_seq, social_seq, object_seq, objectblock_seq);
@@ -122,12 +122,9 @@ void SpecificWorker::updateLaser()
 
     laserData  = laser_proxy->getLaserData();
     navigation.update(laserData);
-
     }
 
-    catch(const Ice::Exception &e){
-        std::cout <<"Can't connect to laser --" <<e.what() << std::endl;
-    };
+    catch(const Ice::Exception &e){ std::cout <<"Can't connect to laser --" <<e.what() << std::endl; };
 
 }
 
@@ -149,6 +146,7 @@ void SpecificWorker::sm_finalize()
 	std::cout<<"Entered final state finalize"<<std::endl;
 }
 
+////////////////////////// SUBSCRIPTIONS /////////////////////////////////////////////
 
 void SpecificWorker::RCISMousePicker_setPick(const Pick &myPick)
 {
@@ -156,6 +154,7 @@ void SpecificWorker::RCISMousePicker_setPick(const Pick &myPick)
     qDebug()<< __FUNCTION__<<QString::fromStdString(myPick.objectName) << myPick.x << myPick.y << myPick.z ;
 
 }
+
 ///////////////////////////////////////////////////////////////////////////////////////
 
 bool SpecificWorker::AGMCommonBehavior_activateAgent(const ParameterMap &prs)

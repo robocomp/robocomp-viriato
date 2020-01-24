@@ -27,8 +27,7 @@ SET ( SOURCES
   genericworker.cpp
   agmcommonbehaviorI.cpp
   agmexecutivetopicI.cpp
-  rcismousepickerI.cpp
-)
+  rcismousepickerI.cpp controller.cpp controller.h)
 
 
 

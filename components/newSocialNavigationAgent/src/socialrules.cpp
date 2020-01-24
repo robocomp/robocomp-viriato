@@ -10,7 +10,6 @@ void SocialRules::initialize(AGMModel::SPtr worldModel_, SocialNavigationGaussia
 	socialnavigationgaussian_proxy = socialnavigationgaussian_proxy_;
 	worldModel = worldModel_;
 
-
 	checkObjectAffordance(false);
 }
 
@@ -297,9 +296,7 @@ void SocialRules::checkObjectAffordance(bool d)
         ObjectType object;
         auto id = obj->identifier;
 
-        try {
-            worldModel->getEdge(obj, obj, "interactive");
-        }
+        try { worldModel->getEdge(obj, obj, "interactive"); }
 
         catch (const Ice::Exception &e) {
         	std::cout <<"Not interactive" <<e.what() << std::endl;

@@ -32,8 +32,8 @@
 #include <innermodel/innermodel.h>
 
 #include <socialrules.h>
-#include <trajectory.h>
 #include <grid.h>
+#include <controller.h>
 #include <navigation.h>
 #include <algorithm>
 
@@ -67,15 +67,14 @@ public:
 	void AGMExecutiveTopic_symbolsUpdated(const RoboCompAGMWorldModel::NodeSequence &modifications);
     void AGMExecutiveTopic_selfEdgeAdded(const int nodeid, const string &edgeType, const RoboCompAGMWorldModel::StringDictionary &attributes);
     void AGMExecutiveTopic_selfEdgeDeleted(const int nodeid, const string &edgeType);
-
 	void RCISMousePicker_setPick(const Pick &myPick);
+
 	using InnerPtr = std::shared_ptr<InnerModel>;
 	#ifdef USE_QTGUI
 		using InnerViewerPtr = std::shared_ptr<InnerViewer>;
 	#endif
 
 	SocialRules socialrules;
-    Trajectory trajectory;
 	bool worldModelChanged = false;
 
 
@@ -103,7 +102,10 @@ private:
     std::string robotname = "robot";
     std::shared_ptr<RoboCompCommonBehavior::ParameterList> confParams;
 
-    Navigation<Grid<> > navigation;
+
+    Navigation<Grid<>,Controller> navigation;
+
+
 
     void updateLaser();
 	bool setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated);
