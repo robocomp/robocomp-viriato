@@ -75,16 +75,32 @@ class Navigation
 
         };
 
-        void update(const RoboCompLaser::TLaserData &laserData_)
+        void reloadInnerModel(const std::shared_ptr<InnerModel> &innerModel_){
+            innerModel = innerModel_;
+            controller.reloadInnerModel(innerModel_);
+        };
+
+        void update(const RoboCompLaser::TLaserData &laserData_, bool changes)
         {
 
             RoboCompLaser::TLaserData laserData;
 
-            if (checkPathState() == false)
-                return;
+            if(changes)
+            {
+                this->current_target.lock();
+                    current_target.blocked.store(true);
+                this->current_target.unlock();
+            }
 
-//            laserData = computeLaser(laserData_);
-            laserData = laserData_;
+            if (checkPathState() == false)
+            {
+                omnirobot_proxy->setSpeedBase(0,0,0);
+                return;
+            }
+
+
+            laserData = computeLaser(laserData_);
+//            laserData = laserData_;
             computeForces(points, laserData);
             cleanPoints();
             addPoints();
@@ -190,6 +206,8 @@ class Navigation
         void updatePolylines(SNGPersonSeq persons_, SNGPolylineSeq intimate_seq,SNGPolylineSeq personal_seq,SNGPolylineSeq social_seq,
                 SNGPolylineSeq object_seq, SNGPolylineSeq objectsblocking_seq)
         {
+            qDebug()<<"Updating Polylines";
+
             polylines_intimate.clear();
             polylines_personal.clear();
             polylines_social.clear();
@@ -281,8 +299,7 @@ class Navigation
     void updateFreeSpaceMap()
     {
         // First remove polygons from last iteration respecting cell occupied by furniture
-        resetGrid();
-
+        grid.resetGrid();
         //To set occupied
         for (auto &&poly_intimate : iter::chain(polylines_intimate, polylines_objects_blocked))
             grid.markAreaInGridAs(poly_intimate, false);
@@ -300,25 +317,6 @@ class Navigation
 
         grid.draw(viewer.get());
 
-    }
-
-    void resetGrid()
-    {
-        for (const auto &prev : iter::chain(prev_polylines_intimate,prev_polylines_objects_blocked))
-        {
-            grid.markAreaInGridAs(prev, true);
-        }
-
-        for (const auto &prev_cost : iter::chain(prev_polylines_personal,prev_polylines_social,prev_polylines_objects_total))
-        {
-            grid.modifyCostInGrid(prev_cost, 1.0);
-        }
-
-        prev_polylines_intimate = polylines_intimate;
-        prev_polylines_personal = polylines_personal;
-        prev_polylines_social = polylines_social;
-        prev_polylines_objects_total = polylines_objects_total;
-        prev_polylines_objects_blocked = polylines_objects_blocked;
     }
 
     ////////// CONTROLLER RELATED METHODS //////////
@@ -446,6 +444,8 @@ class Navigation
             qDebug() << __FUNCTION__ << "Path not found";
             grid.markAreaInGridAs(robotPolygon, true);
 
+
+
             return false;
         }
 
@@ -541,12 +541,6 @@ class Navigation
             if(isVisible(temp_p)
                     and (robotPolygon.containsPoint(temp_p, Qt::OddEvenFill) == false)
                     and (std::none_of(std::begin(polylines_intimate), std::end(polylines_intimate),[temp_p](const auto &poly) { return poly.containsPoint(temp_p, Qt::OddEvenFill);})))
-//                    and
-                            //std::all_of(std::begin(boxes), std::end(boxes), [temp_p](const auto &box) { return box->rect().intersected(temp_p->rect()).empty();})
-//                            std::none_of(std::begin(boxes), std::end(boxes), [p,total](const auto &box) { return box->contains(box->mapFromScene(p->pos() + total.toPointF()));})
-//                    and
-//                            robot->polygon().intersected(temp_p->rect()).empty()
-
                 p = temp_p;
         }
 
@@ -554,9 +548,7 @@ class Navigation
         if (!isVisible(robotNose))
         {
             qDebug()<<"ROBOT NOSE NOT VISIBLE";
-//            this->current_target.lock();
-//                current_target.blocked.store(true);
-//            this->current_target.unlock();
+
             auto robotPose = innerModel->transform("world","robot");
             auto robotPolygon = getRobotPolygon();
 
@@ -574,23 +566,21 @@ class Navigation
             FILE *fd = fopen("laserPoly.txt", "w");
             for (const auto &l: laser_poly)
             {
-                fprintf(fd, "%d %d\n", (int)l.x(), (int)l.y());
+                auto p = innerModel->transform("world", QVec::vec3(l.x(),0,l.y()), "laser");
+                fprintf(fd, "%d %d\n", (int)p.x(), (int)p.z());
             }
             fclose(fd);
 
             FILE *fd1 = fopen("points.txt", "w");
             for (const auto &p: points)
             {
+
                 fprintf(fd1, "%d %d\n", (int)p.x(), (int)p.y());
             }
             fclose(fd1);
 
-            qFatal("MECACHIS");
-
         }
 
-        if(robotPolygon.containsPoint(robotNose, Qt::OddEvenFill))
-            qFatal("robotNose in robotPolygon");
         points[0] = robotNose;
 
     }
@@ -662,10 +652,10 @@ class Navigation
         auto width = boundingPlane->width;
         auto depth = boundingPlane->depth;
 
-        auto bottomLeft     = QVec::vec3(- width/2 -100, 0, - depth/2 -100);
-        auto bottomRight    = QVec::vec3(+ width/2 +100, 0, - depth/2 -100);
-        auto topRight       = QVec::vec3( + width/2 +100, 0 , + depth/2 +100);
-        auto topLeft        = QVec::vec3(- width/2 -100 , 0, + depth/2 +100);
+        auto bottomLeft     = QVec::vec3(- width/2, 0, - depth/2);
+        auto bottomRight    = QVec::vec3(+ width/2, 0, - depth/2);
+        auto topRight       = QVec::vec3( + width/2, 0 , + depth/2 );
+        auto topLeft        = QVec::vec3(- width/2, 0, + depth/2);
 
         auto bLWorld = innerModel->transform ("world", bottomLeft ,"base_mesh");
         auto bRWorld = innerModel->transform ("world", bottomRight ,"base_mesh");

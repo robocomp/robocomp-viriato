@@ -176,7 +176,12 @@ public:
 
     FMap getMap() { return fmap_aux; }
 
-	template <typename Q>
+	void resetGrid()
+	{
+	    fmap = fmap_aux;
+	}
+
+    template <typename Q>
 	void insert(const Key &key, const Q &value)
 	{
 		fmap.insert(std::make_pair(key, value));

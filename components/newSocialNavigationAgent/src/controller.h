@@ -40,6 +40,11 @@ public:
         {   std::cerr << "CONTROLLER. Out of Range error reading parameters: " << oor.what() << '\n'; }
     }
 
+    void reloadInnerModel(const std::shared_ptr<InnerModel> &innerModel_)
+    {
+        innerModel = innerModel_;
+    }
+
 
     retUpdate update(std::vector<QPointF> points, RoboCompLaser::TLaserData laserData,QPolygonF laser_poly, QPointF target)
     {
@@ -47,6 +52,7 @@ public:
         bool blocked = false;
 
         QVec robotPose = innerModel->transformS6D("world","robot");
+        robotPose.print("ROBOT POSE  UPDATE CONTROLLER");
         QPointF robot = QPointF(robotPose.x(),robotPose.z());
         QPointF robotNose = robot + QPointF(50*sin(robotPose.ry()),50*cos(robotPose.ry()));
 
@@ -97,6 +103,7 @@ public:
         for (auto &&i : iter::range(1, lim))
             angles.push_back(rewrapAngleRestricted(qDegreesToRadians(nose.angleTo(QLineF(first, points[i])))));
         auto min_angle = std::min(angles.begin(), angles.end());
+
 
         if (min_angle != angles.end())
         {
