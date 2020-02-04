@@ -24,10 +24,10 @@
 #include <cppitertools/zip.hpp>
 #include <cppitertools/range.hpp>
 #include "innerviewer.h"
-
+#include <limits>
 #include <collisions.h>
 
-#define TILE_SIZE_ 250
+#define TILE_SIZE_ 200
 
 template <class T>
 auto operator<<(std::ostream &os, const T &t) -> decltype(t.save(os), os)
@@ -144,7 +144,7 @@ public:
 //            }
 //
 //		fmap_aux = fmap;
-//        fmap_initial = fmap;
+
 //		std::cout << "Grid::Initialize. Grid initialized to map size: " << fmap.size() << std::endl;
 //	}
 
@@ -152,6 +152,7 @@ public:
 
 	void initialize(std::shared_ptr<Collisions> collisions_)
     {
+	    uint count = 0;
 		dim.TILE_SIZE = int(TILE_SIZE_);
 		dim.HMIN = std::min(collisions_->outerRegion.left(), collisions_->outerRegion.right());
 		dim.WIDTH = std::max(collisions_->outerRegion.left(), collisions_->outerRegion.right()) - dim.HMIN;
@@ -163,15 +164,17 @@ public:
             for (int j = dim.VMIN; j < dim.VMIN + dim.HEIGHT; j += dim.TILE_SIZE)
             {
                 bool free = collisions_->checkRobotValidStateAtTargetFast(QVec::vec3(i,10,j),QVec::zeros(3));
-                fmap.emplace(Key(i, j), T{0, free, false, 1.f});
+                fmap.emplace(Key(i, j), T{count++, free, false, 1.f});
             }
 
 		collisions_->checkRobotValidStateAtTargetFast(QVec::vec3(0,10,0),QVec::zeros(3)); //para devolver el robot a la posición 0,0
 
 		fmap_aux = fmap;
-        fmap_initial = fmap;
+
         std::cout << "Grid::Initialize. Grid initialized to map size: " << fmap.size() << std::endl;
     }
+
+    FMap getMap() { return fmap_aux; }
 
 	template <typename Q>
 	void insert(const Key &key, const Q &value)
@@ -196,29 +199,30 @@ public:
 		std::cout << fmap.size() << " elements written to " << fich << std::endl;
 	}
 
-	std::list<QVec> computePath(const Key &source_, const Key &target_)
+	std::list<QPointF> computePath(const QPointF &source_, const QPointF &target_)
 	{
-		Key source = pointToGrid(source_.x, source_.z);
-		Key target = pointToGrid(target_.x, target_.z);
+		Key source = pointToGrid(source_.x(), source_.y());
+		Key target = pointToGrid(target_.x(), target_.y());
+
 
 		// Admission rules
 		if (!(target.x >= dim.HMIN and target.x < dim.HMIN + dim.WIDTH and target.z >= dim.VMIN and target.z < dim.VMIN + dim.HEIGHT))
 		{
 			qDebug() << __FUNCTION__ << "Target out of limits. Returning empty path";
-			return std::list<QVec>();
+			return std::list<QPointF>();
 		}
 		if (!(source.x >= dim.HMIN and source.x < dim.HMIN + dim.WIDTH and source.z >= dim.VMIN and source.z < dim.VMIN + dim.HEIGHT))
 		{
 			qDebug() << __FUNCTION__ << "Robot out of limits. Returning empty path";
-			return std::list<QVec>();
+			return std::list<QPointF>();
 		}
 		if (source == target)
 		{
 			qDebug() << __FUNCTION__ << "Robot already at target. Returning empty path";
-			return std::list<QVec>();
+			return std::list<QPointF>();
 		}
 		// vector de distancias inicializado a DBL_MAX
-		std::vector<double> min_distance(fmap.size(), DBL_MAX);
+		std::vector<double> min_distance(fmap.size(),std::numeric_limits<double>::max());
 		// std::uint32_t id with source value
 		auto id = std::get<T &>(getCell(source)).id;
 		// initialize source position to 0
@@ -244,29 +248,29 @@ public:
 			Key where = active_vertices.begin()->second;
 			if (where == target)
 			{
-				//qDebug() << __FILE__ << __FUNCTION__  << "Min distance found:" << min_distance[fmap.at(where).id];  //exit point
+//				qDebug() << __FILE__ << __FUNCTION__  << "Min distance found:" << min_distance[fmap.at(where).id];  //exit point
 				auto p = orderPath(previous, source, target);
 				if (p.size() > 1)
 					return p;
 				else
-					return std::list<QVec>();
+					return std::list<QPointF>();
 			}
 			active_vertices.erase(active_vertices.begin());
 			for (auto ed : neighboors(where))
 			{
-				//qDebug() << __FILE__ << __FUNCTION__ << "antes del if" << ed.first.x << ed.first.z << ed.second.id << fmap[where].id << min_distance[ed.second.id] << min_distance[fmap[where].id];
+//				qDebug() << __FILE__ << __FUNCTION__ << "antes del if" << ed.first.x << ed.first.z << ed.second.id << fmap[where].id << min_distance[ed.second.id] << min_distance[fmap[where].id];
 				if (min_distance[ed.second.id] > min_distance[fmap[where].id] + ed.second.cost)
 				{
 					active_vertices.erase({min_distance[ed.second.id], ed.first});
 					min_distance[ed.second.id] = min_distance[fmap[where].id] + ed.second.cost;
 					previous[ed.second.id] = std::make_pair(fmap[where].id, where);
 					active_vertices.insert({min_distance[ed.second.id], ed.first}); // Djikstra
-																					//active_vertices.insert( { min_distance[ed.second.id] + heuristicL2(ed.first, target), ed.first } ); //A*
+					// active_vertices.insert( { min_distance[ed.second.id] + heuristicL2(ed.first, target), ed.first } ); //A*
 				}
 			}
 		}
 		qDebug() << __FUNCTION__ << "Path from (" << source.x << "," << source.z << ") not  found. Returning empty path";
-		return std::list<QVec>();
+		return std::list<QPointF>();
 	};
 
 	auto pointToGrid(long int x, long int z) const -> decltype(Key())
@@ -279,17 +283,17 @@ public:
 	void setFree(const Key &k)
 	{
 	    if((k.x >= dim.HMIN and k.x < dim.HMIN + dim.WIDTH and k.z >= dim.VMIN and k.z < dim.VMIN + dim.HEIGHT))
-		    fmap_aux.at(k).free = true;
+		    fmap.at(k).free = true;
 	}
 	void setOccupied(const Key &k)
 	{
         if((k.x >= dim.HMIN and k.x < dim.HMIN + dim.WIDTH and k.z >= dim.VMIN and k.z < dim.VMIN + dim.HEIGHT))
-            fmap_aux.at(k).free = false;
+            fmap.at(k).free = false;
 	}
     void setCost(const Key &k,float cost)
 	{
         if((k.x >= dim.HMIN and k.x < dim.HMIN + dim.WIDTH and k.z >= dim.VMIN and k.z < dim.VMIN + dim.HEIGHT))
-            fmap_aux.at(k).cost = cost;
+            fmap.at(k).cost = cost;
 	}
 
 	// if true area becomes free
@@ -365,58 +369,60 @@ public:
 
     void draw( InnerViewer *viewer)
     {
-
         try	{ viewer->ts_removeNode("IMV_fmap");} catch(const QString &s){	qDebug() << s; };
         try	{ viewer->ts_addTransform_ignoreExisting("IMV_fmap","world");} catch(const QString &s){qDebug() << s; };
 
         try
         {
-            uint i=0;
-            // Draw all points
-            for ( auto it = fmap_aux.begin(); it != fmap_aux.end(); ++it, i++ )
+            uint i = 0;
+
+            for( const auto &[key,value] : fmap)
             {
+
                 QString item = "IMV_fmap_point_" + QString::number(i);
-                if(it->second.free)
+                if(value.free)
                 {
-                    if (it->second.cost == 1.5) //affordance spaces
-                        viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(it->first.x, 10, it->first.z), QVec::vec3(1,0,0), "#FFA200", QVec::vec3(60,60,60));
+                    if (value.cost == 1.5) //affordance spaces
+                        viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), QVec::vec3(1,0,0), "#FFA200", QVec::vec3(60,60,60));
 
-                    else if (it->second.cost == 4.0) //zona social
-                        viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(it->first.x, 10, it->first.z), QVec::vec3(1,0,0), "#00BFFF", QVec::vec3(60,60,60));
+                    else if (value.cost == 4.0) //zona social
+                        viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), QVec::vec3(1,0,0), "#00BFFF", QVec::vec3(60,60,60));
 
-                    else if (it->second.cost == 6.0) //zona personal
-                        viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(it->first.x, 10, it->first.z), QVec::vec3(1,0,0), "#BF00FF", QVec::vec3(60,60,60));
-
+                    else if (value.cost == 6.0) //zona personal
+                        viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), QVec::vec3(1,0,0), "#BF00FF", QVec::vec3(60,60,60));
 
                     else
-                        viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(it->first.x, 10, it->first.z), QVec::vec3(1,0,0), "#00FF00", QVec::vec3(60,60,60));
+                        viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), QVec::vec3(1,0,0), "#00FF00", QVec::vec3(60,60,60));
                 }
 
                 else
-                    viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(it->first.x, 10, it->first.z), QVec::vec3(1,0,0), "#FF0000", QVec::vec3(60,60,60));
+                    viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), QVec::vec3(1,0,0), "#FF0000", QVec::vec3(60,60,60));
 
+                i++;
             }
+
+
         }
-        catch(const QString &s)
-        {		qDebug() << s;	}
+
+        catch(const QString &s) {qDebug() << s;	}
     }
 
 private:
-	FMap fmap, fmap_aux, fmap_initial;
+	FMap fmap, fmap_aux;
 	Dimensions dim;
 
 	/**
 		* @brief Recovers the optimal path from the list of previous nodes
 		* 
 		*/
-	std::list<QVec> orderPath(const std::vector<std::pair<std::uint32_t, Key>> &previous, const Key &source, const Key &target)
+	std::list<QPointF> orderPath(const std::vector<std::pair<std::uint32_t, Key>> &previous, const Key &source, const Key &target)
 	{
-		std::list<QVec> res;
+		std::list<QPointF> res;
 		Key k = target;
 		std::uint32_t u = fmap.at(k).id;
 		while (previous[u].first != (std::uint32_t)-1)
 		{
-			res.push_front(QVec::vec3(k.x, 0, k.z));
+			res.push_front(QPointF(k.x, k.z));
 			u = previous[u].first;
 			k = previous[u].second;
 		}

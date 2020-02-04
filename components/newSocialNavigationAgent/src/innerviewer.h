@@ -69,7 +69,7 @@ class InnerViewer: public QThread
 		void ts_removeNode(const QString &item){guard gl(mutex); removeNode(item); };
 		void ts_addTransform_ignoreExisting(const QString &item_, const QString &parent_, const QVec &pos = QVec::zeros(6)){guard gl(mutex);addTransform_ignoreExisting(item_, parent_,pos);};
 		void ts_addTransform(const QString &item_, const QString &parent_, const QVec &pos = QVec::zeros(6)){guard gl(mutex);addTransform(item_, parent_, pos);};
-		void ts_drawLine(const QString &item_, const QString &parent_, const QVec &center, const QVec &normal, float length, float width, const QString &texture = "#550000"){guard gl(mutex); drawLine(item_, parent_, center, normal, length, width, texture);};
+		void ts_drawLine(const QString &item_, const QString &parent_, const QVec &center, const QVec &normal, float length, float width,  QString texture = "#550000"){guard gl(mutex); drawLine(item_, parent_, center, normal, length, width, texture);};
 		void ts_addPlane_ignoreExisting(const QString &item_, const QString &parent_, const QVec &center, const QVec &normal, const QString &texture, const QVec &size){guard gl(mutex); addPlane_ignoreExisting(item_, parent_, center, normal, texture, size);};
 		void ts_addPlane_notExisting(const QString &item_, const QString &parent_, const QVec &center, const QVec &normal, const QString &texture, const QVec &size){guard gl(mutex);addPlane_notExisting(item_, parent_, center, normal, texture, size);};
 		void ts_updateTransformValues(const QString item_, const QVec &pos, const QString &parent = "")

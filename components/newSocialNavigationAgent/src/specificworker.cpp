@@ -86,9 +86,9 @@ void SpecificWorker::initialize(int period)
     }
 
 //    trajectory.initialize(innerModel, viewer, confParams);
-    navigation.initialize(innerModel, viewer, confParams);
+    navigation.initialize(innerModel, viewer, confParams, omnirobot_proxy);
     socialrules.initialize(worldModel, socialnavigationgaussian_proxy);
-
+//    drawGrid();
 
 	this->Period = period;
 	timer.start(Period);
@@ -99,14 +99,18 @@ void SpecificWorker::initialize(int period)
 
 void SpecificWorker::compute()
 {
+	RoboCompLaser::TLaserData laserData = updateLaser();
+	navigation.update(laserData);
 
-	updateLaser();
 
     if (worldModelChanged)
     {
 		auto [changes, totalpersons, intimate_seq, personal_seq, social_seq, object_seq, objectblock_seq] = socialrules.update(worldModel);
 		if (changes) //se comprueba si alguna de las personas ha cambiado de posicion
-            navigation.updatePolylines(totalpersons, intimate_seq, personal_seq, social_seq, object_seq, objectblock_seq);
+		{
+			navigation.updatePolylines(totalpersons, intimate_seq, personal_seq, social_seq, object_seq, objectblock_seq);
+//			drawGrid();
+		}
 
         socialrules.checkRobotmov();
 
@@ -116,16 +120,64 @@ void SpecificWorker::compute()
     viewer->run();
 
 }
-void SpecificWorker::updateLaser()
-{
-    try{
 
-    laserData  = laser_proxy->getLaserData();
-    navigation.update(laserData);
+//void SpecificWorker::drawGrid()
+//{
+//
+//    qDebug()<<__PRETTY_FUNCTION__;
+//    try	{ viewer->ts_removeNode("IMV_fmap");} catch(const QString &s){	qDebug() << s; };
+//    try	{ viewer->ts_addTransform_ignoreExisting("IMV_fmap","world");} catch(const QString &s){qDebug() << s; };
+//
+//    try
+//    {
+//        uint i = 0;
+//        auto grid = navigation.getMap();
+//
+//        for( const auto &[key,value] : navigation.getMap())
+//        {
+//            qDebug()<<key.x << key.z << value.cost << value.free;
+//
+//            QString item = "IMV_fmap_point_" + QString::number(i);
+//            if(value.free)
+//            {
+//                if (value.cost == 1.5) //affordance spaces
+//                    viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), QVec::vec3(1,0,0), "#FFA200", QVec::vec3(60,60,60));
+//
+//                else if (value.cost == 4.0) //zona social
+//                    viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), QVec::vec3(1,0,0), "#00BFFF", QVec::vec3(60,60,60));
+//
+//                else if (value.cost == 6.0) //zona personal
+//                    viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), QVec::vec3(1,0,0), "#BF00FF", QVec::vec3(60,60,60));
+//
+//                else
+//                    viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), QVec::vec3(1,0,0), "#00FF00", QVec::vec3(60,60,60));
+//            }
+//
+//            else
+//                viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), QVec::vec3(1,0,0), "#FF0000", QVec::vec3(60,60,60));
+//
+//            i++;
+//         }
+//
+//
+//    }
+//
+//    catch(const QString &s) {qDebug() << s;	}
+//}
+
+
+RoboCompLaser::TLaserData  SpecificWorker::updateLaser()
+{
+	RoboCompLaser::TLaserData laserData;
+
+    try
+    {
+		laserData  = laser_proxy->getLaserData();
     }
 
     catch(const Ice::Exception &e){ std::cout <<"Can't connect to laser --" <<e.what() << std::endl; };
 
+    return laserData;
 }
 
 
@@ -150,9 +202,7 @@ void SpecificWorker::sm_finalize()
 
 void SpecificWorker::RCISMousePicker_setPick(const Pick &myPick)
 {
-//subscribesToCODE
-    qDebug()<< __FUNCTION__<<QString::fromStdString(myPick.objectName) << myPick.x << myPick.y << myPick.z ;
-
+    navigation.newTarget(QPointF(myPick.x,myPick.z));
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////

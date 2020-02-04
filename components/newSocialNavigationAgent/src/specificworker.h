@@ -94,7 +94,7 @@ private:
 
     AGMModel::SPtr worldModel;
 	bool active;
-	RoboCompLaser::TLaserData laserData;
+
 
     #ifdef USE_QTGUI
         InnerViewerPtr viewer;
@@ -105,12 +105,10 @@ private:
 
     Navigation<Grid<>,Controller> navigation;
 
-
-
-    void updateLaser();
+	RoboCompLaser::TLaserData updateLaser();
 	bool setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated);
 	void sendModificationProposal(AGMModel::SPtr &worldModel, AGMModel::SPtr &newModel);
-
+//	void drawGrid();
 
 
 

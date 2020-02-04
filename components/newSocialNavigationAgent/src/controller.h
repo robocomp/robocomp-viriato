@@ -7,11 +7,128 @@
 
 #include <CommonBehavior.h>
 #include "genericworker.h"
+#include <cppitertools/sliding_window.hpp>
+#include <cppitertools/range.hpp>
+#include <tuple>
 
 class Controller {
 public:
+                            //   blocked, active, velx,velz,velrot
+    using retUpdate = std::tuple <bool,bool,float,float,float>;
+
     void initialize(const std::shared_ptr<InnerModel> &innerModel_,
-            std::shared_ptr<RoboCompCommonBehavior::ParameterList> params);
+            std::shared_ptr<RoboCompCommonBehavior::ParameterList> params_)
+    {
+        qDebug()<< __FUNCTION__;
+
+        innerModel = innerModel_;
+        this->time = QTime::currentTime();
+        this->delay = delay*1000;	//msecs
+
+        try
+        {
+            MAX_ADV_SPEED = QString::fromStdString(params_->at("MaxZSpeed").value).toFloat();
+            MAX_ROT_SPEED = QString::fromStdString(params_->at("MaxRotationSpeed").value).toFloat();
+            MAX_SIDE_SPEED = QString::fromStdString(params_->at("MaxXSpeed").value).toFloat();
+            MAX_LAG = std::stof(params_->at("MinControllerPeriod").value);
+            ROBOT_RADIUS_MM =  QString::fromStdString(params_->at("RobotRadius").value).toFloat();
+
+            qDebug()<< __FUNCTION__ << "CONTROLLER: Params from config:"  << MAX_ADV_SPEED << MAX_ROT_SPEED << MAX_SIDE_SPEED << MAX_LAG << ROBOT_RADIUS_MM;
+
+        }
+        catch (const std::out_of_range& oor)
+        {   std::cerr << "CONTROLLER. Out of Range error reading parameters: " << oor.what() << '\n'; }
+    }
+
+
+    retUpdate update(std::vector<QPointF> points, RoboCompLaser::TLaserData laserData,QPolygonF laser_poly, QPointF target)
+    {
+        bool active = true;
+        bool blocked = false;
+
+        QVec robotPose = innerModel->transformS6D("world","robot");
+        QPointF robot = QPointF(robotPose.x(),robotPose.z());
+        QPointF robotNose = robot + QPointF(50*sin(robotPose.ry()),50*cos(robotPose.ry()));
+
+        auto first = points[0];
+
+        // Compute euclidean distance to target
+        float euc_dist_to_target = QVector2D(robot - target).length();
+//        qDebug()<< "DISTANCE TO TARGET " << euc_dist_to_target << "NUM POINTS "<< points.size();
+
+        if (points.size() < 3 and euc_dist_to_target < FINAL_DISTANCE_TO_TARGET)
+        {
+            std::cout << "TARGET ACHIEVED" << std::endl;
+            advVelz = 0;
+            rotVel = 0;
+
+            active = false;
+
+            return std::make_tuple(blocked, active, advVelx, advVelz,rotVel);
+        }
+
+////         Check for blocking and call replanning if needed
+//        int num_free = 0;
+//        for (auto p :points)
+//        {
+//            if (laser_poly.containsPoint(p, Qt::OddEvenFill) == true) {num_free++;}
+//        }
+//
+//        qDebug()<<"NUM FREE "<< num_free;
+//
+////        if(num_free < ROBOT_LENGTH / ROAD_STEP_SEPARATION)
+//        if (num_free < 2)
+//        {
+//            qDebug() << __FUNCTION__ << "Blocked!  New path requested";
+//            advVelz = 0;
+//            rotVel = 0;
+//
+//            blocked = true;
+//            return std::make_tuple(blocked, active, advVelx, advVelz,rotVel);
+//        }
+
+        // Proceed through path
+        // Compute rotation speed. We use angle between robot's nose and line between first and sucessive points
+        // as an estimation of curvature ahead
+        std::vector<float> angles;
+        auto lim = std::min(6, (int)points.size());
+        QLineF nose(robot, robotNose);
+
+        for (auto &&i : iter::range(1, lim))
+            angles.push_back(rewrapAngleRestricted(qDegreesToRadians(nose.angleTo(QLineF(first, points[i])))));
+        auto min_angle = std::min(angles.begin(), angles.end());
+
+        if (min_angle != angles.end())
+        {
+            rotVel = 1.2 * *min_angle;
+            if (fabs(rotVel) > MAX_ROT_SPEED)
+                rotVel = rotVel / fabs(rotVel) * MAX_ROT_SPEED;
+        }
+        else
+        {
+            rotVel = 0;
+            qDebug() << __FUNCTION__ << "rotvel = 0";
+        }
+
+        // Compute advance speed
+        std::min(advVelz = MAX_ADV_SPEED * exponentialFunction(rotVel, 0.3, 0.4, 0), euc_dist_to_target);
+        //std::cout <<  "In controller: active " << active << " adv: "<< advVelz << " rot: " << rotVel << std::endl;
+
+        // Compute bumper-away speed
+        QVector2D total{0, 0};
+        for (const auto &l : laserData)
+        {
+            float limit = (fabs(ROBOT_LENGTH / 2.f * sin(l.angle)) + fabs(ROBOT_LENGTH / 2.f * cos(l.angle))) + 200;
+            float diff = limit - l.dist;
+            if (diff >= 0)
+                total = total + QVector2D(-diff * sin(l.angle), -diff * cos(l.angle));
+        }
+
+        bumperVel = total / KB;  // Parameter set in slidebar
+
+        return std::make_tuple (blocked, active, advVelx, advVelz,rotVel);
+
+    }
 
 
 
@@ -28,7 +145,34 @@ private:
     float MAX_SIDE_SPEED;
     float MAX_LAG; //ms
     float ROBOT_RADIUS_MM; //mm
-    float ARRIVAL_TOLERANCE = 20.f;  //Default tolerance on arrival
+
+    const float ROBOT_LENGTH = 400;
+    const float FINAL_DISTANCE_TO_TARGET = 500; //mm
+    float KB = 90;
+
+    float advVelx = 0, advVelz = 0, rotVel = 0;
+    QVector2D bumperVel;
+
+    // compute max de gauss(value) where gauss(x)=y  y min
+    float exponentialFunction(float value, float xValue, float yValue, float min)
+    {
+        if (yValue <= 0)
+            return 1.f;
+        float landa = -fabs(xValue) / log(yValue);
+        float res = exp(-fabs(value) / landa);
+        return std::max(res, min);
+    }
+
+    float rewrapAngleRestricted(const float angle)
+    {
+        if (angle > M_PI)
+            return angle - M_PI * 2;
+        else if (angle < -M_PI)
+            return angle + M_PI * 2;
+        else
+            return angle;
+    }
+
 };
 
 #endif //PROJECT_CONTROLLER_H
