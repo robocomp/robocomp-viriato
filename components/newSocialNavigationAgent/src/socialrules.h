@@ -51,6 +51,9 @@ public:
 	SNGPersonSeq totalpersons, prevpersons = {};
 	std::map<int32_t, SNGPerson> mapIdPersons;
 	vector <SNGPersonSeq> interactingpersons; //vector de grupos que interactuan
+	vector<vector<int32_t>> prevInteractingId = {};
+
+
 
 	SNGPersonSeq movperson; //moving person
 
@@ -89,7 +92,7 @@ public:
 
 	void updatePeopleInModel();
 	bool peopleChanged();
-	void checkInteractions();
+	bool checkInteractions();
 	vector <vector<int32_t>> groupInteractingPeople(int32_t id, int32_t pairId,vector<vector<int32_t>> &interactingId);
 
 	SNGPolyline calculateAffordance(ObjectType obj);

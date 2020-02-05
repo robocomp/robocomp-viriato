@@ -80,13 +80,15 @@ class Navigation
             controller.innerModelChanged(innerModel_);
         };
 
-        void update(const RoboCompLaser::TLaserData &laserData_, bool changes)
+        void update(const RoboCompLaser::TLaserData &laserData_, bool personMoved)
         {
 
             RoboCompLaser::TLaserData laserData;
+            laserData = computeLaser(laserData_);
 
-            if(changes)
+            if(personMoved)
             {
+                qDebug()<<__PRETTY_FUNCTION__<< " Person Moved = true";
                 this->current_target.lock();
                     current_target.blocked.store(true);
                 this->current_target.unlock();
@@ -99,7 +101,6 @@ class Navigation
             }
 
 
-            laserData = computeLaser(laserData_);
 //            laserData = laserData_;
             computeForces(points, laserData);
             cleanPoints();
@@ -206,7 +207,6 @@ class Navigation
         void updatePolylines(SNGPersonSeq persons_, SNGPolylineSeq intimate_seq,SNGPolylineSeq personal_seq,SNGPolylineSeq social_seq,
                 SNGPolylineSeq object_seq, SNGPolylineSeq objectsblocking_seq)
         {
-            qDebug()<<"Updating Polylines";
 
             polylines_intimate.clear();
             polylines_personal.clear();
@@ -300,6 +300,7 @@ class Navigation
     {
         // First remove polygons from last iteration respecting cell occupied by furniture
         grid.resetGrid();
+
         //To set occupied
         for (auto &&poly_intimate : iter::chain(polylines_intimate, polylines_objects_blocked))
             grid.markAreaInGridAs(poly_intimate, false);
@@ -314,7 +315,7 @@ class Navigation
         for (auto &&poly_per : polylines_personal)
             grid.modifyCostInGrid(poly_per, 6.0);
 
-
+        qDebug()<<"drawing grid";
         grid.draw(viewer.get());
 
     }
@@ -398,6 +399,9 @@ class Navigation
             QVec vv =  lasernode->laserTo(QString("world"), laserSample.dist, laserSample.angle);
             fprintf(fd1, "%d %d\n", (int)vv(0), (int)vv(2));
         }
+        QVec vv =  lasernode->laserTo(QString("world"), laserCombined[0].dist, laserCombined[0].angle);
+        fprintf(fd1, "%d %d\n", (int)vv(0), (int)vv(2));
+
         fclose(fd1);
 
         return laserCombined;
@@ -422,14 +426,28 @@ class Navigation
         grid.markAreaInGridAs(robotPolygon, false);
 
         std::list<QPointF> path = grid.computePath(QPointF(robotNose.x() ,robotNose.y()), target);
+
         if (path.size() > 0)
         {
             points.push_back(robotNose);
 
+            FILE *fd0 = fopen("pointsV.txt", "w");
+            FILE *fd1 = fopen("points.txt", "w");
+
+
             for (const QPointF &p : path)
             {
-                    points.push_back(p);
+                points.push_back(p);
+                if(isVisible(p))
+                    fprintf(fd0, "%d %d\n", (int)p.x(), (int)p.y());
+                else
+                    fprintf(fd1, "%d %d\n", (int)p.x(), (int)p.y());
+
             }
+            fclose(fd0);
+            fclose(fd1);
+
+
 
             first = points[0];
             last = points[points.size()-1];
@@ -465,20 +483,32 @@ class Navigation
             return;
 
         laser_poly.clear();
+
+
         QPolygonF robotPolygon = getRobotPolygon();
 
         //convert laser polar coordinates to cartesian
         auto lasernode = innerModel->getNode<InnerModelLaser>(QString("laser"));
         std::vector<QPointF> laser_cart;
 
+
+        FILE *fd = fopen("laserPoly.txt", "w");
+
         for (const auto &l : lData)
         {
-//            QVec p = lasernode->laserTo(QString("world"),l.dist, l.angle);
+
             QVec laserc = lasernode->laserTo(QString("laser"),l.dist, l.angle);
             laser_cart.push_back(QPointF(laserc.x(),laserc.z()));
             laser_poly << QPointF(laserc.x(),laserc.z());
 
+            QVec p = lasernode->laserTo(QString("world"),l.dist, l.angle);
+//            laser_poly << QPointF(p.x(),p.z());
+
+            fprintf(fd, "%d %d\n", (int)p.x(), (int)p.z());
         }
+        
+        fclose(fd);
+
 
         // Go through points using a sliding windows of 3
         for (auto group : iter::sliding_window(path, 3))
@@ -547,13 +577,7 @@ class Navigation
 
         QPointF robotNose = getRobotNose();
 
-        if(!isVisible(robotNose))
-        {
-            qDebug() << "Robot nose is not visible ";
-            this->current_target.lock();
-                current_target.blocked.store(true);
-            this->current_target.unlock();
-        }
+
         points[0] = robotNose;
 
     }
@@ -625,10 +649,10 @@ class Navigation
         auto width = boundingPlane->width;
         auto depth = boundingPlane->depth;
 
-        auto bottomLeft     = QVec::vec3(- width/2, 0, - depth/2);
-        auto bottomRight    = QVec::vec3(+ width/2, 0, - depth/2);
-        auto topRight       = QVec::vec3( + width/2, 0 , + depth/2 );
-        auto topLeft        = QVec::vec3(- width/2, 0, + depth/2);
+        auto bottomLeft     = QVec::vec3(- width/2 -100, 0, - depth/2-100);
+        auto bottomRight    = QVec::vec3(+ width/2 +100, 0, - depth/2-100);
+        auto topRight       = QVec::vec3( + width/2 +100, 0 , + depth/2 +100);
+        auto topLeft        = QVec::vec3(- width/2 -100, 0, + depth/2+100);
 
         auto bLWorld = innerModel->transform ("world", bottomLeft ,"base_mesh");
         auto bRWorld = innerModel->transform ("world", bottomRight ,"base_mesh");
@@ -640,6 +664,16 @@ class Navigation
         robotP << QPointF(bRWorld.x(),bRWorld.z());
         robotP << QPointF(tRWorld.x(),tRWorld.z());
         robotP << QPointF(tLWorld.x(),tLWorld.z());
+
+        FILE *fd = fopen("robot.txt", "w");
+        for (const auto &r: robotP)
+        {
+            fprintf(fd, "%d %d\n", (int)r.x(), (int)r.y());
+        }
+        fprintf(fd, "%d %d\n", (int)robotP[0].x(), (int)robotP[0].y());
+
+        fclose(fd);
+
 
         return robotP;
     }
@@ -702,9 +736,9 @@ class Navigation
                     viewer->ts_drawLine(item + "_point", item, QVec::zeros(3), normal, 500, 40, "#FF0000");  //Rojo
 
                 else if (isVisible(w))
-                    viewer->ts_drawLine(item + "_point", item, QVec::zeros(3), normal, 500, 40, "#00FFFF"); //TAKE WIDTH FROM PARAMS!!!
+                    viewer->ts_drawLine(item + "_point", item, QVec::zeros(3), normal, 500, 40, "#00ECFF"); //TAKE WIDTH FROM PARAMS!!!
                 else
-                    viewer->ts_drawLine(item + "_point", item, QVec::zeros(3), normal, 500, 40, "#9300FF");  //Morado
+                    viewer->ts_drawLine(item + "_point", item, QVec::zeros(3), normal, 500, 40, "#7C00FF");  //Morado
 
 
             }

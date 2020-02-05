@@ -112,7 +112,6 @@ void SpecificWorker::compute()
 			personMoved = true;
 //			drawGrid();
 		}
-
 //        socialrules.checkRobotmov();
 
         worldModelChanged = false;
@@ -312,6 +311,7 @@ void SpecificWorker::AGMExecutiveTopic_edgeUpdated(const RoboCompAGMWorldModel::
 {
 //subscribesToCODE
 
+
 	QMutexLocker locker(mutex);
 
 	AGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);
@@ -329,6 +329,7 @@ void SpecificWorker::AGMExecutiveTopic_edgeUpdated(const RoboCompAGMWorldModel::
 void SpecificWorker::AGMExecutiveTopic_edgesUpdated(const RoboCompAGMWorldModel::EdgeSequence &modifications)
 {
 //subscribesToCODE
+
 
 	QMutexLocker lockIM(mutex);
 	for (auto modification : modifications)
@@ -348,12 +349,12 @@ void SpecificWorker::AGMExecutiveTopic_edgesUpdated(const RoboCompAGMWorldModel:
 
 void SpecificWorker::AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldModel::World &w)
 {
-	qDebug()<<__PRETTY_FUNCTION__;
 
 	QMutexLocker lockIM(mutex);
 	static bool first = true;
 
 	AGMModelConverter::fromIceToInternal(w, worldModel);
+//	innerModel.reset(AGMInner::extractInnerModel(worldModel));
 	innerModel = std::make_shared<InnerModel>(AGMInner::extractInnerModel(worldModel));
 
 	if (!first)
@@ -372,6 +373,7 @@ void SpecificWorker::AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldMo
 void SpecificWorker::AGMExecutiveTopic_symbolUpdated(const RoboCompAGMWorldModel::Node &modification)
 {
 //subscribesToCODE
+
 	QMutexLocker locker(mutex);
 	AGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);
 
@@ -382,7 +384,9 @@ void SpecificWorker::AGMExecutiveTopic_symbolsUpdated(const RoboCompAGMWorldMode
 {
 //subscribesToCODE
 	QMutexLocker l(mutex);
-	for (auto modification : modifications)
+
+
+    for (auto modification : modifications)
 		AGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);
 
 }
