@@ -99,9 +99,9 @@ void SpecificWorker::initialize(int period)
 
 void SpecificWorker::compute()
 {
-	RoboCompLaser::TLaserData laserData = updateLaser();
-	navigation.update(laserData);
 
+    RoboCompLaser::TLaserData laserData = updateLaser();
+	bool personMoved = false;
 
     if (worldModelChanged)
     {
@@ -109,13 +109,16 @@ void SpecificWorker::compute()
 		if (changes) //se comprueba si alguna de las personas ha cambiado de posicion
 		{
 			navigation.updatePolylines(totalpersons, intimate_seq, personal_seq, social_seq, object_seq, objectblock_seq);
+			personMoved = true;
 //			drawGrid();
 		}
 
-        socialrules.checkRobotmov();
+//        socialrules.checkRobotmov();
 
         worldModelChanged = false;
     }
+
+    navigation.update(laserData, personMoved);
 
     viewer->run();
 
@@ -284,7 +287,11 @@ void SpecificWorker::AGMExecutiveTopic_selfEdgeAdded(const int nodeid, const str
 	QMutexLocker lockIM(mutex);
 	try { worldModel->addEdgeByIdentifiers(nodeid, nodeid, edgeType, attributes); } catch(...){ printf("Couldn't add an edge. Duplicate?\n"); }
 
-	try { innerModel = std::make_shared<InnerModel>(AGMInner::extractInnerModel(worldModel)); } catch(...) { printf("Can't extract an InnerModel from the current model.\n"); }
+	try {
+		innerModel = std::make_shared<InnerModel>(AGMInner::extractInnerModel(worldModel));
+		navigation.innerModelChanged(innerModel);
+
+	} catch(...) { printf("Can't extract an InnerModel from the current model.\n"); }
 }
 
 void SpecificWorker::AGMExecutiveTopic_selfEdgeDeleted(const int nodeid, const string &edgeType)
@@ -293,7 +300,11 @@ void SpecificWorker::AGMExecutiveTopic_selfEdgeDeleted(const int nodeid, const s
 	QMutexLocker lockIM(mutex);
 	try { worldModel->removeEdgeByIdentifiers(nodeid, nodeid, edgeType); } catch(...) { printf("Couldn't remove an edge\n"); }
 
-	try { innerModel = std::make_shared<InnerModel>(AGMInner::extractInnerModel(worldModel)); } catch(...) { printf("Can't extract an InnerModel from the current model.\n"); }
+	try {
+		innerModel = std::make_shared<InnerModel>(AGMInner::extractInnerModel(worldModel));
+		navigation.innerModelChanged(innerModel);
+
+	} catch(...) { printf("Can't extract an InnerModel from the current model.\n"); }
 }
 
 
@@ -352,6 +363,7 @@ void SpecificWorker::AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldMo
 	else
 		first = false;
 
+	navigation.innerModelChanged(innerModel);
 	viewer->reloadInnerModel(innerModel);
     worldModelChanged = true;
 

@@ -40,7 +40,7 @@ public:
         {   std::cerr << "CONTROLLER. Out of Range error reading parameters: " << oor.what() << '\n'; }
     }
 
-    void reloadInnerModel(const std::shared_ptr<InnerModel> &innerModel_)
+    void innerModelChanged(const std::shared_ptr<InnerModel> &innerModel_)
     {
         innerModel = innerModel_;
     }
@@ -52,7 +52,7 @@ public:
         bool blocked = false;
 
         QVec robotPose = innerModel->transformS6D("world","robot");
-        robotPose.print("ROBOT POSE  UPDATE CONTROLLER");
+
         QPointF robot = QPointF(robotPose.x(),robotPose.z());
         QPointF robotNose = robot + QPointF(50*sin(robotPose.ry()),50*cos(robotPose.ry()));
 

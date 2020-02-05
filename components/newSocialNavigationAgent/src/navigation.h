@@ -75,9 +75,9 @@ class Navigation
 
         };
 
-        void reloadInnerModel(const std::shared_ptr<InnerModel> &innerModel_){
+        void innerModelChanged(const std::shared_ptr<InnerModel> &innerModel_){
             innerModel = innerModel_;
-            controller.reloadInnerModel(innerModel_);
+            controller.innerModelChanged(innerModel_);
         };
 
         void update(const RoboCompLaser::TLaserData &laserData_, bool changes)
@@ -473,9 +473,10 @@ class Navigation
 
         for (const auto &l : lData)
         {
-            QVec p = lasernode->laserTo(QString("world"),l.dist, l.angle);
-            laser_cart.push_back(QPointF(p.x(),p.z()));
-            laser_poly << QPointF(p.x(),p.z());
+//            QVec p = lasernode->laserTo(QString("world"),l.dist, l.angle);
+            QVec laserc = lasernode->laserTo(QString("laser"),l.dist, l.angle);
+            laser_cart.push_back(QPointF(laserc.x(),laserc.z()));
+            laser_poly << QPointF(laserc.x(),laserc.z());
 
         }
 
@@ -545,42 +546,14 @@ class Navigation
         }
 
         QPointF robotNose = getRobotNose();
-        if (!isVisible(robotNose))
+
+        if(!isVisible(robotNose))
         {
-            qDebug()<<"ROBOT NOSE NOT VISIBLE";
-
-            auto robotPose = innerModel->transform("world","robot");
-            auto robotPolygon = getRobotPolygon();
-
-            FILE *fd0 = fopen("robot.txt", "w");
-            for (const auto &r: robotPolygon)
-            {
-                fprintf(fd0, "%d %d\n", (int)r.x(), (int)r.y());
-            }
-
-            fprintf(fd0, "%d %d\n", (int)robotPolygon[0].x(), (int)robotPolygon[0].y());
-
-            fclose(fd0);
-
-
-            FILE *fd = fopen("laserPoly.txt", "w");
-            for (const auto &l: laser_poly)
-            {
-                auto p = innerModel->transform("world", QVec::vec3(l.x(),0,l.y()), "laser");
-                fprintf(fd, "%d %d\n", (int)p.x(), (int)p.z());
-            }
-            fclose(fd);
-
-            FILE *fd1 = fopen("points.txt", "w");
-            for (const auto &p: points)
-            {
-
-                fprintf(fd1, "%d %d\n", (int)p.x(), (int)p.y());
-            }
-            fclose(fd1);
-
+            qDebug() << "Robot nose is not visible ";
+            this->current_target.lock();
+                current_target.blocked.store(true);
+            this->current_target.unlock();
         }
-
         points[0] = robotNose;
 
     }
