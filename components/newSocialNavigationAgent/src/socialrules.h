@@ -70,8 +70,8 @@ public:
 		float height;
 		float inter_space;
 		float inter_angle;
-	};
 
+	};
 
 	////////////////////////////
 	SNGPolylineSeq intimate_seq;

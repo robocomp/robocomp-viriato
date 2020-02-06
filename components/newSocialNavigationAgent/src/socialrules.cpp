@@ -339,7 +339,13 @@ void SocialRules::checkObjectAffordance(bool d)
 			SNGPolyline affordance;
 
 			if (object.shape == "trapezoid")
-				auto affordance = affordanceTrapezoidal(object);
+				affordance = affordanceTrapezoidal(object);
+
+            if (object.shape == "circular")
+				affordance = affordanceCircular(object);
+
+            if (object.shape == "rectangular")
+				affordance = affordanceRectangular(object);
 
 			object_seq.push_back(affordance);
 

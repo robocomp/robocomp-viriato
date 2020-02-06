@@ -27,7 +27,7 @@
 #include <limits>
 #include <collisions.h>
 
-#define TILE_SIZE_ 200
+#define TILE_SIZE_ 150
 
 template <class T>
 auto operator<<(std::ostream &os, const T &t) -> decltype(t.save(os), os)
@@ -388,20 +388,20 @@ public:
                 if(value.free)
                 {
                     if (value.cost == 1.5) //affordance spaces
-                        viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), QVec::vec3(1,0,0), "#FFA200", QVec::vec3(60,60,60));
+                        viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), QVec::vec3(1,0,0), "#FFA200", QVec::vec3(50,50,50));
 
                     else if (value.cost == 4.0) //zona social
-                        viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), QVec::vec3(1,0,0), "#00BFFF", QVec::vec3(60,60,60));
+                        viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), QVec::vec3(1,0,0), "#00BFFF", QVec::vec3(50,50,50));
 
                     else if (value.cost == 6.0) //zona personal
-                        viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), QVec::vec3(1,0,0), "#BF00FF", QVec::vec3(60,60,60));
+                        viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), QVec::vec3(1,0,0), "#BF00FF", QVec::vec3(50,50,50));
 
                     else
-                        viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), QVec::vec3(1,0,0), "#00FF00", QVec::vec3(60,60,60));
+                        viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), QVec::vec3(1,0,0), "#00FF00", QVec::vec3(50,50,50));
                 }
 
                 else
-                    viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), QVec::vec3(1,0,0), "#FF0000", QVec::vec3(60,60,60));
+                    viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), QVec::vec3(1,0,0), "#FF0000", QVec::vec3(50,50,50));
 
                 i++;
             }

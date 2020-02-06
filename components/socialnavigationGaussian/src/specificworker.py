@@ -87,7 +87,6 @@ class Person(object):
         self.vel = vel
 
     def draw(self, sigma_h, sigma_r, sigma_s, rot, drawPersonalSpace = False):
-        print("Drawing personal space")
         # define grid.
         npts = 50
         x = np.linspace(self.x - 4, self.x + 4, npts)
@@ -97,7 +96,6 @@ class Person(object):
         Z = self._calculatePersonalSpace(X, Y, sigma_h, sigma_r, sigma_s, rot)
 
         if drawPersonalSpace:
-            print("drawPersonalSpace")
             plt.contour(X, Y, Z, 10)
 
             # Corpo
@@ -269,7 +267,7 @@ class SpecificWorker(GenericWorker):
         normals = []
 
         for p in persons:
-            pn = Person(p.x / 1000, p.z / 1000, p.angle)
+            pn = Person(p.x, p.z, p.angle)
             # print('Pose x', pn.x, 'Pose z', pn.y, 'Rotacion', pn.th)
             # pn.draw(2,1, 4./3.,pi/2 - pn.th, drawPersonalSpace=dibujar) #Valores originales
             pn.draw(1.3, 1., 1.3, pi / 2 - pn.th, drawPersonalSpace=dibujar)
