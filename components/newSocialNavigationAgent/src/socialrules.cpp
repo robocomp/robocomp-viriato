@@ -20,6 +20,9 @@ SocialRules::retPolylines SocialRules::update(AGMModel::SPtr worldModel_)
 	worldModel = worldModel_;
 	updatePeopleInModel();
 
+	if (totalpersons.size() == 0)
+		return std::make_tuple(false,totalpersons, intimate_seq, personal_seq, social_seq, object_seq, objectblock_seq);
+
 	bool personMoved = peopleChanged();
     bool interactionsChanged = checkInteractions();
 
@@ -144,7 +147,6 @@ bool SocialRules::checkInteractions()
         prevInteractingId = interactingId;
         return true;
     }
-
 }
 
 SNGPolylineSeq SocialRules::ApplySocialRules()
