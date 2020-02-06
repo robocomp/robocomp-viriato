@@ -94,9 +94,9 @@ class Navigation
                 this->current_target.unlock();
             }
 
-            if (checkPathState() == false)
+            if (checkPathState(laserData) == false)
             {
-                omnirobot_proxy->setSpeedBase(0,0,0);
+//                omnirobot_proxy->setSpeedBase(0,0,0);
                 return;
             }
 
@@ -132,14 +132,14 @@ class Navigation
 
         };
 
-        bool checkPathState()
+        bool checkPathState(const RoboCompLaser::TLaserData &lData)
         {
             if (current_target.active.load() == true)
             {
                 if (current_target.new_target.load() == true) {
 
 
-                    if (findNewPath() == false) {
+                    if (findNewPath(lData) == false) {
                         qDebug() << __FUNCTION__ << "TTARGET NEW -> NO PATH FOUND";
 
                         this->current_target.lock();
@@ -161,7 +161,7 @@ class Navigation
 
                 if (current_target.blocked.load()==true) {
 
-                    if (findNewPath()==false) {
+                    if (findNewPath(lData)==false) {
                         qDebug() << __FUNCTION__ << "TARGET BLOCKED -> NO PATH FOUND";
                         this->current_target.lock();
                             current_target.active.store(false);
@@ -409,11 +409,12 @@ class Navigation
 
     //CONTROLLER METHODS
 
-    bool findNewPath()
+    bool findNewPath(const RoboCompLaser::TLaserData &lData)
     {
         points.clear();
 
         auto robotPolygon = getRobotPolygon();
+        updateLaserPolygon(lData);
 
         // extract target from current_path
         this->current_target.lock();
@@ -438,10 +439,14 @@ class Navigation
             for (const QPointF &p : path)
             {
                 points.push_back(p);
-                if(isVisible(p))
+                if(isVisible(p) == true)
                     fprintf(fd0, "%d %d\n", (int)p.x(), (int)p.y());
+
+
                 else
                     fprintf(fd1, "%d %d\n", (int)p.x(), (int)p.y());
+
+
 
             }
             fclose(fd0);
@@ -473,8 +478,8 @@ class Navigation
 
     bool isVisible(QPointF p)
     {
-        auto pointInLaser = innerModel->transform("laser", QVec::vec3(p.x(),0,p.y()),"world");
-        return laser_poly.containsPoint(pointInLaser, Qt::OddEvenFill);
+        QVec pointInLaser = innerModel->transform("laser", QVec::vec3(p.x(),0,p.y()),"world");
+        return laser_poly.containsPoint(QPointF(pointInLaser.x(),pointInLaser.z()), Qt::OddEvenFill);
     }
 
     void computeForces(const std::vector<QPointF> &path, const RoboCompLaser::TLaserData &lData)
@@ -482,32 +487,18 @@ class Navigation
         if (path.size() < 3)
             return;
 
-        laser_poly.clear();
-
-
         QPolygonF robotPolygon = getRobotPolygon();
+        updateLaserPolygon(lData);
 
         //convert laser polar coordinates to cartesian
         auto lasernode = innerModel->getNode<InnerModelLaser>(QString("laser"));
         std::vector<QPointF> laser_cart;
 
-
-        FILE *fd = fopen("laserPoly.txt", "w");
-
         for (const auto &l : lData)
         {
-
             QVec laserc = lasernode->laserTo(QString("laser"),l.dist, l.angle);
             laser_cart.push_back(QPointF(laserc.x(),laserc.z()));
-            laser_poly << QPointF(laserc.x(),laserc.z());
-
-            QVec p = lasernode->laserTo(QString("world"),l.dist, l.angle);
-//            laser_poly << QPointF(p.x(),p.z());
-
-            fprintf(fd, "%d %d\n", (int)p.x(), (int)p.z());
         }
-        
-        fclose(fd);
 
 
         // Go through points using a sliding windows of 3
@@ -670,12 +661,41 @@ class Navigation
         {
             fprintf(fd, "%d %d\n", (int)r.x(), (int)r.y());
         }
+
         fprintf(fd, "%d %d\n", (int)robotP[0].x(), (int)robotP[0].y());
 
         fclose(fd);
 
 
         return robotP;
+    }
+
+    void updateLaserPolygon(const RoboCompLaser::TLaserData &lData)
+    {
+        laser_poly.clear(); //stores the points of the laser in lasers refrence system
+        auto lasernode = innerModel->getNode<InnerModelLaser>(QString("laser"));
+
+        for (const auto &l : lData)
+        {
+            QVec laserc = lasernode->laserTo(QString("laser"),l.dist, l.angle);
+            laser_poly << QPointF(laserc.x(),laserc.z());
+        }
+
+//        QVec laserOrigin = innerModel->transform("robot","laser");
+//        laser_poly<<QPointF(laserOrigin.x(),laserOrigin.z());
+//
+//        QVec laser0 = lasernode->laserTo(QString("laser"),lData[0].dist, lData[0].angle);
+//        laser_poly<<QPointF(laser0.x(),laser0.z());
+
+
+        FILE *fd = fopen("laserPoly.txt", "w");
+        for (const auto &lp : laser_poly)
+        {
+            QVec p = innerModel->transform("world",QVec::vec3(lp.x(),0,lp.y()),"laser");
+            fprintf(fd, "%d %d\n", (int)p.x(), (int)p.z());
+        }
+        fclose(fd);
+
     }
 
     QPointF getRobotNose()
@@ -735,7 +755,7 @@ class Navigation
                 else if (i == points.size()-1)
                     viewer->ts_drawLine(item + "_point", item, QVec::zeros(3), normal, 500, 40, "#FF0000");  //Rojo
 
-                else if (isVisible(w))
+                else if (isVisible(wAnt))
                     viewer->ts_drawLine(item + "_point", item, QVec::zeros(3), normal, 500, 40, "#00ECFF"); //TAKE WIDTH FROM PARAMS!!!
                 else
                     viewer->ts_drawLine(item + "_point", item, QVec::zeros(3), normal, 500, 40, "#7C00FF");  //Morado
