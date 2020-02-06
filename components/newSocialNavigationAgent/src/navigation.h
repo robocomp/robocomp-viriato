@@ -88,7 +88,6 @@ class Navigation
 
             if(personMoved)
             {
-                qDebug()<<__PRETTY_FUNCTION__<< " Person Moved = true";
                 this->current_target.lock();
                     current_target.blocked.store(true);
                 this->current_target.unlock();
@@ -96,7 +95,6 @@ class Navigation
 
             if (checkPathState(laserData) == false)
             {
-//                omnirobot_proxy->setSpeedBase(0,0,0);
                 return;
             }
 
@@ -120,6 +118,7 @@ class Navigation
                 this->current_target.lock();
                     current_target.active.store(false);
                 this->current_target.unlock();
+
                     points.clear();
 
                 omnirobot_proxy->setSpeedBase(0,0,0);
@@ -147,6 +146,9 @@ class Navigation
                             current_target.new_target.store(false);
                         this->current_target.unlock();
 
+                        omnirobot_proxy->setSpeedBase(0,0,0);
+                        points.clear();
+
                         return false;
                     }
 
@@ -163,9 +165,13 @@ class Navigation
 
                     if (findNewPath(lData)==false) {
                         qDebug() << __FUNCTION__ << "TARGET BLOCKED -> NO PATH FOUND";
+
                         this->current_target.lock();
                             current_target.active.store(false);
                         this->current_target.unlock();
+
+                        omnirobot_proxy->setSpeedBase(0,0,0);
+                        points.clear();
 
                         return false;
                     }
@@ -446,12 +452,9 @@ class Navigation
                 else
                     fprintf(fd1, "%d %d\n", (int)p.x(), (int)p.y());
 
-
-
             }
             fclose(fd0);
             fclose(fd1);
-
 
 
             first = points[0];
@@ -462,8 +465,6 @@ class Navigation
         }
         else
         {
-            //this->current_target.active.store(false);
-            //this->current_target.blocked.store(true);
             qDebug() << __FUNCTION__ << "Path not found";
             grid.markAreaInGridAs(robotPolygon, true);
 

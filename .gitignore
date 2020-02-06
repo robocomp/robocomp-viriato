@@ -222,3 +222,21 @@ components/fakeHumanAgent/src/Makefile
 components/fakeHumanAgent/Makefile
 
 components/fakeHumanAgent/CMakeCache\.txt
+
+components/fakeHumanAgent/Project\.cbp
+
+components/fakeHumanAgent/README\.md\.new
+
+components/localizationAgent/CMakeFiles/
+
+components/localizationAgent/src/CMakeFiles/
+
+components/localizationAgent/src/localizationAgent_autogen/
+
+components/localizationAgent/Project\.cbp
+
+components/humanObserverAgent/CMakeFiles/
+
+components/humanObserverAgent/src/CMakeFiles/
+
+components/humanObserverAgent/src/humanObserverAgent_autogen/

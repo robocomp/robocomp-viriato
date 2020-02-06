@@ -20,9 +20,6 @@ SocialRules::retPolylines SocialRules::update(AGMModel::SPtr worldModel_)
 	worldModel = worldModel_;
 	updatePeopleInModel();
 
-	if (totalpersons.size() == 0)
-		return std::make_tuple(false,totalpersons, intimate_seq, personal_seq, social_seq, object_seq, objectblock_seq);
-
 	bool personMoved = peopleChanged();
     bool interactionsChanged = checkInteractions();
 
@@ -317,44 +314,63 @@ void SocialRules::checkObjectAffordance(bool d)
             continue;
         }
 
-        AGMModelSymbol::SPtr objectParent = worldModel->getParentByLink(id, "RT");
-        AGMModelEdge &edgeRT  = worldModel->getEdgeByIdentifiers(objectParent->identifier,id, "RT");
-        object.id = id;
-        object.imName = QString::fromStdString( obj->getAttribute("imName"));
-        object.x = str2float(edgeRT.attributes["tx"]);
-        object.z = str2float(edgeRT.attributes["tz"]);
-        object.rot=str2float(edgeRT.attributes["ry"]);
-        object.width=str2float(worldModel->getSymbolByIdentifier(id)->getAttribute("width"));
-        object.inter_space=str2float(worldModel->getSymbolByIdentifier(id)->getAttribute("inter_space"));
-        object.inter_angle=str2float(worldModel->getSymbolByIdentifier(id)->getAttribute("inter_angle"));
+        try
+        {
+			AGMModelSymbol::SPtr objectParent = worldModel->getParentByLink(id, "RT");
+			AGMModelEdge &edgeRT  = worldModel->getEdgeByIdentifiers(objectParent->identifier,id, "RT");
+			object.id = id;
+			object.imName = QString::fromStdString( obj->getAttribute("imName"));
+			object.x = str2float(edgeRT.attributes["tx"]);
+			object.z = str2float(edgeRT.attributes["tz"]);
+			object.rot = str2float(edgeRT.attributes["ry"]);
 
-        qDebug()<< "[FOUND] Interactive Object"<< object.imName;
+			object.shape = QString::fromStdString(worldModel->getSymbolByIdentifier(id)->getAttribute("shape"));
 
-        auto affordance = calculateAffordance(object);
-        object_seq.push_back(affordance);
+			object.width=str2float(worldModel->getSymbolByIdentifier(id)->getAttribute("width"));
+			object.height=str2float(worldModel->getSymbolByIdentifier(id)->getAttribute("height"));
+			object.depth=str2float(worldModel->getSymbolByIdentifier(id)->getAttribute("depth"));
+			object.inter_space=str2float(worldModel->getSymbolByIdentifier(id)->getAttribute("inter_space"));
+			object.inter_angle=str2float(worldModel->getSymbolByIdentifier(id)->getAttribute("inter_angle"));
 
-		for (AGMModelSymbol::iterator it=obj->edgesBegin(worldModel); it != obj->edgesEnd(worldModel); it++)
+			qDebug()<< "[FOUND] Interactive Object"<< object.imName << object.shape << object.x <<  object.z;
+
+			//Defining the affordance
+
+			SNGPolyline affordance;
+
+			if (object.shape == "trapezoid")
+				auto affordance = affordanceTrapezoidal(object);
+
+			object_seq.push_back(affordance);
+
+
+			for (AGMModelSymbol::iterator it=obj->edgesBegin(worldModel); it != obj->edgesEnd(worldModel); it++)
+			{
+				AGMModelEdge edge = *it;
+				if(edge->getLabel() == "interacting")
+				{
+					objectblock_seq.push_back(affordance);
+					break;
+				}
+
+				else continue;
+
+			}
+        }
+
+        catch(const Ice::Exception &e)
 		{
-			AGMModelEdge edge = *it;
-			if(edge->getLabel() == "interacting")
-            {
-                objectblock_seq.push_back(affordance);
-                break;
-            }
-
-            else continue;
-
+			std::cout <<"Error reading symbol attributes -- CHECK INITIAL MODEL SYMBOLIC" <<e.what() << std::endl;
 
 		}
-
     }
 
 }
 
 
-SNGPolyline SocialRules::calculateAffordance(ObjectType obj)
+SNGPolyline SocialRules::affordanceTrapezoidal(ObjectType obj)
 {
-    QPolygonF aff_qp;
+    qDebug()<< __FUNCTION__;
 
     auto left_angle = obj.rot + obj.inter_angle/2;
     auto right_angle = obj.rot - obj.inter_angle/2;
@@ -386,6 +402,68 @@ SNGPolyline SocialRules::calculateAffordance(ObjectType obj)
     return polyline;
 
 }
+
+SNGPolyline SocialRules::affordanceRectangular(ObjectType obj)
+{
+	qDebug()<< __FUNCTION__;
+
+	SNGPolyline polyline;
+
+	SNGPoint2D point1;
+	point1.x  = obj.x - obj.width/2 - obj.inter_space;
+	point1.z = obj.z - obj.depth/2 -obj.inter_space;
+	polyline.push_back(point1);
+
+	SNGPoint2D point2;
+	point2.x  = obj.x + obj.width/2 + obj.inter_space;
+	point2.z = obj.z - obj.depth/2 -obj.inter_space;
+	polyline.push_back(point2);
+
+	SNGPoint2D point3;
+	point3.x  = obj.x + obj.width/2 + obj.inter_space;
+	point3.z = obj.z + obj.depth/2 +obj.inter_space;
+	polyline.push_back(point3);
+
+	SNGPoint2D point4;
+	point4.x  = obj.x - obj.width/2 - obj.inter_space;
+	point4.z = obj.z + obj.depth/2 +obj.inter_space;
+	polyline.push_back(point4);
+
+	return polyline;
+
+}
+
+SNGPolyline SocialRules::affordanceCircular(ObjectType obj)
+{
+	qDebug()<< __FUNCTION__;
+
+	SNGPolyline polyline;
+    int points = 50;
+
+    float angle_shift = M_PI*2 / points, phi = 0;
+
+    for (int i = 0; i < points; ++i) {
+        phi += angle_shift;
+
+        SNGPoint2D point;
+        point.x = obj.x + ((obj.width/2 + 500)*sin(phi));
+        point.z = obj.z +  ((obj.depth/2 + 500)*cos(phi));
+        polyline.push_back(point);
+
+    }
+
+
+    FILE *fd = fopen("circularAffordance.txt", "w");
+    for (const auto &p: polyline)
+    {
+        fprintf(fd, "%d %d\n", (int)p.x, (int)p.z);
+    }
+    fclose(fd);
+
+	return polyline;
+
+}
+
 
 void SocialRules::checkstate()
 {

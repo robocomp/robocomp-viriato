@@ -85,10 +85,10 @@ void SpecificWorker::initialize(int period)
         printf("The executive is probably not running, waiting for first AGM model publication...");
     }
 
-//    trajectory.initialize(innerModel, viewer, confParams);
     navigation.initialize(innerModel, viewer, confParams, omnirobot_proxy);
     socialrules.initialize(worldModel, socialnavigationgaussian_proxy);
-//    drawGrid();
+
+    qDebug()<<"Classes initialized correctly";
 
 	this->Period = period;
 	timer.start(Period);

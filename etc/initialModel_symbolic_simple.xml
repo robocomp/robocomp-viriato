@@ -18,18 +18,64 @@
 	</symbol>
 
 
+	<!-- TRAPEZOID -->
 	<symbol id="3000" type="object">
 		<attribute key="imType" value="transform" />
 		<attribute key="imName" value="board" />
+		<attribute key="shape" value="trapezoid" />
 		<attribute key="inter_space" value="2500" />
 		<attribute key="inter_angle" value="1,57" />
 		<attribute key="width" value="2000" />
+		<attribute key="height" value="1500" />
+		<attribute key="depth" value="500" />
+
 	</symbol>
 	
 	<link src="3000" dst="3000" label="interactive"  > </link>
 	<link src="3000" dst="3" label="in"  > </link>
-	<link src="1" dst="3" label="in"  > </link>
 
+
+	<!-- RECTANGLE 
+
+	<symbol id="3100" type="object">
+		<attribute key="imType" value="transform" />
+		<attribute key="imName" value="recTable" />
+		<attribute key="shape" value="rectangle" />
+
+		<attribute key="inter_space" value="500" /> 
+		<attribute key="inter_angle" value="0" />
+		<attribute key="width" value="2000" />
+		<attribute key="height" value="500" />
+		<attribute key="depth" value="2000" />
+
+	</symbol>
+	
+	<link src="3100" dst="3100" label="interactive"  > </link>
+	<link src="3100" dst="3" label="in"  > </link> -->
+
+
+
+	
+
+	<!-- CIRCLE 
+
+	<symbol id="3200" type="object">
+		<attribute key="imType" value="transform" />
+		<attribute key="imName" value="roundTable" />
+		<attribute key="shape" value="circle" />
+
+		<attribute key="inter_space" value="500" />
+		<attribute key="inter_angle" value="0" />
+		<attribute key="width" value="1000" />
+		<attribute key="height" value="1000" />
+		<attribute key="depth" value="500" />
+
+	</symbol>
+	
+	<link src="3200" dst="3200" label="interactive"  > </link>
+	<link src="3200" dst="3" label="in"  > </link>-->
+	
+	<link src="1" dst="3" label="in"  > </link>
 	<link src="3" dst="1" label="RT" >
 		<linkAttribute key="x" value="0" />
 		<linkAttribute key="y" value="0" />
@@ -38,8 +84,5 @@
 		<linkAttribute key="ry" value="0" />
 		<linkAttribute key="rz" value="0" />
 	</link>
-	
-
-
 
 </AGMModel>

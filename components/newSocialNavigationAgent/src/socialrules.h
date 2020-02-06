@@ -60,11 +60,14 @@ public:
 	struct ObjectType
 	{
 		QString imName; //Nombre del nodo geometrico en AGM
-		int id;
+        QString shape;
+        int id;
 		float x;
 		float z;
 		float rot;
 		float width;
+		float depth;
+		float height;
 		float inter_space;
 		float inter_angle;
 	};
@@ -95,7 +98,9 @@ public:
 	bool checkInteractions();
 	vector <vector<int32_t>> groupInteractingPeople(int32_t id, int32_t pairId,vector<vector<int32_t>> &interactingId);
 
-	SNGPolyline calculateAffordance(ObjectType obj);
+	SNGPolyline affordanceTrapezoidal(ObjectType obj);
+	SNGPolyline affordanceRectangular(ObjectType obj);
+	SNGPolyline affordanceCircular(ObjectType obj);
 	SNGPolylineSeq ApplySocialRules();
 	void checkRobotmov();
 	bool checkHRI(SNGPerson p, int ind, InnerPtr &i, AGMModel::SPtr w);
