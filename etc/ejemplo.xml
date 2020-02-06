@@ -26,10 +26,13 @@
 				<plane id="muro3" nx="0" nz="-5000" size="8000,1900,9"  texture="#880000" />
 			</transform>
 			
+            <!--<transform id="board" tx="2000" tz="4400" ty="1200" ry="3.141516"> -->
 			<!-- PIN BOARD -->
-			<transform id="board" tx="2000" tz="4400" ty="1200" ry="3.141516"> 
-				<mesh id="board_mesh" file="/home/robocomp/robocomp/components/robocomp-araceli/models/board.3DS" 					
-				scale="7,7,7" rx="1.57" rz="3.141516" collide="1" />
+            <transform id="board" tx="2000" tz="4400" ty="1200" ry="3.141516">
+				<!--<mesh id="board_mesh" file="/home/robocomp/robocomp/components/robocomp-araceli/models/board.3DS" 					
+                scale="7,7,7" rx="1.57" rz="3.141516" collide="1" />-->
+                <mesh id="board_mesh" file="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/Lcd_tv.3DS" 					
+                      scale="1,1,1" tx="200" tz="2000" ty="-1200" rx="1.57" rz="1.57" collide="1" />-->
 			</transform>	
 			
 
