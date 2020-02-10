@@ -1,13 +1,14 @@
 <innerModel>
 	<transform id="world">
 		
+		
+		<transform id="room_3">
+
 		<!-- FLOOR -->
 		<transform id="floor" tx="2000" tz="2000" ty="0">
 			<plane id="floor_plane" ny="1" size="8000,5000,10" texture="/home/robolab/robocomp/components/robocomp-viriato/files/osgModels/wood1.jpg" />
 		</transform>
 	
-		
-		<transform id="room_3">
 
 			<!-- ROOM A -->
 			<transform id="pared0" tx="-2000" tz="2000" ty="950" >

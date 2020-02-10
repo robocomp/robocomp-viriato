@@ -1,0 +1,117 @@
+<innerModel>
+	<transform id="world">
+
+		
+		<!-- bedroom -->
+		<transform id="room_3">
+
+		<!-- FLOOR -->
+		<transform id="floor" tx="-4000" tz="-2000" ty="0">
+			<plane id="floor_plane" ny="1" size="4000,5000,10" texture="/home/robolab/robocomp/components/robocomp-viriato/files/osgModels/wood1.jpg" />
+		</transform>
+		
+			<transform id="pared0" tx="-6000" tz="-2000" ty="950" >
+				<plane id="muro0" nx="-500" nz="0" size="5000,1900,100"  texture="#74ADA1" />
+			</transform>
+
+			<transform id="pared1" tx="-4000" tz="500" ty="950" >
+				<plane id="muro1" nx="0" nz="5000" size="4000,1900,100"  texture="#74ADA1" />
+			</transform> 
+
+			<transform id="pared2" tx="-2000" tz="-1250" ty="950" >
+				<plane id="muro2" nx="5000" nz="0" size="3500,1900,100"  texture="#74ADA1" />
+			</transform>
+		
+			<transform id="pared3" tx="-4000" tz="-4500" ty="950" >
+				<plane id="muro3" nx="0" nz="-5000" size="4000,1900,100"  texture="#74ADA1" />
+			</transform>
+			
+			<!-- CAMA -->
+	 		<transform id="bed" tx="-3000" tz="-1000" ty="1200" ry="1.57">
+		        <mesh id="bed_mesh" file="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/hospitalBed/hospbed.3DS" 					
+		              scale="1,1,1" tx="0" tz="0" ty="-1200" rx="1.57" rz="1.57" collide="1" />
+			</transform>
+
+
+			
+			
+		<!-- bathroom -->
+		<transform id="room_4"> 
+		
+			<transform id="floor4" tx="-3000" tz="2500" ty="0">
+				<plane id="floor4_plane" ny="1" size="6000,4000,10" texture="/home/robolab/robocomp/components/robocomp-viriato/files/osgModels/bath.jpg" />
+			</transform>
+
+				<transform id="pared4" tx="-6000" tz="2500" ty="950" >
+					<plane id="muro4" nx="-500" nz="0" size="4000,1900,100"  texture="#74ADA1" />
+				</transform>
+
+			<transform id="pared5" tx="0" tz="2500" ty="950" >
+					<plane id="muro5" nx="-500" nz="0" size="4000,1900,100"  texture="#74ADA1" />
+				</transform>
+
+			<transform id="pared6" tx="-3000" tz="4500" ty="950" >
+					<plane id="muro6" nx="0" nz="-5000" size="6000,1900,100"  texture="#74ADA1" />
+				</transform>
+
+		</transform>
+
+		<transform id="room_5"> 
+		
+				<transform id="floor5" tx="-1000" tz="-2000" ty="0">
+				<plane id="floor5_plane" ny="1" size="2000,5000,10" texture="/home/robolab/robocomp/components/robocomp-viriato/files/osgModels/wood1.jpg" />
+			</transform>
+			<transform id="pared7" tx="0" tz="-250" ty="950" >
+						<plane id="muro7" nx="-500" nz="0" size="1500,1900,100"  texture="#74ADA1" />
+					</transform>
+			<transform id="pared8" tx="0" tz="-3750" ty="950" >
+						<plane id="muro8" nx="-500" nz="0" size="1500,1900,100"  texture="#74ADA1" />
+					</transform>
+
+			
+
+			<transform id="pared9" tx="-1000" tz="-4500" ty="950" >
+						<plane id="muro9" nx="0" nz="-5000" size="2000,1900,100"  texture="#74ADA1" />
+					</transform>
+
+
+			</transform>
+
+		</transform>
+
+		<transform id="room_6"> 
+		
+			<transform id="floor6" tx="3000" tz="0" ty="0">
+				<plane id="floor6_plane" ny="1" size="6000,9000,10" texture="/home/robolab/robocomp/components/robocomp-viriato/files/osgModels/wood1.jpg" />
+			</transform>
+
+		
+				<transform id="pared10" tx="6000" tz="0" ty="950" >
+					<plane id="muro10" nx="-500" nz="0" size="9000,1900,100"  texture="#74ADA1" />
+				</transform>
+
+			<transform id="pared11" tx="3000" tz="-4500" ty="950" >
+						<plane id="muro11" nx="0" nz="-5000" size="6000,1900,100"  texture="#74ADA1" />
+					</transform>
+
+			<transform id="pared12" tx="3000" tz="4500" ty="950" >
+						<plane id="muro12" nx="0" nz="-5000" size="6000,1900,100"  texture="#74ADA1" />
+					</transform>
+		
+
+			<!-- TELE -->	
+            		<transform id="board" tx="3000" tz="4300" ty="1350" ry="1.57">
+		        	<mesh id="board_mesh" file="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/tv/tv.3DS" 					
+		              	scale="35,35,35" tx="-150" tz="0" ty="-300" rx="1.57" rz="1.57" collide="1" />
+			</transform>		
+			<!-- table -->	
+  			<transform id="table" tx="3000" tz="-2000" ty="1200" ry="1.57">
+		        	<mesh id="table_mesh" file="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/table/table2.3ds" 					
+		              	scale="0.05,0.05,0.05" tx="-150" tz="0" ty="-800" rx="1.57" rz="1.57" collide="1" />
+			</transform>		
+		</transform>
+
+
+
+	</transform>
+</innerModel>
