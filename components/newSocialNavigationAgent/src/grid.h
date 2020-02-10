@@ -388,8 +388,13 @@ public:
                 if(value.free)
                 {
                     if (value.cost == 1.5) //affordance spaces
-                        viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), QVec::vec3(1,0,0), "#FFA200", QVec::vec3(50,50,50));
-
+                        viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), QVec::vec3(1,0,0), "#FFD800", QVec::vec3(50,50,50));
+                    else if (value.cost == 2) //lowvisited spaces
+                        viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), QVec::vec3(1,0,0), "#FFAE00", QVec::vec3(50,50,50));
+                    else if (value.cost == 2.5) //mediumvisited spaces
+                        viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), QVec::vec3(1,0,0), "#FF8B00", QVec::vec3(50,50,50));
+                    else if (value.cost == 3) //highVisited spaces
+                            viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), QVec::vec3(1,0,0), "#FF6400", QVec::vec3(50,50,50));
                     else if (value.cost == 4.0) //zona social
                         viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), QVec::vec3(1,0,0), "#00BFFF", QVec::vec3(50,50,50));
 

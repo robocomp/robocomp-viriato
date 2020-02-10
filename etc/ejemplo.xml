@@ -3,7 +3,7 @@
 		
 		<!-- FLOOR -->
 		<transform id="floor" tx="2000" tz="2000" ty="0">
-			<plane id="floor_plane" ny="1" size="8000,5000,10" texture="#eebb77" />
+			<plane id="floor_plane" ny="1" size="8000,5000,10" texture="/home/robolab/robocomp/components/robocomp-viriato/files/osgModels/wood1.jpg" />
 		</transform>
 	
 		
@@ -11,33 +11,35 @@
 
 			<!-- ROOM A -->
 			<transform id="pared0" tx="-2000" tz="2000" ty="950" >
-				<plane id="muro0" nx="-500" nz="0" size="5000,1900,9"  texture="#880000" />
+				<plane id="muro0" nx="-500" nz="0" size="5000,1900,9"  texture="#74ADA1" />
 			</transform>
 
 			<transform id="pared1" tx="2000" tz="4500" ty="950" >
-				<plane id="muro1" nx="0" nz="5000" size="8000,1900,9"  texture="#880000" />
+				<plane id="muro1" nx="0" nz="5000" size="8000,1900,9"  texture="#74ADA1" />
 			</transform> 
 
 			<transform id="pared2" tx="6000" tz="2000" ty="950" >
-				<plane id="muro2" nx="5000" nz="0" size="5000,1900,9"  texture="#880000" />
+				<plane id="muro2" nx="5000" nz="0" size="5000,1900,9"  texture="#74ADA1" />
 			</transform>
 		
 			<transform id="pared3" tx="2000" tz="-500" ty="950" >
-				<plane id="muro3" nx="0" nz="-5000" size="8000,1900,9"  texture="#880000" />
+				<plane id="muro3" nx="0" nz="-5000" size="8000,1900,9"  texture="#74ADA1" />
 			</transform>
 			
 
-			<!-- PIN BOARD -->
+			<!-- TELE -->
             <transform id="board" tx="2000" tz="4400" ty="1200" ry="1.57">
                 <mesh id="board_mesh" file="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/tv/tv.3DS" 					
                       scale="30,30,30" tx="-150" tz="0" ty="-300" rx="1.57" rz="1.57" collide="1" />
 			</transform>	
 			
-
+			<!-- CAMA -->
  		<transform id="bed" tx="5000" tz="2000" ty="1200" ry="1.57">
-                <mesh id="bed_mesh" file="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/bed/bed1.3ds" 					
-                      scale="1,1,1" tx="0" tz="0" ty="-600" rx="1.57" rz="1.57" collide="1" />
+                <mesh id="bed_mesh" file="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/hospitalBed/hospbed.3DS" 					
+                      scale="1,1,1" tx="0" tz="0" ty="-1200" rx="1.57" rz="1.57" collide="1" />
 			</transform>
+
+
 			<!-- <transform id="camera_astra_1" tx="0" tz="0" ty="920" ry="0" > 
 				<mesh id="astraRGBD_mesh_1" file="/home/robocomp/robocomp/files/osgModels/basics/cube2.3ds" 
 				scale="200,200,200"  collide="1" />

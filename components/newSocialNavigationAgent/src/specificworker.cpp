@@ -65,6 +65,10 @@ void SpecificWorker::initialize(int period)
     connect(accompany_checkbox, SIGNAL (clicked()),&socialrules,SLOT(checkstate()));
     connect(passonright_checkbox, SIGNAL (clicked()),&socialrules,SLOT(checkstate()));
 
+    connect(object_slider, SIGNAL (valueChanged(int)),&socialrules,SLOT(affordanceSliderChanged(int)));
+
+
+    socialrules.idobject_combobox = idobject_combobox;
     socialrules.idselect_combobox = idselect_combobox;
     socialrules.follow_checkbox = follow_checkbox;
     socialrules.accompany_checkbox = accompany_checkbox;
@@ -103,12 +107,14 @@ void SpecificWorker::compute()
     RoboCompLaser::TLaserData laserData = updateLaser();
 	bool personMoved = false;
 
-    if (worldModelChanged)
+    if (worldModelChanged or socialrules.costChanged)
     {
-		auto [changes, totalpersons, intimate_seq, personal_seq, social_seq, object_seq, objectblock_seq] = socialrules.update(worldModel);
+		auto [changes, totalpersons, intimate_seq, personal_seq, social_seq, object_seq,
+                object_lowProbVisited, object_mediumProbVisited, object_highProbVisited, objectblock_seq] = socialrules.update(worldModel);
+
 		if (changes) //se comprueba si alguna de las personas ha cambiado de posicion
 		{
-			navigation.updatePolylines(totalpersons, intimate_seq, personal_seq, social_seq, object_seq, objectblock_seq);
+			navigation.updatePolylines(totalpersons, intimate_seq, personal_seq, social_seq, object_seq, object_lowProbVisited, object_mediumProbVisited, object_highProbVisited, objectblock_seq);
 			personMoved = true;
 //			drawGrid();
 		}

@@ -31,6 +31,8 @@ public:
 	SocialNavigationGaussianPrx socialnavigationgaussian_proxy;
 
 	QComboBox* idselect_combobox;
+	QComboBox* idobject_combobox;
+
 	QCheckBox* follow_checkbox;
 	QCheckBox* accompany_checkbox;
 	QCheckBox* passonright_checkbox;
@@ -54,33 +56,40 @@ public:
 	vector<vector<int32_t>> prevInteractingId = {};
 
 
-
 	SNGPersonSeq movperson; //moving person
 
 	struct ObjectType
 	{
-		QString imName; //Nombre del nodo geometrico en AGM
-        QString shape;
+//		QString imName; //Nombre del nodo geometrico en AGM
         int id;
-		float x;
-		float z;
-		float rot;
-		float width;
-		float depth;
-		float height;
-		float inter_space;
-		float inter_angle;
+        float x;
+        float z;
+        float rot;
+
+        float cost = 1.5;
+        SNGPolyline affordance;
+
+        QString shape;
+        float width;
+        float depth;
+        float height;
+        float inter_space;
+        float inter_angle;
+
 
 	};
 
+    std::map<QString, ObjectType> mapIdObjects;
+
+    bool costChanged = false;
 	////////////////////////////
 	SNGPolylineSeq intimate_seq;
 	SNGPolylineSeq personal_seq;
 	SNGPolylineSeq social_seq;
-	SNGPolylineSeq object_seq;
+	SNGPolylineSeq object_seq, object_lowProbVisited, object_mediumProbVisited, object_highProbVisited;
 	SNGPolylineSeq objectblock_seq;
 
-    using retPolylines = std::tuple< bool, SNGPersonSeq, SNGPolylineSeq,SNGPolylineSeq,SNGPolylineSeq,SNGPolylineSeq,SNGPolylineSeq>;
+    using retPolylines = std::tuple< bool, SNGPersonSeq, SNGPolylineSeq,SNGPolylineSeq,SNGPolylineSeq,SNGPolylineSeq,SNGPolylineSeq,SNGPolylineSeq,SNGPolylineSeq,SNGPolylineSeq>;
 
 	//PARA GUARDAR LOS DATOS EN UN ARCHIVO
 	struct Point {float x;float z;};
@@ -119,6 +128,8 @@ public slots:
 	void drawGauss();
 	SNGPolylineSeq PassOnRight(bool draw = true);
 	void checkObjectAffordance(bool d = true);
+
+	void affordanceSliderChanged(int value);
 
 
 

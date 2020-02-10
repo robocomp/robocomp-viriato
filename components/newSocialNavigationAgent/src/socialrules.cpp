@@ -23,15 +23,16 @@ SocialRules::retPolylines SocialRules::update(AGMModel::SPtr worldModel_)
 	bool personMoved = peopleChanged();
     bool interactionsChanged = checkInteractions();
 
-	if(personMoved or interactionsChanged)
+	if(personMoved or interactionsChanged or costChanged)
 	{
         checkObjectAffordance(false);
         ApplySocialRules();
 
-        return std::make_tuple(true, totalpersons, intimate_seq, personal_seq, social_seq, object_seq, objectblock_seq);
+        costChanged = false;
+        return std::make_tuple(true, totalpersons, intimate_seq, personal_seq, social_seq, object_seq, object_lowProbVisited, object_mediumProbVisited, object_highProbVisited, objectblock_seq);
 	}
 
-	else return std::make_tuple(false,totalpersons, intimate_seq, personal_seq, social_seq, object_seq, objectblock_seq);
+	else return std::make_tuple(false,totalpersons, intimate_seq, personal_seq, social_seq, object_seq, object_lowProbVisited, object_mediumProbVisited, object_highProbVisited, objectblock_seq);
 }
 
 void SocialRules::updatePeopleInModel()
@@ -294,84 +295,203 @@ SNGPolylineSeq SocialRules::PassOnRight(bool draw)
 }
 
 
+//void SocialRules::checkObjectAffordance(bool d)
+//{
+//    qDebug() << __PRETTY_FUNCTION__;
+//
+//    object_seq.clear();
+//    objectblock_seq.clear();
+//
+//	auto vectorObjects = worldModel->getSymbolsByType("object");
+//
+//    for (auto obj : vectorObjects) {
+//        ObjectType object;
+//        auto id = obj->identifier;
+//
+//        try { worldModel->getEdge(obj, obj, "interactive"); }
+//
+//        catch (const Ice::Exception &e) {
+//        	std::cout <<"Not interactive" <<e.what() << std::endl;
+//            continue;
+//        }
+//
+//        try
+//        {
+//			AGMModelSymbol::SPtr objectParent = worldModel->getParentByLink(id, "RT");
+//			AGMModelEdge &edgeRT  = worldModel->getEdgeByIdentifiers(objectParent->identifier,id, "RT");
+//			object.id = id;
+//			object.imName = QString::fromStdString( obj->getAttribute("imName"));
+//			object.x = str2float(edgeRT.attributes["tx"]);
+//			object.z = str2float(edgeRT.attributes["tz"]);
+//			object.rot = str2float(edgeRT.attributes["ry"]);
+//
+//			object.shape = QString::fromStdString(worldModel->getSymbolByIdentifier(id)->getAttribute("shape"));
+//
+//			object.width=str2float(worldModel->getSymbolByIdentifier(id)->getAttribute("width"));
+//			object.height=str2float(worldModel->getSymbolByIdentifier(id)->getAttribute("height"));
+//			object.depth=str2float(worldModel->getSymbolByIdentifier(id)->getAttribute("depth"));
+//			object.inter_space=str2float(worldModel->getSymbolByIdentifier(id)->getAttribute("inter_space"));
+//			object.inter_angle=str2float(worldModel->getSymbolByIdentifier(id)->getAttribute("inter_angle"));
+//
+//			qDebug()<< "[FOUND] Interactive Object"<< object.imName << object.shape << object.x <<  object.z;
+//
+//			//Defining the affordance
+//
+//			SNGPolyline affordance;
+//
+//			if (object.shape == "trapezoid")
+//				affordance = affordanceTrapezoidal(object);
+//
+//            if (object.shape == "circular")
+//				affordance = affordanceCircular(object);
+//
+//            if (object.shape == "rectangular")
+//				affordance = affordanceRectangular(object);
+//
+//			object_seq.push_back(affordance);
+//
+//
+//			for (AGMModelSymbol::iterator it=obj->edgesBegin(worldModel); it != obj->edgesEnd(worldModel); it++)
+//			{
+//				AGMModelEdge edge = *it;
+//				if(edge->getLabel() == "interacting")
+//				{
+//					objectblock_seq.push_back(affordance);
+//					break;
+//				}
+//
+//				else continue;
+//
+//			}
+//        }
+//
+//        catch(const Ice::Exception &e)
+//		{
+//			std::cout <<"Error reading symbol attributes -- CHECK INITIAL MODEL SYMBOLIC" <<e.what() << std::endl;
+//
+//		}
+//    }
+//
+//}
+
+
 void SocialRules::checkObjectAffordance(bool d)
 {
     qDebug() << __PRETTY_FUNCTION__;
 
     object_seq.clear();
+    object_lowProbVisited.clear();
+    object_mediumProbVisited.clear();
+    object_highProbVisited.clear();
     objectblock_seq.clear();
 
-	auto vectorObjects = worldModel->getSymbolsByType("object");
 
-    for (auto obj : vectorObjects) {
-        ObjectType object;
-        auto id = obj->identifier;
+    auto vectorObjects = worldModel->getSymbolsByType("object");
 
-        try { worldModel->getEdge(obj, obj, "interactive"); }
+    if (vectorObjects.size() != mapIdObjects.size())
+    {
+        qDebug() << vectorObjects.size() << mapIdObjects.size();
+        mapIdObjects.clear();
 
-        catch (const Ice::Exception &e) {
-        	std::cout <<"Not interactive" <<e.what() << std::endl;
-            continue;
+        for (auto obj : vectorObjects) {
+
+            auto id = obj->identifier;
+
+            try { worldModel->getEdge(obj, obj, "interactive"); }
+
+            catch (const Ice::Exception &e) {
+                std::cout <<"Not interactive" <<e.what() << std::endl;
+                continue;
+            }
+
+            ObjectType object;
+            QString imName;
+
+            try
+            {
+                AGMModelSymbol::SPtr objectParent = worldModel->getParentByLink(id, "RT");
+                AGMModelEdge &edgeRT  = worldModel->getEdgeByIdentifiers(objectParent->identifier,id, "RT");
+
+                imName = QString::fromStdString( obj->getAttribute("imName"));
+                object.id = id;
+                object.x = str2float(edgeRT.attributes["tx"]);
+                object.z = str2float(edgeRT.attributes["tz"]);
+                object.rot = str2float(edgeRT.attributes["ry"]);
+
+                object.shape = QString::fromStdString(worldModel->getSymbolByIdentifier(id)->getAttribute("shape"));
+
+                object.width=str2float(worldModel->getSymbolByIdentifier(id)->getAttribute("width"));
+                object.height=str2float(worldModel->getSymbolByIdentifier(id)->getAttribute("height"));
+                object.depth=str2float(worldModel->getSymbolByIdentifier(id)->getAttribute("depth"));
+                object.inter_space=str2float(worldModel->getSymbolByIdentifier(id)->getAttribute("inter_space"));
+                object.inter_angle=str2float(worldModel->getSymbolByIdentifier(id)->getAttribute("inter_angle"));
+
+                qDebug()<< "[FOUND] Interactive Object"<< imName << object.shape << object.x <<  object.z;
+
+                idobject_combobox->addItem(imName);
+
+                //Defining the affordance
+
+                if (object.shape == "trapezoid")
+                    object.affordance = affordanceTrapezoidal(object);
+
+                if (object.shape == "circular")
+                    object.affordance = affordanceCircular(object);
+
+                if (object.shape == "rectangular")
+                    object.affordance = affordanceRectangular(object);
+
+            }
+
+            catch(const Ice::Exception &e)
+            {
+                std::cout <<"Error reading symbol attributes -- CHECK INITIAL MODEL SYMBOLIC" <<e.what() << std::endl;
+
+            }
+
+
+            mapIdObjects[imName] = object;
+
         }
-
-        try
-        {
-			AGMModelSymbol::SPtr objectParent = worldModel->getParentByLink(id, "RT");
-			AGMModelEdge &edgeRT  = worldModel->getEdgeByIdentifiers(objectParent->identifier,id, "RT");
-			object.id = id;
-			object.imName = QString::fromStdString( obj->getAttribute("imName"));
-			object.x = str2float(edgeRT.attributes["tx"]);
-			object.z = str2float(edgeRT.attributes["tz"]);
-			object.rot = str2float(edgeRT.attributes["ry"]);
-
-			object.shape = QString::fromStdString(worldModel->getSymbolByIdentifier(id)->getAttribute("shape"));
-
-			object.width=str2float(worldModel->getSymbolByIdentifier(id)->getAttribute("width"));
-			object.height=str2float(worldModel->getSymbolByIdentifier(id)->getAttribute("height"));
-			object.depth=str2float(worldModel->getSymbolByIdentifier(id)->getAttribute("depth"));
-			object.inter_space=str2float(worldModel->getSymbolByIdentifier(id)->getAttribute("inter_space"));
-			object.inter_angle=str2float(worldModel->getSymbolByIdentifier(id)->getAttribute("inter_angle"));
-
-			qDebug()<< "[FOUND] Interactive Object"<< object.imName << object.shape << object.x <<  object.z;
-
-			//Defining the affordance
-
-			SNGPolyline affordance;
-
-			if (object.shape == "trapezoid")
-				affordance = affordanceTrapezoidal(object);
-
-            if (object.shape == "circular")
-				affordance = affordanceCircular(object);
-
-            if (object.shape == "rectangular")
-				affordance = affordanceRectangular(object);
-
-			object_seq.push_back(affordance);
-
-
-			for (AGMModelSymbol::iterator it=obj->edgesBegin(worldModel); it != obj->edgesEnd(worldModel); it++)
-			{
-				AGMModelEdge edge = *it;
-				if(edge->getLabel() == "interacting")
-				{
-					objectblock_seq.push_back(affordance);
-					break;
-				}
-
-				else continue;
-
-			}
-        }
-
-        catch(const Ice::Exception &e)
-		{
-			std::cout <<"Error reading symbol attributes -- CHECK INITIAL MODEL SYMBOLIC" <<e.what() << std::endl;
-
-		}
     }
 
+    for (auto obj : vectorObjects) {
+
+        QString imName = QString::fromStdString( obj->getAttribute("imName"));
+
+        auto cost = mapIdObjects[imName].cost;
+
+        if (cost == 1.5)
+            object_seq.push_back(mapIdObjects[imName].affordance);
+
+        if (cost == 2)
+            object_lowProbVisited.push_back(mapIdObjects[imName].affordance);
+
+        if (cost == 2.5)
+            object_mediumProbVisited.push_back(mapIdObjects[imName].affordance);
+
+        if (cost == 3)
+            object_highProbVisited.push_back(mapIdObjects[imName].affordance);
+
+        qDebug()<< __FUNCTION__ << " cost is "<< cost;
+
+        for (AGMModelSymbol::iterator it=obj->edgesBegin(worldModel); it != obj->edgesEnd(worldModel); it++)
+        {
+            AGMModelEdge edge = *it;
+            if(edge->getLabel() == "interacting")
+            {
+                objectblock_seq.push_back(mapIdObjects[imName].affordance);
+                break;
+            }
+
+            else continue;
+
+        }
+    }
+
+
 }
+
 
 
 SNGPolyline SocialRules::affordanceTrapezoidal(ObjectType obj)
@@ -468,6 +588,22 @@ SNGPolyline SocialRules::affordanceCircular(ObjectType obj)
 
 	return polyline;
 
+}
+
+void SocialRules::affordanceSliderChanged(int value)
+{
+    float newCost;
+    if (value == 1) newCost = 1.5;
+    else newCost = 1.5 + (0.5*(value - 1));
+
+    qDebug()<< __FUNCTION__;
+    auto imName = idobject_combobox->currentText();
+    if (imName != "") {
+        qDebug()<< "New cost of " << imName << newCost;
+        mapIdObjects[imName].cost = newCost;
+    }
+
+    costChanged = true;
 }
 
 
@@ -574,6 +710,9 @@ void SocialRules::goToPerson()
 	}
 
 }
+
+
+
 
 
 void SocialRules::checkRobotmov()
@@ -728,6 +867,7 @@ bool SocialRules::checkHRI(SNGPerson p, int ind , InnerPtr &i, AGMModel::SPtr w)
 	}
 	return changes;
 }
+
 
 
 

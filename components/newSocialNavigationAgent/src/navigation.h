@@ -211,13 +211,15 @@ class Navigation
 
 
         void updatePolylines(SNGPersonSeq persons_, SNGPolylineSeq intimate_seq,SNGPolylineSeq personal_seq,SNGPolylineSeq social_seq,
-                SNGPolylineSeq object_seq, SNGPolylineSeq objectsblocking_seq)
+                SNGPolylineSeq object_seq, SNGPolylineSeq object_lowProbVisited ,SNGPolylineSeq object_mediumProbVisited ,SNGPolylineSeq object_highProbVisited, SNGPolylineSeq objectsblocking_seq)
         {
-
             polylines_intimate.clear();
             polylines_personal.clear();
             polylines_social.clear();
             polylines_objects_total.clear();
+            polylines_lowVisited.clear();
+            polylines_mediumVisited.clear();
+            polylines_highVisited.clear();
             polylines_objects_blocked.clear();
 
             for (auto intimate: intimate_seq)
@@ -252,6 +254,30 @@ class Navigation
                 polylines_objects_total.push_back(polygon);
             }
 
+            for (auto object : object_lowProbVisited)
+            {
+                QPolygonF polygon;
+                for (auto o : object)
+                    polygon << QPointF(o.x, o.z);
+                polylines_lowVisited.push_back(polygon);
+            }
+
+            for (auto object : object_mediumProbVisited)
+            {
+                QPolygonF polygon;
+                for (auto o : object)
+                    polygon << QPointF(o.x, o.z);
+                polylines_mediumVisited.push_back(polygon);
+            }
+
+            for (auto object : object_highProbVisited)
+            {
+                QPolygonF polygon;
+                for (auto o : object)
+                    polygon << QPointF(o.x, o.z);
+                polylines_highVisited.push_back(polygon);
+            }
+
             for (auto object_block : objectsblocking_seq)
             {
                 QPolygonF polygon;
@@ -279,8 +305,9 @@ class Navigation
         TMap grid;
         TController controller;
 
-        std::vector<QPolygonF> polylines_intimate,polylines_personal,polylines_social,polylines_objects_total,polylines_objects_blocked;
-        std::vector<QPolygonF> prev_polylines_intimate = {}, prev_polylines_personal = {}, prev_polylines_social = {}, prev_polylines_objects_total = {}, prev_polylines_objects_blocked = {};
+        std::vector<QPolygonF> polylines_intimate,polylines_personal,polylines_social,polylines_objects_total,polylines_objects_blocked, polylines_lowVisited ,polylines_mediumVisited ,polylines_highVisited;
+        std::vector<QPolygonF> prev_polylines_intimate = {}, prev_polylines_personal = {}, prev_polylines_social = {}, prev_polylines_objects_total = {}, prev_polylines_objects_blocked = {} ,
+                prev_polylines_lowVisited={} ,prev_polylines_mediumVisited={} ,prev_polylines_highVisited={};
 
         // ElasticBand
         std::vector<QPointF> points;
@@ -314,6 +341,15 @@ class Navigation
         //To modify cost
         for (auto &&poly_object : polylines_objects_total)
             grid.modifyCostInGrid(poly_object, 1.5);
+
+        for (auto &&poly_l : polylines_lowVisited)
+            grid.modifyCostInGrid(poly_l, 2);
+
+        for (auto &&poly_m : polylines_mediumVisited)
+            grid.modifyCostInGrid(poly_m, 2.5);
+
+        for (auto &&poly_h : polylines_highVisited)
+            grid.modifyCostInGrid(poly_h, 3);
 
         for (auto &&poly_soc : polylines_social)
             grid.modifyCostInGrid(poly_soc, 4.0);
