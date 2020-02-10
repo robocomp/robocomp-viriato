@@ -55,10 +55,14 @@
 				</transform>
 	
 		<transform id="basin" tx="-5500" tz="1500" ty="0" ry="1.57">
-		        <mesh id="basin_mesh" file="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/basin/Wash-basin.3DS" 					
-		              scale="1.5,1.5,1.5" tx="0" tz="0" ty="0"  rx="1.57" rz="3.14" collide="1" />
+		        <mesh id="basin_mesh" file="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/basin/Washbasin.3DS" 					
+		              scale="30,30,30" tx="0" tz="0" ty="0"  rx="1.57" rz="3.14" collide="1" />
 			</transform>
 
+		<transform id="mirror" tx="-6000" tz="1500" ty="1200" ry="1.57">
+		        <mesh id="mirror_mesh" file="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/mirror/mirror.3DS"				
+		              scale="2,2,1" tx="0" tz="0" ty="0"  rx="1.57" rz="1.57" collide="1" />
+			</transform>					
 
 		<transform id="lavatory" tx="-5500" tz="3600" ty="0" ry="1.57">
 		        <mesh id="lavatory_mesh" file="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/lavatory/lavatory.3DS" 					
