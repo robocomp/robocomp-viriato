@@ -23,7 +23,7 @@
 		<attribute key="imType" value="transform" />
 		<attribute key="imName" value="board" />
 		<attribute key="shape" value="trapezoid" />
-		<attribute key="inter_space" value="2500" />
+		<attribute key="inter_space" value="2000" />
 		<attribute key="inter_angle" value="1,57" />
 		<attribute key="width" value="2000" />
 		<attribute key="height" value="1500" />
@@ -35,45 +35,42 @@
 	<link src="3000" dst="3" label="in"  > </link>
 
 
-	<!-- RECTANGLE 
+	<!-- RECTANGLE -->
 
 	<symbol id="3100" type="object">
 		<attribute key="imType" value="transform" />
-		<attribute key="imName" value="recTable" />
+		<attribute key="imName" value="bed" />
 		<attribute key="shape" value="rectangle" />
 
 		<attribute key="inter_space" value="500" /> 
 		<attribute key="inter_angle" value="0" />
-		<attribute key="width" value="2000" />
+		<attribute key="width" value="900" />
 		<attribute key="height" value="500" />
 		<attribute key="depth" value="2000" />
 
 	</symbol>
 	
 	<link src="3100" dst="3100" label="interactive"  > </link>
-	<link src="3100" dst="3" label="in"  > </link> -->
+	<link src="3100" dst="3" label="in"  > </link> 
 
 
-
-	
-
-	<!-- CIRCLE 
+	<!-- CIRCLE -->
 
 	<symbol id="3200" type="object">
 		<attribute key="imType" value="transform" />
-		<attribute key="imName" value="roundTable" />
+		<attribute key="imName" value="tableD" />
 		<attribute key="shape" value="circle" />
 
-		<attribute key="inter_space" value="500" />
+		<attribute key="inter_space" value="300" />
 		<attribute key="inter_angle" value="0" />
-		<attribute key="width" value="1000" />
-		<attribute key="height" value="1000" />
-		<attribute key="depth" value="500" />
+		<attribute key="width" value="1800" />
+		<attribute key="height" value="800" />
+		<attribute key="depth" value="1800" />
 
 	</symbol>
 	
 	<link src="3200" dst="3200" label="interactive"  > </link>
-	<link src="3200" dst="3" label="in"  > </link>-->
+	<link src="3200" dst="3" label="in"  > </link>
 	
 	<link src="1" dst="3" label="in"  > </link>
 	<link src="3" dst="1" label="RT" >

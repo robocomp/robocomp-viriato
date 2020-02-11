@@ -120,14 +120,35 @@
 			<!-- TELE -->	
             		<transform id="board" tx="3000" tz="4300" ty="1350" ry="1.57">
 		        	<mesh id="board_mesh" file="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/tv/tv.3DS" 					
-		              	scale="35,35,35" tx="0" tz="0" ty="-300" rx="1.57" rz="1.57" collide="1" />
+		              	scale="30,30,30" tx="0" tz="0" ty="-300" rx="1.57" rz="1.57" collide="1" />
 			</transform>		
-			<!-- table -->	
+			<!-- table 	
   			<transform id="table" tx="3000" tz="-2000" ty="1300" ry="1.57">
 		        	<mesh id="table_mesh" file="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/table/table2.3ds" 					
 		              	scale="0.05,0.05,0.05" tx="0" tz="0" ty="-800" rx="1.57" rz="1.57" collide="1" />
-			</transform>		
+			</transform>-->		
+            
+            <!-- TABLE D MESA REDONDA DEL COMEDOR> -->
+			<transform id="tableD" tx="3000" tz="-2000" ty="750" >
+				<mesh id="tableD_mesh" file="/home/robocomp/robocomp/files/osgModels/basics/cylinder.3ds" scale="1200,600,20" rx="1.570799947" collide="1"/>
+						
+                
+                <transform id="rwreewreet" ty="-365" >
+					<mesh id="tableD_mesh2" file="/home/robocomp/robocomp/files/osgModels/basics/cylinder.3ds" scale="100,100,360" rx="1.570799947" collide="1"/>
+				</transform>
+
+			 <transform id="tablebase" ty="-700" >
+					<mesh id="tablebase_mesh" file="/home/robocomp/robocomp/files/osgModels/basics/cylinder.3ds" scale="600,300,10" rx="1.570799947" collide="1"/>
+				</transform>
+                
+            </transform>	
+            
 		</transform>
+        
+        <transform id="ladder" tx="5750" tz="2500" ty="0" ry="0">
+		        	<mesh id="ladder_mesh" file="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/ladder.3DS" 					
+		              	scale="0.75,0.75,0.75" tx="0" tz="0" ty="0" rx="1.57" rz="1.57" collide="1" />
+        </transform>
 
 
 

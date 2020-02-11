@@ -154,11 +154,14 @@ void SpecificWorker::loadInfoFromAGM()
 		object.x = str2float(edgeRT.attributes["tx"]);
 		object.z = str2float(edgeRT.attributes["tz"]);
 		object.rot=str2float(edgeRT.attributes["ry"]);
-		object.width=str2float(worldModel->getSymbolByIdentifier(id)->getAttribute("width"));
-		object.inter_space=str2float(worldModel->getSymbolByIdentifier(id)->getAttribute("inter_space"));
+        object.width=str2float(worldModel->getSymbolByIdentifier(id)->getAttribute("width"));
+        object.height=str2float(worldModel->getSymbolByIdentifier(id)->getAttribute("height"));
+        object.depth=str2float(worldModel->getSymbolByIdentifier(id)->getAttribute("depth"));		object.inter_space=str2float(worldModel->getSymbolByIdentifier(id)->getAttribute("inter_space"));
 		object.inter_angle=str2float(worldModel->getSymbolByIdentifier(id)->getAttribute("inter_angle"));
 
-		cout<< "OBJECT - interaction space " <<object.inter_space << "mm"<< " x = "<<object.x <<" z = "<<object.z <<" rot "<<object.rot << endl;
+        object.shape = QString::fromStdString(worldModel->getSymbolByIdentifier(id)->getAttribute("shape"));
+
+        cout<< "OBJECT - interaction space " <<object.inter_space << "mm"<< " x = "<<object.x <<" z = "<<object.z <<" rot "<<object.rot << endl;
 
 		totalObjects.push_back(object);
 
@@ -248,7 +251,18 @@ bool SpecificWorker::checkObjectInteraction()
 		for (auto object : totalObjects)
 		{
             QVec VI = QVec::vec2((person.x - object.x),(person.z -object.z));
-            auto affordance = calculateAffordance(object);
+            QPolygonF affordance;
+            if (object.shape == "trapezoid")
+                affordance = affordanceTrapezoidal(object);
+
+            if (object.shape == "circle")
+                affordance = affordanceCircular(object);
+
+            if (object.shape == "rectangle")
+                affordance = affordanceRectangular(object);
+
+//            auto affordance = calculateAffordance(object);
+
             bool inside_affordance = affordance.containsPoint(QPointF(person.x,person.z),Qt::OddEvenFill);
 
             if(inside_affordance) qDebug() <<"Person " << person.id << " is inside the affordance of object " << object.imName;
@@ -286,7 +300,7 @@ bool SpecificWorker::checkObjectInteraction()
 	return changeInEdges;
 }
 
-QPolygonF SpecificWorker::calculateAffordance(ObjectType obj)
+QPolygonF SpecificWorker::affordanceTrapezoidal(ObjectType obj)
 {
     cout << "Entered calculateAffordance"<<endl;
     QPolygonF aff_qp;
@@ -311,6 +325,49 @@ QPolygonF SpecificWorker::calculateAffordance(ObjectType obj)
     return aff_qp;
 
 }
+
+
+QPolygonF SpecificWorker::affordanceRectangular(ObjectType obj)
+{
+    qDebug()<< __FUNCTION__;
+
+    QPolygonF aff_qp;
+
+    aff_qp << QPointF (obj.x - obj.width/2 - obj.inter_space , obj.z - obj.depth/2 -obj.inter_space) ;
+
+    aff_qp << QPointF ( obj.x + obj.width/2 + obj.inter_space, obj.z - obj.depth/2 -obj.inter_space) ;
+
+    aff_qp << QPointF ( obj.x + obj.width/2 + obj.inter_space, obj.z + obj.depth/2 +obj.inter_space) ;
+
+    aff_qp << QPointF (obj.x - obj.width/2 - obj.inter_space, obj.z + obj.depth/2 + obj.inter_space) ;
+
+
+    return aff_qp;
+
+}
+
+QPolygonF SpecificWorker::affordanceCircular(ObjectType obj)
+{
+    qDebug()<< __FUNCTION__;
+
+    QPolygonF aff_qp;
+
+    int points = 50;
+
+    float angle_shift = M_PI*2 / points, phi = 0;
+
+    for (int i = 0; i < points; ++i) {
+        phi += angle_shift;
+        aff_qp << QPointF ( obj.x + ((obj.width/2 + obj.inter_space)*sin(phi)),obj.z +  ((obj.depth/2 + obj.inter_space)*cos(phi)) );
+    }
+
+
+    return aff_qp;
+
+}
+
+
+
 
 ////////////////////////////////////////////////////////////////////////////////////////
 

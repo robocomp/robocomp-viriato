@@ -435,10 +435,10 @@ void SocialRules::checkObjectAffordance(bool d)
                 if (object.shape == "trapezoid")
                     object.affordance = affordanceTrapezoidal(object);
 
-                if (object.shape == "circular")
+                if (object.shape == "circle")
                     object.affordance = affordanceCircular(object);
 
-                if (object.shape == "rectangular")
+                if (object.shape == "rectangle")
                     object.affordance = affordanceRectangular(object);
 
             }
@@ -572,8 +572,8 @@ SNGPolyline SocialRules::affordanceCircular(ObjectType obj)
         phi += angle_shift;
 
         SNGPoint2D point;
-        point.x = obj.x + ((obj.width/2 + 500)*sin(phi));
-        point.z = obj.z +  ((obj.depth/2 + 500)*cos(phi));
+        point.x = obj.x + ((obj.width/2 + obj.inter_space)*sin(phi));
+        point.z = obj.z +  ((obj.depth/2 + obj.inter_space)*cos(phi));
         polyline.push_back(point);
 
     }
