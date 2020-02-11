@@ -1,12 +1,12 @@
 <innerModel>
 	<transform id="world">
 
-		
 		<!-- bedroom -->
 		<transform id="room_3">
 
 		<!-- FLOOR -->
 		<transform id="floor" tx="-4000" tz="-2000" ty="0">
+
 			<plane id="floor_plane" ny="1" size="4000,5000,10" texture="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/wood1.jpg" />
 		</transform>
 		
@@ -121,7 +121,22 @@
             		<transform id="board" tx="3000" tz="4300" ty="1350" ry="1.57">
 		        	<mesh id="board_mesh" file="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/tv/tv.3DS" 					
 		              	scale="30,30,30" tx="0" tz="0" ty="-300" rx="1.57" rz="1.57" collide="1" />
-			</transform>		
+			</transform>	
+
+				<transform id="ball" tx="750" tz="4200" ty="0" ry="1.57">
+		        	<mesh id="ball_mesh" file="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/ball.3DS" 					
+		              	scale="1.5,1.5,1.5" tx="0" tz="0" ty="0" rx="1.57" rz="1.57" collide="1" />
+			</transform>	
+
+			<transform id="rug" tx="300" tz="4200" ty="700" ry="1.57">
+		        	<mesh id="rug_mesh" file="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/rug.3DS" 					
+		              	scale="300,300,250" tx="0" tz="0" ty="0" rx="1.57" rz="1.57" ry="0.21" collide="1" />
+			</transform>
+
+			<transform id="dumbbells" tx="250" tz="3900" ty="50" ry="1.57">
+		        	<mesh id="dumbbells_mesh" file="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/dumbbells.3DS" 					
+		              	scale="7,7,7" tx="0" tz="0" ty="0" rx="1.57" rz="1.57" collide="1" />
+			</transform>
 			<!-- table 	
   			<transform id="table" tx="3000" tz="-2000" ty="1300" ry="1.57">
 		        	<mesh id="table_mesh" file="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/table/table2.3ds" 					
@@ -130,7 +145,7 @@
             
             <!-- TABLE D MESA REDONDA DEL COMEDOR> -->
 			<transform id="tableD" tx="3000" tz="-2000" ty="750" >
-				<mesh id="tableD_mesh" file="/home/robocomp/robocomp/files/osgModels/basics/cylinder.3ds" scale="1200,600,20" rx="1.570799947" collide="1"/>
+				<mesh id="tableD_mesh" file="/home/robocomp/robocomp/files/osgModels/basics/cylinder.3ds" scale="1500,900,20" rx="1.570799947" collide="1"/>
 						
                 
                 <transform id="rwreewreet" ty="-365" >
@@ -138,16 +153,28 @@
 				</transform>
 
 			 <transform id="tablebase" ty="-700" >
-					<mesh id="tablebase_mesh" file="/home/robocomp/robocomp/files/osgModels/basics/cylinder.3ds" scale="600,300,10" rx="1.570799947" collide="1"/>
+					<mesh id="tablebase_mesh" file="/home/robocomp/robocomp/files/osgModels/basics/cylinder.3ds" scale="900,600,10" rx="1.570799947" collide="1"/>
 				</transform>
+
+ 		<!-- cosas encima de la mesa -->
+  		<transform id="toy1" tx="900" tz = "200" >
+		<mesh id="toy_mesh" file="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/toy.3DS" scale="4,4,5" 			rx="1.570799947" collide="1"/>
+		</transform>
+		<transform id="palette" tx="-400" tz = "-200" >
+		<mesh id="palette_mesh" file="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/palette.3DS" scale="30,30,30" 			rx="1.570799947" collide="1"/>
+		</transform>
                 
+		<transform id="puzzle" tx="-600" tz = "200" ty="100" >
+		<mesh id="puzzle_mesh" file="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/puzzle/puzzle.3ds" scale="10,10,10" 			rx="-1.570799947" rz="0" collide="1"/>
+		</transform>
             </transform>	
             
+
 		</transform>
         
         <transform id="ladder" tx="5750" tz="2500" ty="0" ry="0">
 		        	<mesh id="ladder_mesh" file="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/ladder.3DS" 					
-		              	scale="0.75,0.75,0.75" tx="0" tz="0" ty="0" rx="1.57" rz="1.57" collide="1" />
+		              	scale="0.75,0.75,0.8" tx="0" tz="0" ty="0" rx="1.57" rz="1.57" collide="1" />
         </transform>
 
 
