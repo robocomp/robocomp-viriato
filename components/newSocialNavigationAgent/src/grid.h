@@ -378,7 +378,7 @@ public:
         try	{ viewer->ts_addTransform_ignoreExisting("IMV_fmap","world");} catch(const QString &s){qDebug() << s; };
 
         auto normal = QVec::vec3(1,1,0);
-        auto size =  QVec::vec3(40,40,40);
+        auto size =  QVec::vec3(50,50,50);
 
         try
         {
@@ -391,13 +391,14 @@ public:
                 if(value.free)
                 {
                     if (value.cost == 1.5) //affordance spaces
-                        viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), normal, "#FFD500", size);
+                        viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), normal, "#FFFF00", size);
                     else if (value.cost == 2) //lowvisited spaces
-                        viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), normal, "#FFAA00", size);
+                        viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), normal, "#FFBF00", size);
                     else if (value.cost == 2.5) //mediumvisited spaces
-                        viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), normal, "#FF8300", size);
+                        viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), normal, "#FF8000", size);
                     else if (value.cost == 3) //highVisited spaces
-                            viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), normal, "#FF4D00", size);
+                            viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), normal, "#FF4000", size);
+
                     else if (value.cost == 4.0) //zona social
                         viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), normal, "#00BFFF", size);
 
@@ -405,11 +406,11 @@ public:
                         viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), normal, "#BF00FF", size);
 
                     else
-                        viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), normal, "#00FF00", size);
+                        viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), normal, "#E6E6E6", size); // Libre
                 }
 
                 else
-                    viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), QVec::vec3(1,1,0), "#FF0000", QVec::vec3(40,40,40));
+                    viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), QVec::vec3(1,1,0), "#B40404", QVec::vec3(40,40,40)); //Ocupado
 
                 i++;
             }

@@ -1,6 +1,6 @@
 ﻿<innerModel>
 	
-	<omnirobot id="robot" tx="0" ty="0" tz="0" port="12238" >
+	<omnirobot id="robot" tx="-5200" ty="0" tz="-200" ry ="3.14" port="12238" >
         	<plane id="base_mesh" size="540,220,460" py="137.5" texture="#666666"  collide="1" />
         
 		<!--<transform id="plane_base" ty="0" tz="0" tz="0" rx="0"  >

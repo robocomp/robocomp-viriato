@@ -724,6 +724,7 @@ void SocialRules::checkRobotmov()
 	robot.z=str2float(edgeRTrobot.attributes["tz"]);
 	robot.angle=str2float(edgeRTrobot.attributes["ry"]);
 
+	qDebug() <<"POSE ROBOT "<< robot.x << robot.z << robot.angle;
 
 	point.x=robot.x;
 	point.z=robot.z;

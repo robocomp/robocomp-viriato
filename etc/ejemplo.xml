@@ -34,10 +34,10 @@
 			</transform>	
 			
 			<!-- CAMA -->
-            <transform id="bed" tx="5500" tz="1500" ty="0" ry="1.57">
+            <transform id="bed" tx="5500" tz="1700" ty="0" ry="1.57">
 
                 <mesh id="bed_mesh" file="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/hospitalBed/hospbed.3DS" 					
-                      scale="1,1,1" tx="-100" tz="0" ty="0" rx="1.57" rz="1.57" collide="1" />
+                      scale="1,1,1" tx="150" tz="0" ty="0" rx="1.57" rz="1.57" collide="1" />
 			</transform>
 
 		

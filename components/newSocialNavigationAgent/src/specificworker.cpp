@@ -118,7 +118,8 @@ void SpecificWorker::compute()
 			personMoved = true;
 //			drawGrid();
 		}
-//        socialrules.checkRobotmov();
+
+        socialrules.checkRobotmov();
 
         worldModelChanged = false;
     }
@@ -358,10 +359,11 @@ void SpecificWorker::AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldMo
 
 	QMutexLocker lockIM(mutex);
 	static bool first = true;
+    qDebug() << "structural Change";
 
 	AGMModelConverter::fromIceToInternal(w, worldModel);
-//	innerModel.reset(AGMInner::extractInnerModel(worldModel));
-	innerModel = std::make_shared<InnerModel>(AGMInner::extractInnerModel(worldModel));
+	innerModel.reset(AGMInner::extractInnerModel(worldModel));
+//	innerModel = std::make_shared<InnerModel>(AGMInner::extractInnerModel(worldModel));
 
 	if (!first)
 	{
