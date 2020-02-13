@@ -98,7 +98,6 @@ class Navigation
                 return;
             }
 
-
 //            laserData = laserData_;
             computeForces(points, laserData);
             cleanPoints();
@@ -319,9 +318,10 @@ class Navigation
 
         const float ROBOT_LENGTH = 400;
 
-        float KE = 3.0;
-        float KI = 120;
-        float KB = 90;
+//        float KE = 3.0;
+//        float KI = 120;
+        float KE = 6.0;
+        float KI = 200;
 
         const float ROAD_STEP_SEPARATION = ROBOT_LENGTH * 0.9;
 

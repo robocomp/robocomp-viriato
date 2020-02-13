@@ -410,7 +410,7 @@ public:
                 }
 
                 else
-                    viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), QVec::vec3(1,1,0), "#B40404", QVec::vec3(40,40,40)); //Ocupado
+                    viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), QVec::vec3(1,1,0), "#B40404", size); //Ocupado
 
                 i++;
             }

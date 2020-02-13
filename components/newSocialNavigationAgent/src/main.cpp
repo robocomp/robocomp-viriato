@@ -85,8 +85,8 @@
 #include <agmexecutivetopicI.h>
 #include <rcismousepickerI.h>
 
-#include <GenericBase.h>
 #include <Planning.h>
+#include <GenericBase.h>
 
 
 // User includes here

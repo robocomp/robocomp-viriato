@@ -33,8 +33,8 @@
 #include <QState>
 #include <CommonBehavior.h>
 
-#include <GenericBase.h>
 #include <Planning.h>
+#include <GenericBase.h>
 #include <Laser.h>
 #include <OmniRobot.h>
 #include <SocialNavigationGaussian.h>
@@ -51,8 +51,8 @@
 #define BASIC_PERIOD 100
 
 using namespace std;
-using namespace RoboCompGenericBase;
 using namespace RoboCompPlanning;
+using namespace RoboCompGenericBase;
 using namespace RoboCompLaser;
 using namespace RoboCompOmniRobot;
 using namespace RoboCompSocialNavigationGaussian;

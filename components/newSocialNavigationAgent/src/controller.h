@@ -96,6 +96,7 @@ public:
         // Proceed through path
         // Compute rotation speed. We use angle between robot's nose and line between first and sucessive points
         // as an estimation of curvature ahead
+
         std::vector<float> angles;
         auto lim = std::min(6, (int)points.size());
         QLineF nose(robot, robotNose);
@@ -132,6 +133,8 @@ public:
         }
 
         bumperVel = total / KB;  // Parameter set in slidebar
+        qDebug()<< bumperVel;
+        advVelx = bumperVel.x();
 
         return std::make_tuple (blocked, active, advVelx, advVelz,rotVel);
 

@@ -106,7 +106,7 @@
 <!--   <color value="#FF3333" /> -->
  </node>
 
- <!--<node alias="testtrajectory2D" endpoint="RCISMousePickerTopic:tcp -h localhost -p 13204">
+<!--<node alias="testtrajectory2D" endpoint="RCISMousePickerTopic:tcp -h localhost -p 13204">
   <dependence alias="newSocialnavigA"/>
   <workingDir path="/home/robocomp/"/>
   <upCommand command="rcremote localhost testtrajectory2D /home/robocomp/robocomp/components/robocomp-tests/testTrajectoryRobot2D python src/testTrajectoryRobot2D.py etc/config"/>

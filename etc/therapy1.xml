@@ -27,9 +27,9 @@
 			</transform>
 			
 			<!-- CAMA -->
-	 		<transform id="bed" tx="-3250" tz="-1250" ty="1200" ry="1.57">
+	 		<transform id="bed" tx="-3250" tz="-1500" ty="-100" ry="1.57">
 		        <mesh id="bed_mesh" file="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/hospitalBed/hospbed.3DS" 					
-		              scale="1,1,1" tx="150" tz="-100" ty="-1200" rx="1.57" rz="1.57" collide="1" />
+		              scale="1,1,1" tx="150" tz="-100" ty="0" rx="1.57" rz="1.57" collide="1" />
 			</transform>
 
 
@@ -144,7 +144,8 @@
         		</transform>
             
            		 <!-- TABLE D MESA REDONDA DEL COMEDOR> -->
-			<transform id="tableD" tx="3000" tz="-2000" ty="750" >
+
+		<transform id="tableD" tx="3000" tz="-1600" ty="750" >
 				<mesh id="tableD_mesh" file="/home/robocomp/robocomp/files/osgModels/basics/cylinder.3ds" scale="1500,900,20" rx="1.570799947" collide="1"/>
 						
                 
