@@ -119,11 +119,11 @@ void SpecificWorker::compute()
 //			drawGrid();
 		}
 
-        socialrules.checkRobotmov();
 
         worldModelChanged = false;
     }
 
+    socialrules.checkRobotmov();
     navigation.update(laserData, personMoved);
 
     viewer->run();

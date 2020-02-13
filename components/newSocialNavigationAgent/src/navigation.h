@@ -112,6 +112,8 @@ class Navigation
                 this->current_target.unlock();
 
                 omnirobot_proxy->setSpeedBase(0,0,0);
+
+
             }
             if (!active)
             {
@@ -197,7 +199,10 @@ class Navigation
 
         void newTarget(QPointF newT)
         {
-            qDebug()<<"New Target arrived "<< newT;
+
+            auto robotPose = innerModel->transform("world","robot");
+
+            qDebug()<<"New Target arrived "<< newT << " Robot Pose" << QPointF(robotPose.x(),robotPose.z());
 
             this->current_target.lock();
                 current_target.active.store(true);
@@ -739,6 +744,7 @@ class Navigation
     {
         QVec robotPose = innerModel->transformS6D("world","robot");
         auto robot = QPointF(robotPose.x(),robotPose.z());
+
 
         return (robot + QPointF( ROAD_STEP_SEPARATION *sin(robotPose.ry()), ROAD_STEP_SEPARATION *cos(robotPose.ry())));
     }

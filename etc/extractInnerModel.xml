@@ -1,7 +1,7 @@
 <innermodel>
 	<transform id="world" tx="0" ty="0" tz="0"  rx="0" ry="0" rz="0">
 		<transform id="room_3" tx="0" ty="0" tz="0"  rx="0" ry="0" rz="0">
-			<transform id="robot" tx="-5200" ty="0" tz="-200"  rx="0" ry="3.140000105" rz="0">
+			<transform id="robot" tx="0" ty="0" tz="0"  rx="0" ry="0" rz="0">
 				<plane id="base_mesh" texture="#666666" size="540,220,460" repeat="1000" nx="0" ny="0" nz="-1" px="0" py="137.5" pz="0" collide="1" />
 				<transform id="laser1Pose" tx="11" ty="300" tz="200"  rx="0" ry="0" rz="0">
 					<laser id="laser" port="10003" min="100" max="30000" measures="100" angle="4.199999809" ifconfig="" />
@@ -32,48 +32,42 @@
 			<transform id="bed" tx="-3250" ty="1200" tz="-1250"  rx="0" ry="1.570000052" rz="0">
 				<mesh id="bed_mesh" file="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/hospitalBed/hospbed.3DS" scale="1,1,1" tx="150" ty="-1200" tz="-100" rx="1.570000052" ry="0" rz="1.570000052" collide="1" />
 			</transform>
-			<transform id="room_4" tx="0" ty="0" tz="0"  rx="0" ry="0" rz="0">
-				<transform id="floor4" tx="-3000" ty="0" tz="2500"  rx="0" ry="0" rz="0">
-					<plane id="floor4_plane" texture="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/bath.jpg" size="6000,4000,10" repeat="1000" nx="0" ny="1" nz="0" px="0" py="0" pz="0" collide="0" />
-				</transform>
-				<transform id="pared4" tx="-6000" ty="950" tz="2500"  rx="0" ry="0" rz="0">
-					<plane id="muro4" texture="#74ADA1" size="4000,1900,100" repeat="1000" nx="-500" ny="0" nz="0" px="0" py="0" pz="0" collide="0" />
-				</transform>
-				<transform id="pared5" tx="0" ty="950" tz="2500"  rx="0" ry="0" rz="0">
-					<plane id="muro5" texture="#74ADA1" size="4000,1900,100" repeat="1000" nx="-500" ny="0" nz="0" px="0" py="0" pz="0" collide="0" />
-				</transform>
-				<transform id="pared6" tx="-3000" ty="950" tz="4500"  rx="0" ry="0" rz="0">
-					<plane id="muro6" texture="#74ADA1" size="6000,1900,100" repeat="1000" nx="0" ny="0" nz="-5000" px="0" py="0" pz="0" collide="0" />
-				</transform>
-				<transform id="basin" tx="-5500" ty="0" tz="1500"  rx="0" ry="1.570000052" rz="0">
-					<mesh id="basin_mesh" file="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/basin/Washbasin.3DS" scale="30,30,30" tx="0" ty="0" tz="0" rx="1.570000052" ry="0" rz="3.140000105" collide="1" />
-				</transform>
-				<transform id="mirror" tx="-6000" ty="1200" tz="1500"  rx="0" ry="1.570000052" rz="0">
-					<mesh id="mirror_mesh" file="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/mirror/mirror.3DS" scale="2,2,1" tx="0" ty="0" tz="0" rx="1.570000052" ry="0" rz="1.570000052" collide="1" />
-				</transform>
-				<transform id="lavatory" tx="-5500" ty="0" tz="3600"  rx="0" ry="1.570000052" rz="0">
-					<mesh id="lavatory_mesh" file="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/lavatory/lavatory.3DS" scale="3,3,3" tx="0" ty="0" tz="0" rx="1.570000052" ry="0" rz="3.140000105" collide="1" />
-				</transform>
-				<transform id="shower" tx="-600" ty="0" tz="4100"  rx="0" ry="0" rz="0">
-					<mesh id="shower_mesh" file="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/shower/shower.3DS" scale="1,1,1" tx="0" ty="0" tz="0" rx="1.570000052" ry="0" rz="-1.570000052" collide="1" />
-				</transform>
+			<transform id="floor4" tx="-3000" ty="0" tz="2500"  rx="0" ry="0" rz="0">
+				<plane id="floor4_plane" texture="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/bath.jpg" size="6000,4000,10" repeat="1000" nx="0" ny="1" nz="0" px="0" py="0" pz="0" collide="0" />
 			</transform>
-			<transform id="room_5" tx="0" ty="0" tz="0"  rx="0" ry="0" rz="0">
-				<transform id="floor5" tx="-1000" ty="0" tz="-2000"  rx="0" ry="0" rz="0">
-					<plane id="floor5_plane" texture="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/wood1.jpg" size="2000,5000,10" repeat="1000" nx="0" ny="1" nz="0" px="0" py="0" pz="0" collide="0" />
-				</transform>
-				<transform id="pared7" tx="0" ty="950" tz="-250"  rx="0" ry="0" rz="0">
-					<plane id="muro7" texture="#74ADA1" size="1500,1900,100" repeat="1000" nx="-500" ny="0" nz="0" px="0" py="0" pz="0" collide="0" />
-				</transform>
-				<transform id="pared8" tx="0" ty="950" tz="-3750"  rx="0" ry="0" rz="0">
-					<plane id="muro8" texture="#74ADA1" size="1500,1900,100" repeat="1000" nx="-500" ny="0" nz="0" px="0" py="0" pz="0" collide="0" />
-				</transform>
-				<transform id="pared9" tx="-1000" ty="950" tz="-4500"  rx="0" ry="0" rz="0">
-					<plane id="muro9" texture="#74ADA1" size="2000,1900,100" repeat="1000" nx="0" ny="0" nz="-5000" px="0" py="0" pz="0" collide="0" />
-				</transform>
+			<transform id="pared4" tx="-6000" ty="950" tz="2500"  rx="0" ry="0" rz="0">
+				<plane id="muro4" texture="#74ADA1" size="4000,1900,100" repeat="1000" nx="-500" ny="0" nz="0" px="0" py="0" pz="0" collide="0" />
 			</transform>
-		</transform>
-		<transform id="room_6" tx="0" ty="0" tz="0"  rx="0" ry="0" rz="0">
+			<transform id="pared5" tx="0" ty="950" tz="2500"  rx="0" ry="0" rz="0">
+				<plane id="muro5" texture="#74ADA1" size="4000,1900,100" repeat="1000" nx="-500" ny="0" nz="0" px="0" py="0" pz="0" collide="0" />
+			</transform>
+			<transform id="pared6" tx="-3000" ty="950" tz="4500"  rx="0" ry="0" rz="0">
+				<plane id="muro6" texture="#74ADA1" size="6000,1900,100" repeat="1000" nx="0" ny="0" nz="-5000" px="0" py="0" pz="0" collide="0" />
+			</transform>
+			<transform id="basin" tx="-5500" ty="0" tz="1500"  rx="0" ry="1.570000052" rz="0">
+				<mesh id="basin_mesh" file="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/basin/Washbasin.3DS" scale="30,30,30" tx="0" ty="0" tz="0" rx="1.570000052" ry="0" rz="3.140000105" collide="1" />
+			</transform>
+			<transform id="mirror" tx="-6000" ty="1200" tz="1500"  rx="0" ry="1.570000052" rz="0">
+				<mesh id="mirror_mesh" file="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/mirror/mirror.3DS" scale="2,2,1" tx="0" ty="0" tz="0" rx="1.570000052" ry="0" rz="1.570000052" collide="1" />
+			</transform>
+			<transform id="lavatory" tx="-5500" ty="0" tz="3600"  rx="0" ry="1.570000052" rz="0">
+				<mesh id="lavatory_mesh" file="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/lavatory/lavatory.3DS" scale="3,3,3" tx="0" ty="0" tz="0" rx="1.570000052" ry="0" rz="3.140000105" collide="1" />
+			</transform>
+			<transform id="shower" tx="-600" ty="0" tz="4100"  rx="0" ry="0" rz="0">
+				<mesh id="shower_mesh" file="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/shower/shower.3DS" scale="1,1,1" tx="0" ty="0" tz="0" rx="1.570000052" ry="0" rz="-1.570000052" collide="1" />
+			</transform>
+			<transform id="floor5" tx="-1000" ty="0" tz="-2000"  rx="0" ry="0" rz="0">
+				<plane id="floor5_plane" texture="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/wood1.jpg" size="2000,5000,10" repeat="1000" nx="0" ny="1" nz="0" px="0" py="0" pz="0" collide="0" />
+			</transform>
+			<transform id="pared7" tx="0" ty="950" tz="-250"  rx="0" ry="0" rz="0">
+				<plane id="muro7" texture="#74ADA1" size="1500,1900,100" repeat="1000" nx="-500" ny="0" nz="0" px="0" py="0" pz="0" collide="0" />
+			</transform>
+			<transform id="pared8" tx="0" ty="950" tz="-3750"  rx="0" ry="0" rz="0">
+				<plane id="muro8" texture="#74ADA1" size="1500,1900,100" repeat="1000" nx="-500" ny="0" nz="0" px="0" py="0" pz="0" collide="0" />
+			</transform>
+			<transform id="pared9" tx="-1000" ty="950" tz="-4500"  rx="0" ry="0" rz="0">
+				<plane id="muro9" texture="#74ADA1" size="2000,1900,100" repeat="1000" nx="0" ny="0" nz="-5000" px="0" py="0" pz="0" collide="0" />
+			</transform>
 			<transform id="floor6" tx="3000" ty="0" tz="0"  rx="0" ry="0" rz="0">
 				<plane id="floor6_plane" texture="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/wood1.jpg" size="6000,9000,10" repeat="1000" nx="0" ny="1" nz="0" px="0" py="0" pz="0" collide="0" />
 			</transform>
@@ -86,17 +80,20 @@
 			<transform id="pared12" tx="3000" ty="950" tz="4500"  rx="0" ry="0" rz="0">
 				<plane id="muro12" texture="#74ADA1" size="6000,1900,100" repeat="1000" nx="0" ny="0" nz="-5000" px="0" py="0" pz="0" collide="0" />
 			</transform>
-			<transform id="board" tx="3000" ty="1350" tz="4300"  rx="0" ry="1.570000052" rz="0">
-				<mesh id="board_mesh" file="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/tv/tv.3DS" scale="30,30,30" tx="-150" ty="-300" tz="-150" rx="1.570000052" ry="0" rz="1.570000052" collide="1" />
+			<transform id="board" tx="3000" ty="1350" tz="4300"  rx="0" ry="3.140000105" rz="0">
+				<mesh id="board_mesh" file="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/tv/tv.3DS" scale="30,30,30" tx="-150" ty="-300" tz="-150" rx="1.570000052" ry="0" rz="3.140000105" collide="1" />
 			</transform>
 			<transform id="ball" tx="750" ty="0" tz="4200"  rx="0" ry="1.570000052" rz="0">
 				<mesh id="ball_mesh" file="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/ball.3DS" scale="1.5,1.5,1.5" tx="0" ty="0" tz="0" rx="1.570000052" ry="0" rz="1.570000052" collide="1" />
 			</transform>
-			<transform id="rug" tx="300" ty="700" tz="4200"  rx="0" ry="1.570000052" rz="0">
-				<mesh id="rug_mesh" file="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/rug.3DS" scale="300,300,250" tx="0" ty="0" tz="0" rx="1.570000052" ry="0.2099999934" rz="1.570000052" collide="1" />
+			<transform id="rug" tx="300" ty="700" tz="4200"  rx="0" ry="0" rz="0">
+				<mesh id="rug_mesh" file="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/rug.3DS" scale="300,300,250" tx="0" ty="0" tz="0" rx="1.570000052" ry="0" rz="1.570000052" collide="1" />
 			</transform>
 			<transform id="dumbbells" tx="250" ty="50" tz="3900"  rx="0" ry="1.570000052" rz="0">
 				<mesh id="dumbbells_mesh" file="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/dumbbells.3DS" scale="7,7,7" tx="0" ty="0" tz="0" rx="1.570000052" ry="0" rz="1.570000052" collide="1" />
+			</transform>
+			<transform id="ladder" tx="5750" ty="0" tz="2500"  rx="0" ry="0" rz="0">
+				<mesh id="ladder_mesh" file="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/ladder.3DS" scale="0.75,0.75,0.8000000119" tx="0" ty="0" tz="0" rx="1.570000052" ry="0" rz="1.570000052" collide="1" />
 			</transform>
 			<transform id="tableD" tx="3000" ty="750" tz="-2000"  rx="0" ry="0" rz="0">
 				<mesh id="tableD_mesh" file="/home/robocomp/robocomp/files/osgModels/basics/cylinder.3ds" scale="1500,900,20" tx="0" ty="0" tz="0" rx="1.570799947" ry="0" rz="0" collide="1" />
@@ -116,9 +113,6 @@
 					<mesh id="puzzle_mesh" file="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/puzzle/puzzle.3ds" scale="10,10,10" tx="0" ty="0" tz="0" rx="-1.570799947" ry="0" rz="0" collide="1" />
 				</transform>
 			</transform>
-		</transform>
-		<transform id="ladder" tx="5750" ty="0" tz="2500"  rx="0" ry="0" rz="0">
-			<mesh id="ladder_mesh" file="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/ladder.3DS" scale="0.75,0.75,0.8000000119" tx="0" ty="0" tz="0" rx="1.570000052" ry="0" rz="1.570000052" collide="1" />
 		</transform>
 	</transform>
 </innermodel>

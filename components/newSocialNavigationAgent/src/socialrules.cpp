@@ -724,8 +724,6 @@ void SocialRules::checkRobotmov()
 	robot.z=str2float(edgeRTrobot.attributes["tz"]);
 	robot.angle=str2float(edgeRTrobot.attributes["ry"]);
 
-	qDebug() <<"POSE ROBOT "<< robot.x << robot.z << robot.angle;
-
 	point.x=robot.x;
 	point.z=robot.z;
 		 
@@ -738,7 +736,7 @@ void SocialRules::checkRobotmov()
 				+(point.z - poserobot[poserobot.size()-1].z)*(point.z - poserobot[poserobot.size()-1].z));
 		    
 		totaldist=totaldist + dist;
-		qDebug()<<"Distancia calculada" << dist << "Distancia total" <<totaldist;
+//		qDebug()<<"Distancia calculada" << dist << "Distancia total" <<totaldist;
 	}
 
 	poserobot.push_back(point);
