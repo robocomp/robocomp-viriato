@@ -84,14 +84,14 @@ InnerViewer::InnerViewer( const InnerPtr &innerModel_, const std::string &name_,
 //}
 void InnerViewer::run()
 {
-//        guard gl(mutex);
+        guard gl(mutex);
 		innerModelViewer->update();
         viewer.frame();
 }
 
 void InnerViewer::reloadInnerModel(const InnerPtr &other)
 {	
-//	guard gl(mutex);
+	guard gl(mutex);
 	innerModel = other;
 
 	root->removeChild(innerModelViewer);

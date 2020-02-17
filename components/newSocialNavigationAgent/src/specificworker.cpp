@@ -116,7 +116,6 @@ void SpecificWorker::compute()
 		{
 			navigation.updatePolylines(totalpersons, intimate_seq, personal_seq, social_seq, object_seq, object_lowProbVisited, object_mediumProbVisited, object_highProbVisited, objectblock_seq);
 			personMoved = true;
-//			drawGrid();
 		}
 
 
@@ -145,53 +144,6 @@ RoboCompLaser::TLaserData  SpecificWorker::updateLaser()
 
     return laserData;
 }
-
-
-//void SpecificWorker::drawGrid()
-//{
-//
-//    qDebug()<<__PRETTY_FUNCTION__;
-//    try	{ viewer->ts_removeNode("IMV_fmap");} catch(const QString &s){	qDebug() << s; };
-//    try	{ viewer->ts_addTransform_ignoreExisting("IMV_fmap","world");} catch(const QString &s){qDebug() << s; };
-//
-//    try
-//    {
-//        uint i = 0;
-//        auto grid = navigation.getMap();
-//
-//        for( const auto &[key,value] : navigation.getMap())
-//        {
-//            qDebug()<<key.x << key.z << value.cost << value.free;
-//
-//            QString item = "IMV_fmap_point_" + QString::number(i);
-//            if(value.free)
-//            {
-//                if (value.cost == 1.5) //affordance spaces
-//                    viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), QVec::vec3(1,0,0), "#FFA200", QVec::vec3(60,60,60));
-//
-//                else if (value.cost == 4.0) //zona social
-//                    viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), QVec::vec3(1,0,0), "#00BFFF", QVec::vec3(60,60,60));
-//
-//                else if (value.cost == 6.0) //zona personal
-//                    viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), QVec::vec3(1,0,0), "#BF00FF", QVec::vec3(60,60,60));
-//
-//                else
-//                    viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), QVec::vec3(1,0,0), "#00FF00", QVec::vec3(60,60,60));
-//            }
-//
-//            else
-//                viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), QVec::vec3(1,0,0), "#FF0000", QVec::vec3(60,60,60));
-//
-//            i++;
-//         }
-//
-//
-//    }
-//
-//    catch(const QString &s) {qDebug() << s;	}
-//}
-
-
 
 
 void SpecificWorker::sm_compute()
@@ -297,11 +249,14 @@ void SpecificWorker::AGMExecutiveTopic_selfEdgeAdded(const int nodeid, const str
 	try { worldModel->addEdgeByIdentifiers(nodeid, nodeid, edgeType, attributes); } catch(...){ printf("Couldn't add an edge. Duplicate?\n"); }
 
 	try {
-		innerModel.reset(AGMInner::extractInnerModel(worldModel));
-        viewer->reloadInnerModel(innerModel);
-        navigation.updateViewer(viewer);
+//		innerModel.reset(AGMInner::extractInnerModel(worldModel));
+        innerModel = std::make_shared<InnerModel>(AGMInner::extractInnerModel(worldModel));
 
-    } catch(...) { printf("Can't extract an InnerModel from the current model.\n"); }
+        viewer->reloadInnerModel(innerModel);
+		navigation.updateInnerModel(innerModel,viewer);
+
+
+	} catch(...) { printf("Can't extract an InnerModel from the current model.\n"); }
 }
 
 void SpecificWorker::AGMExecutiveTopic_selfEdgeDeleted(const int nodeid, const string &edgeType)
@@ -311,9 +266,11 @@ void SpecificWorker::AGMExecutiveTopic_selfEdgeDeleted(const int nodeid, const s
 	try { worldModel->removeEdgeByIdentifiers(nodeid, nodeid, edgeType); } catch(...) { printf("Couldn't remove an edge\n"); }
 
 	try {
-        innerModel.reset(AGMInner::extractInnerModel(worldModel));
+//        innerModel.reset(AGMInner::extractInnerModel(worldModel));
+        innerModel = std::make_shared<InnerModel>(AGMInner::extractInnerModel(worldModel));
+
         viewer->reloadInnerModel(innerModel);
-        navigation.updateViewer(viewer);
+		navigation.updateInnerModel(innerModel,viewer);
 
     } catch(...) { printf("Can't extract an InnerModel from the current model.\n"); }
 }
@@ -363,11 +320,13 @@ void SpecificWorker::AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldMo
 {
 
 	QMutexLocker lockIM(mutex);
+
 	static bool first = true;
     qDebug() << "structural Change";
 
 	AGMModelConverter::fromIceToInternal(w, worldModel);
-	innerModel.reset(AGMInner::extractInnerModel(worldModel));
+//	innerModel.reset(AGMInner::extractInnerModel(worldModel));
+    innerModel = std::make_shared<InnerModel>(AGMInner::extractInnerModel(worldModel));
 
 	if (!first)
 	{
@@ -377,7 +336,7 @@ void SpecificWorker::AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldMo
 		first = false;
 
     viewer->reloadInnerModel(innerModel);
-	navigation.updateViewer(viewer);
+	navigation.updateInnerModel(innerModel,viewer);
 
     worldModelChanged = true;
 
