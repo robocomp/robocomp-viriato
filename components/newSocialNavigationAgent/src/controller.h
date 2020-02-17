@@ -46,17 +46,15 @@ public:
     }
 
 
-    retUpdate update(std::vector<QPointF> points, RoboCompLaser::TLaserData laserData,QPolygonF laser_poly, QPointF target)
+    retUpdate update(std::vector<QPointF> points, RoboCompLaser::TLaserData laserData, QPointF target, QVec robotPose)
     {
         bool active = true;
         bool blocked = false;
 
-        QVec robotPose = innerModel->transformS6D("world","robot");
-
         QPointF robot = QPointF(robotPose.x(),robotPose.z());
         QPointF robotNose = robot + QPointF(50*sin(robotPose.ry()),50*cos(robotPose.ry()));
 
-        auto first = points[0];
+        auto firstPointInPath = points[0];
 
         // Compute euclidean distance to target
         float euc_dist_to_target = QVector2D(robot - target).length();
@@ -102,7 +100,7 @@ public:
         QLineF nose(robot, robotNose);
 
         for (auto &&i : iter::range(1, lim))
-            angles.push_back(rewrapAngleRestricted(qDegreesToRadians(nose.angleTo(QLineF(first, points[i])))));
+            angles.push_back(rewrapAngleRestricted(qDegreesToRadians(nose.angleTo(QLineF(firstPointInPath, points[i])))));
         auto min_angle = std::min(angles.begin(), angles.end());
 
 
@@ -133,8 +131,8 @@ public:
         }
 
         bumperVel = total / KB;  // Parameter set in slidebar
-        qDebug()<< bumperVel;
-        advVelx = bumperVel.x();
+//        qDebug()<< bumperVel;
+//        advVelx = bumperVel.x();
 
         return std::make_tuple (blocked, active, advVelx, advVelz,rotVel);
 

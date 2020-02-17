@@ -118,7 +118,7 @@
  </node> -->
 
  <node alias="newSocialnavigA" endpoint="agmcommonbehavior:tcp -h localhost -p 10330">
-  <!--<dependence alias="executive" />-->
+  <dependence alias="LocalizationA" />
   <dependence alias="socialnavigG" />
   <dependence alias="base" />
   <workingDir path="/home/robocomp/" />
