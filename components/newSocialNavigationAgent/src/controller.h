@@ -40,14 +40,11 @@ public:
         {   std::cerr << "CONTROLLER. Out of Range error reading parameters: " << oor.what() << '\n'; }
     }
 
-    void innerModelChanged(const std::shared_ptr<InnerModel> &innerModel_)
-    {
-        innerModel = innerModel_;
-    }
-
 
     retUpdate update(std::vector<QPointF> points, RoboCompLaser::TLaserData laserData, QPointF target, QVec robotPose)
     {
+        qDebug()<<"CONTROLLER -- " <<__FUNCTION__;
+
         bool active = true;
         bool blocked = false;
 

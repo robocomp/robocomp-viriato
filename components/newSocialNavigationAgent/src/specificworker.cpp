@@ -130,6 +130,23 @@ void SpecificWorker::compute()
 
 }
 
+
+
+RoboCompLaser::TLaserData  SpecificWorker::updateLaser()
+{
+	RoboCompLaser::TLaserData laserData;
+
+    try
+    {
+		laserData  = laser_proxy->getLaserData();
+    }
+
+    catch(const Ice::Exception &e){ std::cout <<"Can't connect to laser --" <<e.what() << std::endl; };
+
+    return laserData;
+}
+
+
 //void SpecificWorker::drawGrid()
 //{
 //
@@ -174,20 +191,6 @@ void SpecificWorker::compute()
 //    catch(const QString &s) {qDebug() << s;	}
 //}
 
-
-RoboCompLaser::TLaserData  SpecificWorker::updateLaser()
-{
-	RoboCompLaser::TLaserData laserData;
-
-    try
-    {
-		laserData  = laser_proxy->getLaserData();
-    }
-
-    catch(const Ice::Exception &e){ std::cout <<"Can't connect to laser --" <<e.what() << std::endl; };
-
-    return laserData;
-}
 
 
 
@@ -294,10 +297,11 @@ void SpecificWorker::AGMExecutiveTopic_selfEdgeAdded(const int nodeid, const str
 	try { worldModel->addEdgeByIdentifiers(nodeid, nodeid, edgeType, attributes); } catch(...){ printf("Couldn't add an edge. Duplicate?\n"); }
 
 	try {
-		innerModel = std::make_shared<InnerModel>(AGMInner::extractInnerModel(worldModel));
-		navigation.innerModelChanged(innerModel);
+		innerModel.reset(AGMInner::extractInnerModel(worldModel));
+        viewer->reloadInnerModel(innerModel);
+        navigation.updateViewer(viewer);
 
-	} catch(...) { printf("Can't extract an InnerModel from the current model.\n"); }
+    } catch(...) { printf("Can't extract an InnerModel from the current model.\n"); }
 }
 
 void SpecificWorker::AGMExecutiveTopic_selfEdgeDeleted(const int nodeid, const string &edgeType)
@@ -307,10 +311,11 @@ void SpecificWorker::AGMExecutiveTopic_selfEdgeDeleted(const int nodeid, const s
 	try { worldModel->removeEdgeByIdentifiers(nodeid, nodeid, edgeType); } catch(...) { printf("Couldn't remove an edge\n"); }
 
 	try {
-		innerModel = std::make_shared<InnerModel>(AGMInner::extractInnerModel(worldModel));
-		navigation.innerModelChanged(innerModel);
+        innerModel.reset(AGMInner::extractInnerModel(worldModel));
+        viewer->reloadInnerModel(innerModel);
+        navigation.updateViewer(viewer);
 
-	} catch(...) { printf("Can't extract an InnerModel from the current model.\n"); }
+    } catch(...) { printf("Can't extract an InnerModel from the current model.\n"); }
 }
 
 
@@ -363,7 +368,6 @@ void SpecificWorker::AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldMo
 
 	AGMModelConverter::fromIceToInternal(w, worldModel);
 	innerModel.reset(AGMInner::extractInnerModel(worldModel));
-//	innerModel = std::make_shared<InnerModel>(AGMInner::extractInnerModel(worldModel));
 
 	if (!first)
 	{
@@ -372,8 +376,9 @@ void SpecificWorker::AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldMo
 	else
 		first = false;
 
-	navigation.innerModelChanged(innerModel);
-	viewer->reloadInnerModel(innerModel);
+    viewer->reloadInnerModel(innerModel);
+	navigation.updateViewer(viewer);
+
     worldModelChanged = true;
 
 }

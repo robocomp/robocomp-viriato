@@ -56,31 +56,45 @@ class Navigation
         void initialize(const std::shared_ptr<InnerModel> &innerModel_, const std::shared_ptr<InnerViewer> &viewer_,
                 std::shared_ptr< RoboCompCommonBehavior::ParameterList > configparams_, OmniRobotPrx omnirobot_proxy_)
         {
-            qDebug()<<"Initializing Trajectory";
+            qDebug()<<"NAVIGATION -- " <<__FUNCTION__;
 
+            qDebug()<<"--1--";
             innerModel = innerModel_;
+            qDebug()<<"--2--";
+
             configparams = configparams_;
+            qDebug()<<"--3--";
             viewer = viewer_;
+            qDebug()<<"--4--";
             omnirobot_proxy = omnirobot_proxy_;
+            qDebug()<<"--5--";
             collisions =  std::make_shared<Collisions>();
+            qDebug()<<"--6--";
             collisions->initialize(innerModel, configparams);
+            qDebug()<<"--7--";
             grid.initialize(collisions);
+            qDebug()<<"--8--" <<"drawing grid";
 
             grid.draw(viewer.get());
+            qDebug()<<"--9--";
 
             controller.initialize(innerModel,configparams);
+            qDebug()<<"--10--";
 
             reloj.restart();
+            qDebug()<<"NAVIGATION -- END" <<__FUNCTION__;
 
         };
 
-        void innerModelChanged(const std::shared_ptr<InnerModel> &innerModel_){
-            innerModel = innerModel_;
-            controller.innerModelChanged(innerModel_);
+        void updateViewer(const std::shared_ptr<InnerViewer> &viewer_)
+        {
+            qDebug()<<"NAVIGATION ->" <<__FUNCTION__;
+            viewer = viewer_;
         };
 
         void update(const RoboCompLaser::TLaserData &laserData_, bool personMoved)
         {
+            qDebug()<<"NAVIGATION ->" <<__FUNCTION__;
 
             RoboCompLaser::TLaserData laserData;
             laserData = computeLaser(laserData_);
@@ -94,10 +108,13 @@ class Navigation
 
             currentRobotPose = innerModel->transformS6D("world","robot");
             currentRobotPolygon = getRobotPolygon();
-            updateLaserPolygon(laserData);
 
-            if (checkPathState(laserData) == false)
+            if (checkPathState() == false)
                 return;
+
+
+            updateLaserPolygon(laserData);
+            checkVisibility(points);
 
             computeForces(points, laserData);
             cleanPoints();
@@ -133,14 +150,16 @@ class Navigation
 
         };
 
-        bool checkPathState(const RoboCompLaser::TLaserData &lData)
+        bool checkPathState()
         {
+            qDebug()<<"NAVIGATION -- " <<__FUNCTION__;
+
             if (current_target.active.load() == true)
             {
 
                 if (current_target.blocked.load()==true) {
 
-                    if (findNewPath(lData)==false) {
+                    if (findNewPath()==false) {
                         qDebug() << __FUNCTION__ << "TARGET BLOCKED -> NO PATH FOUND";
 
                         this->current_target.lock();
@@ -174,8 +193,7 @@ class Navigation
 
         void newTarget(QPointF newT)
         {
-
-            qDebug()<<"New Target arrived "<< newT;
+            qDebug()<<"NAVIGATION -- " <<__FUNCTION__ <<"New Target arrived "<< newT;
 
             this->current_target.lock();
                 current_target.active.store(true);
@@ -191,6 +209,8 @@ class Navigation
         void updatePolylines(SNGPersonSeq persons_, SNGPolylineSeq intimate_seq,SNGPolylineSeq personal_seq,SNGPolylineSeq social_seq,
                 SNGPolylineSeq object_seq, SNGPolylineSeq object_lowProbVisited ,SNGPolylineSeq object_mediumProbVisited ,SNGPolylineSeq object_highProbVisited, SNGPolylineSeq objectsblocking_seq)
         {
+            qDebug()<<"NAVIGATION -- " <<__FUNCTION__;
+
             polylines_intimate.clear();
             polylines_personal.clear();
             polylines_social.clear();
@@ -284,8 +304,6 @@ class Navigation
         TController controller;
 
         std::vector<QPolygonF> polylines_intimate,polylines_personal,polylines_social,polylines_objects_total,polylines_objects_blocked, polylines_lowVisited ,polylines_mediumVisited ,polylines_highVisited;
-        std::vector<QPolygonF> prev_polylines_intimate = {}, prev_polylines_personal = {}, prev_polylines_social = {}, prev_polylines_objects_total = {}, prev_polylines_objects_blocked = {} ,
-                prev_polylines_lowVisited={} ,prev_polylines_mediumVisited={} ,prev_polylines_highVisited={};
 
         // ElasticBand
         std::vector<QPointF> points;
@@ -307,11 +325,16 @@ class Navigation
         QPointF lastPointInPath;
 
         QPolygonF currentRobotPolygon, laser_poly;
-        QVec currentRobotPose;
+    std::vector<QPointF> laser_cart;
+    QVec currentRobotPose;
+
+    std::map<QPointF, bool> mapPointsVisible;
 
     ////////// GRID RELATED METHODS //////////
     void updateFreeSpaceMap()
     {
+        qDebug()<<"NAVIGATION -- " <<__FUNCTION__;
+
         // First remove polygons from last iteration respecting cell occupied by furniture
         grid.resetGrid();
 
@@ -339,6 +362,7 @@ class Navigation
             grid.modifyCostInGrid(poly_per, 6.0);
 
         qDebug()<<"drawing grid";
+
         grid.draw(viewer.get());
 
     }
@@ -346,6 +370,8 @@ class Navigation
     ////////// CONTROLLER RELATED METHODS //////////
     RoboCompLaser::TLaserData computeLaser(RoboCompLaser::TLaserData laserData)
     {
+        qDebug()<<"NAVIGATION -- " <<__FUNCTION__;
+
         auto lasernode = innerModel->getNode<InnerModelLaser>(QString("laser"));
 
         RoboCompLaser::TLaserData laserCombined;
@@ -410,8 +436,10 @@ class Navigation
 
     //CONTROLLER METHODS
 
-    bool findNewPath(const RoboCompLaser::TLaserData &lData )
+    bool findNewPath()
     {
+        qDebug()<<"NAVIGATION -- " <<__FUNCTION__;
+
         points.clear();
 
         // extract target from current_path
@@ -444,36 +472,34 @@ class Navigation
             grid.markAreaInGridAs(currentRobotPolygon, true);
 
 
-
             return false;
         }
-
 
     }
 
 
     bool isVisible(QPointF p)
     {
+        qDebug()<<"NAVIGATION -- " <<__FUNCTION__;
+
         QVec pointInLaser = innerModel->transform("laser", QVec::vec3(p.x(),0,p.y()),"world");
         return laser_poly.containsPoint(QPointF(pointInLaser.x(),pointInLaser.z()), Qt::OddEvenFill);
     }
 
+//    void checkVisibility (std::vector<QPointF> &path)
+//    {
+//        mapPointsVisible.clear();
+//
+//    }
+
     void computeForces(const std::vector<QPointF> &path, const RoboCompLaser::TLaserData &lData)
     {
-        if (path.size() < 3)
+
+        if (path.size() < 3) {
             return;
-
-
-        //convert laser polar coordinates to cartesian
-        auto lasernode = innerModel->getNode<InnerModelLaser>(QString("laser"));
-        std::vector<QPointF> laser_cart;
-
-        for (const auto &l : lData)
-        {
-            QVec laserc = lasernode->laserTo(QString("laser"),l.dist, l.angle);
-            laser_cart.push_back(QPointF(laserc.x(),laserc.z()));
         }
 
+        qDebug()<<"NAVIGATION -- " <<__FUNCTION__;
 
         // Go through points using a sliding windows of 3
         for (auto group : iter::sliding_window(path, 3))
@@ -497,7 +523,7 @@ class Navigation
 
             std::vector<std::tuple<float, QVector2D>> distances;
             // Apply to all laser points a functor to compute the distances to point p2
-            std::transform(std::begin(laser_cart), std::end(laser_cart), std::back_inserter(distances), [p, this](QPointF &t) {
+            std::transform(std::begin(laser_cart), std::end(laser_cart), std::back_inserter(distances), [p, this](QPointF &t) { //lasercart is updated in UpdateLaserPolygon
                 // compute distante from laser tip to point minus RLENGTH/2 or 0 and keep it positive
                 float dist = (QVector2D(p) - QVector2D(t)).length() - (ROBOT_LENGTH / 2);
                 if (dist <= 0)
@@ -550,6 +576,8 @@ class Navigation
 
     void addPoints()
     {
+        qDebug()<<"NAVIGATION -- " <<__FUNCTION__;
+
         std::vector<std::tuple<int, QPointF>> points_to_insert;
         for (auto &&[k, group] : iter::enumerate(iter::sliding_window(points, 2)))
         {
@@ -578,6 +606,9 @@ class Navigation
 
     void cleanPoints()
     {
+        qDebug()<<"NAVIGATION -- " <<__FUNCTION__;
+
+
         std::vector<QPointF> points_to_remove;
         for (const auto &group : iter::sliding_window(points, 2))
         {
@@ -608,6 +639,8 @@ class Navigation
 
     QPolygonF getRobotPolygon()
     {
+        qDebug()<<"NAVIGATION -- " <<__FUNCTION__;
+
         QPolygonF robotP;
 
         auto boundingPlane = innerModel->getPlane("base_mesh");
@@ -630,15 +663,15 @@ class Navigation
         robotP << QPointF(tRWorld.x(),tRWorld.z());
         robotP << QPointF(tLWorld.x(),tLWorld.z());
 
-        FILE *fd = fopen("robot.txt", "w");
-        for (const auto &r: robotP)
-        {
-            fprintf(fd, "%d %d\n", (int)r.x(), (int)r.y());
-        }
-
-        fprintf(fd, "%d %d\n", (int)robotP[0].x(), (int)robotP[0].y());
-
-        fclose(fd);
+//        FILE *fd = fopen("robot.txt", "w");
+//        for (const auto &r: robotP)
+//        {
+//            fprintf(fd, "%d %d\n", (int)r.x(), (int)r.y());
+//        }
+//
+//        fprintf(fd, "%d %d\n", (int)robotP[0].x(), (int)robotP[0].y());
+//
+//        fclose(fd);
 
 
         return robotP;
@@ -646,40 +679,46 @@ class Navigation
 
     void updateLaserPolygon(const RoboCompLaser::TLaserData &lData)
     {
+        qDebug()<<"NAVIGATION -- " <<__FUNCTION__;
+
         laser_poly.clear(); //stores the points of the laser in lasers refrence system
+        laser_cart.clear();
         auto lasernode = innerModel->getNode<InnerModelLaser>(QString("laser"));
 
         for (const auto &l : lData)
         {
+            //convert laser polar coordinates to cartesian
             QVec laserc = lasernode->laserTo(QString("laser"),l.dist, l.angle);
             laser_poly << QPointF(laserc.x(),laserc.z());
+            laser_cart.push_back(QPointF(laserc.x(),laserc.z()));
         }
 
-//        QVec laserOrigin = innerModel->transform("robot","laser");
-//        laser_poly<<QPointF(laserOrigin.x(),laserOrigin.z());
-//
-//        QVec laser0 = lasernode->laserTo(QString("laser"),lData[0].dist, lData[0].angle);
-//        laser_poly<<QPointF(laser0.x(),laser0.z());
+        qDebug()<<"NAVIGATION -- END " <<__FUNCTION__;
 
 
-        FILE *fd = fopen("laserPoly.txt", "w");
-        for (const auto &lp : laser_poly)
-        {
-            QVec p = innerModel->transform("world",QVec::vec3(lp.x(),0,lp.y()),"laser");
-            fprintf(fd, "%d %d\n", (int)p.x(), (int)p.z());
-        }
-        fclose(fd);
+//        FILE *fd = fopen("laserPoly.txt", "w");
+//        for (const auto &lp : laser_poly)
+//        {
+//            QVec p = innerModel->transform("world",QVec::vec3(lp.x(),0,lp.y()),"laser");
+//            fprintf(fd, "%d %d\n", (int)p.x(), (int)p.z());
+//        }
+//        fclose(fd);
 
     }
 
     QPointF getRobotNose()
     {
+        qDebug()<<"NAVIGATION -- " <<__FUNCTION__;
+
         auto robot = QPointF(currentRobotPose.x(),currentRobotPose.z());
         return (robot + QPointF( ROAD_STEP_SEPARATION *sin(currentRobotPose.ry()), ROAD_STEP_SEPARATION *cos(currentRobotPose.ry())));
     }
 
     void drawRoad()
     {
+        qDebug()<<"NAVIGATION -- " <<__FUNCTION__;
+
+
         ///////////////////////
         // Preconditions
         ///////////////////////
@@ -705,18 +744,8 @@ class Navigation
                 QLine2D l(QVec::vec2(wAnt.x(),wAnt.y()), QVec::vec2(w.x(),w.y()));
                 QLine2D lp = l.getPerpendicularLineThroughPoint(QVec::vec2(w.x(), w.y()));
                 QVec normal = lp.getNormalForOSGLineDraw();  //3D vector
-//                QVec tangent = points.getTangentAtClosestPoint().getNormalForOSGLineDraw();
                 QString item = "p_" + QString::number(i);
                 viewer->ts_addTransform_ignoreExisting(item, "points", QVec::vec6(w.x(), 10, w.y(), 0, 0, 0));
-
-//                viewer->ts_drawLine(item + "_target", item, QVec::zeros(3), normal, 500, 80, "#FF0000");
-
-//                if (i == (int)points.getIndexOfCurrentPoint() + 1)
-//                {
-//                    // tangent to points
-////                    viewer->ts_drawLine(item + "_line", item, QVec::zeros(3), tangent, 600, 30, "#00FFFF");
-//                    viewer->ts_drawLine(item + "_target", item, QVec::zeros(3), normal, 500, 80, "#FFFFFF");
-//                }
 
 
                 if(i == 1)
