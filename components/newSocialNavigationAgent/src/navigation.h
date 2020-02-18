@@ -67,6 +67,8 @@ class Navigation
             viewer = viewer_;
             qDebug()<<"--4--";
             omnirobot_proxy = omnirobot_proxy_;
+            omnirobot_proxy->setSpeedBase(0,0,0); //grid can't be initialized if the robot is moving
+
             qDebug()<<"--5--";
             collisions =  std::make_shared<Collisions>();
             qDebug()<<"--6--";
@@ -75,21 +77,21 @@ class Navigation
             grid.initialize(collisions);
             qDebug()<<"--8--" <<"drawing grid";
 
-            grid.draw(viewer.get());
+            grid.draw(viewer);
             qDebug()<<"--9--";
 
             controller.initialize(innerModel,configparams);
             qDebug()<<"--10--";
 
+
             reloj.restart();
 
         };
 
-        void updateInnerModel(const std::shared_ptr<InnerModel> &innerModel_,const std::shared_ptr<InnerViewer> &viewer_)
+        void updateInnerModel(const std::shared_ptr<InnerModel> &innerModel_)
         {
             qDebug()<<"NAVIGATION ->" <<__FUNCTION__;
             innerModel = innerModel_;
-            viewer = viewer_;
             controller.updateInnerModel(innerModel);
 
         };
@@ -166,7 +168,6 @@ class Navigation
                             current_target.active.store(false);
                         this->current_target.unlock();
 
-                        omnirobot_proxy->setSpeedBase(0,0,0);
                         points.clear();
 
                         newRandomTarget();
@@ -385,7 +386,7 @@ class Navigation
 
         qDebug()<<"drawing grid";
 
-        grid.draw(viewer.get());
+        grid.draw(viewer);
 
     }
 
@@ -715,8 +716,6 @@ class Navigation
     void drawRoad()
     {
 
-        QMutexLocker locker(mutex);
-
         ///////////////////////
         // Preconditions
         ///////////////////////
@@ -724,8 +723,8 @@ class Navigation
             return;
 
 
-        try	{ viewer->ts_removeNode("points");} catch(const QString &s){	qDebug() <<"drawRoad" <<s; };
-        try	{ viewer->ts_addTransform_ignoreExisting("points","world");} catch(const QString &s){qDebug()<<"drawRoad" << s; };
+        try	{ viewer->removeNode("points");} catch(const QString &s){	qDebug() <<"drawRoad" <<s; };
+        try	{ viewer->addTransform_ignoreExisting("points","world");} catch(const QString &s){qDebug()<<"drawRoad" << s; };
 
         try
         {
@@ -743,20 +742,20 @@ class Navigation
                 QLine2D lp = l.getPerpendicularLineThroughPoint(QVec::vec2(w.x(), w.y()));
                 QVec normal = lp.getNormalForOSGLineDraw();  //3D vector
                 QString item = "p_" + QString::number(i);
-                viewer->ts_addTransform_ignoreExisting(item, "points", QVec::vec6(w.x(), 10, w.y(), 0, 0, 0));
+                viewer->addTransform_ignoreExisting(item, "points", QVec::vec6(w.x(), 10, w.y(), 0, 0, 0));
 
 
                 if(i == 1)
                 {
-                    viewer->ts_drawLine(item + "_point", item, QVec::zeros(3), normal, 500, 40, "#007CFF");  //Azul
+                    viewer->drawLine(item + "_point", item, QVec::zeros(3), normal, 500, 40, "#007CFF");  //Azul
                 }
                 else if (i == points.size()-1)
-                    viewer->ts_drawLine(item + "_point", item, QVec::zeros(3), normal, 500, 40, "#FF0000");  //Rojo
+                    viewer->drawLine(item + "_point", item, QVec::zeros(3), normal, 500, 40, "#FF0000");  //Rojo
 
-//                else if (isVisible(w))
-//                    viewer->ts_drawLine(item + "_point", item, QVec::zeros(3), normal, 500, 40, "#00ECFF"); //TAKE WIDTH FROM PARAMS!!!
+                else if (isVisible(w))
+                    viewer->drawLine(item + "_point", item, QVec::zeros(3), normal, 500, 40, "#00ECFF"); //TAKE WIDTH FROM PARAMS!!!
                 else
-                    viewer->ts_drawLine(item + "_point", item, QVec::zeros(3), normal, 500, 40, "#00ECFF");  //Morado
+                    viewer->drawLine(item + "_point", item, QVec::zeros(3), normal, 500, 40, "#00ECFF");  //Morado
 
 
             }

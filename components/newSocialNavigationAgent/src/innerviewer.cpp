@@ -31,8 +31,8 @@ InnerViewer::InnerViewer( const InnerPtr &innerModel_, const std::string &name_,
 	tb->setHomePosition(eye, center, up, false);
 //	tb->setByMatrix(osg::Matrixf::lookAt(eye, center, up));
 	viewer.setCameraManipulator(tb);
-	osgViewer::Viewer::ThreadingModel threadingModel = osgViewer::Viewer::AutomaticSelection;
-	viewer.setThreadingModel(threadingModel);
+//	osgViewer::Viewer::ThreadingModel threadingModel = osgViewer::Viewer::AutomaticSelection;
+//	viewer.setThreadingModel(threadingModel);
 	viewer.addEventHandler(new osgViewer::WindowSizeHandler);
 	createWindow(viewer, name_);
  	root = new osg::Group();
@@ -44,8 +44,8 @@ InnerViewer::InnerViewer( const InnerPtr &innerModel_, const std::string &name_,
 
 	//Asignamos a innerModel el puntero smart
 	innerModel = innerModel_;
-	innerModelViewer = new InnerModelViewer(innerModel, "root", root, true);
-	
+	innerModelViewer = new InnerModelViewer(innerModel_, "root", root, true);
+
  	viewer.setSceneData(root);
 		
 	//////////////////////////
@@ -84,27 +84,27 @@ InnerViewer::InnerViewer( const InnerPtr &innerModel_, const std::string &name_,
 //}
 void InnerViewer::run()
 {
-        guard gl(mutex);
+//        guard gl(mutex);
 		innerModelViewer->update();
         viewer.frame();
 }
 
-void InnerViewer::reloadInnerModel(const InnerPtr &other)
+void InnerViewer::reloadInnerModel(InnerPtr other)
 {	
-	guard gl(mutex);
+//	guard gl(mutex);
 	innerModel = other;
 
 	root->removeChild(innerModelViewer);
-	innerModelViewer = new InnerModelViewer(innerModel, "root", root, true);
+	innerModelViewer = new InnerModelViewer(other, "root", root, true);
 
 //	stop.store(false);
 //	stopped.store(false);
 }
 
-void InnerViewer::updateTransformValues(const QString item, const QVec &pos, const QString &parent)
-{
-	innerModel->updateTransformValues(item, pos.x(), pos.y(), pos.z(), pos.rx(), pos.ry(), pos.rz(), parent);
-}
+//void InnerViewer::updateTransformValues(const QString item, const QVec &pos, const QString &parent)
+//{
+//	innerModel->updateTransformValues(item, pos.x(), pos.y(), pos.z(), pos.rx(), pos.ry(), pos.rz(), parent);
+//}
 
 //////////////////////////////////////////////////////
 //// Non thread saffe API 
@@ -112,7 +112,7 @@ void InnerViewer::updateTransformValues(const QString item, const QVec &pos, con
 
 void InnerViewer::removeNode(const QString &item_)
 {	
-	guard gl(mutex);
+//	guard gl(mutex);
     //preconditions
 	InnerModelNode *node = innerModel->getNode(item_);
 	if (node == NULL)
@@ -159,7 +159,7 @@ void InnerViewer::removeNode(const QString &item_)
 
 void InnerViewer::addTransform_ignoreExisting(const QString &item_, const QString &parent_, const QVec &pos)
 {
-	guard gl(mutex);
+//	guard gl(mutex);
     //preconditions
 	if(pos.size() != 6)
 		throw QString("InnerViewer::addPlane_ignoreExisting: Position vector has not dimension 6");
@@ -176,7 +176,7 @@ void InnerViewer::addTransform_ignoreExisting(const QString &item_, const QStrin
 
 void InnerViewer::addTransform(const QString &item_, const QString &parent_,const QVec &pos)
 {
-	guard gl(mutex);
+//	guard gl(mutex);
     //preconditions
 	if(pos.size() != 6)
 		throw QString("InnerViewer::addPlane_ignoreExisting: Position vector has not dimension 6");
@@ -206,13 +206,13 @@ void InnerViewer::addTransform(const QString &item_, const QString &parent_,cons
 
 void InnerViewer::drawLine(const QString &item_, const QString &parent_, const QVec &center, const QVec &normal, float length, float width, const QString &texture)
 {
-	guard gl(mutex);
+//	guard gl(mutex);
     this->addPlane_ignoreExisting(item_, parent_, center, normal, texture, QVec::vec3(length, width, width));
 }
 
 void InnerViewer::addPlane_ignoreExisting(const QString &item_, const QString &parent_, const QVec &center, const QVec &normal, const QString &texture, const QVec &size)
 {
-	guard gl(mutex);
+//	guard gl(mutex);
     InnerModelNode *parent = innerModel->getNode(parent_);
 	if (parent == NULL)
 		throw QString("InnerViewer::addPlane_ignoreExisting: parent element node doesn't exist " + item_);
@@ -223,7 +223,7 @@ void InnerViewer::addPlane_ignoreExisting(const QString &item_, const QString &p
 
 void InnerViewer::addPlane_notExisting(const QString &item_, const QString &parent_, const QVec &center, const QVec &normal, const QString &texture, const QVec &size)
 {
-	guard gl(mutex);
+//	guard gl(mutex);
     InnerModelNode *parent = innerModel->getNode(parent_);
 	if (parent == NULL)
 		throw QString("InnerViewer::addPlane_notExisting: parent node doesn't exist");
@@ -234,7 +234,7 @@ void InnerViewer::addPlane_notExisting(const QString &item_, const QString &pare
 
 void InnerViewer::addMesh_ignoreExisting(const QString &item, const QString &base, const QVec &t, const QVec &r, const QString &path, const QVec &scale)
 {
-	guard gl(mutex);
+//	guard gl(mutex);
     InnerModelTransform *parent = innerModel->getNode<InnerModelTransform>(base);
 	if( parent == nullptr)
 		return;
@@ -259,7 +259,7 @@ void InnerViewer::addMesh_ignoreExisting(const QString &item, const QString &bas
 
 bool InnerViewer::setScale(const QString &item, float scaleX, float scaleY, float scaleZ)
 {
-	guard gl(mutex);
+//	guard gl(mutex);
     InnerModelMesh *aux = innerModel->getNode<InnerModelMesh>(item);
 	if(aux == nullptr) 
 		return false;
@@ -269,7 +269,7 @@ bool InnerViewer::setScale(const QString &item, float scaleX, float scaleY, floa
 
 bool InnerViewer::addJoint(const QString &item, const QString &base, const QVec &t, const QVec &r, QString &axis)
 {
-	guard gl(mutex);
+//	guard gl(mutex);
     if (axis == "")
 		axis = "z";
 
@@ -292,7 +292,7 @@ bool InnerViewer::addJoint(const QString &item, const QString &base, const QVec 
 
 bool InnerViewer::setPlaneTexture(const QString &item, const QString &texture)
 {
-	guard gl(mutex);
+//	guard gl(mutex);
     InnerModelPlane *aux = innerModel->getNode<InnerModelPlane>(item);
 	if(item == nullptr)
 		return false;
@@ -326,7 +326,7 @@ bool InnerViewer::setPlaneTexture(const QString &item, const QString &texture)
 
 void InnerViewer::drawLine2Points(const QString &name, const QString &parent, const QVec& p1, const QVec& p2, float width, const QString &texture)
 {
-	guard gl(mutex);
+//	guard gl(mutex);
     QLine2D line( p1 , p2 );	
 	float dl = (p1-p2).norm2();
 	QVec center = p2 + ((p1 - p2)*(float)0.5);
@@ -335,7 +335,7 @@ void InnerViewer::drawLine2Points(const QString &name, const QString &parent, co
 
 bool InnerViewer::removeObject(const QString &name)
 {
-	guard gl(mutex);
+//	guard gl(mutex);
     if (innerModel->getNode<InnerModelNode>(name) != nullptr)
 	{
 		removeNode(name);

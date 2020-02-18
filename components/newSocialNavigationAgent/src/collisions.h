@@ -55,23 +55,32 @@ public:
 
     bool checkRobotValidStateAtTargetFast(const QVec &targetPos, const QVec &targetRot) const   {
         //First we move the robot in our copy of innermodel to its current coordinates
-        innerModel->updateTransformValues("robot", targetPos.x(), targetPos.y(), targetPos.z(), targetRot.x(), targetRot.y(), targetRot.z());
-
-        ///////////////////////
-        //// Check if the robot at the target collides with any know object
-        ///////////////////////
-        for ( auto &in : robotNodes )
+        try
         {
-            for ( auto &out : restNodes )
+            innerModel->updateTransformValues("robot", targetPos.x(), targetPos.y(), targetPos.z(), targetRot.x(), targetRot.y(), targetRot.z());
+            ///////////////////////
+            //// Check if the robot at the target collides with any know object
+            ///////////////////////
+            for ( auto &in : robotNodes )
             {
-                if ( innerModel->collide( in, out))
+                for ( auto &out : restNodes )
                 {
-                    //qDebug() << __FUNCTION__ << "collision de " << in << " con " << out;
-                    return false;
+                    if ( innerModel->collide(in, out))
+                    {
+                        return false;
+                    }
                 }
             }
+            return true;
         }
-        return true;
+
+        catch(QString e)
+        {
+            qDebug()<< __FUNCTION__<<e;
+            return true;
+        }
+
+
     }
 
     void recursiveIncludeMeshes(InnerModelNode *node, QString robotId, bool inside, std::vector<QString> &in, std::vector<QString> &out, std::set<QString> &excluded) {

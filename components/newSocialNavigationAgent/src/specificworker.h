@@ -76,6 +76,7 @@ public:
 
 	SocialRules socialrules;
 	bool worldModelChanged = false;
+	bool innerModelChanged = false;
 
 
 public slots:

@@ -132,7 +132,7 @@ public:
 	typename FMap::const_iterator end() const { return fmap.begin(); };
 	size_t size() const { return fmap.size(); };
 
-//
+
 //	void initialize(const Dimensions &dim_, T &&initValue)
 //	{
 //		dim = dim_;
@@ -144,7 +144,7 @@ public:
 //            }
 //
 //		fmap_aux = fmap;
-
+//
 //		std::cout << "Grid::Initialize. Grid initialized to map size: " << fmap.size() << std::endl;
 //	}
 
@@ -160,6 +160,8 @@ public:
 		dim.HEIGHT = std::max(collisions_->outerRegion.top(), collisions_->outerRegion.bottom()) - dim.VMIN;
 
         fmap.clear();
+        fmap_aux.clear();
+
         for (int i = dim.HMIN; i < dim.HMIN + dim.WIDTH; i += dim.TILE_SIZE)
             for (int j = dim.VMIN; j < dim.VMIN + dim.HEIGHT; j += dim.TILE_SIZE)
             {
@@ -372,10 +374,11 @@ public:
 		return neigh;
 	}
 
-    void draw( InnerViewer *viewer)
+    void draw(std::shared_ptr<InnerViewer> viewer)
     {
-        try	{ viewer->ts_removeNode("IMV_fmap");} catch(const QString &s){	qDebug() << s; };
-        try	{ viewer->ts_addTransform_ignoreExisting("IMV_fmap","world");} catch(const QString &s){qDebug() << s; };
+
+        try	{ viewer->removeNode("IMV_fmap");} catch(const QString &s){	qDebug() << s; };
+        try	{ viewer->addTransform_ignoreExisting("IMV_fmap","world");} catch(const QString &s){qDebug() << s; };
 
         auto normal = QVec::vec3(1,1,0);
         auto size =  QVec::vec3(50,50,50);
@@ -391,26 +394,26 @@ public:
                 if(value.free)
                 {
                     if (value.cost == 1.5) //affordance spaces
-                        viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), normal, "#FFFF00", size);
+                        viewer->addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), normal, "#FFFF00", size);
                     else if (value.cost == 2) //lowvisited spaces
-                        viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), normal, "#FFBF00", size);
+                        viewer->addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), normal, "#FFBF00", size);
                     else if (value.cost == 2.5) //mediumvisited spaces
-                        viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), normal, "#FF8000", size);
+                        viewer->addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), normal, "#FF8000", size);
                     else if (value.cost == 3) //highVisited spaces
-                            viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), normal, "#FF4000", size);
+                            viewer->addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), normal, "#FF4000", size);
 
                     else if (value.cost == 4.0) //zona social
-                        viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), normal, "#00BFFF", size);
+                        viewer->addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), normal, "#00BFFF", size);
 
                     else if (value.cost == 6.0) //zona personal
-                        viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), normal, "#BF00FF", size);
+                        viewer->addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), normal, "#BF00FF", size);
 
                     else
-                        viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), normal, "#E6E6E6", size); // Libre
+                        viewer->addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), normal, "#E6E6E6", size); // Libre
                 }
 
                 else
-                    viewer->ts_addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), QVec::vec3(1,1,0), "#B40404", size); //Ocupado
+                    viewer->addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), QVec::vec3(1,1,0), "#B40404", size); //Ocupado
 
                 i++;
             }
