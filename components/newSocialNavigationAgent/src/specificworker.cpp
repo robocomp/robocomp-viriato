@@ -57,18 +57,21 @@ bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 
 void SpecificWorker::initialize(int period)
 {
-	std::cout << "Initialize worker" << std::endl;
+    QMutexLocker lockIM(mutex);
+
+    std::cout << "Initialize worker" << std::endl;
 
     connect(draw_gaussian_button,SIGNAL(clicked()),&socialrules, SLOT(drawGauss()));
     connect(draw_objects_button,SIGNAL(clicked()),&socialrules, SLOT(checkObjectAffordance()));
     connect(save_data_button,SIGNAL(clicked()),&socialrules, SLOT(saveData()));
     connect(gotoperson_button,SIGNAL(clicked()),&socialrules, SLOT(goToPerson()));
+
     connect(follow_checkbox, SIGNAL (clicked()),&socialrules,SLOT(checkstate()));
     connect(accompany_checkbox, SIGNAL (clicked()),&socialrules,SLOT(checkstate()));
     connect(passonright_checkbox, SIGNAL (clicked()),&socialrules,SLOT(checkstate()));
+	connect(object_slider, SIGNAL (valueChanged(int)),&socialrules,SLOT(affordanceSliderChanged(int)));
 
-    connect(object_slider, SIGNAL (valueChanged(int)),&socialrules,SLOT(affordanceSliderChanged(int)));
-
+	connect(robotMov_checkbox, SIGNAL(clicked()),this, SLOT(checkRobotMovState()));
 
     socialrules.idobject_combobox = idobject_combobox;
     socialrules.idselect_combobox = idselect_combobox;
@@ -86,12 +89,12 @@ void SpecificWorker::initialize(int period)
     {
         RoboCompAGMWorldModel::World w = agmexecutive_proxy->getModel();
         AGMExecutiveTopic_structuralChange(w);
+
     }
     catch(...)
     {
         printf("The executive is probably not running, waiting for first AGM model publication...");
     }
-
 
     navigation.initialize(innerModel, viewer, confParams, omnirobot_proxy);
 
@@ -109,21 +112,13 @@ void SpecificWorker::initialize(int period)
 
 void SpecificWorker::compute()
 {
+	qDebug()<< __FUNCTION__;
 	static QTime reloj = QTime::currentTime();
 
-	QMutexLocker lockIM(mutex);
 
     RoboCompLaser::TLaserData laserData = updateLaser();
 	bool personMoved = false;
 
-//	if (innerModelChanged)
-//	{
-//		qDebug()<<"innerModel changed";
-//		viewer->reloadInnerModel(innerModel);
-//		navigation.updateInnerModel(innerModel);
-//
-//		innerModelChanged = false;
-//	}
 
     if (worldModelChanged or socialrules.costChanged)
     {
@@ -143,16 +138,21 @@ void SpecificWorker::compute()
     socialrules.checkRobotmov();
     navigation.update(laserData, personMoved);
 
+	QMutexLocker lockIM(mutex);
+
+    qDebug() <<"viewer run";
     viewer->run();
+    qDebug() <<"END viewer run";
 
 //    qDebug()<< "Compute time " <<reloj.restart();
 
 }
 
 
-
 RoboCompLaser::TLaserData  SpecificWorker::updateLaser()
 {
+	qDebug()<<__FUNCTION__;
+
 	RoboCompLaser::TLaserData laserData;
 
     try
@@ -165,6 +165,20 @@ RoboCompLaser::TLaserData  SpecificWorker::updateLaser()
     return laserData;
 }
 
+void  SpecificWorker::checkRobotMovState()
+{
+	qDebug()<<__FUNCTION__;
+
+	if(robotMov_checkbox->checkState() == Qt::CheckState(2))
+	{
+		navigation.robotAutoMov = true;
+		navigation.newRandomTarget();
+	}
+
+	else
+		navigation.robotAutoMov = false;
+
+}
 
 void SpecificWorker::sm_compute()
 {
@@ -264,6 +278,7 @@ int SpecificWorker::AGMCommonBehavior_uptimeAgent()
 
 void SpecificWorker::AGMExecutiveTopic_selfEdgeAdded(const int nodeid, const string &edgeType, const RoboCompAGMWorldModel::StringDictionary &attributes)
 {
+    qDebug()<<__FUNCTION__;
 	QMutexLocker lockIM(mutex);
 	try { worldModel->addEdgeByIdentifiers(nodeid, nodeid, edgeType, attributes); } catch(...){ printf("Couldn't add an edge. Duplicate?\n"); }
 
@@ -280,7 +295,9 @@ void SpecificWorker::AGMExecutiveTopic_selfEdgeAdded(const int nodeid, const str
 
 void SpecificWorker::AGMExecutiveTopic_selfEdgeDeleted(const int nodeid, const string &edgeType)
 {
-	QMutexLocker lockIM(mutex);
+    qDebug()<<__FUNCTION__;
+
+    QMutexLocker lockIM(mutex);
 	try { worldModel->removeEdgeByIdentifiers(nodeid, nodeid, edgeType); } catch(...) { printf("Couldn't remove an edge\n"); }
 
 	try {
@@ -298,6 +315,7 @@ void SpecificWorker::AGMExecutiveTopic_selfEdgeDeleted(const int nodeid, const s
 void SpecificWorker::AGMExecutiveTopic_edgeUpdated(const RoboCompAGMWorldModel::Edge &modification)
 {
 	QMutexLocker locker(mutex);
+	qDebug() << __FUNCTION__;
 
 
 	AGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);
@@ -316,6 +334,7 @@ void SpecificWorker::AGMExecutiveTopic_edgesUpdated(const RoboCompAGMWorldModel:
 {
 //subscribesToCODE
 
+	qDebug() << __FUNCTION__;
 
 	QMutexLocker lockIM(mutex);
 	for (auto modification : modifications)
@@ -335,17 +354,16 @@ void SpecificWorker::AGMExecutiveTopic_edgesUpdated(const RoboCompAGMWorldModel:
 
 void SpecificWorker::AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldModel::World &w)
 {
+	qDebug() << __FUNCTION__;
 
 	QMutexLocker lockIM(mutex);
-
 	static bool first = true;
-    qDebug() << "structural Change";
+
 
 
 	try {
 		AGMModelConverter::fromIceToInternal(w, worldModel);
 
-//		innerModel.swap(std::make_shared<InnerModel>(AGMInner::extractInnerModel(worldModel)));
 		innerModel.reset(AGMInner::extractInnerModel(worldModel));
 
 		viewer->reloadInnerModel(innerModel);
@@ -360,6 +378,7 @@ void SpecificWorker::AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldMo
 		else
 			first = false;
 
+
 	} catch(...) { qDebug()<<__FUNCTION__<<"Can't extract an InnerModel from the current model."; }
 
 
@@ -368,6 +387,7 @@ void SpecificWorker::AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldMo
 void SpecificWorker::AGMExecutiveTopic_symbolUpdated(const RoboCompAGMWorldModel::Node &modification)
 {
 //subscribesToCODE
+	qDebug() << __FUNCTION__;
 
 	QMutexLocker locker(mutex);
 	AGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);
@@ -378,6 +398,8 @@ void SpecificWorker::AGMExecutiveTopic_symbolUpdated(const RoboCompAGMWorldModel
 void SpecificWorker::AGMExecutiveTopic_symbolsUpdated(const RoboCompAGMWorldModel::NodeSequence &modifications)
 {
 //subscribesToCODE
+	qDebug() << __FUNCTION__;
+
 	QMutexLocker l(mutex);
 
 
@@ -390,6 +412,8 @@ void SpecificWorker::AGMExecutiveTopic_symbolsUpdated(const RoboCompAGMWorldMode
 
 bool SpecificWorker::setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated)
 {
+	qDebug() << __FUNCTION__;
+
 	printf("<<< setParametersAndPossibleActivation\n");
 	// We didn't reactivate the component
 	reactivated = false;
@@ -434,6 +458,8 @@ bool SpecificWorker::setParametersAndPossibleActivation(const ParameterMap &prs,
 }
 void SpecificWorker::sendModificationProposal(AGMModel::SPtr &worldModel, AGMModel::SPtr &newModel)
 {
+	qDebug() << __FUNCTION__;
+
 	try
 	{
 		AGMMisc::publishModification(newModel, agmexecutive_proxy, "socialNavigationAgentAgent");

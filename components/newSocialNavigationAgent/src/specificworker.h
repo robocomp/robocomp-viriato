@@ -76,15 +76,17 @@ public:
 
 	SocialRules socialrules;
 	bool worldModelChanged = false;
-	bool innerModelChanged = false;
-
+    bool innerModelChanged = false;
 
 public slots:
-	void compute();
-	void initialize(int period);
-//Specification slot methods State Machine
+    void compute();
+    void initialize(int period);
+    void checkRobotMovState();
+
+    //Specification slot methods State Machine
 	void sm_compute();
-	void sm_initialize();
+    void sm_initialize();
+
 	void sm_finalize();
 
 //--------------------

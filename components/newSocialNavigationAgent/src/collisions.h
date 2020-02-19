@@ -18,6 +18,9 @@ public:
     QRectF outerRegion;
 
     void initialize(const std::shared_ptr<InnerModel> &innerModel_,const std::shared_ptr< RoboCompCommonBehavior::ParameterList > &params_) {
+
+
+        qDebug()<<"Collisions - " <<__FUNCTION__;
         innerModel = innerModel_;
 
         /// Processing configuration parameters
@@ -55,17 +58,26 @@ public:
 
     bool checkRobotValidStateAtTargetFast(const QVec &targetPos, const QVec &targetRot) const   {
         //First we move the robot in our copy of innermodel to its current coordinates
-        try
-        {
+
             innerModel->updateTransformValues("robot", targetPos.x(), targetPos.y(), targetPos.z(), targetRot.x(), targetRot.y(), targetRot.z());
+
             ///////////////////////
             //// Check if the robot at the target collides with any know object
             ///////////////////////
+
+            bool collision = false;
+
             for ( auto &in : robotNodes )
             {
                 for ( auto &out : restNodes )
                 {
-                    if ( innerModel->collide(in, out))
+                    try {
+                        collision = innerModel->collide(in, out);
+                    }
+
+                    catch(QString s) {qDebug()<< __FUNCTION__ << s;}
+
+                    if (collision)
                     {
                         return false;
                     }
@@ -74,14 +86,6 @@ public:
             return true;
         }
 
-        catch(QString e)
-        {
-            qDebug()<< __FUNCTION__<<e;
-            return true;
-        }
-
-
-    }
 
     void recursiveIncludeMeshes(InnerModelNode *node, QString robotId, bool inside, std::vector<QString> &in, std::vector<QString> &out, std::set<QString> &excluded) {
 

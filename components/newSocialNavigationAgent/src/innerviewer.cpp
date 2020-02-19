@@ -67,26 +67,22 @@ InnerViewer::InnerViewer( const InnerPtr &innerModel_, const std::string &name_,
 	 	
 	viewer.realize();
 }
-//
-//void InnerViewer::run()
-//{
-//	//while(true)
-//	{
-//		if(!stop.load())
-//		{
-//            guard gl(mutex);
-//            innerModelViewer->update();
-//			viewer.frame();
-//		}
-//		else
-//			stopped.store(true);
-//	}
-//}
+
+
 void InnerViewer::run()
 {
-//        guard gl(mutex);
+	qDebug() <<"viewer update";
+//            guard gl(mutex);
+
+    try {
 		innerModelViewer->update();
-        viewer.frame();
+	}
+
+	catch (QString s){qDebug() << "Updating innerModelViewer "<< s; };
+
+	qDebug() <<"viewer frame";
+	viewer.frame();
+
 }
 
 void InnerViewer::reloadInnerModel(InnerPtr other)

@@ -27,7 +27,7 @@
 #include <limits>
 #include <collisions.h>
 
-#define TILE_SIZE_ 180
+#define TILE_SIZE_ 200
 
 template <class T>
 auto operator<<(std::ostream &os, const T &t) -> decltype(t.save(os), os)
@@ -152,6 +152,8 @@ public:
 
 	void initialize(std::shared_ptr<Collisions> collisions_)
     {
+	    qDebug()<<"Grid - " <<__FUNCTION__;
+
 	    uint count = 0;
 		dim.TILE_SIZE = int(TILE_SIZE_);
 		dim.HMIN = std::min(collisions_->outerRegion.left(), collisions_->outerRegion.right());
@@ -161,6 +163,8 @@ public:
 
         fmap.clear();
         fmap_aux.clear();
+
+        qDebug()<<"Collisions - checkRobotValidStateAtTargetFast";
 
         for (int i = dim.HMIN; i < dim.HMIN + dim.WIDTH; i += dim.TILE_SIZE)
             for (int j = dim.VMIN; j < dim.VMIN + dim.HEIGHT; j += dim.TILE_SIZE)
@@ -376,6 +380,7 @@ public:
 
     void draw(std::shared_ptr<InnerViewer> viewer)
     {
+        qDebug()<<"Grid - " <<__FUNCTION__;
 
         try	{ viewer->removeNode("IMV_fmap");} catch(const QString &s){	qDebug() << s; };
         try	{ viewer->addTransform_ignoreExisting("IMV_fmap","world");} catch(const QString &s){qDebug() << s; };

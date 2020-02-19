@@ -47,6 +47,7 @@ public:
 
     retUpdate update(std::vector<QPointF> points, RoboCompLaser::TLaserData laserData, QPointF target, QVec robotPose)
     {
+        qDebug() <<"Controller " << __FUNCTION__;
 
         bool active = true;
         bool blocked = false;
@@ -62,7 +63,7 @@ public:
 
         if (points.size() < 3 and euc_dist_to_target < FINAL_DISTANCE_TO_TARGET)
         {
-            std::cout << "TARGET ACHIEVED" << std::endl;
+            std::cout << "TARGET ACHIEVED" << std::endl <<std::endl << std::endl;
             advVelz = 0;
             rotVel = 0;
 
@@ -130,9 +131,8 @@ public:
                 total = total + QVector2D(-diff * sin(l.angle), -diff * cos(l.angle));
         }
 
-        bumperVel = total / KB;  // Parameter set in slidebar
-//        qDebug()<< bumperVel;
-//        advVelx = bumperVel.x();
+        bumperVel = total * KB;  // Parameter set in slidebar
+        advVelx = bumperVel.x();
 
         return std::make_tuple (blocked, active, advVelx, advVelz,rotVel);
 
@@ -156,7 +156,7 @@ private:
 
     const float ROBOT_LENGTH = 400;
     const float FINAL_DISTANCE_TO_TARGET = 500; //mm
-    float KB = 90;
+    float KB = 3.5;
 
     float advVelx = 0, advVelz = 0, rotVel = 0;
     QVector2D bumperVel;
