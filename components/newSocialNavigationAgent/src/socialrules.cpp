@@ -5,7 +5,7 @@
 
 void SocialRules::initialize(AGMModel::SPtr worldModel_, SocialNavigationGaussianPrx socialnavigationgaussian_proxy_)
 {
-	qDebug()<<__FUNCTION__;
+// qDebug()<<__FUNCTION__;
 
 	socialnavigationgaussian_proxy = socialnavigationgaussian_proxy_;
 	worldModel = worldModel_;
@@ -16,6 +16,7 @@ void SocialRules::initialize(AGMModel::SPtr worldModel_, SocialNavigationGaussia
 
 SocialRules::retPolylines SocialRules::update(AGMModel::SPtr worldModel_)
 {
+    qDebug()<<__FUNCTION__;
 
 	worldModel = worldModel_;
 	updatePeopleInModel();
@@ -285,7 +286,7 @@ SNGPolylineSeq SocialRules::PassOnRight(bool draw)
 {
     SNGPolylineSeq seq;
 
-//	qDebug()<<__FUNCTION__;
+//// qDebug()<<__FUNCTION__;
 	if (!movperson.empty())
 	{
 		seq = socialnavigationgaussian_proxy-> getPassOnRight(movperson, h, draw);
@@ -689,7 +690,7 @@ void SocialRules::accompanyPerson()
 
 void SocialRules::goToPerson()
 {
-	qDebug()<<__FUNCTION__;
+// qDebug()<<__FUNCTION__;
 	int32_t id = idselect_combobox->currentText().toInt();
 	qDebug()<<"Person selected" << id;
 

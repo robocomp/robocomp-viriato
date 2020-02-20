@@ -76,7 +76,7 @@ public:
 
 	SocialRules socialrules;
 	bool worldModelChanged = false;
-    bool innerModelChanged = false;
+	bool specificWorkerInitialized = false;
 
 public slots:
     void compute();

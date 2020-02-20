@@ -47,7 +47,7 @@ public:
 
     retUpdate update(std::vector<QPointF> points, RoboCompLaser::TLaserData laserData, QPointF target, QVec robotPose)
     {
-        qDebug() <<"Controller " << __FUNCTION__;
+//        qDebug() <<"Controller " << __FUNCTION__;
 
         bool active = true;
         bool blocked = false;
@@ -132,7 +132,10 @@ public:
         }
 
         bumperVel = total * KB;  // Parameter set in slidebar
-        advVelx = bumperVel.x();
+
+        if (bumperVel.x() < 500)
+            advVelx = bumperVel.x();
+
 
         return std::make_tuple (blocked, active, advVelx, advVelz,rotVel);
 

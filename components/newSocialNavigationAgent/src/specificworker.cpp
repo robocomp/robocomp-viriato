@@ -102,9 +102,12 @@ void SpecificWorker::initialize(int period)
 
 
     qDebug()<<"Classes initialized correctly";
+    specificWorkerInitialized = true;
 
-	this->Period = period;
-	timer.start(10);
+    this->Period = period;
+    timer.start(10);
+
+
     emit this->t_initialize_to_compute();
 
 
@@ -112,17 +115,19 @@ void SpecificWorker::initialize(int period)
 
 void SpecificWorker::compute()
 {
-	qDebug()<< __FUNCTION__;
-	static QTime reloj = QTime::currentTime();
+    //qDebug()<< __FUNCTION__;
+
+    QMutexLocker lockIM(mutex);
+
+    static QTime reloj = QTime::currentTime();
 
 
-    RoboCompLaser::TLaserData laserData = updateLaser();
-	bool personMoved = false;
-
+    bool personMoved = false;
+    bool needsReplaning = false;
 
     if (worldModelChanged or socialrules.costChanged)
     {
-		auto [changes, totalpersons, intimate_seq, personal_seq, social_seq, object_seq,
+        auto [changes, totalpersons, intimate_seq, personal_seq, social_seq, object_seq,
                 object_lowProbVisited, object_mediumProbVisited, object_highProbVisited, objectblock_seq] = socialrules.update(worldModel);
 
 		if (changes) //se comprueba si alguna de las personas ha cambiado de posicion
@@ -131,18 +136,20 @@ void SpecificWorker::compute()
 			personMoved = true;
 		}
 
-
         worldModelChanged = false;
     }
 
-    socialrules.checkRobotmov();
-    navigation.update(laserData, personMoved);
+    if(socialrules.costChanged or personMoved) needsReplaning = true;
 
-	QMutexLocker lockIM(mutex);
+    RoboCompLaser::TLaserData laserData = updateLaser();
 
-    qDebug() <<"viewer run";
+
+	navigation.update(laserData, needsReplaning);
+
     viewer->run();
-    qDebug() <<"END viewer run";
+
+    socialrules.checkRobotmov();
+
 
 //    qDebug()<< "Compute time " <<reloj.restart();
 
@@ -151,7 +158,7 @@ void SpecificWorker::compute()
 
 RoboCompLaser::TLaserData  SpecificWorker::updateLaser()
 {
-	qDebug()<<__FUNCTION__;
+//	qDebug()<<__FUNCTION__;
 
 	RoboCompLaser::TLaserData laserData;
 
@@ -314,9 +321,11 @@ void SpecificWorker::AGMExecutiveTopic_selfEdgeDeleted(const int nodeid, const s
 
 void SpecificWorker::AGMExecutiveTopic_edgeUpdated(const RoboCompAGMWorldModel::Edge &modification)
 {
-	QMutexLocker locker(mutex);
-	qDebug() << __FUNCTION__;
 
+//    qDebug() << __FUNCTION__;
+
+    if(!specificWorkerInitialized)
+        QMutexLocker lockIM(mutex);
 
 	AGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);
 	AGMInner::updateImNodeFromEdge(worldModel, modification, innerModel.get());
@@ -334,9 +343,11 @@ void SpecificWorker::AGMExecutiveTopic_edgesUpdated(const RoboCompAGMWorldModel:
 {
 //subscribesToCODE
 
-	qDebug() << __FUNCTION__;
+//	qDebug() << __FUNCTION__;
 
-	QMutexLocker lockIM(mutex);
+    if(!specificWorkerInitialized)
+	    QMutexLocker lockIM(mutex);
+
 	for (auto modification : modifications)
 	{
 		AGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);
@@ -346,7 +357,7 @@ void SpecificWorker::AGMExecutiveTopic_edgesUpdated(const RoboCompAGMWorldModel:
 		auto symbol2 = worldModel->getSymbolByIdentifier(modification.b);
 
 		if(symbol1.get()->symbolType == "person" or symbol2.get()->symbolType == "person")
-			worldModelChanged = true;
+            worldModelChanged = true;
 	}
 
 
@@ -363,8 +374,11 @@ void SpecificWorker::AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldMo
 
 	try {
 		AGMModelConverter::fromIceToInternal(w, worldModel);
+		static QTime reloj = QTime::currentTime();
 
 		innerModel.reset(AGMInner::extractInnerModel(worldModel));
+
+		qDebug()<<"------------------" << reloj.restart();
 
 		viewer->reloadInnerModel(innerModel);
 		navigation.updateInnerModel(innerModel);
@@ -387,7 +401,7 @@ void SpecificWorker::AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldMo
 void SpecificWorker::AGMExecutiveTopic_symbolUpdated(const RoboCompAGMWorldModel::Node &modification)
 {
 //subscribesToCODE
-	qDebug() << __FUNCTION__;
+//	qDebug() << __FUNCTION__;
 
 	QMutexLocker locker(mutex);
 	AGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);
@@ -398,7 +412,7 @@ void SpecificWorker::AGMExecutiveTopic_symbolUpdated(const RoboCompAGMWorldModel
 void SpecificWorker::AGMExecutiveTopic_symbolsUpdated(const RoboCompAGMWorldModel::NodeSequence &modifications)
 {
 //subscribesToCODE
-	qDebug() << __FUNCTION__;
+//	qDebug() << __FUNCTION__;
 
 	QMutexLocker l(mutex);
 
@@ -412,7 +426,7 @@ void SpecificWorker::AGMExecutiveTopic_symbolsUpdated(const RoboCompAGMWorldMode
 
 bool SpecificWorker::setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated)
 {
-	qDebug() << __FUNCTION__;
+//	qDebug() << __FUNCTION__;
 
 	printf("<<< setParametersAndPossibleActivation\n");
 	// We didn't reactivate the component

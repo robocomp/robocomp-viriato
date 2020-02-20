@@ -65,7 +65,8 @@ class Navigation
             viewer = viewer_;
 
             omnirobot_proxy = omnirobot_proxy_;
-            omnirobot_proxy->setSpeedBase(0,0,0); //grid can't be initialized if the robot is moving
+            stopRobot();
+             //grid can't be initialized if the robot is moving
 
             collisions =  std::make_shared<Collisions>();
 
@@ -90,20 +91,37 @@ class Navigation
 
         };
 
-        void update(const RoboCompLaser::TLaserData &laserData_, bool personMoved)
+        void update(const RoboCompLaser::TLaserData &laserData_, bool needsReplaning)
         {
 
             RoboCompLaser::TLaserData laserData;
             laserData = computeLaser(laserData_);
             currentRobotPose = innerModel->transformS6D("world","robot");
             currentRobotPolygon = getRobotPolygon();
+            auto currentRobotNose = getRobotNose();
 
-            if(personMoved)
+            if(needsReplaning)
             {
-                this->current_target.lock();
-                    current_target.blocked.store(true);
-                this->current_target.unlock();
+                for (auto p: points)
+                {
+                    if(std::any_of(std::begin(polylines_personal), std::end(polylines_personal),[p](const auto &poly) { return poly.containsPoint(p, Qt::OddEvenFill);})
+                    or std::any_of(std::begin(polylines_social), std::end(polylines_social),[p](const auto &poly) { return poly.containsPoint(p, Qt::OddEvenFill);})
+                    or std::any_of(std::begin(polylines_objects_blocked), std::end(polylines_objects_blocked),[p](const auto &poly) { return poly.containsPoint(p, Qt::OddEvenFill);}))
+
+                    {
+                        qDebug()<<"EL CAMINO ATRAVIESA POLILINEA SOCIAL";
+                        stopRobot();
+
+                        this->current_target.lock();
+                        current_target.blocked.store(true);
+                        this->current_target.unlock();
+
+                        break;
+                    }
+                }
+
             }
+
 
             if (checkPathState() == false)
                 return;
@@ -114,41 +132,64 @@ class Navigation
             cleanPoints();
             addPoints();
 
+            for(auto p: points)
+            {
+                if(currentRobotPolygon.containsPoint(p, Qt::OddEvenFill) and points.size() != 1)
+                {
+                    qDebug()<< "robotPolygon contains point in path";
+
+                    stopRobot();
+
+                    this->current_target.lock();
+                    current_target.blocked.store(true);
+                    this->current_target.unlock();
+
+                }
+            }
+
             auto [blocked, active, xVel,zVel,rotVel] = controller.update(points, laserData, current_target.p, currentRobotPose);
 
             if (blocked)
             {
+                stopRobot();
+
                 this->current_target.lock();
                     current_target.blocked.store(true);
                 this->current_target.unlock();
 
-                omnirobot_proxy->setSpeedBase(0,0,0);
 
 
             }
             if (!active)
             {
+
+                stopRobot();
+
                 this->current_target.lock();
                     current_target.active.store(false);
                 this->current_target.unlock();
 
                 points.clear();
 
-                omnirobot_proxy->setSpeedBase(0,0,0);
-
                 if(robotAutoMov) newRandomTarget();
             }
 
-            if (!blocked and active ) omnirobot_proxy->setSpeedBase(xVel,zVel,rotVel);
+            if (!blocked and active) omnirobot_proxy->setSpeedBase(xVel,zVel,rotVel);
 
 
             drawRoad();
 
         };
 
+        void stopRobot()
+        {
+            omnirobot_proxy->setSpeedBase(0,0,0);
+
+        }
+
         bool checkPathState()
         {
-            qDebug() << __FUNCTION__;
+            // qDebug() << __FUNCTION__;
 
 
             if (current_target.active.load() == true)
@@ -156,7 +197,10 @@ class Navigation
 
                 if (current_target.blocked.load()==true) {
 
-                    if (findNewPath()==false) {
+                    if (findNewPath() == false) {
+
+                        qDebug()<< "Path not found";
+                        stopRobot();
 
                         this->current_target.lock();
                             current_target.active.store(false);
@@ -175,6 +219,7 @@ class Navigation
                             this->current_target.blocked.store(false);
                         this->current_target.unlock();
 
+                        drawRoad();
                         reloj.restart();
                     }
                 }
@@ -346,7 +391,7 @@ class Navigation
         QPolygonF currentRobotPolygon, laser_poly;
         std::vector<QPointF> laser_cart;
         QVec currentRobotPose;
-        float robotXWidth, robotZLong;
+        float robotXWidth, robotZLong; //robot dimensions read from config
 
 
     ////////// GRID RELATED METHODS //////////
@@ -477,8 +522,25 @@ class Navigation
         {
             points.push_back(robotNose);
 
+
+            FILE *fd = fopen("points.txt", "w");
+            FILE *fd1 = fopen("pointsV.txt", "w");
+
             for (const QPointF &p : path)
+            {
                 points.push_back(p);
+
+                if(isVisible(p))
+                    fprintf(fd1, "%d %d\n", (int)p.x(), (int)p.y());
+                else
+                    fprintf(fd, "%d %d\n", (int)p.x(), (int)p.y());
+
+
+            }
+
+            fclose(fd);
+            fclose(fd1);
+
 
             lastPointInPath = points[points.size()-1];
             grid.markAreaInGridAs(currentRobotPolygon, true);
@@ -506,7 +568,7 @@ class Navigation
 
     void computeForces(const std::vector<QPointF> &path, const RoboCompLaser::TLaserData &lData)
     {
-        qDebug() << __FUNCTION__;
+//        qDebug() << __FUNCTION__;
 
         if (path.size() < 3) {
             return;
@@ -585,7 +647,7 @@ class Navigation
 
     void addPoints()
     {
-        qDebug() << __FUNCTION__;
+//        //qDebug() << __FUNCTION__;
 
         std::vector<std::tuple<int, QPointF>> points_to_insert;
         for (auto &&[k, group] : iter::enumerate(iter::sliding_window(points, 2)))
@@ -615,7 +677,7 @@ class Navigation
 
     void cleanPoints()
     {
-        qDebug() << __FUNCTION__;
+        //qDebug() << __FUNCTION__;
 
         std::vector<QPointF> points_to_remove;
         for (const auto &group : iter::sliding_window(points, 2))
@@ -649,10 +711,10 @@ class Navigation
     {
         QPolygonF robotP;
 
-        auto bottomLeft     = QVec::vec3(- robotXWidth/2 -100, 0, - robotZLong/2-100);
-        auto bottomRight    = QVec::vec3(+ robotXWidth/2 +100, 0, - robotZLong/2-100);
-        auto topRight       = QVec::vec3( + robotXWidth/2 +100, 0 , + robotZLong/2 +100);
-        auto topLeft        = QVec::vec3(- robotXWidth/2 -100, 0, + robotZLong/2+100);
+        auto bottomLeft     = QVec::vec3(- robotXWidth/2, 0, - robotZLong/2);
+        auto bottomRight    = QVec::vec3(+ robotXWidth/2, 0, - robotZLong/2);
+        auto topRight       = QVec::vec3( + robotXWidth/2, 0 , + robotZLong/2);
+        auto topLeft        = QVec::vec3(- robotXWidth/2, 0, + robotZLong/2);
 
         auto bLWorld = innerModel->transform ("world", bottomLeft ,"base_mesh");
         auto bRWorld = innerModel->transform ("world", bottomRight ,"base_mesh");
@@ -681,7 +743,7 @@ class Navigation
 
     void updateLaserPolygon(const RoboCompLaser::TLaserData &lData)
     {
-        qDebug() << __FUNCTION__;
+        //qDebug() << __FUNCTION__;
 
         laser_poly.clear(); //stores the points of the laser in lasers refrence system
         laser_cart.clear();
@@ -695,13 +757,15 @@ class Navigation
             laser_cart.push_back(QPointF(laserc.x(),laserc.z()));
         }
 
-//        FILE *fd = fopen("laserPoly.txt", "w");
-//        for (const auto &lp : laser_poly)
-//        {
-//            QVec p = innerModel->transform("world",QVec::vec3(lp.x(),0,lp.y()),"laser");
-//            fprintf(fd, "%d %d\n", (int)p.x(), (int)p.z());
-//        }
-//        fclose(fd);
+
+
+        FILE *fd = fopen("laserPoly.txt", "w");
+        for (const auto &lp : laser_poly)
+        {
+            QVec p = innerModel->transform("world",QVec::vec3(lp.x(),0,lp.y()),"laser");
+            fprintf(fd, "%d %d\n", (int)p.x(), (int)p.z());
+        }
+        fclose(fd);
 
     }
 
@@ -713,7 +777,7 @@ class Navigation
 
     void drawRoad()
     {
-        qDebug() << __FUNCTION__;
+        ////qDebug() << __FUNCTION__;
 
         ///////////////////////
         // Preconditions
@@ -746,7 +810,7 @@ class Navigation
 
                 if(i == 1)
                 {
-                    viewer->drawLine(item + "_point", item, QVec::zeros(3), normal, 500, 40, "#007CFF");  //Azul
+                    viewer->drawLine(item + "_point", item, QVec::zeros(3), normal, 500, 40, "#FF0000");  //Rojo
                 }
                 else if (i == points.size()-1)
                     viewer->drawLine(item + "_point", item, QVec::zeros(3), normal, 500, 40, "#FF0000");  //Rojo
@@ -761,7 +825,7 @@ class Navigation
 
         }
         catch(const QString &s){qDebug()<<"drawRoad" << s;}
-        qDebug()<<"END "<<__FUNCTION__;
+//        qDebug()<<"END "<<__FUNCTION__;
     }
 
 
