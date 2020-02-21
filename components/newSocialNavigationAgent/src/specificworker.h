@@ -75,7 +75,9 @@ public:
 	#endif
 
 	SocialRules socialrules;
-	bool worldModelChanged = false;
+	bool structuralChange = false;
+	bool edgesUpdated = false;
+
 	bool specificWorkerInitialized = false;
 
 public slots:

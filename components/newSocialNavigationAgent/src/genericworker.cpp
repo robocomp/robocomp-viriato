@@ -56,6 +56,7 @@ QObject()
 
 	mutex = new QMutex(QMutex::Recursive);
 
+
 	#ifdef USE_QTGUI
 		setupUi(this);
 		show();

@@ -71,7 +71,9 @@ InnerViewer::InnerViewer( const InnerPtr &innerModel_, const std::string &name_,
 
 void InnerViewer::run()
 {
-	qDebug() <<"viewer update";
+
+    qDebug()<<"Viewer - "<<__FUNCTION__;
+
 //            guard gl(mutex);
 
     try {
@@ -80,7 +82,6 @@ void InnerViewer::run()
 
 	catch (QString s){qDebug() << "Updating innerModelViewer "<< s; };
 
-	qDebug() <<"viewer frame";
 	viewer.frame();
 
 }

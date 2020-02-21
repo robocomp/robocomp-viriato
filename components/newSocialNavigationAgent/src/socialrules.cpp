@@ -5,10 +5,10 @@
 
 void SocialRules::initialize(AGMModel::SPtr worldModel_, SocialNavigationGaussianPrx socialnavigationgaussian_proxy_)
 {
-// qDebug()<<__FUNCTION__;
+    qDebug()<<"Social Rules - "<< __FUNCTION__;
 
-	socialnavigationgaussian_proxy = socialnavigationgaussian_proxy_;
-	worldModel = worldModel_;
+     socialnavigationgaussian_proxy = socialnavigationgaussian_proxy_;
+     worldModel = worldModel_;
 
 	checkObjectAffordance(false);
 }
@@ -16,7 +16,7 @@ void SocialRules::initialize(AGMModel::SPtr worldModel_, SocialNavigationGaussia
 
 SocialRules::retPolylines SocialRules::update(AGMModel::SPtr worldModel_)
 {
-    qDebug()<<__FUNCTION__;
+    qDebug()<<"Social Rules - "<< __FUNCTION__;
 
 	worldModel = worldModel_;
 	updatePeopleInModel();
@@ -38,7 +38,7 @@ SocialRules::retPolylines SocialRules::update(AGMModel::SPtr worldModel_)
 
 void SocialRules::updatePeopleInModel()
 {
-	qDebug() << __PRETTY_FUNCTION__;
+    qDebug()<<"Social Rules - "<< __FUNCTION__;
 
 	idselect_combobox->clear();
 	totalpersons.clear();
@@ -73,7 +73,7 @@ void SocialRules::updatePeopleInModel()
 
 bool SocialRules::peopleChanged()
 {
-	qDebug() << __PRETTY_FUNCTION__;
+    qDebug()<<"Social Rules - "<< __FUNCTION__;
 
 	bool changes = false;
 
@@ -101,10 +101,11 @@ bool SocialRules::peopleChanged()
 
 bool SocialRules::checkInteractions()
 {
+    qDebug()<<"Social Rules - "<< __FUNCTION__;
+
     vector<vector<int32_t>> interactingId;
     interactingpersons.clear();
 
-    qDebug() << __PRETTY_FUNCTION__;
 
 	for (auto p: totalpersons) {
 		auto id = p.id;
@@ -150,7 +151,7 @@ bool SocialRules::checkInteractions()
 
 SNGPolylineSeq SocialRules::ApplySocialRules()
 {
-    qDebug() << __PRETTY_FUNCTION__;
+    qDebug()<<"Social Rules - "<< __FUNCTION__;
 
     social_seq.clear();
     personal_seq.clear();
@@ -206,6 +207,8 @@ SNGPolylineSeq SocialRules::ApplySocialRules()
 
 vector <vector<int32_t>> SocialRules::groupInteractingPeople(int32_t id, int32_t pairId,vector<vector<int32_t>> &interactingId)
 {
+    qDebug()<<"Social Rules - "<< __FUNCTION__;
+
     vector <int32_t> Ids;
     bool p1found = false;
     bool p2found = false;
@@ -296,89 +299,9 @@ SNGPolylineSeq SocialRules::PassOnRight(bool draw)
 }
 
 
-//void SocialRules::checkObjectAffordance(bool d)
-//{
-//    qDebug() << __PRETTY_FUNCTION__;
-//
-//    object_seq.clear();
-//    objectblock_seq.clear();
-//
-//	auto vectorObjects = worldModel->getSymbolsByType("object");
-//
-//    for (auto obj : vectorObjects) {
-//        ObjectType object;
-//        auto id = obj->identifier;
-//
-//        try { worldModel->getEdge(obj, obj, "interactive"); }
-//
-//        catch (const Ice::Exception &e) {
-//        	std::cout <<"Not interactive" <<e.what() << std::endl;
-//            continue;
-//        }
-//
-//        try
-//        {
-//			AGMModelSymbol::SPtr objectParent = worldModel->getParentByLink(id, "RT");
-//			AGMModelEdge &edgeRT  = worldModel->getEdgeByIdentifiers(objectParent->identifier,id, "RT");
-//			object.id = id;
-//			object.imName = QString::fromStdString( obj->getAttribute("imName"));
-//			object.x = str2float(edgeRT.attributes["tx"]);
-//			object.z = str2float(edgeRT.attributes["tz"]);
-//			object.rot = str2float(edgeRT.attributes["ry"]);
-//
-//			object.shape = QString::fromStdString(worldModel->getSymbolByIdentifier(id)->getAttribute("shape"));
-//
-//			object.width=str2float(worldModel->getSymbolByIdentifier(id)->getAttribute("width"));
-//			object.height=str2float(worldModel->getSymbolByIdentifier(id)->getAttribute("height"));
-//			object.depth=str2float(worldModel->getSymbolByIdentifier(id)->getAttribute("depth"));
-//			object.inter_space=str2float(worldModel->getSymbolByIdentifier(id)->getAttribute("inter_space"));
-//			object.inter_angle=str2float(worldModel->getSymbolByIdentifier(id)->getAttribute("inter_angle"));
-//
-//			qDebug()<< "[FOUND] Interactive Object"<< object.imName << object.shape << object.x <<  object.z;
-//
-//			//Defining the affordance
-//
-//			SNGPolyline affordance;
-//
-//			if (object.shape == "trapezoid")
-//				affordance = affordanceTrapezoidal(object);
-//
-//            if (object.shape == "circular")
-//				affordance = affordanceCircular(object);
-//
-//            if (object.shape == "rectangular")
-//				affordance = affordanceRectangular(object);
-//
-//			object_seq.push_back(affordance);
-//
-//
-//			for (AGMModelSymbol::iterator it=obj->edgesBegin(worldModel); it != obj->edgesEnd(worldModel); it++)
-//			{
-//				AGMModelEdge edge = *it;
-//				if(edge->getLabel() == "interacting")
-//				{
-//					objectblock_seq.push_back(affordance);
-//					break;
-//				}
-//
-//				else continue;
-//
-//			}
-//        }
-//
-//        catch(const Ice::Exception &e)
-//		{
-//			std::cout <<"Error reading symbol attributes -- CHECK INITIAL MODEL SYMBOLIC" <<e.what() << std::endl;
-//
-//		}
-//    }
-//
-//}
-
-
 void SocialRules::checkObjectAffordance(bool d)
 {
-    qDebug() << __PRETTY_FUNCTION__;
+    qDebug()<<"Social Rules - "<< __FUNCTION__;
 
     object_seq.clear();
     object_lowProbVisited.clear();
@@ -497,7 +420,7 @@ void SocialRules::checkObjectAffordance(bool d)
 
 SNGPolyline SocialRules::affordanceTrapezoidal(ObjectType obj)
 {
-    qDebug()<< __FUNCTION__;
+    qDebug()<<"Social Rules - "<< __FUNCTION__;
 
     auto left_angle = obj.rot + obj.inter_angle/2;
     auto right_angle = obj.rot - obj.inter_angle/2;
@@ -532,7 +455,7 @@ SNGPolyline SocialRules::affordanceTrapezoidal(ObjectType obj)
 
 SNGPolyline SocialRules::affordanceRectangular(ObjectType obj)
 {
-	qDebug()<< __FUNCTION__;
+    qDebug()<<"Social Rules - "<< __FUNCTION__;
 
 	SNGPolyline polyline;
 
@@ -562,7 +485,7 @@ SNGPolyline SocialRules::affordanceRectangular(ObjectType obj)
 
 SNGPolyline SocialRules::affordanceCircular(ObjectType obj)
 {
-	qDebug()<< __FUNCTION__;
+    qDebug()<<"Social Rules - "<< __FUNCTION__;
 
 	SNGPolyline polyline;
     int points = 50;

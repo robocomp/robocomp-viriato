@@ -19,7 +19,7 @@ public:
     void initialize(const std::shared_ptr<InnerModel> &innerModel_,
             std::shared_ptr<RoboCompCommonBehavior::ParameterList> params_)
     {
-        qDebug()<< __FUNCTION__;
+        qDebug()<<"Controller - "<< __FUNCTION__;
 
         innerModel = innerModel_;
         this->time = QTime::currentTime();
@@ -42,12 +42,14 @@ public:
 
     void updateInnerModel(const std::shared_ptr<InnerModel> &innerModel_)
     {
+        qDebug()<<"Controller - "<< __FUNCTION__;
+
         innerModel = innerModel_;
     }
 
     retUpdate update(std::vector<QPointF> points, RoboCompLaser::TLaserData laserData, QPointF target, QVec robotPose)
     {
-//        qDebug() <<"Controller " << __FUNCTION__;
+        qDebug()<<"Controller - "<< __FUNCTION__;
 
         bool active = true;
         bool blocked = false;
@@ -63,7 +65,11 @@ public:
 
         if (points.size() < 3 and euc_dist_to_target < FINAL_DISTANCE_TO_TARGET)
         {
-            std::cout << "TARGET ACHIEVED" << std::endl <<std::endl << std::endl;
+            qDebug()<< "·······················";
+            qDebug()<< "····TARGET ACHIEVED····";
+            qDebug()<< "·······················";
+            qDebug()<< " ";
+
             advVelz = 0;
             rotVel = 0;
 

@@ -29,7 +29,6 @@ SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
 	worldModel->name = "worldModel";
 
     innerModel = std::make_shared<InnerModel>();
-	qDebug()<< "INNERMODEL SHARED_PTR -- constructor "<< innerModel.use_count();
 
 }
 
@@ -105,7 +104,7 @@ void SpecificWorker::initialize(int period)
     specificWorkerInitialized = true;
 
     this->Period = period;
-    timer.start(10);
+    timer.start(period);
 
 
     emit this->t_initialize_to_compute();
@@ -115,7 +114,7 @@ void SpecificWorker::initialize(int period)
 
 void SpecificWorker::compute()
 {
-    //qDebug()<< __FUNCTION__;
+    qDebug()<< __FUNCTION__;
 
     QMutexLocker lockIM(mutex);
 
@@ -125,7 +124,7 @@ void SpecificWorker::compute()
     bool personMoved = false;
     bool needsReplaning = false;
 
-    if (worldModelChanged or socialrules.costChanged)
+    if (structuralChange or edgesUpdated or socialrules.costChanged)
     {
         auto [changes, totalpersons, intimate_seq, personal_seq, social_seq, object_seq,
                 object_lowProbVisited, object_mediumProbVisited, object_highProbVisited, objectblock_seq] = socialrules.update(worldModel);
@@ -136,13 +135,15 @@ void SpecificWorker::compute()
 			personMoved = true;
 		}
 
-        worldModelChanged = false;
+        if(structuralChange or socialrules.costChanged or personMoved) needsReplaning = true;
+
+        structuralChange = false;
+		edgesUpdated = false;
+
     }
 
-    if(socialrules.costChanged or personMoved) needsReplaning = true;
 
     RoboCompLaser::TLaserData laserData = updateLaser();
-
 
 	navigation.update(laserData, needsReplaning);
 
@@ -322,19 +323,23 @@ void SpecificWorker::AGMExecutiveTopic_selfEdgeDeleted(const int nodeid, const s
 void SpecificWorker::AGMExecutiveTopic_edgeUpdated(const RoboCompAGMWorldModel::Edge &modification)
 {
 
-//    qDebug() << __FUNCTION__;
+    qDebug() << __FUNCTION__;
+//
+//    if(!specificWorkerInitialized)
+//    {
+//        QMutexLocker lockIM(mutex);
+//    }
+    QMutexLocker lockIM(mutex);
 
-    if(!specificWorkerInitialized)
-        QMutexLocker lockIM(mutex);
 
-	AGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);
+    AGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);
 	AGMInner::updateImNodeFromEdge(worldModel, modification, innerModel.get());
 
     auto symbol1 = worldModel->getSymbolByIdentifier(modification.a);
     auto symbol2 = worldModel->getSymbolByIdentifier(modification.b);
 
     if(symbol1.get()->symbolType == "person" or symbol2.get()->symbolType == "person")
-        worldModelChanged = true;
+        edgesUpdated = true;
 
 
 }
@@ -343,10 +348,14 @@ void SpecificWorker::AGMExecutiveTopic_edgesUpdated(const RoboCompAGMWorldModel:
 {
 //subscribesToCODE
 
-//	qDebug() << __FUNCTION__;
+	qDebug() << __FUNCTION__;
 
-    if(!specificWorkerInitialized)
-	    QMutexLocker lockIM(mutex);
+//    if(!specificWorkerInitialized)
+//    {
+//        QMutexLocker lockIM(mutex);
+//    }
+
+    QMutexLocker lockIM(mutex);
 
 	for (auto modification : modifications)
 	{
@@ -357,7 +366,7 @@ void SpecificWorker::AGMExecutiveTopic_edgesUpdated(const RoboCompAGMWorldModel:
 		auto symbol2 = worldModel->getSymbolByIdentifier(modification.b);
 
 		if(symbol1.get()->symbolType == "person" or symbol2.get()->symbolType == "person")
-            worldModelChanged = true;
+            edgesUpdated = true;
 	}
 
 
@@ -367,9 +376,14 @@ void SpecificWorker::AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldMo
 {
 	qDebug() << __FUNCTION__;
 
-	QMutexLocker lockIM(mutex);
-	static bool first = true;
+    static bool first = true;
+//
+//    if(!first)
+//        navigation.stopRobot();
+//    else
+//        first = false;
 
+    QMutexLocker lockIM(mutex);
 
 
 	try {
@@ -383,15 +397,7 @@ void SpecificWorker::AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldMo
 		viewer->reloadInnerModel(innerModel);
 		navigation.updateInnerModel(innerModel);
 
-		worldModelChanged = true;
-
-		if (!first)
-		{
-			innerModel->save("/home/robocomp/robocomp/components/robocomp-viriato/etcSim/innermodel.xml");
-		}
-		else
-			first = false;
-
+		structuralChange = true;
 
 	} catch(...) { qDebug()<<__FUNCTION__<<"Can't extract an InnerModel from the current model."; }
 
@@ -412,7 +418,7 @@ void SpecificWorker::AGMExecutiveTopic_symbolUpdated(const RoboCompAGMWorldModel
 void SpecificWorker::AGMExecutiveTopic_symbolsUpdated(const RoboCompAGMWorldModel::NodeSequence &modifications)
 {
 //subscribesToCODE
-//	qDebug() << __FUNCTION__;
+	qDebug() << __FUNCTION__;
 
 	QMutexLocker l(mutex);
 

@@ -57,7 +57,7 @@ class Navigation
         void initialize(const std::shared_ptr<InnerModel> &innerModel_, const std::shared_ptr<InnerViewer> &viewer_,
                 std::shared_ptr< RoboCompCommonBehavior::ParameterList > configparams_, OmniRobotPrx omnirobot_proxy_)
         {
-            qDebug()<<"NAVIGATION -- " <<__FUNCTION__;
+            qDebug()<<"Navigation - "<< __FUNCTION__;
 
             innerModel = innerModel_;
 
@@ -85,7 +85,8 @@ class Navigation
 
         void updateInnerModel(const std::shared_ptr<InnerModel> &innerModel_)
         {
-            qDebug()<<"NAVIGATION ->" <<__FUNCTION__;
+            qDebug()<<"Navigation - "<< __FUNCTION__;
+
             innerModel = innerModel_;
             controller.updateInnerModel(innerModel);
 
@@ -93,6 +94,7 @@ class Navigation
 
         void update(const RoboCompLaser::TLaserData &laserData_, bool needsReplaning)
         {
+            qDebug()<<"Navigation - "<< __FUNCTION__;
 
             RoboCompLaser::TLaserData laserData;
             laserData = computeLaser(laserData_);
@@ -104,12 +106,12 @@ class Navigation
             {
                 for (auto p: points)
                 {
-                    if(std::any_of(std::begin(polylines_personal), std::end(polylines_personal),[p](const auto &poly) { return poly.containsPoint(p, Qt::OddEvenFill);})
+                    if(std::any_of(std::begin(polylines_intimate), std::end(polylines_intimate),[p](const auto &poly) { return poly.containsPoint(p, Qt::OddEvenFill);})
+                    or std::any_of(std::begin(polylines_personal), std::end(polylines_personal),[p](const auto &poly) { return poly.containsPoint(p, Qt::OddEvenFill);})
                     or std::any_of(std::begin(polylines_social), std::end(polylines_social),[p](const auto &poly) { return poly.containsPoint(p, Qt::OddEvenFill);})
                     or std::any_of(std::begin(polylines_objects_blocked), std::end(polylines_objects_blocked),[p](const auto &poly) { return poly.containsPoint(p, Qt::OddEvenFill);}))
 
                     {
-                        qDebug()<<"EL CAMINO ATRAVIESA POLILINEA SOCIAL";
                         stopRobot();
 
                         this->current_target.lock();
@@ -132,20 +134,35 @@ class Navigation
             cleanPoints();
             addPoints();
 
+            int pointsInRobotP = 0;
+
+            FILE *fd = fopen("points.txt", "w");
+
             for(auto p: points)
             {
-                if(currentRobotPolygon.containsPoint(p, Qt::OddEvenFill) and points.size() != 1)
+                if(currentRobotPolygon.containsPoint(p, Qt::OddEvenFill))
                 {
-                    qDebug()<< "robotPolygon contains point in path";
-
-                    stopRobot();
-
-                    this->current_target.lock();
-                    current_target.blocked.store(true);
-                    this->current_target.unlock();
-
+                    pointsInRobotP++;
                 }
+
+                fprintf(fd, "%d %d\n", (int)p.x(), (int)p.y());
+
             }
+
+            fclose(fd);
+
+
+            if(pointsInRobotP > 1 and (points.size() < 3 == false))
+            {
+                qDebug()<< "----- Blocking target -----" << pointsInRobotP;
+                stopRobot();
+                this->current_target.lock();
+                    current_target.blocked.store(true);
+                this->current_target.unlock();
+
+                return;
+            }
+
 
             auto [blocked, active, xVel,zVel,rotVel] = controller.update(points, laserData, current_target.p, currentRobotPose);
 
@@ -183,13 +200,15 @@ class Navigation
 
         void stopRobot()
         {
+            qDebug()<<"Navigation - "<< __FUNCTION__;
+
             omnirobot_proxy->setSpeedBase(0,0,0);
 
         }
 
         bool checkPathState()
         {
-            // qDebug() << __FUNCTION__;
+            qDebug()<<"Navigation - "<< __FUNCTION__;
 
 
             if (current_target.active.load() == true)
@@ -214,7 +233,7 @@ class Navigation
                     }
 
                     else{
-
+                        qDebug()<< "Path found";
                         this->current_target.lock();
                             this->current_target.blocked.store(false);
                         this->current_target.unlock();
@@ -235,6 +254,7 @@ class Navigation
 
         void newRandomTarget()
         {
+            qDebug()<<"Navigation - "<< __FUNCTION__;
 
             auto hmin = std::min(collisions->outerRegion.left(), collisions->outerRegion.right());
             auto width = std::max(collisions->outerRegion.left(), collisions->outerRegion.right()) - hmin;
@@ -251,13 +271,14 @@ class Navigation
 
             this->current_target.unlock();
 
-            qDebug()<<"NAVIGATION -- " <<__FUNCTION__ <<"New Random Target" << current_target.p;
+            qDebug()<<"New Random Target" << current_target.p;
 
         }
 
         void newTarget(QPointF newT)
         {
-            qDebug()<<"NAVIGATION -- " <<__FUNCTION__ <<"New Target arrived "<< newT;
+            qDebug()<<"Navigation - "<< __FUNCTION__
+            <<"New Target arrived "<< newT;
 
             this->current_target.lock();
                 current_target.active.store(true);
@@ -273,7 +294,7 @@ class Navigation
         void updatePolylines(SNGPersonSeq persons_, SNGPolylineSeq intimate_seq,SNGPolylineSeq personal_seq,SNGPolylineSeq social_seq,
                 SNGPolylineSeq object_seq, SNGPolylineSeq object_lowProbVisited ,SNGPolylineSeq object_mediumProbVisited ,SNGPolylineSeq object_highProbVisited, SNGPolylineSeq objectsblocking_seq)
         {
-            qDebug()<<"NAVIGATION -- " <<__FUNCTION__;
+            qDebug()<<"Navigation - "<< __FUNCTION__;
 
             polylines_intimate.clear();
             polylines_personal.clear();
@@ -397,7 +418,7 @@ class Navigation
     ////////// GRID RELATED METHODS //////////
     void updateFreeSpaceMap()
     {
-        qDebug()<<"NAVIGATION -- " <<__FUNCTION__;
+        qDebug()<<"Navigation - "<< __FUNCTION__;
 
         // First remove polygons from last iteration respecting cell occupied by furniture
         grid.resetGrid();
@@ -434,6 +455,7 @@ class Navigation
     ////////// CONTROLLER RELATED METHODS //////////
     RoboCompLaser::TLaserData computeLaser(RoboCompLaser::TLaserData laserData)
     {
+        qDebug()<<"Navigation - "<< __FUNCTION__;
 
         auto lasernode = innerModel->getNode<InnerModelLaser>(QString("laser"));
 
@@ -501,7 +523,7 @@ class Navigation
 
     bool findNewPath()
     {
-        qDebug()<<"NAVIGATION -- " <<__FUNCTION__;
+        qDebug()<<"Navigation - "<< __FUNCTION__;
 
         points.clear();
 
@@ -523,30 +545,19 @@ class Navigation
             points.push_back(robotNose);
 
 
-            FILE *fd = fopen("points.txt", "w");
-            FILE *fd1 = fopen("pointsV.txt", "w");
-
             for (const QPointF &p : path)
             {
                 points.push_back(p);
 
-                if(isVisible(p))
-                    fprintf(fd1, "%d %d\n", (int)p.x(), (int)p.y());
-                else
-                    fprintf(fd, "%d %d\n", (int)p.x(), (int)p.y());
-
-
             }
-
-            fclose(fd);
-            fclose(fd1);
-
 
             lastPointInPath = points[points.size()-1];
             grid.markAreaInGridAs(currentRobotPolygon, true);
 
             return true;
         }
+
+
         else
         {
             qDebug() << __FUNCTION__ << "Path not found";
@@ -561,6 +572,7 @@ class Navigation
 
     bool isVisible(QPointF p)
     {
+
         QVec pointInLaser = innerModel->transform("laser", QVec::vec3(p.x(),0,p.y()),"world");
         return laser_poly.containsPoint(QPointF(pointInLaser.x(),pointInLaser.z()), Qt::OddEvenFill);
     }
@@ -568,7 +580,7 @@ class Navigation
 
     void computeForces(const std::vector<QPointF> &path, const RoboCompLaser::TLaserData &lData)
     {
-//        qDebug() << __FUNCTION__;
+        qDebug()<<"Navigation - "<< __FUNCTION__;
 
         if (path.size() < 3) {
             return;
@@ -647,7 +659,7 @@ class Navigation
 
     void addPoints()
     {
-//        //qDebug() << __FUNCTION__;
+        qDebug()<<"Navigation - "<< __FUNCTION__;
 
         std::vector<std::tuple<int, QPointF>> points_to_insert;
         for (auto &&[k, group] : iter::enumerate(iter::sliding_window(points, 2)))
@@ -677,7 +689,7 @@ class Navigation
 
     void cleanPoints()
     {
-        //qDebug() << __FUNCTION__;
+        qDebug()<<"Navigation - "<< __FUNCTION__;
 
         std::vector<QPointF> points_to_remove;
         for (const auto &group : iter::sliding_window(points, 2))
@@ -709,6 +721,8 @@ class Navigation
 
     QPolygonF getRobotPolygon()
     {
+        qDebug()<<"Navigation - "<< __FUNCTION__;
+
         QPolygonF robotP;
 
         auto bottomLeft     = QVec::vec3(- robotXWidth/2, 0, - robotZLong/2);
@@ -743,7 +757,7 @@ class Navigation
 
     void updateLaserPolygon(const RoboCompLaser::TLaserData &lData)
     {
-        //qDebug() << __FUNCTION__;
+        qDebug()<<"Navigation - "<< __FUNCTION__;
 
         laser_poly.clear(); //stores the points of the laser in lasers refrence system
         laser_cart.clear();
@@ -771,13 +785,16 @@ class Navigation
 
     QPointF getRobotNose()
     {
+        qDebug()<<"Navigation - "<< __FUNCTION__;
+
         auto robot = QPointF(currentRobotPose.x(),currentRobotPose.z());
-        return (robot + QPointF( ROAD_STEP_SEPARATION *sin(currentRobotPose.ry()), ROAD_STEP_SEPARATION *cos(currentRobotPose.ry())));
+
+        return (robot + QPointF( (robotZLong/2 + 250) * sin(currentRobotPose.ry()), (robotZLong/2 +250) * cos(currentRobotPose.ry())));
     }
 
     void drawRoad()
     {
-        ////qDebug() << __FUNCTION__;
+        qDebug()<<"Navigation - "<< __FUNCTION__;
 
         ///////////////////////
         // Preconditions

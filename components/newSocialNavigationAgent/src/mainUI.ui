@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>652</width>
-    <height>261</height>
+    <height>297</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -331,6 +331,9 @@
        <widget class="QCheckBox" name="robotMov_checkbox">
         <property name="text">
          <string>Auto movement</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
         </property>
        </widget>
       </item>
