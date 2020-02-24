@@ -99,8 +99,8 @@ class Navigation
             RoboCompLaser::TLaserData laserData;
             laserData = computeLaser(laserData_);
             currentRobotPose = innerModel->transformS6D("world","robot");
+
             currentRobotPolygon = getRobotPolygon();
-            auto currentRobotNose = getRobotNose();
 
             if(needsReplaning)
             {
@@ -135,27 +135,28 @@ class Navigation
             addPoints();
 
             int pointsInRobotP = 0;
-
-            FILE *fd = fopen("points.txt", "w");
+            bool blockTarget = false;
 
             for(auto p: points)
             {
                 if(currentRobotPolygon.containsPoint(p, Qt::OddEvenFill))
                 {
                     pointsInRobotP++;
+
+                    if (pointsInRobotP > 2) {
+
+                        blockTarget = true;
+                        break;
+                    }
                 }
-
-                fprintf(fd, "%d %d\n", (int)p.x(), (int)p.y());
-
             }
 
-            fclose(fd);
 
-
-            if(pointsInRobotP > 1 and (points.size() < 3 == false))
+            if(blockTarget and (points.size() < 2) == false)
             {
-                qDebug()<< "----- Blocking target -----" << pointsInRobotP;
-                stopRobot();
+                qDebug()<< "----- Blocking target ----- Path points inside robotPolygon = " << pointsInRobotP;
+
+//                stopRobot();
                 this->current_target.lock();
                     current_target.blocked.store(true);
                 this->current_target.unlock();
@@ -208,26 +209,42 @@ class Navigation
 
         bool checkPathState()
         {
+            static int  timesBlocked = 0;
             qDebug()<<"Navigation - "<< __FUNCTION__;
 
 
             if (current_target.active.load() == true)
             {
-
                 if (current_target.blocked.load()==true) {
 
                     if (findNewPath() == false) {
 
-                        qDebug()<< "Path not found";
+                        qDebug()<< "findNewPath - Path not found";
+
+                        if (targetBehindRobot)
+                        {
+                            timesBlocked++;
+
+                            if (timesBlocked < 100 )
+                                return false;
+
+                        }
+
+                        qDebug()<< "Deactivating current target";
+
                         stopRobot();
 
                         this->current_target.lock();
-                            current_target.active.store(false);
+                        current_target.active.store(false);
                         this->current_target.unlock();
 
                         points.clear();
 
                         if(robotAutoMov) newRandomTarget();
+
+                        timesBlocked = 0;
+                        targetBehindRobot = false;
+
 
                         return false;
                     }
@@ -240,6 +257,9 @@ class Navigation
 
                         drawRoad();
                         reloj.restart();
+
+                        timesBlocked = 0;
+
                     }
                 }
 
@@ -414,6 +434,7 @@ class Navigation
         QVec currentRobotPose;
         float robotXWidth, robotZLong; //robot dimensions read from config
 
+        bool targetBehindRobot = false;
 
     ////////// GRID RELATED METHODS //////////
     void updateFreeSpaceMap()
@@ -524,7 +545,6 @@ class Navigation
     bool findNewPath()
     {
         qDebug()<<"Navigation - "<< __FUNCTION__;
-
         points.clear();
 
         // extract target from current_path
@@ -534,7 +554,7 @@ class Navigation
 
         QPointF robotNose = getRobotNose();
 
-        //mark spece under the robot as occupied
+        //mark space under the robot as occupied
         grid.markAreaInGridAs(currentRobotPolygon, false);
 
         std::list<QPointF> path = grid.computePath(QPointF(robotNose.x() ,robotNose.y()), target);
@@ -542,17 +562,20 @@ class Navigation
 
         if (path.size() > 0)
         {
-            points.push_back(robotNose);
+            qDebug()<< "Path found ";
+            stopRobot();
 
+            points.push_back(robotNose);
 
             for (const QPointF &p : path)
             {
                 points.push_back(p);
-
             }
 
             lastPointInPath = points[points.size()-1];
             grid.markAreaInGridAs(currentRobotPolygon, true);
+
+            targetBehindRobot = false;
 
             return true;
         }
@@ -560,11 +583,38 @@ class Navigation
 
         else
         {
-            qDebug() << __FUNCTION__ << "Path not found";
+            qDebug()<< "Path NOT found -- searching path behind the robot ";
+
+            auto robot = QPointF(currentRobotPose.x(),currentRobotPose.z());
+            QPointF robotBack =  (robot + QPointF( (robotZLong/2 + 150) * -sin(currentRobotPose.ry()), (robotZLong/2 + 150) * -cos(currentRobotPose.ry())));
+
+            qDebug()<<"-------------------------";
+            std::list<QPointF> path_back = grid.computePath(QPointF(robotBack.x() ,robotBack.y()), target);
+
+            if (path_back.size() > 0) {
+
+
+                qDebug()<< "Path found -- rotating robot";
+                    omnirobot_proxy->setSpeedBase(0,0,0.6);
+
+                this->current_target.lock();
+                    current_target.blocked.store(true);
+                this->current_target.unlock();
+
+                targetBehindRobot = true;
+
+            }
+
+            else
+            {
+                qDebug() << __FUNCTION__ << "Path not found";
+                targetBehindRobot = false;
+
+            }
+
             grid.markAreaInGridAs(currentRobotPolygon, true);
-
-
             return false;
+
         }
 
     }
@@ -789,7 +839,8 @@ class Navigation
 
         auto robot = QPointF(currentRobotPose.x(),currentRobotPose.z());
 
-        return (robot + QPointF( (robotZLong/2 + 250) * sin(currentRobotPose.ry()), (robotZLong/2 +250) * cos(currentRobotPose.ry())));
+        return (robot + QPointF( (robotZLong/2 + 150) * sin(currentRobotPose.ry()), (robotZLong/2 + 150) * cos(currentRobotPose.ry())));
+
     }
 
     void drawRoad()

@@ -78,26 +78,6 @@ public:
             return std::make_tuple(blocked, active, advVelx, advVelz,rotVel);
         }
 
-////         Check for blocking and call replanning if needed
-//        int num_free = 0;
-//        for (auto p :points)
-//        {
-//            if (laser_poly.containsPoint(p, Qt::OddEvenFill) == true) {num_free++;}
-//        }
-//
-//        qDebug()<<"NUM FREE "<< num_free;
-//
-////        if(num_free < ROBOT_LENGTH / ROAD_STEP_SEPARATION)
-//        if (num_free < 2)
-//        {
-//            qDebug() << __FUNCTION__ << "Blocked!  New path requested";
-//            advVelz = 0;
-//            rotVel = 0;
-//
-//            blocked = true;
-//            return std::make_tuple(blocked, active, advVelx, advVelz,rotVel);
-//        }
-
         // Proceed through path
         // Compute rotation speed. We use angle between robot's nose and line between first and sucessive points
         // as an estimation of curvature ahead
@@ -139,9 +119,8 @@ public:
 
         bumperVel = total * KB;  // Parameter set in slidebar
 
-        if (bumperVel.x() < 500)
+        if (abs(bumperVel.x()) < 400)
             advVelx = bumperVel.x();
-
 
         return std::make_tuple (blocked, active, advVelx, advVelz,rotVel);
 

@@ -120,20 +120,17 @@ void SpecificWorker::compute()
 
     static QTime reloj = QTime::currentTime();
 
-
-    bool personMoved = false;
     bool needsReplaning = false;
 
     if (structuralChange or edgesUpdated or socialrules.costChanged)
     {
-        auto [changes, totalpersons, intimate_seq, personal_seq, social_seq, object_seq,
+        auto [personMoved, totalpersons, intimate_seq, personal_seq, social_seq, object_seq,
                 object_lowProbVisited, object_mediumProbVisited, object_highProbVisited, objectblock_seq] = socialrules.update(worldModel);
 
-		if (changes) //se comprueba si alguna de las personas ha cambiado de posicion
-		{
-			navigation.updatePolylines(totalpersons, intimate_seq, personal_seq, social_seq, object_seq, object_lowProbVisited, object_mediumProbVisited, object_highProbVisited, objectblock_seq);
-			personMoved = true;
-		}
+		if (personMoved) //se comprueba si alguna de las personas ha cambiado de posicion
+			navigation.updatePolylines(totalpersons, intimate_seq, personal_seq, social_seq, object_seq,
+			        object_lowProbVisited, object_mediumProbVisited, object_highProbVisited, objectblock_seq);
+
 
         if(structuralChange or socialrules.costChanged or personMoved) needsReplaning = true;
 
@@ -376,7 +373,7 @@ void SpecificWorker::AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldMo
 {
 	qDebug() << __FUNCTION__;
 
-    static bool first = true;
+//    static bool first = true;
 //
 //    if(!first)
 //        navigation.stopRobot();
