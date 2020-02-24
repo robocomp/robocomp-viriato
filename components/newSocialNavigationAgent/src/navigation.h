@@ -94,13 +94,14 @@ class Navigation
 
         void update(const RoboCompLaser::TLaserData &laserData_, bool needsReplaning)
         {
-            qDebug()<<"Navigation - "<< __FUNCTION__;
+//            qDebug()<<"Navigation - "<< __FUNCTION__;
 
             RoboCompLaser::TLaserData laserData;
             laserData = computeLaser(laserData_);
             currentRobotPose = innerModel->transformS6D("world","robot");
-
+            updateLaserPolygon(laserData);
             currentRobotPolygon = getRobotPolygon();
+            currentRobotNose = getRobotNose();
 
             if(needsReplaning)
             {
@@ -110,7 +111,6 @@ class Navigation
                     or std::any_of(std::begin(polylines_personal), std::end(polylines_personal),[p](const auto &poly) { return poly.containsPoint(p, Qt::OddEvenFill);})
                     or std::any_of(std::begin(polylines_social), std::end(polylines_social),[p](const auto &poly) { return poly.containsPoint(p, Qt::OddEvenFill);})
                     or std::any_of(std::begin(polylines_objects_blocked), std::end(polylines_objects_blocked),[p](const auto &poly) { return poly.containsPoint(p, Qt::OddEvenFill);}))
-
                     {
                         stopRobot();
 
@@ -121,7 +121,6 @@ class Navigation
                         break;
                     }
                 }
-
             }
 
 
@@ -129,21 +128,20 @@ class Navigation
                 return;
 
 
-            updateLaserPolygon(laserData);
             computeForces(points, laserData);
             cleanPoints();
             addPoints();
 
-            int pointsInRobotP = 0;
             bool blockTarget = false;
 
+            int pointsInRobotP = 0;
             for(auto p: points)
             {
                 if(currentRobotPolygon.containsPoint(p, Qt::OddEvenFill))
                 {
                     pointsInRobotP++;
 
-                    if (pointsInRobotP > 2) {
+                    if (pointsInRobotP > 1) {
 
                         blockTarget = true;
                         break;
@@ -151,14 +149,17 @@ class Navigation
                 }
             }
 
+            qDebug()<< "Points inside robotPolygon = " << pointsInRobotP;
 
-            if(blockTarget and (points.size() < 2) == false)
+
+            if(blockTarget and points.size() > 3)
+//            if( currentRobotPolygon.containsPoint(currentRobotNose, Qt::OddEvenFill)  and points.size() > 3)
             {
-                qDebug()<< "----- Blocking target ----- Path points inside robotPolygon = " << pointsInRobotP;
+                qDebug()<< "----- Blocking target ----- ";
 
 //                stopRobot();
                 this->current_target.lock();
-                    current_target.blocked.store(true);
+                current_target.blocked.store(true);
                 this->current_target.unlock();
 
                 return;
@@ -176,7 +177,6 @@ class Navigation
                 this->current_target.unlock();
 
 
-
             }
             if (!active)
             {
@@ -192,7 +192,11 @@ class Navigation
                 if(robotAutoMov) newRandomTarget();
             }
 
-            if (!blocked and active) omnirobot_proxy->setSpeedBase(xVel,zVel,rotVel);
+            if (!blocked and active)
+            {
+                qDebug()<< "Moving robot -- " << "xVel = " << xVel << "zVel = " << zVel << "rotVel = " << rotVel;
+                omnirobot_proxy->setSpeedBase(xVel,zVel,rotVel);
+            }
 
 
             drawRoad();
@@ -202,24 +206,22 @@ class Navigation
         void stopRobot()
         {
             qDebug()<<"Navigation - "<< __FUNCTION__;
-
             omnirobot_proxy->setSpeedBase(0,0,0);
-
         }
 
         bool checkPathState()
         {
             static int  timesBlocked = 0;
-            qDebug()<<"Navigation - "<< __FUNCTION__;
+//            qDebug()<<"Navigation - "<< __FUNCTION__;
 
 
-            if (current_target.active.load() == true)
+            if (current_target.active.load())
             {
-                if (current_target.blocked.load()==true) {
+                if (current_target.blocked.load()) {
 
                     if (findNewPath() == false) {
 
-                        qDebug()<< "findNewPath - Path not found";
+                        qDebug()<< "checkPathState - Path not found";
 
                         if (targetBehindRobot)
                         {
@@ -230,7 +232,7 @@ class Navigation
 
                         }
 
-                        qDebug()<< "Deactivating current target";
+                        qDebug()<< "checkPathState - Deactivating current target";
 
                         stopRobot();
 
@@ -245,12 +247,12 @@ class Navigation
                         timesBlocked = 0;
                         targetBehindRobot = false;
 
-
                         return false;
                     }
 
                     else{
-                        qDebug()<< "Path found";
+
+                        qDebug()<< "checkPathState - Path found";
                         this->current_target.lock();
                             this->current_target.blocked.store(false);
                         this->current_target.unlock();
@@ -427,11 +429,12 @@ class Navigation
     //Integrating time
         QTime reloj = QTime::currentTime();
 
-        QPointF lastPointInPath;
+        QPointF lastPointInPath, currentRobotNose;
 
         QPolygonF currentRobotPolygon, laser_poly;
         std::vector<QPointF> laser_cart;
         QVec currentRobotPose;
+
         float robotXWidth, robotZLong; //robot dimensions read from config
 
         bool targetBehindRobot = false;
@@ -476,7 +479,7 @@ class Navigation
     ////////// CONTROLLER RELATED METHODS //////////
     RoboCompLaser::TLaserData computeLaser(RoboCompLaser::TLaserData laserData)
     {
-        qDebug()<<"Navigation - "<< __FUNCTION__;
+//        qDebug()<<"Navigation - "<< __FUNCTION__;
 
         auto lasernode = innerModel->getNode<InnerModelLaser>(QString("laser"));
 
@@ -552,70 +555,71 @@ class Navigation
             auto target = this->current_target.p;
         this->current_target.unlock();
 
-        QPointF robotNose = getRobotNose();
-
         //mark space under the robot as occupied
         grid.markAreaInGridAs(currentRobotPolygon, false);
 
-        std::list<QPointF> path = grid.computePath(QPointF(robotNose.x() ,robotNose.y()), target);
-
-
-        if (path.size() > 0)
+        if(isVisible(currentRobotNose))
         {
-            qDebug()<< "Path found ";
-            stopRobot();
+            std::list<QPointF> path = grid.computePath(QPointF(currentRobotNose.x() ,currentRobotNose.y()), target);
 
-            points.push_back(robotNose);
+            FILE *fd = fopen("points.txt", "w");
 
-            for (const QPointF &p : path)
+            if (path.size() > 0)
             {
-                points.push_back(p);
+                qDebug()<< "RobotNose visible -- Path found ";
+
+                points.push_back(currentRobotNose);
+                fprintf(fd, "%d %d\n", (int)currentRobotNose.x(), (int)currentRobotNose.y());
+
+                for (const QPointF &p : path)
+                {
+                    points.push_back(p);
+                    fprintf(fd, "%d %d\n", (int)p.x(), (int)p.y());
+
+                }
+                fclose(fd);
+
+                lastPointInPath = points[points.size()-1];
+                grid.markAreaInGridAs(currentRobotPolygon, true);
+
+                targetBehindRobot = false;
+
+                return true;
             }
 
-            lastPointInPath = points[points.size()-1];
-            grid.markAreaInGridAs(currentRobotPolygon, true);
-
-            targetBehindRobot = false;
-
-            return true;
         }
 
+        qDebug()<< "Path NOT found -- searching path behind the robot ";
+
+        auto robot = QPointF(currentRobotPose.x(),currentRobotPose.z());
+        QPointF robotBack =  (robot + QPointF( (robotZLong/2 + 150) * -sin(currentRobotPose.ry()), (robotZLong/2 + 150) * -cos(currentRobotPose.ry())));
+
+        qDebug()<<"-------------------------";
+        std::list<QPointF> path_back = grid.computePath(QPointF(robotBack.x() ,robotBack.y()), target);
+
+        if (path_back.size() > 0) {
+
+            qDebug()<< "Path found -- rotating robot";
+                omnirobot_proxy->setSpeedBase(0,0,0.6);
+
+            this->current_target.lock();
+                current_target.blocked.store(true);
+            this->current_target.unlock();
+
+            targetBehindRobot = true;
+
+        }
 
         else
         {
-            qDebug()<< "Path NOT found -- searching path behind the robot ";
-
-            auto robot = QPointF(currentRobotPose.x(),currentRobotPose.z());
-            QPointF robotBack =  (robot + QPointF( (robotZLong/2 + 150) * -sin(currentRobotPose.ry()), (robotZLong/2 + 150) * -cos(currentRobotPose.ry())));
-
-            qDebug()<<"-------------------------";
-            std::list<QPointF> path_back = grid.computePath(QPointF(robotBack.x() ,robotBack.y()), target);
-
-            if (path_back.size() > 0) {
-
-
-                qDebug()<< "Path found -- rotating robot";
-                    omnirobot_proxy->setSpeedBase(0,0,0.6);
-
-                this->current_target.lock();
-                    current_target.blocked.store(true);
-                this->current_target.unlock();
-
-                targetBehindRobot = true;
-
-            }
-
-            else
-            {
-                qDebug() << __FUNCTION__ << "Path not found";
-                targetBehindRobot = false;
-
-            }
-
-            grid.markAreaInGridAs(currentRobotPolygon, true);
-            return false;
+            qDebug() << __FUNCTION__ << "Path not found";
+            targetBehindRobot = false;
 
         }
+
+        grid.markAreaInGridAs(currentRobotPolygon, true);
+        return false;
+
 
     }
 
@@ -701,9 +705,7 @@ class Navigation
                 p = temp_p;
         }
 
-        QPointF robotNose = getRobotNose();
-        points[0] = robotNose;
-
+        points[0] = currentRobotNose;
     }
 
 
@@ -732,7 +734,8 @@ class Navigation
         }
         for (const auto &[l, p] : iter::enumerate(points_to_insert))
         {
-            points.insert(points.begin() + std::get<int>(p) + l, std::get<QPointF>(p));
+            if(!currentRobotPolygon.containsPoint(std::get<QPointF>(p), Qt::OddEvenFill))
+                points.insert(points.begin() + std::get<int>(p) + l, std::get<QPointF>(p));
         }
 //        qDebug() << __FUNCTION__ << "points inserted " << points_to_insert.size();
     }
@@ -771,14 +774,14 @@ class Navigation
 
     QPolygonF getRobotPolygon()
     {
-        qDebug()<<"Navigation - "<< __FUNCTION__;
+//        qDebug()<<"Navigation - "<< __FUNCTION__;
 
         QPolygonF robotP;
 
-        auto bottomLeft     = QVec::vec3(- robotXWidth/2, 0, - robotZLong/2);
-        auto bottomRight    = QVec::vec3(+ robotXWidth/2, 0, - robotZLong/2);
-        auto topRight       = QVec::vec3( + robotXWidth/2, 0 , + robotZLong/2);
-        auto topLeft        = QVec::vec3(- robotXWidth/2, 0, + robotZLong/2);
+        auto bottomLeft     = QVec::vec3(- robotXWidth/2 -100, 0, - robotZLong/2-100);
+        auto bottomRight    = QVec::vec3(+ robotXWidth/2+100, 0, - robotZLong/2 -100);
+        auto topRight       = QVec::vec3( + robotXWidth/2+100, 0 , + robotZLong/2 +100);
+        auto topLeft        = QVec::vec3(- robotXWidth/2 -100, 0, + robotZLong/2 +100);
 
         auto bLWorld = innerModel->transform ("world", bottomLeft ,"base_mesh");
         auto bRWorld = innerModel->transform ("world", bottomRight ,"base_mesh");
@@ -807,7 +810,7 @@ class Navigation
 
     void updateLaserPolygon(const RoboCompLaser::TLaserData &lData)
     {
-        qDebug()<<"Navigation - "<< __FUNCTION__;
+//        qDebug()<<"Navigation - "<< __FUNCTION__;
 
         laser_poly.clear(); //stores the points of the laser in lasers refrence system
         laser_cart.clear();
@@ -835,17 +838,17 @@ class Navigation
 
     QPointF getRobotNose()
     {
-        qDebug()<<"Navigation - "<< __FUNCTION__;
+//        qDebug()<<"Navigation - "<< __FUNCTION__;
 
         auto robot = QPointF(currentRobotPose.x(),currentRobotPose.z());
 
-        return (robot + QPointF( (robotZLong/2 + 150) * sin(currentRobotPose.ry()), (robotZLong/2 + 150) * cos(currentRobotPose.ry())));
+        return (robot + QPointF( (robotZLong/2 + 250) * sin(currentRobotPose.ry()), (robotZLong/2 + 250) * cos(currentRobotPose.ry())));
 
     }
 
     void drawRoad()
     {
-        qDebug()<<"Navigation - "<< __FUNCTION__;
+//        qDebug()<<"Navigation - "<< __FUNCTION__;
 
         ///////////////////////
         // Preconditions

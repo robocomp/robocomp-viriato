@@ -65,9 +65,9 @@ public:
 
         if (points.size() < 3 and euc_dist_to_target < FINAL_DISTANCE_TO_TARGET)
         {
-            qDebug()<< "·······················";
-            qDebug()<< "····TARGET ACHIEVED····";
-            qDebug()<< "·······················";
+            qDebug()<< "·························";
+            qDebug()<< "···· TARGET ACHIEVED ····";
+            qDebug()<< "·························";
             qDebug()<< " ";
 
             advVelz = 0;
@@ -119,7 +119,7 @@ public:
 
         bumperVel = total * KB;  // Parameter set in slidebar
 
-        if (abs(bumperVel.x()) < 400)
+        if (abs(bumperVel.x()) < 450)
             advVelx = bumperVel.x();
 
         return std::make_tuple (blocked, active, advVelx, advVelz,rotVel);
@@ -144,7 +144,7 @@ private:
 
     const float ROBOT_LENGTH = 400;
     const float FINAL_DISTANCE_TO_TARGET = 500; //mm
-    float KB = 3.5;
+    float KB = 2.0;
 
     float advVelx = 0, advVelz = 0, rotVel = 0;
     QVector2D bumperVel;

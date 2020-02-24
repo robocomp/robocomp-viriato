@@ -72,7 +72,7 @@ InnerViewer::InnerViewer( const InnerPtr &innerModel_, const std::string &name_,
 void InnerViewer::run()
 {
 
-    qDebug()<<"Viewer - "<<__FUNCTION__;
+//    qDebug()<<"Viewer - "<<__FUNCTION__;
 
 //            guard gl(mutex);
 

@@ -114,7 +114,7 @@ void SpecificWorker::initialize(int period)
 
 void SpecificWorker::compute()
 {
-    qDebug()<< __FUNCTION__;
+//    qDebug()<< __FUNCTION__;
 
     QMutexLocker lockIM(mutex);
 
@@ -320,7 +320,7 @@ void SpecificWorker::AGMExecutiveTopic_selfEdgeDeleted(const int nodeid, const s
 void SpecificWorker::AGMExecutiveTopic_edgeUpdated(const RoboCompAGMWorldModel::Edge &modification)
 {
 
-    qDebug() << __FUNCTION__;
+//    qDebug() << __FUNCTION__;
 //
 //    if(!specificWorkerInitialized)
 //    {
@@ -345,7 +345,7 @@ void SpecificWorker::AGMExecutiveTopic_edgesUpdated(const RoboCompAGMWorldModel:
 {
 //subscribesToCODE
 
-	qDebug() << __FUNCTION__;
+//	qDebug() << __FUNCTION__;
 
 //    if(!specificWorkerInitialized)
 //    {
@@ -415,7 +415,7 @@ void SpecificWorker::AGMExecutiveTopic_symbolUpdated(const RoboCompAGMWorldModel
 void SpecificWorker::AGMExecutiveTopic_symbolsUpdated(const RoboCompAGMWorldModel::NodeSequence &modifications)
 {
 //subscribesToCODE
-	qDebug() << __FUNCTION__;
+//	qDebug() << __FUNCTION__;
 
 	QMutexLocker l(mutex);
 
