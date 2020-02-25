@@ -105,11 +105,9 @@ class Navigation
 
             if(needsReplaning)
             {
-                for (auto p: points)
+                for (auto p: pathPoints)
                 {
-                    if(std::any_of(std::begin(polylines_intimate), std::end(polylines_intimate),[p](const auto &poly) { return poly.containsPoint(p, Qt::OddEvenFill);})
-                    or std::any_of(std::begin(polylines_personal), std::end(polylines_personal),[p](const auto &poly) { return poly.containsPoint(p, Qt::OddEvenFill);})
-                    or std::any_of(std::begin(polylines_social), std::end(polylines_social),[p](const auto &poly) { return poly.containsPoint(p, Qt::OddEvenFill);})
+                    if(std::any_of(std::begin(polylines_social), std::end(polylines_social),[p](const auto &poly) { return poly.containsPoint(p, Qt::OddEvenFill);})
                     or std::any_of(std::begin(polylines_objects_blocked), std::end(polylines_objects_blocked),[p](const auto &poly) { return poly.containsPoint(p, Qt::OddEvenFill);}))
                     {
                         stopRobot();
@@ -128,45 +126,12 @@ class Navigation
                 return;
 
 
-            computeForces(points, laserData);
+            computeForces(pathPoints, laserData);
             cleanPoints();
             addPoints();
 
-            bool blockTarget = false;
 
-            int pointsInRobotP = 0;
-            for(auto p: points)
-            {
-                if(currentRobotPolygon.containsPoint(p, Qt::OddEvenFill))
-                {
-                    pointsInRobotP++;
-
-                    if (pointsInRobotP > 1) {
-
-                        blockTarget = true;
-                        break;
-                    }
-                }
-            }
-
-            qDebug()<< "Points inside robotPolygon = " << pointsInRobotP;
-
-
-            if(blockTarget and points.size() > 3)
-//            if( currentRobotPolygon.containsPoint(currentRobotNose, Qt::OddEvenFill)  and points.size() > 3)
-            {
-                qDebug()<< "----- Blocking target ----- ";
-
-//                stopRobot();
-                this->current_target.lock();
-                current_target.blocked.store(true);
-                this->current_target.unlock();
-
-                return;
-            }
-
-
-            auto [blocked, active, xVel,zVel,rotVel] = controller.update(points, laserData, current_target.p, currentRobotPose);
+            auto [blocked, active, xVel,zVel,rotVel] = controller.update(pathPoints, laserData, current_target.p, currentRobotPose);
 
             if (blocked)
             {
@@ -180,21 +145,20 @@ class Navigation
             }
             if (!active)
             {
-
                 stopRobot();
 
                 this->current_target.lock();
                     current_target.active.store(false);
                 this->current_target.unlock();
 
-                points.clear();
+                pathPoints.clear();
 
                 if(robotAutoMov) newRandomTarget();
             }
 
             if (!blocked and active)
             {
-                qDebug()<< "Moving robot -- " << "xVel = " << xVel << "zVel = " << zVel << "rotVel = " << rotVel;
+//                qDebug()<< "Moving robot -- " << "xVel = " << xVel << "zVel = " << zVel << "rotVel = " << rotVel;
                 omnirobot_proxy->setSpeedBase(xVel,zVel,rotVel);
             }
 
@@ -240,7 +204,7 @@ class Navigation
                         current_target.active.store(false);
                         this->current_target.unlock();
 
-                        points.clear();
+                        pathPoints.clear();
 
                         if(robotAutoMov) newRandomTarget();
 
@@ -414,7 +378,7 @@ class Navigation
         std::vector<QPolygonF> polylines_intimate,polylines_personal,polylines_social,polylines_objects_total,polylines_objects_blocked, polylines_lowVisited ,polylines_mediumVisited ,polylines_highVisited;
 
         // ElasticBand
-        std::vector<QPointF> points;
+        std::vector<QPointF> pathPoints;
 
         const float ROBOT_LENGTH = 400;
 
@@ -548,7 +512,7 @@ class Navigation
     bool findNewPath()
     {
         qDebug()<<"Navigation - "<< __FUNCTION__;
-        points.clear();
+        pathPoints.clear();
 
         // extract target from current_path
         this->current_target.lock();
@@ -556,31 +520,27 @@ class Navigation
         this->current_target.unlock();
 
         //mark space under the robot as occupied
-        grid.markAreaInGridAs(currentRobotPolygon, false);
+//        grid.markAreaInGridAs(currentRobotPolygon, false);
 
         if(isVisible(currentRobotNose))
         {
             std::list<QPointF> path = grid.computePath(QPointF(currentRobotNose.x() ,currentRobotNose.y()), target);
 
-            FILE *fd = fopen("points.txt", "w");
 
             if (path.size() > 0)
             {
                 qDebug()<< "RobotNose visible -- Path found ";
 
-                points.push_back(currentRobotNose);
-                fprintf(fd, "%d %d\n", (int)currentRobotNose.x(), (int)currentRobotNose.y());
+                pathPoints.push_back(currentRobotNose);
 
                 for (const QPointF &p : path)
                 {
-                    points.push_back(p);
-                    fprintf(fd, "%d %d\n", (int)p.x(), (int)p.y());
+                    pathPoints.push_back(p);
 
                 }
-                fclose(fd);
 
-                lastPointInPath = points[points.size()-1];
-                grid.markAreaInGridAs(currentRobotPolygon, true);
+                lastPointInPath = pathPoints[pathPoints.size()-1];
+//                grid.markAreaInGridAs(currentRobotPolygon, true);
 
                 targetBehindRobot = false;
 
@@ -594,12 +554,11 @@ class Navigation
         auto robot = QPointF(currentRobotPose.x(),currentRobotPose.z());
         QPointF robotBack =  (robot + QPointF( (robotZLong/2 + 150) * -sin(currentRobotPose.ry()), (robotZLong/2 + 150) * -cos(currentRobotPose.ry())));
 
-        qDebug()<<"-------------------------";
         std::list<QPointF> path_back = grid.computePath(QPointF(robotBack.x() ,robotBack.y()), target);
 
         if (path_back.size() > 0) {
 
-            qDebug()<< "Path found -- rotating robot";
+            qDebug()<< "Path found BEHIND ROBOT -- rotating robot";
                 omnirobot_proxy->setSpeedBase(0,0,0.6);
 
             this->current_target.lock();
@@ -617,7 +576,7 @@ class Navigation
 
         }
 
-        grid.markAreaInGridAs(currentRobotPolygon, true);
+//        grid.markAreaInGridAs(currentRobotPolygon, true);
         return false;
 
 
@@ -634,7 +593,7 @@ class Navigation
 
     void computeForces(const std::vector<QPointF> &path, const RoboCompLaser::TLaserData &lData)
     {
-        qDebug()<<"Navigation - "<< __FUNCTION__;
+//        qDebug()<<"Navigation - "<< __FUNCTION__;
 
         if (path.size() < 3) {
             return;
@@ -705,16 +664,16 @@ class Navigation
                 p = temp_p;
         }
 
-        points[0] = currentRobotNose;
+        pathPoints[0] = currentRobotNose;
     }
 
 
     void addPoints()
     {
-        qDebug()<<"Navigation - "<< __FUNCTION__;
+//        qDebug()<<"Navigation - "<< __FUNCTION__;
 
         std::vector<std::tuple<int, QPointF>> points_to_insert;
-        for (auto &&[k, group] : iter::enumerate(iter::sliding_window(points, 2)))
+        for (auto &&[k, group] : iter::enumerate(iter::sliding_window(pathPoints, 2)))
         {
             auto &p1 = group[0];
             auto &p2 = group[1];
@@ -734,18 +693,23 @@ class Navigation
         }
         for (const auto &[l, p] : iter::enumerate(points_to_insert))
         {
-            if(!currentRobotPolygon.containsPoint(std::get<QPointF>(p), Qt::OddEvenFill))
-                points.insert(points.begin() + std::get<int>(p) + l, std::get<QPointF>(p));
+            if(currentRobotPolygon.containsPoint(std::get<QPointF>(p), Qt::OddEvenFill) == false)
+            {
+//                qDebug()<< "Add points  " << std::get<QPointF>(p);
+
+                pathPoints.insert(pathPoints.begin() + std::get<int>(p) + l, std::get<QPointF>(p));
+            }
+
         }
 //        qDebug() << __FUNCTION__ << "points inserted " << points_to_insert.size();
     }
 
     void cleanPoints()
     {
-        qDebug()<<"Navigation - "<< __FUNCTION__;
+//        qDebug()<<"Navigation - "<< __FUNCTION__;
 
         std::vector<QPointF> points_to_remove;
-        for (const auto &group : iter::sliding_window(points, 2))
+        for (const auto &group : iter::sliding_window(pathPoints, 2))
         {
             const auto &p1 = group[0];
             const auto &p2 = group[1];
@@ -762,12 +726,19 @@ class Navigation
             float dist = QVector2D(p1 - p2).length();
             if (dist < 0.5 * ROAD_STEP_SEPARATION)
                 points_to_remove.push_back(p2);
+
+            else if(currentRobotPolygon.containsPoint(p2, Qt::OddEvenFill))
+            {
+                qDebug()<<"-------------" << __FUNCTION__ << "------------- Removing point inside robot ";
+                points_to_remove.push_back(p2);
+            }
+
         }
 
 
         for (auto &&p : points_to_remove)
         {
-            points.erase(std::remove_if(points.begin(), points.end(), [p](auto &r) { return p == r; }), points.end());
+            pathPoints.erase(std::remove_if(pathPoints.begin(), pathPoints.end(), [p](auto &r) { return p == r; }), pathPoints.end());
 
         }
     }
@@ -842,7 +813,7 @@ class Navigation
 
         auto robot = QPointF(currentRobotPose.x(),currentRobotPose.z());
 
-        return (robot + QPointF( (robotZLong/2 + 250) * sin(currentRobotPose.ry()), (robotZLong/2 + 250) * cos(currentRobotPose.ry())));
+        return (robot + QPointF( (robotZLong/2 + 200) * sin(currentRobotPose.ry()), (robotZLong/2 + 200) * cos(currentRobotPose.ry())));
 
     }
 
@@ -853,7 +824,7 @@ class Navigation
         ///////////////////////
         // Preconditions
         ///////////////////////
-        if (points.size() == 0)
+        if (pathPoints.size() == 0)
             return;
 
 
@@ -865,10 +836,10 @@ class Navigation
             ///////////////////
             //Draw all points
             //////////////////
-            for (int i = 1; i < points.size(); i++)
+            for (int i = 1; i < pathPoints.size(); i++)
             {
-                QPointF &w = points[i];
-                QPointF &wAnt = points[i - 1];
+                QPointF &w = pathPoints[i];
+                QPointF &wAnt = pathPoints[i - 1];
                 if (w == wAnt) //avoid calculations on equal points
                     continue;
 
@@ -883,7 +854,7 @@ class Navigation
                 {
                     viewer->drawLine(item + "_point", item, QVec::zeros(3), normal, 500, 40, "#FF0000");  //Rojo
                 }
-                else if (i == points.size()-1)
+                else if (i == pathPoints.size()-1)
                     viewer->drawLine(item + "_point", item, QVec::zeros(3), normal, 500, 40, "#FF0000");  //Rojo
 
 //                else if (isVisible(w))
