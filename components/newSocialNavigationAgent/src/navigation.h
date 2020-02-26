@@ -108,6 +108,11 @@ class Navigation
                 for (auto p: pathPoints)
                 {
                     if(std::any_of(std::begin(polylines_social), std::end(polylines_social),[p](const auto &poly) { return poly.containsPoint(p, Qt::OddEvenFill);})
+                    or std::any_of(std::begin(polylines_personal), std::end(polylines_personal),[p](const auto &poly) { return poly.containsPoint(p, Qt::OddEvenFill);})
+                    or std::any_of(std::begin(polylines_objects_total), std::end(polylines_objects_total),[p](const auto &poly) { return poly.containsPoint(p, Qt::OddEvenFill);})
+                    or std::any_of(std::begin(polylines_lowVisited), std::end(polylines_lowVisited),[p](const auto &poly) { return poly.containsPoint(p, Qt::OddEvenFill);})
+                    or std::any_of(std::begin(polylines_mediumVisited), std::end(polylines_mediumVisited),[p](const auto &poly) { return poly.containsPoint(p, Qt::OddEvenFill);})
+                    or std::any_of(std::begin(polylines_highVisited), std::end(polylines_highVisited),[p](const auto &poly) { return poly.containsPoint(p, Qt::OddEvenFill);})
                     or std::any_of(std::begin(polylines_objects_blocked), std::end(polylines_objects_blocked),[p](const auto &poly) { return poly.containsPoint(p, Qt::OddEvenFill);}))
                     {
                         stopRobot();
@@ -552,7 +557,7 @@ class Navigation
         qDebug()<< "Path NOT found -- searching path behind the robot ";
 
         auto robot = QPointF(currentRobotPose.x(),currentRobotPose.z());
-        QPointF robotBack =  (robot + QPointF( (robotZLong/2 + 150) * -sin(currentRobotPose.ry()), (robotZLong/2 + 150) * -cos(currentRobotPose.ry())));
+        QPointF robotBack =  (robot + QPointF( (robotZLong/2 + 150) * - sin(currentRobotPose.ry()), (robotZLong/2 + 150) * -cos(currentRobotPose.ry())));
 
         std::list<QPointF> path_back = grid.computePath(QPointF(robotBack.x() ,robotBack.y()), target);
 
@@ -795,8 +800,6 @@ class Navigation
             laser_cart.push_back(QPointF(laserc.x(),laserc.z()));
         }
 
-
-
         FILE *fd = fopen("laserPoly.txt", "w");
         for (const auto &lp : laser_poly)
         {
@@ -857,10 +860,10 @@ class Navigation
                 else if (i == pathPoints.size()-1)
                     viewer->drawLine(item + "_point", item, QVec::zeros(3), normal, 500, 40, "#FF0000");  //Rojo
 
-//                else if (isVisible(w))
-//                    viewer->drawLine(item + "_point", item, QVec::zeros(3), normal, 500, 40, "#00ECFF"); //TAKE WIDTH FROM PARAMS!!!
+                else if (isVisible(w))
+                    viewer->drawLine(item + "_point", item, QVec::zeros(3), normal, 500, 40, "#00FFF0");
                 else
-                    viewer->drawLine(item + "_point", item, QVec::zeros(3), normal, 500, 40, "#00ECFF");  //Morado
+                    viewer->drawLine(item + "_point", item, QVec::zeros(3), normal, 500, 40, "#A200FF");  //Morado
 
 
             }

@@ -530,6 +530,93 @@ void SocialRules::affordanceSliderChanged(int value)
     costChanged = true;
 }
 
+void SocialRules::affordanceTimeChanged(int step)
+{
+
+    qDebug()<<__FUNCTION__ << step;
+
+    auto hours = step / 60;
+    auto minutes = step % 60;
+
+    currentTime = QTime(hours,minutes);
+
+
+    currentTime_timeEdit->setTime(currentTime);
+
+    for (auto [key,obj] : mapIdObjects)
+    {
+        if (obj.therapyProgrammed)
+        {
+            auto before30 = obj.startT.addSecs(-(60*30));
+            auto before15 = obj.startT.addSecs(-(60*15));
+            auto after15 = obj.endT.addSecs(60*15);
+            auto after30 = obj.endT.addSecs(60*30);
+
+
+            if(obj.startT <= currentTime and currentTime <= obj.endT)
+            {
+                mapIdObjects[key].cost = 3.0;
+                costChanged = true;
+            }
+            else if ((before15 <= currentTime and currentTime <= obj.startT) or (obj.endT <= currentTime and currentTime <= after15))
+            {
+                mapIdObjects[key].cost = 2.5;
+                costChanged = true;
+
+            }
+            else if ((before30 <= currentTime and currentTime <= before15) or (after15 <= currentTime and currentTime <= after30))
+            {
+                mapIdObjects[key].cost = 2.0;
+                costChanged = true;
+            }
+
+            else
+            {
+                mapIdObjects[key].cost = 1.5;
+                costChanged = true;
+            }
+        }
+    }
+
+
+
+
+
+
+
+}
+
+void SocialRules::programTherapy()
+{
+    qDebug()<<__FUNCTION__;
+    if(idobject_combobox->currentText() == "")
+    {
+        qDebug()<< "Please, select object to program the therapy";
+        return;
+    }
+
+    qDebug() << "Programing therapy with " << idobject_combobox->currentText() << " from " << startTherapy_timeEdit->time()<< " to " << endTherapy_timeEdit->time();
+
+    auto therapy = (idobject_combobox->currentText() +QString ("    ")+ startTherapy_timeEdit->time().toString(Qt::SystemLocaleShortDate)
+            + " - " + endTherapy_timeEdit->time().toString(Qt::SystemLocaleShortDate));
+
+    therapies_list->addItem(therapy);
+
+    mapIdObjects[idobject_combobox->currentText()].therapyProgrammed = true;
+    mapIdObjects[idobject_combobox->currentText()].startT = startTherapy_timeEdit->time();
+    mapIdObjects[idobject_combobox->currentText()].endT = endTherapy_timeEdit->time();
+
+}
+
+void SocialRules::removeTherapy()
+{
+    auto item_to_delete = therapies_list->currentRow();
+    therapies_list->takeItem(item_to_delete);
+
+    mapIdObjects[idobject_combobox->currentText()].therapyProgrammed = false;
+
+
+}
 
 void SocialRules::checkstate()
 {

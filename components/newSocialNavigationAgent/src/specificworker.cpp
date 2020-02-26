@@ -61,22 +61,36 @@ void SpecificWorker::initialize(int period)
     std::cout << "Initialize worker" << std::endl;
 
     connect(draw_gaussian_button,SIGNAL(clicked()),&socialrules, SLOT(drawGauss()));
-    connect(draw_objects_button,SIGNAL(clicked()),&socialrules, SLOT(checkObjectAffordance()));
     connect(save_data_button,SIGNAL(clicked()),&socialrules, SLOT(saveData()));
     connect(gotoperson_button,SIGNAL(clicked()),&socialrules, SLOT(goToPerson()));
 
     connect(follow_checkbox, SIGNAL (clicked()),&socialrules,SLOT(checkstate()));
     connect(accompany_checkbox, SIGNAL (clicked()),&socialrules,SLOT(checkstate()));
     connect(passonright_checkbox, SIGNAL (clicked()),&socialrules,SLOT(checkstate()));
-	connect(object_slider, SIGNAL (valueChanged(int)),&socialrules,SLOT(affordanceSliderChanged(int)));
 
-	connect(robotMov_checkbox, SIGNAL(clicked()),this, SLOT(checkRobotMovState()));
+    connect(robotMov_checkbox, SIGNAL(clicked()),this, SLOT(checkRobotMovState()));
 
-    socialrules.idobject_combobox = idobject_combobox;
+    connect(object_slider, SIGNAL (valueChanged(int)),&socialrules,SLOT(affordanceSliderChanged(int)));
+
+//	connect(currentTime_timeEdit, SIGNAL (timeChanged(const QTime)),&socialrules,SLOT(affordanceTimeChanged(const QTime)));
+	connect(setTherapy_button, SIGNAL (clicked()),&socialrules,SLOT(programTherapy()));
+	connect(removeT_button, SIGNAL (clicked()),&socialrules,SLOT(removeTherapy()));
+
+	connect(currtime_slider, SIGNAL (valueChanged(int)),&socialrules,SLOT(affordanceTimeChanged(int)));
+
+
     socialrules.idselect_combobox = idselect_combobox;
     socialrules.follow_checkbox = follow_checkbox;
     socialrules.accompany_checkbox = accompany_checkbox;
     socialrules.passonright_checkbox = passonright_checkbox;
+
+    socialrules.object_slider = object_slider;
+    socialrules.idobject_combobox = idobject_combobox;
+    socialrules.therapies_list = therapies_list;
+    socialrules.startTherapy_timeEdit = startTherapy_timeEdit;
+    socialrules.endTherapy_timeEdit = endTherapy_timeEdit;
+    socialrules.currentTime_timeEdit = currentTime_timeEdit;
+
 
 
 #ifdef USE_QTGUI

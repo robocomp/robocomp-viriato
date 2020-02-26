@@ -32,12 +32,20 @@ public:
 
 	QComboBox* idselect_combobox;
 	QComboBox* idobject_combobox;
-
 	QCheckBox* follow_checkbox;
 	QCheckBox* accompany_checkbox;
 	QCheckBox* passonright_checkbox;
 
-	bool followpulsed = false;
+    QSlider *object_slider;
+    QListWidget *therapies_list;
+    QTimeEdit *startTherapy_timeEdit;
+    QTimeEdit *endTherapy_timeEdit;
+	QTimeEdit *currentTime_timeEdit;
+
+	QTime currentTime = QTime(0,0);
+
+
+    bool followpulsed = false;
 	bool accompanypulsed = false;
 	bool porpulsed = false;
 
@@ -76,6 +84,10 @@ public:
         float inter_space;
         float inter_angle;
 
+
+        bool therapyProgrammed = false;
+        QTime startT;
+        QTime endT;
 
 	};
 
@@ -130,7 +142,9 @@ public slots:
 	void checkObjectAffordance(bool d = true);
 
 	void affordanceSliderChanged(int value);
-
+	void affordanceTimeChanged(int step);
+	void programTherapy();
+	void removeTherapy();
 
 
 };
