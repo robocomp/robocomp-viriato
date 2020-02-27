@@ -20,5 +20,4 @@ SET ( HEADERS
 )
 
 set(CMAKE_CXX_STANDARD 17)
-
 SET (LIBS ${LIBS} pthread osg osgViewer osgDB fcl )

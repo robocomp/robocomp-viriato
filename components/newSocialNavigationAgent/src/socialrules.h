@@ -22,6 +22,10 @@
 #include <boost/format.hpp>
 #include <QObject>
 #include <vector>
+#include <QtCore/QVariant>
+
+#include <QtWidgets/QTimeEdit>
+#include <QtWidgets/QListWidget>
 
 class SocialRules :public QObject
 {
@@ -42,7 +46,6 @@ public:
     QTimeEdit *endTherapy_timeEdit;
 	QTimeEdit *currentTime_timeEdit;
 
-	QTime currentTime = QTime(0,0);
 
 
     bool followpulsed = false;

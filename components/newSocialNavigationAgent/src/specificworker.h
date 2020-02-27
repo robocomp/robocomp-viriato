@@ -37,6 +37,7 @@
 #include <navigation.h>
 #include <algorithm>
 
+
 using namespace std;
 
 #define USE_QTGUI
@@ -46,6 +47,7 @@ using namespace std;
 
 class SpecificWorker : public GenericWorker
 {
+
 Q_OBJECT
 public:
 	SpecificWorker(MapPrx& mprx);
@@ -84,6 +86,8 @@ public slots:
     void compute();
     void initialize(int period);
     void checkRobotMovState();
+    void moveRobot();
+	void forcesSliderChanged(int value);
 
     //Specification slot methods State Machine
 	void sm_compute();

@@ -68,16 +68,17 @@ void SpecificWorker::initialize(int period)
     connect(accompany_checkbox, SIGNAL (clicked()),&socialrules,SLOT(checkstate()));
     connect(passonright_checkbox, SIGNAL (clicked()),&socialrules,SLOT(checkstate()));
 
-    connect(robotMov_checkbox, SIGNAL(clicked()),this, SLOT(checkRobotMovState()));
+    connect(autoMov_checkbox, SIGNAL(clicked()),this, SLOT(checkRobotMovState()));
+    connect(robotMov_checkbox, SIGNAL(clicked()),this, SLOT(moveRobot()));
 
     connect(object_slider, SIGNAL (valueChanged(int)),&socialrules,SLOT(affordanceSliderChanged(int)));
 
-//	connect(currentTime_timeEdit, SIGNAL (timeChanged(const QTime)),&socialrules,SLOT(affordanceTimeChanged(const QTime)));
 	connect(setTherapy_button, SIGNAL (clicked()),&socialrules,SLOT(programTherapy()));
 	connect(removeT_button, SIGNAL (clicked()),&socialrules,SLOT(removeTherapy()));
-
 	connect(currtime_slider, SIGNAL (valueChanged(int)),&socialrules,SLOT(affordanceTimeChanged(int)));
 
+    connect(ki_slider, SIGNAL (valueChanged(int)),this,SLOT(forcesSliderChanged(int)));
+    connect(ke_slider, SIGNAL (valueChanged(int)),this,SLOT(forcesSliderChanged(int)));
 
     socialrules.idselect_combobox = idselect_combobox;
     socialrules.follow_checkbox = follow_checkbox;
@@ -110,11 +111,11 @@ void SpecificWorker::initialize(int period)
     }
 
     navigation.initialize(innerModel, viewer, confParams, omnirobot_proxy);
-
 	socialrules.initialize(worldModel, socialnavigationgaussian_proxy);
 
-
     qDebug()<<"Classes initialized correctly";
+
+
     specificWorkerInitialized = true;
 
     this->Period = period;
@@ -198,6 +199,27 @@ void  SpecificWorker::checkRobotMovState()
 		navigation.robotAutoMov = false;
 
 }
+
+void  SpecificWorker::moveRobot()
+{
+	qDebug()<<__FUNCTION__;
+
+	if(robotMov_checkbox->checkState() == Qt::CheckState(2))
+	{
+		navigation.moveRobot = true;
+	}
+
+	else
+		navigation.moveRobot = false;
+
+}
+
+void SpecificWorker::forcesSliderChanged(int value)
+{
+    navigation.KI = (float) ki_slider -> sliderPosition();
+    navigation.KE = (float) ke_slider -> sliderPosition();
+}
+
 
 void SpecificWorker::sm_compute()
 {

@@ -533,12 +533,12 @@ void SocialRules::affordanceSliderChanged(int value)
 void SocialRules::affordanceTimeChanged(int step)
 {
 
-    qDebug()<<__FUNCTION__ << step;
 
     auto hours = step / 60;
     auto minutes = step % 60;
+    qDebug()<<__FUNCTION__ << step << " -- " << hours << ":" << minutes;
 
-    currentTime = QTime(hours,minutes);
+    QTime currentTime = QTime(hours,minutes);
 
 
     currentTime_timeEdit->setTime(currentTime);

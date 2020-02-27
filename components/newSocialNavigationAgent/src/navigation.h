@@ -53,6 +53,10 @@ class Navigation
 
         Target current_target;
         bool robotAutoMov = false;
+        bool moveRobot = false;
+
+        float KE;
+        float KI;
 
         void initialize(const std::shared_ptr<InnerModel> &innerModel_, const std::shared_ptr<InnerViewer> &viewer_,
                 std::shared_ptr< RoboCompCommonBehavior::ParameterList > configparams_, OmniRobotPrx omnirobot_proxy_)
@@ -164,7 +168,8 @@ class Navigation
             if (!blocked and active)
             {
 //                qDebug()<< "Moving robot -- " << "xVel = " << xVel << "zVel = " << zVel << "rotVel = " << rotVel;
-                omnirobot_proxy->setSpeedBase(xVel,zVel,rotVel);
+//
+                if(moveRobot) omnirobot_proxy->setSpeedBase(xVel,zVel,rotVel);
             }
 
 
@@ -386,12 +391,6 @@ class Navigation
         std::vector<QPointF> pathPoints;
 
         const float ROBOT_LENGTH = 400;
-
-//        float KE = 3.0;
-//        float KI = 120;
-        float KE = 6.0;
-        float KI = 200;
-
         const float ROAD_STEP_SEPARATION = ROBOT_LENGTH * 0.9;
 
 
@@ -598,7 +597,7 @@ class Navigation
 
     void computeForces(const std::vector<QPointF> &path, const RoboCompLaser::TLaserData &lData)
     {
-//        qDebug()<<"Navigation - "<< __FUNCTION__;
+        qDebug()<<"Navigation - "<< __FUNCTION__ << KI << KE;
 
         if (path.size() < 3) {
             return;
