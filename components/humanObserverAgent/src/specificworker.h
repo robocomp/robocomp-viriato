@@ -32,6 +32,7 @@
 
 #include <genericworker.h>
 #include <innermodel/innermodel.h>
+#include <QPolygonF>
 
 class SpecificWorker : public GenericWorker
 {

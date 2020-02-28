@@ -129,6 +129,9 @@
           <property name="text">
            <string>Move Robot</string>
           </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
          </widget>
         </item>
         <item>
@@ -572,7 +575,7 @@
            <number>1</number>
           </property>
           <property name="pageStep">
-           <number>1</number>
+           <number>15</number>
           </property>
           <property name="sliderPosition">
            <number>540</number>
@@ -581,7 +584,7 @@
            <enum>Qt::Horizontal</enum>
           </property>
           <property name="tickPosition">
-           <enum>QSlider::TicksBothSides</enum>
+           <enum>QSlider::TicksBelow</enum>
           </property>
          </widget>
         </item>

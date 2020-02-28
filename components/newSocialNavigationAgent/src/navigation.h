@@ -52,8 +52,11 @@ class Navigation
         };
 
         Target current_target;
+
         bool robotAutoMov = false;
         bool moveRobot = false;
+
+        bool stopMovingRobot = false;
 
         float KE;
         float KI;
@@ -162,6 +165,8 @@ class Navigation
 
                 pathPoints.clear();
 
+                if(stopMovingRobot) moveRobot = false;
+
                 if(robotAutoMov) newRandomTarget();
             }
 
@@ -260,9 +265,10 @@ class Navigation
             auto x = hmin + (double)rand() * width / (double)RAND_MAX;
             auto z = vmin + (double)rand() * height/ (double)RAND_MAX;
 
+
             this->current_target.lock();
-            current_target.active.store(true);
-            current_target.blocked.store(true);
+                current_target.active.store(true);
+                current_target.blocked.store(true);
             current_target.p = QPointF(x,z);
 
             this->current_target.unlock();
@@ -273,8 +279,14 @@ class Navigation
 
         void newTarget(QPointF newT)
         {
+
             qDebug()<<"Navigation - "<< __FUNCTION__
             <<"New Target arrived "<< newT;
+
+            if(stopMovingRobot){
+                stopRobot();
+                moveRobot = false;
+            }
 
             this->current_target.lock();
                 current_target.active.store(true);
@@ -438,8 +450,6 @@ class Navigation
         for (auto &&poly_per : polylines_personal)
             grid.modifyCostInGrid(poly_per, 6.0);
 
-        qDebug()<<"drawing grid";
-
         grid.draw(viewer);
 
     }
@@ -597,8 +607,6 @@ class Navigation
 
     void computeForces(const std::vector<QPointF> &path, const RoboCompLaser::TLaserData &lData)
     {
-        qDebug()<<"Navigation - "<< __FUNCTION__ << KI << KE;
-
         if (path.size() < 3) {
             return;
         }

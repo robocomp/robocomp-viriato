@@ -10,30 +10,38 @@ void SocialRules::initialize(AGMModel::SPtr worldModel_, SocialNavigationGaussia
      socialnavigationgaussian_proxy = socialnavigationgaussian_proxy_;
      worldModel = worldModel_;
 
+     auto timeValue = currtime_slider->value();
+
+        auto hours = timeValue / 60;
+        auto minutes = timeValue % 60;
+
+    QTime currentTime = QTime(hours,minutes);
+    currentTime_timeEdit->setTime(currentTime);
+
+
 	checkObjectAffordance(false);
 }
 
 
 SocialRules::retPolylines SocialRules::update(AGMModel::SPtr worldModel_)
 {
+
+    QTime reloj = QTime::currentTime();
+
     qDebug()<<"Social Rules - "<< __FUNCTION__;
 
 	worldModel = worldModel_;
 	updatePeopleInModel();
 
 	bool personMoved = peopleChanged();
-    bool interactionsChanged = checkInteractions();
 
-	if(personMoved or interactionsChanged or costChanged)
-	{
-        checkObjectAffordance(false);
-        ApplySocialRules();
+	checkInteractions();
+    checkObjectAffordance(false);
+    ApplySocialRules();
 
-        costChanged = false;
-        return std::make_tuple(true, totalpersons, intimate_seq, personal_seq, social_seq, object_seq, object_lowProbVisited, object_mediumProbVisited, object_highProbVisited, objectblock_seq);
-	}
-
-	else return std::make_tuple(false,totalpersons, intimate_seq, personal_seq, social_seq, object_seq, object_lowProbVisited, object_mediumProbVisited, object_highProbVisited, objectblock_seq);
+    costChanged = false;
+    qDebug()<<"Social Rules - "<< __FUNCTION__<< reloj.elapsed();
+    return std::make_tuple(personMoved,totalpersons, intimate_seq, personal_seq, social_seq, object_seq, object_lowProbVisited, object_mediumProbVisited, object_highProbVisited, objectblock_seq);
 }
 
 void SocialRules::updatePeopleInModel()
@@ -99,7 +107,7 @@ bool SocialRules::peopleChanged()
 
 }
 
-bool SocialRules::checkInteractions()
+void SocialRules::checkInteractions()
 {
     qDebug()<<"Social Rules - "<< __FUNCTION__;
 
@@ -131,21 +139,14 @@ bool SocialRules::checkInteractions()
 
 	}
 
-    for (auto id_vect: interactingId) {
+    for (auto id_vect: interactingId)
+    {
         SNGPersonSeq persons;
         for (auto id : id_vect) {
             persons.push_back(mapIdPersons[id]);
         }
 
         interactingpersons.push_back(persons);
-    }
-
-    if (prevInteractingId == interactingId)
-        return false;
-    else
-    {
-        prevInteractingId = interactingId;
-        return true;
     }
 }
 
@@ -530,17 +531,14 @@ void SocialRules::affordanceSliderChanged(int value)
     costChanged = true;
 }
 
-void SocialRules::affordanceTimeChanged(int step)
+void SocialRules::affordanceTimeSliderChanged(int step)
 {
 
 
     auto hours = step / 60;
     auto minutes = step % 60;
-    qDebug()<<__FUNCTION__ << step << " -- " << hours << ":" << minutes;
 
     QTime currentTime = QTime(hours,minutes);
-
-
     currentTime_timeEdit->setTime(currentTime);
 
     for (auto [key,obj] : mapIdObjects)
@@ -577,14 +575,24 @@ void SocialRules::affordanceTimeChanged(int step)
             }
         }
     }
-
-
-
-
-
-
-
 }
+
+void SocialRules::affordanceTimeEditChanged(const QTime &time)
+{
+    auto hours = time.hour();
+    auto hoursInMinutes = hours*60;
+    auto minutes = time.minute();
+
+    auto totalMinutes = hoursInMinutes + minutes;
+
+    currtime_slider->setValue(totalMinutes);
+}
+
+
+
+
+
+
 
 void SocialRules::programTherapy()
 {

@@ -40,7 +40,8 @@ public:
 	QCheckBox* accompany_checkbox;
 	QCheckBox* passonright_checkbox;
 
-    QSlider *object_slider;
+    QSlider *currtime_slider;
+
     QListWidget *therapies_list;
     QTimeEdit *startTherapy_timeEdit;
     QTimeEdit *endTherapy_timeEdit;
@@ -119,7 +120,7 @@ public:
 
 	void updatePeopleInModel();
 	bool peopleChanged();
-	bool checkInteractions();
+	void checkInteractions();
 	vector <vector<int32_t>> groupInteractingPeople(int32_t id, int32_t pairId,vector<vector<int32_t>> &interactingId);
 
 	SNGPolyline affordanceTrapezoidal(ObjectType obj);
@@ -145,7 +146,8 @@ public slots:
 	void checkObjectAffordance(bool d = true);
 
 	void affordanceSliderChanged(int value);
-	void affordanceTimeChanged(int step);
+	void affordanceTimeSliderChanged(int step);
+	void affordanceTimeEditChanged(const QTime &time);
 	void programTherapy();
 	void removeTherapy();
 

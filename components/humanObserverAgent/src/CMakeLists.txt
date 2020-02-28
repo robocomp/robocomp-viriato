@@ -42,7 +42,6 @@ ROBOCOMP_INITIALIZE( $ENV{ROBOCOMP}/ )
 ROBOCOMP_WRAP_ICE( CommonBehavior Planning AGMCommonBehavior AGMExecutive AGMExecutiveTopic AGMWorldModel AGMExecutive AGMExecutiveTopic AGMWorldModel Planning AGMCommonBehavior )
 SET (EXECUTABLE_OUTPUT_PATH ${RC_COMPONENT_DEVEL_PATH}/bin)
 
-QT_WRAP_UI( UI_HEADERS mainUI.ui )
 
 # Specify construction and link process
 SET(LIBS ${LIBS} -lagm)

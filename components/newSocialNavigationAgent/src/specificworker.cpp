@@ -68,24 +68,29 @@ void SpecificWorker::initialize(int period)
     connect(accompany_checkbox, SIGNAL (clicked()),&socialrules,SLOT(checkstate()));
     connect(passonright_checkbox, SIGNAL (clicked()),&socialrules,SLOT(checkstate()));
 
-    connect(autoMov_checkbox, SIGNAL(clicked()),this, SLOT(checkRobotMovState()));
+    connect(autoMov_checkbox, SIGNAL(clicked()),this, SLOT(checkRobotAutoMovState()));
     connect(robotMov_checkbox, SIGNAL(clicked()),this, SLOT(moveRobot()));
 
     connect(object_slider, SIGNAL (valueChanged(int)),&socialrules,SLOT(affordanceSliderChanged(int)));
+    connect(currentTime_timeEdit, SIGNAL (timeChanged(const QTime)),&socialrules,SLOT(affordanceTimeEditChanged(const QTime)));
+
 
 	connect(setTherapy_button, SIGNAL (clicked()),&socialrules,SLOT(programTherapy()));
 	connect(removeT_button, SIGNAL (clicked()),&socialrules,SLOT(removeTherapy()));
-	connect(currtime_slider, SIGNAL (valueChanged(int)),&socialrules,SLOT(affordanceTimeChanged(int)));
+	connect(currtime_slider, SIGNAL (valueChanged(int)),&socialrules,SLOT(affordanceTimeSliderChanged(int)));
 
     connect(ki_slider, SIGNAL (valueChanged(int)),this,SLOT(forcesSliderChanged(int)));
     connect(ke_slider, SIGNAL (valueChanged(int)),this,SLOT(forcesSliderChanged(int)));
+
+    forcesSliderChanged();
+    moveRobot();
 
     socialrules.idselect_combobox = idselect_combobox;
     socialrules.follow_checkbox = follow_checkbox;
     socialrules.accompany_checkbox = accompany_checkbox;
     socialrules.passonright_checkbox = passonright_checkbox;
 
-    socialrules.object_slider = object_slider;
+    socialrules.currtime_slider = currtime_slider;
     socialrules.idobject_combobox = idobject_combobox;
     socialrules.therapies_list = therapies_list;
     socialrules.startTherapy_timeEdit = startTherapy_timeEdit;
@@ -142,7 +147,7 @@ void SpecificWorker::compute()
         auto [personMoved, totalpersons, intimate_seq, personal_seq, social_seq, object_seq,
                 object_lowProbVisited, object_mediumProbVisited, object_highProbVisited, objectblock_seq] = socialrules.update(worldModel);
 
-		if (personMoved) //se comprueba si alguna de las personas ha cambiado de posicion
+//		if (personMoved) //se comprueba si alguna de las personas ha cambiado de posicion
 			navigation.updatePolylines(totalpersons, intimate_seq, personal_seq, social_seq, object_seq,
 			        object_lowProbVisited, object_mediumProbVisited, object_highProbVisited, objectblock_seq);
 
@@ -151,6 +156,7 @@ void SpecificWorker::compute()
 
         structuralChange = false;
 		edgesUpdated = false;
+
 
     }
 
@@ -185,34 +191,50 @@ RoboCompLaser::TLaserData  SpecificWorker::updateLaser()
     return laserData;
 }
 
-void  SpecificWorker::checkRobotMovState()
+void  SpecificWorker::moveRobot()
+{
+    qDebug()<<__FUNCTION__;
+
+    if(robotMov_checkbox->checkState() == Qt::CheckState(2))
+    {
+        navigation.moveRobot = true;
+		navigation.stopMovingRobot = false;
+    }
+
+    else
+    {
+        if(navigation.current_target.active.load())
+        {
+			navigation.stopMovingRobot = true;
+        }
+        else
+		{
+			navigation.moveRobot = false;
+			navigation.stopMovingRobot = false;
+		}
+
+    }
+
+}
+
+
+void  SpecificWorker::checkRobotAutoMovState()
 {
 	qDebug()<<__FUNCTION__;
 
-	if(robotMov_checkbox->checkState() == Qt::CheckState(2))
+	if(autoMov_checkbox->checkState() == Qt::CheckState(2))
 	{
 		navigation.robotAutoMov = true;
 		navigation.newRandomTarget();
 	}
 
 	else
-		navigation.robotAutoMov = false;
+    {
+        navigation.robotAutoMov = false;
+    }
 
 }
 
-void  SpecificWorker::moveRobot()
-{
-	qDebug()<<__FUNCTION__;
-
-	if(robotMov_checkbox->checkState() == Qt::CheckState(2))
-	{
-		navigation.moveRobot = true;
-	}
-
-	else
-		navigation.moveRobot = false;
-
-}
 
 void SpecificWorker::forcesSliderChanged(int value)
 {
