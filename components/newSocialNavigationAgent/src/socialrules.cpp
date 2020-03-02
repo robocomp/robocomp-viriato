@@ -763,17 +763,19 @@ void SocialRules::checkRobotmov()
 }
 
 void SocialRules::saveData()
-{	
-	qDebug("Saving in robotpose.txt the robot's pose");
-	ofstream file("robotpose.txt", ofstream::out);
+{
+
+
+	qDebug()<< "Saving in robotpose.txt the robot's pose";
+	ofstream file("results/robotpose.txt", ofstream::out);
 	for (auto p:poserobot)
 	{
 		file<< p.x << " " <<p.z<< endl;
 	}
 	file.close();
 
-	qDebug("Saving in personpose.txt the human's poses");
-	ofstream file2("personpose.txt", ofstream::out);
+    qDebug()<< "Saving in personpose.txt the human's poses";
+	ofstream file2("results/personpose.txt", ofstream::out);
 	for (auto person:totalpersons)
 	{
 		file2<< person.x << " " <<person.z<<" "<<person.angle<< endl;
@@ -782,8 +784,8 @@ void SocialRules::saveData()
 	poserobot.clear();
 
 
-	qDebug("Saving intimate polyline");
-	ofstream file3("polyline_intimate.txt", ofstream::out);
+    qDebug()<< "Saving intimate polyline";
+	ofstream file3("results/polyline_intimate.txt", ofstream::out);
 	for (auto s:intimate_seq)
 	{
 		for (auto p: s)
@@ -792,9 +794,9 @@ void SocialRules::saveData()
 	}
 
 	file3.close();
-	
-	qDebug("Saving personal polyline");
-	ofstream file4("polyline_personal.txt", ofstream::out);
+
+    qDebug()<< "Saving personal polyline";
+	ofstream file4("results/polyline_personal.txt", ofstream::out);
 	for (auto s:personal_seq)
 	{
 		for (auto p: s)
@@ -802,9 +804,9 @@ void SocialRules::saveData()
         file4 << " "<<endl ;
 	}
 	file4.close();
-	
-	qDebug("Saving social polyline");
-	ofstream file5("polyline_social.txt", ofstream::out);
+
+    qDebug()<< "Saving social polyline";
+	ofstream file5("results/polyline_social.txt", ofstream::out);
 	for (auto s:social_seq)
 	{
 		for (auto p: s)
@@ -814,10 +816,60 @@ void SocialRules::saveData()
 	file5.close();
 
 	qDebug()<<"Saving in dist.txt the total distance"<<totaldist;
-	ofstream file6("dist.txt", ofstream::out);
+	ofstream file6("results/dist.txt", ofstream::out);
 	file6 <<" Distance " << totaldist << endl;
 	totaldist = 0;
 	file6.close();
+
+
+    qDebug()<< "-- Saving Affordances --";
+    ofstream file7("results/object_normal.txt", ofstream::out);
+    for (auto s:object_seq)
+    {
+        for (auto p: s)
+            file7<< p.x << " " <<p.z<<" "<< endl;
+        file7<<" "<<endl;
+    }
+
+    file7.close();
+
+    ofstream file8("results/object_lowP.txt", ofstream::out);
+    for (auto s:object_lowProbVisited)
+    {
+        for (auto p: s)
+            file8<< p.x << " " <<p.z<<" "<< endl;
+        file8<<" "<<endl;
+    }
+    file8.close();
+
+    ofstream file9("results/object_medP.txt", ofstream::out);
+    for (auto s:object_mediumProbVisited)
+    {
+        for (auto p: s)
+            file9<< p.x << " " <<p.z<<" "<< endl;
+        file9<<" "<<endl;
+    }
+    file9.close();
+
+    ofstream file10("results/object_highP.txt", ofstream::out);
+    for (auto s:object_highProbVisited)
+    {
+        for (auto p: s)
+            file10<< p.x << " " <<p.z<<" "<< endl;
+        file10<<" "<<endl;
+    }
+    file10.close();
+
+    ofstream file11 ("results/objects.txt", ofstream::out);
+    for (auto [k,o] : mapIdObjects)
+    {
+            file11 << o.x << " " <<o.z<<" "<<o.rot<< endl;
+
+    }
+    file11.close();
+
+
+
 }
 
 

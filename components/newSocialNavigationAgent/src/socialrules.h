@@ -27,6 +27,8 @@
 #include <QtWidgets/QTimeEdit>
 #include <QtWidgets/QListWidget>
 
+
+
 class SocialRules :public QObject
 {
 Q_OBJECT
