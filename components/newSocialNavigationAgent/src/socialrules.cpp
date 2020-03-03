@@ -863,7 +863,7 @@ void SocialRules::saveData()
     ofstream file11 ("results/objects.txt", ofstream::out);
     for (auto [k,o] : mapIdObjects)
     {
-            file11 << o.x << " " <<o.z<<" "<<o.rot<< endl;
+            file11 << o.shape.toStdString() <<" " <<o.x << " " <<o.z<<" "<<o.rot<< " " <<o.width <<" " << o.depth << endl;
 
     }
     file11.close();

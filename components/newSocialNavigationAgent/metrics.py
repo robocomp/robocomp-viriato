@@ -54,11 +54,27 @@ def readData(directory, id):
         persons += [[float(row[0]), float(row[1])] for row in spamreader]
     persons = np.array(persons)
 
-    objects = []
+    objects_centers = []
     with open(objectsFiles, 'r') as csvfile:
         spamreader2 = csv.reader(csvfile, delimiter=' ', quotechar='|')
-        objects += [[float(row[0]), float(row[1])] for row in spamreader2]
-    objects = np.array(objects)
+        objects_centers += [[float(row[1]), float(row[2])] for row in spamreader2]
+    objects_centers = np.array(objects_centers)
+
+    objects_shapes = []
+
+    with open(objectsFiles, 'r') as csvfile:
+        objFile = csv.reader(csvfile, delimiter=' ', quotechar='|')
+        for row in objFile:
+            obj_shape = row[0]
+            obj_x = float(row[1])
+            obj_z = float(row[2])
+            obj_width = float(row[4])
+            obj_depth = float(row[5])
+            objects_shapes.append(np.array(get_object_shape(obj_shape, obj_x, obj_z, obj_width, obj_depth)))
+
+    for sh in objects_shapes:
+        for p in sh:
+            plt.plot(p[0], p[1], ".r")
 
     polylinesI = readPolylinesFromFiles(polylineIFiles)
     polylinesP = readPolylinesFromFiles(polylinePFiles)
@@ -73,11 +89,32 @@ def readData(directory, id):
         spamreader3 = csv.reader(csvfile, delimiter=' ', quotechar='|')
         experiment = np.array([[float(row[0]), float(row[1])] for row in spamreader3])
 
-    return persons, objects, polylinesI, polylinesP, polylinesS, polylinesAffNormal, polylinesAffLow, \
+    return persons, objects_centers, objects_shapes, polylinesI, polylinesP, polylinesS, polylinesAffNormal, polylinesAffLow, \
            polylinesAffMed, polylinesAffHigh, experiment
 
 
-def get_avgDist_minDist_maxDist_CP_single(persons, objects, traj, polylinesI, polylinesP, polylinesS,
+def get_object_shape(shape, x, z, width, depth):
+    shape_polygon = []
+
+    if shape == "rectangle" or shape == "trapezoid":
+        shape_polygon.append([x - width / 2, z - depth / 2])
+        shape_polygon.append([x + width / 2, z - depth / 2])
+        shape_polygon.append([x + width / 2, z + depth / 2])
+        shape_polygon.append([x - width / 2, z + depth / 2])
+
+    if shape == "circle":
+        points = 40
+        angle_shift = math.pi * 2 / points
+        phi = 0
+
+        for i in range(points):
+            phi += angle_shift;
+            shape_polygon.append([x + ((width / 2) * math.sin(phi)), z + (depth / 2) * math.cos(phi)])
+
+    return shape_polygon
+
+
+def get_avgDist_minDist_maxDist_CP_single(persons, objects, objects_shapes, traj, polylinesI, polylinesP, polylinesS,
                                           polylinesAffNormal,
                                           polylinesAffLow, polylinesAffMed, polylinesAffHigh):
     dist_cperson = np.array([min([np.linalg.norm(x - person) for person in persons]) for x in traj])
@@ -89,13 +126,21 @@ def get_avgDist_minDist_maxDist_CP_single(persons, objects, traj, polylinesI, po
     maxDist_cperson = np.max(dist_cperson)
 
     # To objects
-    dist_cobject = np.array([min([np.linalg.norm(x - object) for object in objects]) for x in traj])
-    avgDist_cobject = np.average(dist_cobject)
+    dist_center_object = np.array([min([np.linalg.norm(x - object) for object in objects]) for x in traj])
 
-    dist_cobject2 = np.array([min([np.linalg.norm(x - object) for x in traj]) for object in objects])
+    avgDist_center_object = np.average(dist_center_object)
+    minDist_center_object = np.min(dist_center_object)
+    maxDist_center_object = np.max(dist_center_object)
 
-    minDist_cobject = np.min(dist_cobject)
-    maxDist_cobject = np.max(dist_cobject)
+    dist_shape_object_points = np.array(
+        [[min(np.linalg.norm(x - point) for shape in objects_shapes for point in shape)] for x in traj])
+
+    dist_shape_objects2 = np.array(
+        [min([min([np.linalg.norm(x - point) for x in traj]) for point in shape]) for shape in objects_shapes])
+
+    minDist_shape_obj = np.min(dist_shape_object_points)
+    maxDist_shape_obj = np.max(dist_shape_object_points)
+    avgDist_shape_obj = np.average(dist_shape_object_points)
 
     social_cperson = {'intimate': 0., 'personal': 0., 'social': 0., 'pub': 0.}
     social_affordance = {'normal': 0., 'low': 0., 'medium': 0., 'high': 0., 'free': 0.}
@@ -171,7 +216,7 @@ def get_avgDist_minDist_maxDist_CP_single(persons, objects, traj, polylinesI, po
     social_affordance['high'] /= len(traj) / 100.
     social_affordance['free'] /= len(traj) / 100.
 
-    return avgDist_cperson, minDist_cperson, maxDist_cperson, avgDist_cobject, minDist_cobject, maxDist_cobject, social_cperson, social_affordance, dist_cperson2
+    return avgDist_cperson, minDist_cperson, maxDist_cperson, avgDist_shape_obj, minDist_shape_obj, maxDist_shape_obj, social_cperson, social_affordance, dist_cperson2, dist_shape_objects2
 
 
 def get_CHC(ps):
@@ -225,22 +270,19 @@ def showExperimentsInDirectory(directory):
 
     num_experiments = 4
     for i in range(1, num_experiments + 1):
-
-        persons, objects, polylinesI, polylinesP, polylinesS, polylinesAffNormal, polylinesAffLow, \
+        print "Experiment ", i
+        persons, objects, objects_shapes, polylinesI, polylinesP, polylinesS, polylinesAffNormal, polylinesAffLow, \
         polylinesAffMed, polylinesAffHigh, exp = readData(directory, i)
 
         ttr = 0.0445 * (len(exp))  # a ojo para que cuadre con el tiempo del cronometro
 
         ##llamar a esto tantas veces como recorridos haya
-        avgDist, minDist, maxDist, avgDistObj, minDistObj, \
-        maxDistObj, dists_persons, dist_objects, minDists2 = get_avgDist_minDist_maxDist_CP_single(persons, objects,
-                                                                                                   exp, polylinesI,
-                                                                                                   polylinesP,
-                                                                                                   polylinesS,
-                                                                                                   polylinesAffNormal,
-                                                                                                   polylinesAffLow,
-                                                                                                   polylinesAffMed,
-                                                                                                   polylinesAffHigh)
+        avgDist, minDist, maxDist, avgDistObj, minDistObj, maxDistObj, dists_persons, dist_objects, minDists2, minDistObj2 = \
+            get_avgDist_minDist_maxDist_CP_single(
+                persons, objects, objects_shapes, exp, polylinesI, polylinesP,
+                polylinesS, polylinesAffNormal, polylinesAffLow, polylinesAffMed,
+                polylinesAffHigh)
+
         plt.axis('equal')
         for p in polylinesI:
             plt.plot(p.T[0], p.T[1], '-', color="#FF2D00")
@@ -269,6 +311,11 @@ def showExperimentsInDirectory(directory):
         except KeyError:
             meanValues['minDist2'] = copy.deepcopy(minDists2)
 
+        try:
+            meanValues['minDistObj2'] += minDistObj2
+        except KeyError:
+            meanValues['minDistObj2'] = copy.deepcopy(minDistObj2)
+
         meanValues['maxDist'] += maxDist
 
         meanValues['avgDistObj'] += avgDistObj
@@ -296,11 +343,17 @@ def showExperimentsInDirectory(directory):
             allValues['minDist2'] = np.vstack((allValues['minDist2'], minDists2))
         except KeyError:
             allValues['minDist2'] = minDists2
+
         allValues['maxDist'].append(maxDist)
 
         allValues['avgDistObj'].append(avgDistObj)
         allValues['minDistObj'].append(minDistObj)
         allValues['maxDistObj'].append(maxDistObj)
+
+        try:
+            allValues['minDistObj2'] = np.vstack((allValues['minDistObj2'], minDistObj2))
+        except KeyError:
+            allValues['minDistObj2'] = minDistObj2
 
         allValues['CHC'].append(chc)
         allValues['pathLength'].append(plength)
@@ -329,6 +382,9 @@ def showExperimentsInDirectory(directory):
     for i in meanValues:
         if i == 'minDist2':
             print (i, meanValues[i], np.std(np.array(allValues[i]), axis=0))
+        elif i == 'minDistObj2':
+            print (i, meanValues[i], np.std(np.array(allValues[i]), axis=0))
+
         else:
             print (i, meanValues[i], np.std(np.array(allValues[i])))
 
