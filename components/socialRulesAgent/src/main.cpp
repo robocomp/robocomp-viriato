@@ -136,6 +136,7 @@ int ::socialRulesAgent::run(int argc, char* argv[])
 
 	int status=EXIT_SUCCESS;
 
+	SocialRulesPolylinesPrx socialrulespolylines_pubproxy;
 	AGMExecutivePrx agmexecutive_proxy;
 	SocialNavigationGaussianPrx socialnavigationgaussian_proxy;
 
@@ -186,6 +187,31 @@ int ::socialRulesAgent::run(int argc, char* argv[])
 		cout << "[" << PROGRAM_NAME << "]: Exception: STORM not running: " << ex << endl;
 		return EXIT_FAILURE;
 	}
+	IceStorm::TopicPrx socialrulespolylines_topic;
+
+	while (!socialrulespolylines_topic)
+	{
+		try
+		{
+			socialrulespolylines_topic = topicManager->retrieve("SocialRulesPolylines");
+		}
+		catch (const IceStorm::NoSuchTopic&)
+		{
+			cout << "[" << PROGRAM_NAME << "]: ERROR retrieving SocialRulesPolylines topic. \n";
+			try
+			{
+				socialrulespolylines_topic = topicManager->create("SocialRulesPolylines");
+			}
+			catch (const IceStorm::TopicExists&){
+				// Another client created the topic.
+				cout << "[" << PROGRAM_NAME << "]: ERROR publishing the SocialRulesPolylines topic. It's possible that other component have created\n";
+			}
+		}
+	}
+
+	Ice::ObjectPrx socialrulespolylines_pub = socialrulespolylines_topic->getPublisher()->ice_oneway();
+	socialrulespolylines_pubproxy = SocialRulesPolylinesPrx::uncheckedCast(socialrulespolylines_pub);
+	mprx["SocialRulesPolylinesPub"] = (::IceProxy::Ice::Object*)(&socialrulespolylines_pubproxy);
 
 	SpecificWorker *worker = new SpecificWorker(mprx);
 	//Monitor thread

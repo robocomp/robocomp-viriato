@@ -1,0 +1,23 @@
+import "SocialNavigationGaussian.idsl";
+
+module RoboCompSocialRulesPolylines
+{
+
+	struct SRObject
+	{
+		float x;
+		float z;
+		bool interacting;
+		RoboCompSocialNavigationGaussian::SNGPolyline affordance;
+		float cost;
+	};
+
+	sequence <SRObject> SRObjectSeq;
+
+	interface SocialRulesPolylines
+	{
+		void objectsChanged(SRObjectSeq objectsAffordances);
+		void personalSpacesChanged(RoboCompSocialNavigationGaussian::SNGPolylineSeq intimateSpaces, RoboCompSocialNavigationGaussian::SNGPolylineSeq personalSpaces, RoboCompSocialNavigationGaussian::SNGPolylineSeq socialSpaces);		
+	};
+
+};

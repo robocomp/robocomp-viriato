@@ -51,6 +51,7 @@ QObject()
 //------------------
 	agmexecutive_proxy = (*(AGMExecutivePrx*)mprx["AGMExecutiveProxy"]);
 	socialnavigationgaussian_proxy = (*(SocialNavigationGaussianPrx*)mprx["SocialNavigationGaussianProxy"]);
+	socialrulespolylines_pubproxy = (*(SocialRulesPolylinesPrx*)mprx["SocialRulesPolylinesPub"]);
 
 	mutex = new QMutex(QMutex::Recursive);
 

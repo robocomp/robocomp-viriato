@@ -35,6 +35,7 @@
 
 #include <Planning.h>
 #include <SocialNavigationGaussian.h>
+#include <SocialRulesPolylines.h>
 #include <AGMCommonBehavior.h>
 #include <AGMExecutive.h>
 #include <AGMExecutiveTopic.h>
@@ -49,6 +50,7 @@
 using namespace std;
 using namespace RoboCompPlanning;
 using namespace RoboCompSocialNavigationGaussian;
+using namespace RoboCompSocialRulesPolylines;
 using namespace RoboCompAGMCommonBehavior;
 using namespace RoboCompAGMExecutive;
 using namespace RoboCompAGMExecutiveTopic;
@@ -86,6 +88,7 @@ public:
 
 	AGMExecutivePrx agmexecutive_proxy;
 	SocialNavigationGaussianPrx socialnavigationgaussian_proxy;
+	SocialRulesPolylinesPrx socialrulespolylines_pubproxy;
 
 	virtual bool AGMCommonBehavior_activateAgent(const ParameterMap &prs) = 0;
 	virtual bool AGMCommonBehavior_deactivateAgent() = 0;

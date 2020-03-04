@@ -35,6 +35,7 @@ class SpecificWorker : public GenericWorker
 {
 Q_OBJECT
 public:
+
 	SpecificWorker(MapPrx& mprx);
 	~SpecificWorker();
 	bool setParams(RoboCompCommonBehavior::ParameterList params);
@@ -62,16 +63,83 @@ public slots:
 	void sm_compute();
 	void sm_initialize();
 	void sm_finalize();
-
 //--------------------
+
+    void affordanceSliderChanged(int value);
+    void affordanceTimeSliderChanged(int step);
+    void affordanceTimeEditChanged(const QTime &time);
+    void programTherapy();
+    void removeTherapy();
+	void drawPersonalSpace();
+	void recordData();
+
+
 private:
-	std::shared_ptr<InnerModel> innerModel;
+
+    SNGPersonSeq totalPersonsSeq;
+    std::map<int32_t, SNGPerson> mapIdPersons;
+    vector <SNGPersonSeq> interactingPersonsVec; //vector de grupos que interactuan entre ellos
+
+    bool worldModelChanged = false;
+
+    struct ObjectType
+    {
+        int id;
+        float x;
+        float z;
+        float rot;
+
+        float cost = 1.5;
+        float prevCost = 1.5;
+
+        SNGPolyline affordance;
+        bool interacting = false;
+
+        QString shape;
+        float width;
+        float depth;
+        float height;
+        float inter_space;
+        float inter_angle;
+
+
+        bool therapyProgrammed = false;
+        QTime startT;
+        QTime endT;
+
+    };
+
+    std::map<QString, ObjectType> mapIdObjects;
+    bool costChanged = false;
+
+    SNGPolylineSeq intimateSpace_seq, personalSpace_seq, socialSpace_seq;
+    SNGPolylineSeq objectblock_seq, object_normalProbVisited, object_lowProbVisited, object_mediumProbVisited, object_highProbVisited;
+
+
+    //------------------------------------------//
+    std::shared_ptr<InnerModel> innerModel;
 	std::string action;
 	ParameterMap params;
 	AGMModel::SPtr worldModel;
+
 	bool active;
 	bool setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated);
 	void sendModificationProposal(AGMModel::SPtr &worldModel, AGMModel::SPtr &newModel);
+
+    void updatePeopleInModel();
+    void checkInteractions();
+    vector <vector<int32_t>> groupInteractingPeople(int32_t id, int32_t pairId,vector<vector<int32_t>> &interactingId);
+    void checkObjectAffordance();
+
+    SNGPolyline affordanceTrapezoidal(ObjectType obj);
+    SNGPolyline affordanceRectangular(ObjectType obj);
+    SNGPolyline affordanceCircular(ObjectType obj);
+
+	void applySocialRules();
+
+	void publishPersonalSpaces();
+	void publishAffordances();
+
 
 };
 
