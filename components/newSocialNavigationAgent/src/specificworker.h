@@ -70,6 +70,8 @@ public:
     void AGMExecutiveTopic_selfEdgeAdded(const int nodeid, const string &edgeType, const RoboCompAGMWorldModel::StringDictionary &attributes);
     void AGMExecutiveTopic_selfEdgeDeleted(const int nodeid, const string &edgeType);
 	void RCISMousePicker_setPick(const Pick &myPick);
+	void SocialRulesData_objectsChanged(const SRObjectSeq &objectsAffordances);
+	void SocialRulesData_personalSpacesChanged(const RoboCompSocialNavigationGaussian::SNGPolylineSeq &intimateSpaces, const RoboCompSocialNavigationGaussian::SNGPolylineSeq &personalSpaces, const RoboCompSocialNavigationGaussian::SNGPolylineSeq &socialSpaces);
 
 	using InnerPtr = std::shared_ptr<InnerModel>;
 	#ifdef USE_QTGUI

@@ -722,7 +722,7 @@ void SpecificWorker::publishPersonalSpaces()
 {
     try
     {
-        socialrulespolylines_pubproxy->personalSpacesChanged(intimateSpace_seq,personalSpace_seq,socialSpace_seq);
+        socialrulesdata_pubproxy->personalSpacesChanged(intimateSpace_seq,personalSpace_seq,socialSpace_seq);
     }
     catch(const Ice::Exception& e)
     {
@@ -749,7 +749,7 @@ void SpecificWorker::publishAffordances()
 
     try
     {
-        socialrulespolylines_pubproxy->objectsChanged(objectsToSend);
+        socialrulesdata_pubproxy->objectsChanged(objectsToSend);
     }
     catch(const Ice::Exception& e)
     {

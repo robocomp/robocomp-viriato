@@ -3,13 +3,13 @@
 
 #define PI M_PI
 
-void SocialBehaviour::initialize(AGMModel::SPtr worldModel_, SocialNavigationGaussianPrx socialnavigationgaussian_proxy_)
+//void SocialBehaviour::initialize(AGMModel::SPtr worldModel_, SocialNavigationGaussianPrx socialnavigationgaussian_proxy_)
 
-//void SocialBehaviour::initialize(AGMModel::SPtr worldModel_)
+void SocialBehaviour::initialize(AGMModel::SPtr worldModel_)
 {
     qDebug()<<"Social Rules - "<< __FUNCTION__;
 
-     socialnavigationgaussian_proxy = socialnavigationgaussian_proxy_;
+//     socialnavigationgaussian_proxy = socialnavigationgaussian_proxy_;
      worldModel = worldModel_;
 
      auto timeValue = currtime_slider->value();
@@ -170,21 +170,21 @@ SNGPolylineSeq SocialBehaviour::ApplySocialRules()
 			{
 				if((per.size() == 1) and (porpulsed))
 				{
-					seq = socialnavigationgaussian_proxy->  getPassOnRight(per, 0.1, false);
+					// seq = socialnavigationgaussian_proxy->  getPassOnRight(per, 0.1, false);
 					for (auto s:seq) {social_seq.push_back(s);}
 //
-					seq = socialnavigationgaussian_proxy-> getPassOnRight(per, 0.4, false);
+					// seq = socialnavigationgaussian_proxy-> getPassOnRight(per, 0.4, false);
 					for (auto s:seq) {personal_seq.push_back(s);}
-//
-					seq = socialnavigationgaussian_proxy-> getPassOnRight(per, 0.8, false);
+
+					// seq = socialnavigationgaussian_proxy-> getPassOnRight(per, 0.8, false);
 					for (auto s:seq) {intimate_seq.push_back(s);}
 
 				}
 				else
 				{
                     SNGPolylineSeq initmate_result, personal_result, social_result;
-                    socialnavigationgaussian_proxy-> getAllPersonalSpaces(per, false, initmate_result, personal_result, social_result);
-//
+//                    socialnavigationgaussian_proxy-> getAllPersonalSpaces(per, false, initmate_result, personal_result, social_result);
+
                     for (auto s:initmate_result) {intimate_seq.push_back(s);}
                     for (auto s:personal_result) {personal_seq.push_back(s);}
                     for (auto s:social_result) {social_seq.push_back(s);}
@@ -281,7 +281,7 @@ void SocialBehaviour::drawGauss()
 		for (auto per: interactingpersons)
 		{
             SNGPolylineSeq initmate_result, personal_result, social_result;
-            socialnavigationgaussian_proxy-> getAllPersonalSpaces(per, true, initmate_result, personal_result, social_result);
+//            socialnavigationgaussian_proxy-> getAllPersonalSpaces(per, true, initmate_result, personal_result, social_result);
 		}
 		
 	}
@@ -295,7 +295,7 @@ SNGPolylineSeq SocialBehaviour::PassOnRight(bool draw)
 //// qDebug()<<__FUNCTION__;
 	if (!movperson.empty())
 	{
-		seq = socialnavigationgaussian_proxy-> getPassOnRight(movperson, h, draw);
+		// seq = socialnavigationgaussian_proxy-> getPassOnRight(movperson, h, draw);
 	}
 	
 	return seq;	

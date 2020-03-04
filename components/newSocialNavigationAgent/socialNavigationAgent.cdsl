@@ -1,4 +1,4 @@
-import "SocialNavigationGaussian.idsl";
+import "SocialRulesData.idsl";
 import "DifferentialRobot.idsl";
 import "OmniRobot.idsl";
 import "Laser.idsl";
@@ -8,12 +8,13 @@ Component socialNavigationAgent
 {
     Communications
     {
-		requires SocialNavigationGaussian, OmniRobot, Laser;
-		subscribesTo RCISMousePicker;
+		requires OmniRobot, Laser;
+		subscribesTo RCISMousePicker, SocialRulesData;
     };
     language Cpp;
     gui Qt(QWidget);
     options agmagent;
 	statemachine "statemachine.smdsl";
+
 };
 

@@ -1,12 +1,12 @@
 import "SocialNavigationGaussian.idsl";
-import "SocialRulesPolylines.idsl";
+import "SocialRulesData.idsl";
 
 Component socialRulesAgent
 {
 	Communications
 	{
         	requires SocialNavigationGaussian;
-		publishes SocialRulesPolylines;
+		publishes SocialRulesData;
 	};
 	
 	language Cpp;

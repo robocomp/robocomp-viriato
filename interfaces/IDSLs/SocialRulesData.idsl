@@ -1,6 +1,6 @@
 import "SocialNavigationGaussian.idsl";
 
-module RoboCompSocialRulesPolylines
+module RoboCompSocialRulesData
 {
 
 	struct SRObject
@@ -14,7 +14,7 @@ module RoboCompSocialRulesPolylines
 
 	sequence <SRObject> SRObjectSeq;
 
-	interface SocialRulesPolylines
+	interface SocialRulesData
 	{
 		void objectsChanged(SRObjectSeq objectsAffordances);
 		void personalSpacesChanged(RoboCompSocialNavigationGaussian::SNGPolylineSeq intimateSpaces, RoboCompSocialNavigationGaussian::SNGPolylineSeq personalSpaces, RoboCompSocialNavigationGaussian::SNGPolylineSeq socialSpaces);		

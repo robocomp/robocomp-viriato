@@ -116,7 +116,7 @@ void SpecificWorker::initialize(int period)
     }
 
     navigation.initialize(innerModel, viewer, confParams, omnirobot_proxy);
-	socialbehaviour.initialize(worldModel, socialnavigationgaussian_proxy);
+	socialbehaviour.initialize(worldModel);
 
     qDebug()<<"Classes initialized correctly";
 
@@ -264,6 +264,18 @@ void SpecificWorker::sm_finalize()
 void SpecificWorker::RCISMousePicker_setPick(const Pick &myPick)
 {
     navigation.newTarget(QPointF(myPick.x,myPick.z));
+}
+
+void SpecificWorker::SocialRulesData_objectsChanged(const SRObjectSeq &objectsAffordances)
+{
+//subscribesToCODE
+
+}
+
+void SpecificWorker::SocialRulesData_personalSpacesChanged(const RoboCompSocialNavigationGaussian::SNGPolylineSeq &intimateSpaces, const RoboCompSocialNavigationGaussian::SNGPolylineSeq &personalSpaces, const RoboCompSocialNavigationGaussian::SNGPolylineSeq &socialSpaces)
+{
+//subscribesToCODE
+
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////

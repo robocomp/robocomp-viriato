@@ -52,10 +52,8 @@ QObject()
 	agmexecutive_proxy = (*(AGMExecutivePrx*)mprx["AGMExecutiveProxy"]);
 	laser_proxy = (*(LaserPrx*)mprx["LaserProxy"]);
 	omnirobot_proxy = (*(OmniRobotPrx*)mprx["OmniRobotProxy"]);
-	socialnavigationgaussian_proxy = (*(SocialNavigationGaussianPrx*)mprx["SocialNavigationGaussianProxy"]);
 
 	mutex = new QMutex(QMutex::Recursive);
-
 
 	#ifdef USE_QTGUI
 		setupUi(this);

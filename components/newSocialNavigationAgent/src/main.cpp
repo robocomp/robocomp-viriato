@@ -84,9 +84,11 @@
 #include <agmcommonbehaviorI.h>
 #include <agmexecutivetopicI.h>
 #include <rcismousepickerI.h>
+#include <socialrulesdataI.h>
 
-#include <Planning.h>
+#include <SocialNavigationGaussian.h>
 #include <GenericBase.h>
+#include <Planning.h>
 
 
 // User includes here
@@ -141,7 +143,6 @@ int ::socialNavigationAgent::run(int argc, char* argv[])
 	AGMExecutivePrx agmexecutive_proxy;
 	LaserPrx laser_proxy;
 	OmniRobotPrx omnirobot_proxy;
-	SocialNavigationGaussianPrx socialnavigationgaussian_proxy;
 
 	string proxy, tmp;
 	initialize();
@@ -197,23 +198,6 @@ int ::socialNavigationAgent::run(int argc, char* argv[])
 	rInfo("OmniRobotProxy initialized Ok!");
 
 	mprx["OmniRobotProxy"] = (::IceProxy::Ice::Object*)(&omnirobot_proxy);//Remote server proxy creation example
-
-	try
-	{
-		if (not GenericMonitor::configGetString(communicator(), prefix, "SocialNavigationGaussianProxy", proxy, ""))
-		{
-			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy SocialNavigationGaussianProxy\n";
-		}
-		socialnavigationgaussian_proxy = SocialNavigationGaussianPrx::uncheckedCast( communicator()->stringToProxy( proxy ) );
-	}
-	catch(const Ice::Exception& ex)
-	{
-		cout << "[" << PROGRAM_NAME << "]: Exception creating proxy SocialNavigationGaussian: " << ex;
-		return EXIT_FAILURE;
-	}
-	rInfo("SocialNavigationGaussianProxy initialized Ok!");
-
-	mprx["SocialNavigationGaussianProxy"] = (::IceProxy::Ice::Object*)(&socialnavigationgaussian_proxy);//Remote server proxy creation example
 	IceStorm::TopicManagerPrx topicManager;
 	try
 	{
@@ -363,6 +347,46 @@ int ::socialNavigationAgent::run(int argc, char* argv[])
 		}
 
 		// Server adapter creation and publication
+		IceStorm::TopicPrx socialrulesdata_topic;
+		Ice::ObjectPrx socialrulesdata;
+		try
+		{
+			if (not GenericMonitor::configGetString(communicator(), prefix, "SocialRulesDataTopic.Endpoints", tmp, ""))
+			{
+				cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy SocialRulesDataProxy";
+			}
+			Ice::ObjectAdapterPtr SocialRulesData_adapter = communicator()->createObjectAdapterWithEndpoints("socialrulesdata", tmp);
+			SocialRulesDataPtr socialrulesdataI_ =  new SocialRulesDataI(worker);
+			Ice::ObjectPrx socialrulesdata = SocialRulesData_adapter->addWithUUID(socialrulesdataI_)->ice_oneway();
+			if(!socialrulesdata_topic)
+			{
+				try {
+					socialrulesdata_topic = topicManager->create("SocialRulesData");
+				}
+				catch (const IceStorm::TopicExists&) {
+					//Another client created the topic
+					try{
+						cout << "[" << PROGRAM_NAME << "]: Probably other client already opened the topic. Trying to connect.\n";
+						socialrulesdata_topic = topicManager->retrieve("SocialRulesData");
+					}
+					catch(const IceStorm::NoSuchTopic&)
+					{
+						cout << "[" << PROGRAM_NAME << "]: Topic doesn't exists and couldn't be created.\n";
+						//Error. Topic does not exist
+					}
+				}
+				IceStorm::QoS qos;
+				socialrulesdata_topic->subscribeAndGetPublisher(qos, socialrulesdata);
+			}
+			SocialRulesData_adapter->activate();
+		}
+		catch(const IceStorm::NoSuchTopic&)
+		{
+			cout << "[" << PROGRAM_NAME << "]: Error creating SocialRulesData topic.\n";
+			//Error. Topic does not exist
+		}
+
+		// Server adapter creation and publication
 		cout << SERVER_FULL_NAME " started" << endl;
 
 		// User defined QtGui elements ( main window, dialogs, etc )
@@ -391,6 +415,15 @@ int ::socialNavigationAgent::run(int argc, char* argv[])
 		catch(const Ice::Exception& ex)
 		{
 			std::cout << "ERROR Unsubscribing topic: rcismousepicker " <<std::endl;
+		}
+		try
+		{
+			std::cout << "Unsubscribing topic: socialrulesdata " <<std::endl;
+			socialrulesdata_topic->unsubscribe( socialrulesdata );
+		}
+		catch(const Ice::Exception& ex)
+		{
+			std::cout << "ERROR Unsubscribing topic: socialrulesdata " <<std::endl;
 		}
 
 		status = EXIT_SUCCESS;

@@ -117,8 +117,8 @@ public:
 	//PARA GUARDAR LA DISTANCIA RECORRIDA
 	float totaldist = 0;
 
-//	void initialize(AGMModel::SPtr worldModel_);
-	void initialize(AGMModel::SPtr worldModel_, SocialNavigationGaussianPrx socialnavigationgaussian_proxy_);
+	void initialize(AGMModel::SPtr worldModel_);
+//	void initialize(AGMModel::SPtr worldModel_, SocialNavigationGaussianPrx socialnavigationgaussian_proxy_);
 	retPolylines update(AGMModel::SPtr worldModel_);
 
 	void updatePeopleInModel();

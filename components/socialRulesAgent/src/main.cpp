@@ -136,7 +136,7 @@ int ::socialRulesAgent::run(int argc, char* argv[])
 
 	int status=EXIT_SUCCESS;
 
-	SocialRulesPolylinesPrx socialrulespolylines_pubproxy;
+	SocialRulesDataPrx socialrulesdata_pubproxy;
 	AGMExecutivePrx agmexecutive_proxy;
 	SocialNavigationGaussianPrx socialnavigationgaussian_proxy;
 
@@ -187,31 +187,31 @@ int ::socialRulesAgent::run(int argc, char* argv[])
 		cout << "[" << PROGRAM_NAME << "]: Exception: STORM not running: " << ex << endl;
 		return EXIT_FAILURE;
 	}
-	IceStorm::TopicPrx socialrulespolylines_topic;
+	IceStorm::TopicPrx socialrulesdata_topic;
 
-	while (!socialrulespolylines_topic)
+	while (!socialrulesdata_topic)
 	{
 		try
 		{
-			socialrulespolylines_topic = topicManager->retrieve("SocialRulesPolylines");
+			socialrulesdata_topic = topicManager->retrieve("SocialRulesData");
 		}
 		catch (const IceStorm::NoSuchTopic&)
 		{
-			cout << "[" << PROGRAM_NAME << "]: ERROR retrieving SocialRulesPolylines topic. \n";
+			cout << "[" << PROGRAM_NAME << "]: ERROR retrieving SocialRulesData topic. \n";
 			try
 			{
-				socialrulespolylines_topic = topicManager->create("SocialRulesPolylines");
+				socialrulesdata_topic = topicManager->create("SocialRulesData");
 			}
 			catch (const IceStorm::TopicExists&){
 				// Another client created the topic.
-				cout << "[" << PROGRAM_NAME << "]: ERROR publishing the SocialRulesPolylines topic. It's possible that other component have created\n";
+				cout << "[" << PROGRAM_NAME << "]: ERROR publishing the SocialRulesData topic. It's possible that other component have created\n";
 			}
 		}
 	}
 
-	Ice::ObjectPrx socialrulespolylines_pub = socialrulespolylines_topic->getPublisher()->ice_oneway();
-	socialrulespolylines_pubproxy = SocialRulesPolylinesPrx::uncheckedCast(socialrulespolylines_pub);
-	mprx["SocialRulesPolylinesPub"] = (::IceProxy::Ice::Object*)(&socialrulespolylines_pubproxy);
+	Ice::ObjectPrx socialrulesdata_pub = socialrulesdata_topic->getPublisher()->ice_oneway();
+	socialrulesdata_pubproxy = SocialRulesDataPrx::uncheckedCast(socialrulesdata_pub);
+	mprx["SocialRulesDataPub"] = (::IceProxy::Ice::Object*)(&socialrulesdata_pubproxy);
 
 	SpecificWorker *worker = new SpecificWorker(mprx);
 	//Monitor thread

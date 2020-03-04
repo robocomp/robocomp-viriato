@@ -33,12 +33,13 @@
 #include <QState>
 #include <CommonBehavior.h>
 
-#include <Planning.h>
+#include <SocialNavigationGaussian.h>
 #include <GenericBase.h>
+#include <Planning.h>
 #include <Laser.h>
 #include <OmniRobot.h>
-#include <SocialNavigationGaussian.h>
 #include <RCISMousePicker.h>
+#include <SocialRulesData.h>
 #include <AGMCommonBehavior.h>
 #include <AGMExecutive.h>
 #include <AGMExecutiveTopic.h>
@@ -51,12 +52,13 @@
 #define BASIC_PERIOD 100
 
 using namespace std;
-using namespace RoboCompPlanning;
+using namespace RoboCompSocialNavigationGaussian;
 using namespace RoboCompGenericBase;
+using namespace RoboCompPlanning;
 using namespace RoboCompLaser;
 using namespace RoboCompOmniRobot;
-using namespace RoboCompSocialNavigationGaussian;
 using namespace RoboCompRCISMousePicker;
+using namespace RoboCompSocialRulesData;
 using namespace RoboCompAGMCommonBehavior;
 using namespace RoboCompAGMExecutive;
 using namespace RoboCompAGMExecutiveTopic;
@@ -95,7 +97,6 @@ public:
 	AGMExecutivePrx agmexecutive_proxy;
 	LaserPrx laser_proxy;
 	OmniRobotPrx omnirobot_proxy;
-	SocialNavigationGaussianPrx socialnavigationgaussian_proxy;
 
 	virtual bool AGMCommonBehavior_activateAgent(const ParameterMap &prs) = 0;
 	virtual bool AGMCommonBehavior_deactivateAgent() = 0;
@@ -113,6 +114,8 @@ public:
 	virtual void AGMExecutiveTopic_symbolUpdated(const RoboCompAGMWorldModel::Node &modification) = 0;
 	virtual void AGMExecutiveTopic_symbolsUpdated(const RoboCompAGMWorldModel::NodeSequence &modifications) = 0;
 	virtual void RCISMousePicker_setPick(const Pick &myPick) = 0;
+	virtual void SocialRulesData_objectsChanged(const SRObjectSeq &objectsAffordances) = 0;
+	virtual void SocialRulesData_personalSpacesChanged(const RoboCompSocialNavigationGaussian::SNGPolylineSeq &intimateSpaces, const RoboCompSocialNavigationGaussian::SNGPolylineSeq &personalSpaces, const RoboCompSocialNavigationGaussian::SNGPolylineSeq &socialSpaces) = 0;
 
 protected:
 //State Machine
