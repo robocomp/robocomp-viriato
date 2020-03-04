@@ -31,7 +31,7 @@
 #include <genericworker.h>
 #include <innermodel/innermodel.h>
 
-#include <socialrules.h>
+#include <socialbehaviour.h>
 #include <grid.h>
 #include <controller.h>
 #include <navigation.h>
@@ -76,7 +76,7 @@ public:
 		using InnerViewerPtr = std::shared_ptr<InnerViewer>;
 	#endif
 
-	SocialRules socialrules;
+	SocialBehaviour socialbehaviour;
 	bool structuralChange = false;
 	bool edgesUpdated = false;
 

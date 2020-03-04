@@ -29,7 +29,7 @@
 
 
 
-class SocialRules :public QObject
+class SocialBehaviour :public QObject
 {
 Q_OBJECT
 public:
@@ -117,6 +117,7 @@ public:
 	//PARA GUARDAR LA DISTANCIA RECORRIDA
 	float totaldist = 0;
 
+//	void initialize(AGMModel::SPtr worldModel_);
 	void initialize(AGMModel::SPtr worldModel_, SocialNavigationGaussianPrx socialnavigationgaussian_proxy_);
 	retPolylines update(AGMModel::SPtr worldModel_);
 
@@ -129,6 +130,7 @@ public:
 	SNGPolyline affordanceRectangular(ObjectType obj);
 	SNGPolyline affordanceCircular(ObjectType obj);
 	SNGPolylineSeq ApplySocialRules();
+
 	void checkRobotmov();
 	bool checkHRI(SNGPerson p, int ind, InnerPtr &i, AGMModel::SPtr w);
 

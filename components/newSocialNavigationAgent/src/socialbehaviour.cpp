@@ -1,9 +1,11 @@
 
-#include "socialrules.h"
+#include "socialbehaviour.h"
 
 #define PI M_PI
 
-void SocialRules::initialize(AGMModel::SPtr worldModel_, SocialNavigationGaussianPrx socialnavigationgaussian_proxy_)
+void SocialBehaviour::initialize(AGMModel::SPtr worldModel_, SocialNavigationGaussianPrx socialnavigationgaussian_proxy_)
+
+//void SocialBehaviour::initialize(AGMModel::SPtr worldModel_)
 {
     qDebug()<<"Social Rules - "<< __FUNCTION__;
 
@@ -23,7 +25,7 @@ void SocialRules::initialize(AGMModel::SPtr worldModel_, SocialNavigationGaussia
 }
 
 
-SocialRules::retPolylines SocialRules::update(AGMModel::SPtr worldModel_)
+SocialBehaviour::retPolylines SocialBehaviour::update(AGMModel::SPtr worldModel_)
 {
 
     QTime reloj = QTime::currentTime();
@@ -44,7 +46,7 @@ SocialRules::retPolylines SocialRules::update(AGMModel::SPtr worldModel_)
     return std::make_tuple(personMoved,totalpersons, intimate_seq, personal_seq, social_seq, object_seq, object_lowProbVisited, object_mediumProbVisited, object_highProbVisited, objectblock_seq);
 }
 
-void SocialRules::updatePeopleInModel()
+void SocialBehaviour::updatePeopleInModel()
 {
     qDebug()<<"Social Rules - "<< __FUNCTION__;
 
@@ -79,7 +81,7 @@ void SocialRules::updatePeopleInModel()
     }
 }
 
-bool SocialRules::peopleChanged()
+bool SocialBehaviour::peopleChanged()
 {
     qDebug()<<"Social Rules - "<< __FUNCTION__;
 
@@ -107,7 +109,7 @@ bool SocialRules::peopleChanged()
 
 }
 
-void SocialRules::checkInteractions()
+void SocialBehaviour::checkInteractions()
 {
     qDebug()<<"Social Rules - "<< __FUNCTION__;
 
@@ -150,7 +152,7 @@ void SocialRules::checkInteractions()
     }
 }
 
-SNGPolylineSeq SocialRules::ApplySocialRules()
+SNGPolylineSeq SocialBehaviour::ApplySocialRules()
 {
     qDebug()<<"Social Rules - "<< __FUNCTION__;
 
@@ -170,10 +172,10 @@ SNGPolylineSeq SocialRules::ApplySocialRules()
 				{
 					seq = socialnavigationgaussian_proxy->  getPassOnRight(per, 0.1, false);
 					for (auto s:seq) {social_seq.push_back(s);}
-					
+//
 					seq = socialnavigationgaussian_proxy-> getPassOnRight(per, 0.4, false);
 					for (auto s:seq) {personal_seq.push_back(s);}
-
+//
 					seq = socialnavigationgaussian_proxy-> getPassOnRight(per, 0.8, false);
 					for (auto s:seq) {intimate_seq.push_back(s);}
 
@@ -182,7 +184,7 @@ SNGPolylineSeq SocialRules::ApplySocialRules()
 				{
                     SNGPolylineSeq initmate_result, personal_result, social_result;
                     socialnavigationgaussian_proxy-> getAllPersonalSpaces(per, false, initmate_result, personal_result, social_result);
-
+//
                     for (auto s:initmate_result) {intimate_seq.push_back(s);}
                     for (auto s:personal_result) {personal_seq.push_back(s);}
                     for (auto s:social_result) {social_seq.push_back(s);}
@@ -206,7 +208,7 @@ SNGPolylineSeq SocialRules::ApplySocialRules()
 }
 
 
-vector <vector<int32_t>> SocialRules::groupInteractingPeople(int32_t id, int32_t pairId,vector<vector<int32_t>> &interactingId)
+vector <vector<int32_t>> SocialBehaviour::groupInteractingPeople(int32_t id, int32_t pairId,vector<vector<int32_t>> &interactingId)
 {
     qDebug()<<"Social Rules - "<< __FUNCTION__;
 
@@ -272,7 +274,7 @@ vector <vector<int32_t>> SocialRules::groupInteractingPeople(int32_t id, int32_t
 * The function returns a sequence of polylines.
 */
 
-void SocialRules::drawGauss()
+void SocialBehaviour::drawGauss()
 {
     if (!interactingpersons.empty())
 	{
@@ -286,7 +288,7 @@ void SocialRules::drawGauss()
 }
 
 
-SNGPolylineSeq SocialRules::PassOnRight(bool draw)
+SNGPolylineSeq SocialBehaviour::PassOnRight(bool draw)
 {
     SNGPolylineSeq seq;
 
@@ -300,7 +302,7 @@ SNGPolylineSeq SocialRules::PassOnRight(bool draw)
 }
 
 
-void SocialRules::checkObjectAffordance(bool d)
+void SocialBehaviour::checkObjectAffordance(bool d)
 {
     qDebug()<<"Social Rules - "<< __FUNCTION__;
 
@@ -419,7 +421,7 @@ void SocialRules::checkObjectAffordance(bool d)
 
 
 
-SNGPolyline SocialRules::affordanceTrapezoidal(ObjectType obj)
+SNGPolyline SocialBehaviour::affordanceTrapezoidal(ObjectType obj)
 {
     qDebug()<<"Social Rules - "<< __FUNCTION__;
 
@@ -454,7 +456,7 @@ SNGPolyline SocialRules::affordanceTrapezoidal(ObjectType obj)
 
 }
 
-SNGPolyline SocialRules::affordanceRectangular(ObjectType obj)
+SNGPolyline SocialBehaviour::affordanceRectangular(ObjectType obj)
 {
     qDebug()<<"Social Rules - "<< __FUNCTION__;
 
@@ -484,7 +486,7 @@ SNGPolyline SocialRules::affordanceRectangular(ObjectType obj)
 
 }
 
-SNGPolyline SocialRules::affordanceCircular(ObjectType obj)
+SNGPolyline SocialBehaviour::affordanceCircular(ObjectType obj)
 {
     qDebug()<<"Social Rules - "<< __FUNCTION__;
 
@@ -515,7 +517,7 @@ SNGPolyline SocialRules::affordanceCircular(ObjectType obj)
 
 }
 
-void SocialRules::affordanceSliderChanged(int value)
+void SocialBehaviour::affordanceSliderChanged(int value)
 {
     float newCost;
     if (value == 1) newCost = 1.5;
@@ -531,7 +533,7 @@ void SocialRules::affordanceSliderChanged(int value)
     costChanged = true;
 }
 
-void SocialRules::affordanceTimeSliderChanged(int step)
+void SocialBehaviour::affordanceTimeSliderChanged(int step)
 {
 
 
@@ -577,7 +579,7 @@ void SocialRules::affordanceTimeSliderChanged(int step)
     }
 }
 
-void SocialRules::affordanceTimeEditChanged(const QTime &time)
+void SocialBehaviour::affordanceTimeEditChanged(const QTime &time)
 {
     auto hours = time.hour();
     auto hoursInMinutes = hours*60;
@@ -591,10 +593,7 @@ void SocialRules::affordanceTimeEditChanged(const QTime &time)
 
 
 
-
-
-
-void SocialRules::programTherapy()
+void SocialBehaviour::programTherapy()
 {
     qDebug()<<__FUNCTION__;
     if(idobject_combobox->currentText() == "")
@@ -616,7 +615,7 @@ void SocialRules::programTherapy()
 
 }
 
-void SocialRules::removeTherapy()
+void SocialBehaviour::removeTherapy()
 {
     auto item_to_delete = therapies_list->currentRow();
     therapies_list->takeItem(item_to_delete);
@@ -626,7 +625,7 @@ void SocialRules::removeTherapy()
 
 }
 
-void SocialRules::checkstate()
+void SocialBehaviour::checkstate()
 {
 //    qDebug()<<__FUNCTION__;
 
@@ -659,7 +658,7 @@ void SocialRules::checkstate()
         porpulsed = false;
 }
 
-void SocialRules::followPerson()
+void SocialBehaviour::followPerson()
 {
     int32_t id = idselect_combobox->currentText().toInt();
     qDebug()<<"Person selected" << id;
@@ -682,8 +681,7 @@ void SocialRules::followPerson()
 
 }
 
-
-void SocialRules::accompanyPerson()
+void SocialBehaviour::accompanyPerson()
 {
     qDebug() <<__FUNCTION__;
     int32_t id = idselect_combobox->currentText().toInt();
@@ -706,7 +704,7 @@ void SocialRules::accompanyPerson()
 
 }
 
-void SocialRules::goToPerson()
+void SocialBehaviour::goToPerson()
 {
 // qDebug()<<__FUNCTION__;
 	int32_t id = idselect_combobox->currentText().toInt();
@@ -731,10 +729,7 @@ void SocialRules::goToPerson()
 }
 
 
-
-
-
-void SocialRules::checkRobotmov()
+void SocialBehaviour::checkRobotmov()
 {
 	robotSymbolId = worldModel->getIdentifierByType("robot");
 	AGMModelSymbol::SPtr robotparent = worldModel->getParentByLink(robotSymbolId, "RT");
@@ -762,7 +757,7 @@ void SocialRules::checkRobotmov()
 
 }
 
-void SocialRules::saveData()
+void SocialBehaviour::saveData()
 {
 
 
@@ -873,7 +868,7 @@ void SocialRules::saveData()
 }
 
 
-bool SocialRules::checkHRI(SNGPerson p, int ind , InnerPtr &i, AGMModel::SPtr w)
+bool SocialBehaviour::checkHRI(SNGPerson p, int ind , InnerPtr &i, AGMModel::SPtr w)
 {
 	worldModel = w;
 	bool changes = false;
