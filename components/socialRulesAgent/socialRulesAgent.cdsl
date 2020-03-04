@@ -1,0 +1,15 @@
+import "SocialNavigationGaussian.idsl";
+
+Component socialRulesAgent
+{
+	Communications
+	{
+        	requires SocialNavigationGaussian;
+	};
+	
+	language Cpp;
+	gui Qt(QWidget);
+	options agmagent;
+	statemachine "statemachine.smdsl";
+};
+
