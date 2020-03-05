@@ -39,7 +39,7 @@ SET (LIBS ${LIBS} -lagm )
 
 #ROBOCOMP
 ROBOCOMP_INITIALIZE( $ENV{ROBOCOMP}/ )
-ROBOCOMP_WRAP_ICE( CommonBehavior Planning SocialNavigationGaussian SocialRulesData AGMCommonBehavior AGMExecutive AGMExecutiveTopic AGMWorldModel AGMExecutive AGMExecutiveTopic )
+ROBOCOMP_WRAP_ICE( CommonBehavior Planning SocialNavigationGaussian SocialRules AGMCommonBehavior AGMExecutive AGMExecutiveTopic AGMWorldModel AGMExecutive AGMExecutiveTopic )
 SET (EXECUTABLE_OUTPUT_PATH ${RC_COMPONENT_DEVEL_PATH}/bin)
 
 QT_WRAP_UI( UI_HEADERS mainUI.ui )

@@ -31,7 +31,6 @@
 #include <genericworker.h>
 #include <innermodel/innermodel.h>
 
-#include <socialbehaviour.h>
 #include <grid.h>
 #include <controller.h>
 #include <navigation.h>
@@ -70,19 +69,16 @@ public:
     void AGMExecutiveTopic_selfEdgeAdded(const int nodeid, const string &edgeType, const RoboCompAGMWorldModel::StringDictionary &attributes);
     void AGMExecutiveTopic_selfEdgeDeleted(const int nodeid, const string &edgeType);
 	void RCISMousePicker_setPick(const Pick &myPick);
-	void SocialRulesData_objectsChanged(const SRObjectSeq &objectsAffordances);
-	void SocialRulesData_personalSpacesChanged(const RoboCompSocialNavigationGaussian::SNGPolylineSeq &intimateSpaces, const RoboCompSocialNavigationGaussian::SNGPolylineSeq &personalSpaces, const RoboCompSocialNavigationGaussian::SNGPolylineSeq &socialSpaces);
+	void SocialRules_objectsChanged(const SRObjectSeq &objectsAffordances);
+	void SocialRules_personalSpacesChanged(const RoboCompSocialNavigationGaussian::SNGPolylineSeq &intimateSpaces, const RoboCompSocialNavigationGaussian::SNGPolylineSeq &personalSpaces, const RoboCompSocialNavigationGaussian::SNGPolylineSeq &socialSpaces);
 
 	using InnerPtr = std::shared_ptr<InnerModel>;
 	#ifdef USE_QTGUI
 		using InnerViewerPtr = std::shared_ptr<InnerViewer>;
 	#endif
 
-	SocialBehaviour socialbehaviour;
-	bool structuralChange = false;
-	bool edgesUpdated = false;
 
-	bool specificWorkerInitialized = false;
+
 
 public slots:
     void compute();
@@ -110,13 +106,17 @@ private:
     #ifdef USE_QTGUI
         InnerViewerPtr viewer;
     #endif
-    std::string robotname = "robot";
+
     std::shared_ptr<RoboCompCommonBehavior::ParameterList> confParams;
-
-
     Navigation<Grid<>,Controller> navigation;
 
-	RoboCompLaser::TLaserData updateLaser();
+    SNGPolylineSeq intimate_seq, personal_seq, social_seq;
+    SRObjectSeq objects_seq;
+
+    bool personalSpacesChanged = false;
+    bool affordancesChanged = false;
+
+    RoboCompLaser::TLaserData updateLaser();
 	bool setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated);
 	void sendModificationProposal(AGMModel::SPtr &worldModel, AGMModel::SPtr &newModel);
 

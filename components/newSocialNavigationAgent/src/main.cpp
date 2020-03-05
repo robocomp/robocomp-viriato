@@ -84,11 +84,11 @@
 #include <agmcommonbehaviorI.h>
 #include <agmexecutivetopicI.h>
 #include <rcismousepickerI.h>
-#include <socialrulesdataI.h>
+#include <socialrulesI.h>
 
-#include <SocialNavigationGaussian.h>
 #include <GenericBase.h>
 #include <Planning.h>
+#include <SocialNavigationGaussian.h>
 
 
 // User includes here
@@ -347,27 +347,27 @@ int ::socialNavigationAgent::run(int argc, char* argv[])
 		}
 
 		// Server adapter creation and publication
-		IceStorm::TopicPrx socialrulesdata_topic;
-		Ice::ObjectPrx socialrulesdata;
+		IceStorm::TopicPrx socialrules_topic;
+		Ice::ObjectPrx socialrules;
 		try
 		{
-			if (not GenericMonitor::configGetString(communicator(), prefix, "SocialRulesDataTopic.Endpoints", tmp, ""))
+			if (not GenericMonitor::configGetString(communicator(), prefix, "SocialRulesTopic.Endpoints", tmp, ""))
 			{
-				cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy SocialRulesDataProxy";
+				cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy SocialRulesProxy";
 			}
-			Ice::ObjectAdapterPtr SocialRulesData_adapter = communicator()->createObjectAdapterWithEndpoints("socialrulesdata", tmp);
-			SocialRulesDataPtr socialrulesdataI_ =  new SocialRulesDataI(worker);
-			Ice::ObjectPrx socialrulesdata = SocialRulesData_adapter->addWithUUID(socialrulesdataI_)->ice_oneway();
-			if(!socialrulesdata_topic)
+			Ice::ObjectAdapterPtr SocialRules_adapter = communicator()->createObjectAdapterWithEndpoints("socialrules", tmp);
+			SocialRulesPtr socialrulesI_ =  new SocialRulesI(worker);
+			Ice::ObjectPrx socialrules = SocialRules_adapter->addWithUUID(socialrulesI_)->ice_oneway();
+			if(!socialrules_topic)
 			{
 				try {
-					socialrulesdata_topic = topicManager->create("SocialRulesData");
+					socialrules_topic = topicManager->create("SocialRules");
 				}
 				catch (const IceStorm::TopicExists&) {
 					//Another client created the topic
 					try{
 						cout << "[" << PROGRAM_NAME << "]: Probably other client already opened the topic. Trying to connect.\n";
-						socialrulesdata_topic = topicManager->retrieve("SocialRulesData");
+						socialrules_topic = topicManager->retrieve("SocialRules");
 					}
 					catch(const IceStorm::NoSuchTopic&)
 					{
@@ -376,13 +376,13 @@ int ::socialNavigationAgent::run(int argc, char* argv[])
 					}
 				}
 				IceStorm::QoS qos;
-				socialrulesdata_topic->subscribeAndGetPublisher(qos, socialrulesdata);
+				socialrules_topic->subscribeAndGetPublisher(qos, socialrules);
 			}
-			SocialRulesData_adapter->activate();
+			SocialRules_adapter->activate();
 		}
 		catch(const IceStorm::NoSuchTopic&)
 		{
-			cout << "[" << PROGRAM_NAME << "]: Error creating SocialRulesData topic.\n";
+			cout << "[" << PROGRAM_NAME << "]: Error creating SocialRules topic.\n";
 			//Error. Topic does not exist
 		}
 
@@ -418,12 +418,12 @@ int ::socialNavigationAgent::run(int argc, char* argv[])
 		}
 		try
 		{
-			std::cout << "Unsubscribing topic: socialrulesdata " <<std::endl;
-			socialrulesdata_topic->unsubscribe( socialrulesdata );
+			std::cout << "Unsubscribing topic: socialrules " <<std::endl;
+			socialrules_topic->unsubscribe( socialrules );
 		}
 		catch(const Ice::Exception& ex)
 		{
-			std::cout << "ERROR Unsubscribing topic: socialrulesdata " <<std::endl;
+			std::cout << "ERROR Unsubscribing topic: socialrules " <<std::endl;
 		}
 
 		status = EXIT_SUCCESS;

@@ -88,6 +88,7 @@ private:
         float x;
         float z;
         float rot;
+        string imName;
 
         float cost = 1.5;
         float prevCost = 1.5;
@@ -115,6 +116,15 @@ private:
     SNGPolylineSeq intimateSpace_seq, personalSpace_seq, socialSpace_seq;
     SNGPolylineSeq objectblock_seq, object_normalProbVisited, object_lowProbVisited, object_mediumProbVisited, object_highProbVisited;
 
+    //PARA GUARDAR LOS DATOS EN UN ARCHIVO
+
+    int32_t robotSymbolId;
+    SNGPerson robot;
+
+    struct Point {float x;float z;};
+    Point point;
+    vector <Point> poserobot;
+    float totaldist = 0;
 
     //------------------------------------------//
     std::shared_ptr<InnerModel> innerModel;
@@ -136,9 +146,11 @@ private:
     SNGPolyline affordanceCircular(ObjectType obj);
 
 	void applySocialRules();
-
 	void publishPersonalSpaces();
 	void publishAffordances();
+
+    void checkRobotmov();
+
 
 
 };

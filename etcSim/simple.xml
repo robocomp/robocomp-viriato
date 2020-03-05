@@ -23,7 +23,7 @@
   <color value="#AAAAAA" />
  </node>
 
- <node alias="logger" endpoint="commonbehavior:tcp -p 12070">
+ <!--<node alias="logger" endpoint="commonbehavior:tcp -p 12070">
   <dependence alias="IS" />
   <workingDir path="/home/robocomp/" />
   <upCommand command="rcremote localhost rclogger /home/robocomp/ rclogger" />
@@ -33,9 +33,10 @@
   <ypos value="51.7617554197" />
   <radius value="10.0" />
   <color value="#FF3333" />
- </node>
+ </node> -->
 
  <node alias="laser" endpoint="laser:tcp -h localhost -p 10003">
+  <dependence alias="base" />
   <workingDir path="/home/robocomp/" />
   <upCommand command="rcremote localhost rgbd /home/robocomp/robocomp/components/robocomp-viriato/etcSim rcis simulation.xml -f 100" />
   <downCommand command="killall -9 rcis" />
@@ -119,13 +120,28 @@
 
  <node alias="newSocialnavigA" endpoint="agmcommonbehavior:tcp -h localhost -p 10330">
   <dependence alias="LocalizationA" />
-  <dependence alias="socialnavigG" />
+
   <dependence alias="base" />
   <workingDir path="/home/robocomp/" />
   <upCommand command="rcremote localhost socialnavAgnt /home/robocomp/robocomp/components/robocomp-viriato/components/newSocialNavigationAgent ./bin/socialNavigationAgent /home/robocomp/robocomp/components/robocomp-viriato/components/newSocialNavigationAgent/etc/config" />
   <downCommand command="killall -9 socialNavigationAgent" />
   <configFile path="/home/robocomp/robocomp/components/robocomp-viriato/components/newSocialNavigationAgent/etc/config" />
   <xpos value="-271.097569307" />
+  <ypos value="20.5106363282" />
+  <radius value="10.0" />
+  <color value="#33FF33" />
+ </node>
+
+ <node alias="socialRulesAgent" endpoint="agmcommonbehavior:tcp -h localhost -p 10331">
+  <dependence alias="socialRulesAgent" />
+  <dependence alias="socialnavigG" />
+  <dependence alias="executive" />
+
+  <workingDir path="/home/robocomp/" />
+  <upCommand command="rcremote localhost socialRulesAgent /home/robocomp/robocomp/components/robocomp-viriato/components/socialRulesAgent ./bin/socialRulesAgent /home/robocomp/robocomp/components/robocomp-viriato/components/socialRulesAgent/etc/config" />
+  <downCommand command="killall -9 socialRulesAgent" />
+  <configFile path="/home/robocomp/robocomp/components/robocomp-viriato/components/socialRulesAgent/etc/config" />
+  <xpos value="-071.097569307" />
   <ypos value="20.5106363282" />
   <radius value="10.0" />
   <color value="#33FF33" />

@@ -109,6 +109,8 @@ void SpecificWorker::compute()
 
         costChanged = false;
     }
+
+    checkRobotmov();
 }
 
 void SpecificWorker::updatePeopleInModel()
@@ -331,6 +333,7 @@ void SpecificWorker::checkObjectAffordance()
                 AGMModelEdge &edgeRT  = worldModel->getEdgeByIdentifiers(objectParent->identifier,id, "RT");
 
                 imName = QString::fromStdString( obj->getAttribute("imName"));
+                object.imName = obj->getAttribute("imName");
                 object.id = id;
                 object.x = str2float(edgeRT.attributes["tx"]);
                 object.z = str2float(edgeRT.attributes["tz"]);
@@ -620,13 +623,14 @@ void SpecificWorker::removeTherapy()
 void SpecificWorker::recordData()
 {
 
-//    qDebug()<< "Saving in robotpose.txt the robot's pose";
-//    ofstream file("results/robotpose.txt", ofstream::out);
-//    for (auto p:poserobot)
-//    {
-//        file<< p.x << " " <<p.z<< endl;
-//    }
-//    file.close();
+    qDebug()<< "Saving in robotpose.txt the robot's pose";
+    ofstream file("results/robotpose.txt", ofstream::out);
+    for (auto p:poserobot)
+    {
+        file<< p.x << " " <<p.z<< endl;
+    }
+    file.close();
+    poserobot.clear();
 
     qDebug()<< "Saving in personpose.txt the human's poses";
     ofstream file2("results/personpose.txt", ofstream::out);
@@ -718,11 +722,43 @@ void SpecificWorker::recordData()
 }
 
 
+void SpecificWorker::checkRobotmov()
+{
+    robotSymbolId = worldModel->getIdentifierByType("robot");
+    AGMModelSymbol::SPtr robotparent = worldModel->getParentByLink(robotSymbolId, "RT");
+    AGMModelEdge &edgeRTrobot  = worldModel->getEdgeByIdentifiers(robotparent->identifier, robotSymbolId, "RT");
+    robot.x=str2float(edgeRTrobot.attributes["tx"]);
+    robot.z=str2float(edgeRTrobot.attributes["tz"]);
+    robot.angle=str2float(edgeRTrobot.attributes["ry"]);
+
+    point.x=robot.x;
+    point.z=robot.z;
+
+    if (poserobot.size() == 0)
+        poserobot.push_back(point);
+
+    else if ((poserobot[poserobot.size()-1].x != point.x) or (poserobot[poserobot.size()-1].z !=point.z))
+    {
+        float  dist=sqrt((point.x - poserobot[poserobot.size()-1].x)*(point.x - poserobot[poserobot.size()-1].x)
+                +(point.z - poserobot[poserobot.size()-1].z)*(point.z - poserobot[poserobot.size()-1].z));
+
+        totaldist=totaldist + dist;
+//		qDebug()<<"Distancia calculada" << dist << "Distancia total" <<totaldist;
+    }
+
+    poserobot.push_back(point);
+
+}
+
+
+
 void SpecificWorker::publishPersonalSpaces()
 {
+    qDebug() <<__FUNCTION__;
     try
     {
-        socialrulesdata_pubproxy->personalSpacesChanged(intimateSpace_seq,personalSpace_seq,socialSpace_seq);
+        socialrules_pubproxy->personalSpacesChanged(intimateSpace_seq,personalSpace_seq,socialSpace_seq);
+
     }
     catch(const Ice::Exception& e)
     {
@@ -732,15 +768,18 @@ void SpecificWorker::publishPersonalSpaces()
 
 void SpecificWorker::publishAffordances()
 {
+    qDebug() <<__FUNCTION__;
+
     SRObjectSeq objectsToSend;
 
     for (auto [k,o] : mapIdObjects)
     {
         SRObject object;
-
+        object.name = o.imName;
         object.x = o.x;
         object.z = o.z;
-        object.interacting = o.inter_angle;
+        object.interacting = o.interacting;
+
         object.cost = o.cost;
         object.affordance = o.affordance;
 
@@ -749,7 +788,7 @@ void SpecificWorker::publishAffordances()
 
     try
     {
-        socialrulesdata_pubproxy->objectsChanged(objectsToSend);
+        socialrules_pubproxy->objectsChanged(objectsToSend);
     }
     catch(const Ice::Exception& e)
     {

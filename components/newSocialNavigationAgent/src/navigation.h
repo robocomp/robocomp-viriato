@@ -103,6 +103,13 @@ class Navigation
         {
 //            qDebug()<<"Navigation - "<< __FUNCTION__;
 
+            if (gridChanged)
+            {
+                updateFreeSpaceMap();
+                gridChanged = false;
+            }
+
+
             RoboCompLaser::TLaserData laserData;
             laserData = computeLaser(laserData_);
             currentRobotPose = innerModel->transformS6D("world","robot");
@@ -114,13 +121,10 @@ class Navigation
             {
                 for (auto p: pathPoints)
                 {
-                    if(std::any_of(std::begin(polylines_social), std::end(polylines_social),[p](const auto &poly) { return poly.containsPoint(p, Qt::OddEvenFill);})
-                    or std::any_of(std::begin(polylines_personal), std::end(polylines_personal),[p](const auto &poly) { return poly.containsPoint(p, Qt::OddEvenFill);})
-                    or std::any_of(std::begin(polylines_objects_total), std::end(polylines_objects_total),[p](const auto &poly) { return poly.containsPoint(p, Qt::OddEvenFill);})
-                    or std::any_of(std::begin(polylines_lowVisited), std::end(polylines_lowVisited),[p](const auto &poly) { return poly.containsPoint(p, Qt::OddEvenFill);})
-                    or std::any_of(std::begin(polylines_mediumVisited), std::end(polylines_mediumVisited),[p](const auto &poly) { return poly.containsPoint(p, Qt::OddEvenFill);})
-                    or std::any_of(std::begin(polylines_highVisited), std::end(polylines_highVisited),[p](const auto &poly) { return poly.containsPoint(p, Qt::OddEvenFill);})
-                    or std::any_of(std::begin(polylines_objects_blocked), std::end(polylines_objects_blocked),[p](const auto &poly) { return poly.containsPoint(p, Qt::OddEvenFill);}))
+                    if(std::any_of(std::begin(socialSpaces), std::end(socialSpaces),[p](const auto &poly) { return poly.containsPoint(p, Qt::OddEvenFill);})
+                    or std::any_of(std::begin(personalSpaces), std::end(personalSpaces),[p](const auto &poly) { return poly.containsPoint(p, Qt::OddEvenFill);})
+                    or std::any_of(std::begin(totalAffordances), std::end(totalAffordances),[p](const auto &poly) { return poly.containsPoint(p, Qt::OddEvenFill);})
+                   )
                     {
                         stopRobot();
 
@@ -132,7 +136,6 @@ class Navigation
                     }
                 }
             }
-
 
             if (checkPathState() == false)
                 return;
@@ -192,7 +195,6 @@ class Navigation
         {
             static int  timesBlocked = 0;
 //            qDebug()<<"Navigation - "<< __FUNCTION__;
-
 
             if (current_target.active.load())
             {
@@ -299,26 +301,18 @@ class Navigation
         const TMap& getMap() const { return grid; };
 
 
-        void updatePolylines(SNGPersonSeq persons_, SNGPolylineSeq intimate_seq,SNGPolylineSeq personal_seq,SNGPolylineSeq social_seq,
-                SNGPolylineSeq object_seq, SNGPolylineSeq object_lowProbVisited ,SNGPolylineSeq object_mediumProbVisited ,SNGPolylineSeq object_highProbVisited, SNGPolylineSeq objectsblocking_seq)
+        void updatePersonalPolylines(SNGPolylineSeq intimate_seq, SNGPolylineSeq personal_seq, SNGPolylineSeq social_seq)
         {
-            qDebug()<<"Navigation - "<< __FUNCTION__;
-
-            polylines_intimate.clear();
-            polylines_personal.clear();
-            polylines_social.clear();
-            polylines_objects_total.clear();
-            polylines_lowVisited.clear();
-            polylines_mediumVisited.clear();
-            polylines_highVisited.clear();
-            polylines_objects_blocked.clear();
+            intimateSpaces.clear();
+            personalSpaces.clear();
+            socialSpaces.clear();
 
             for (auto intimate: intimate_seq)
             {
                 QPolygonF polygon;
                 for (auto i : intimate)
                     polygon << QPointF(i.x, i.z);
-                polylines_intimate.push_back(polygon);
+                intimateSpaces.push_back(polygon);
             }
 
             for (auto personal : personal_seq)
@@ -326,7 +320,7 @@ class Navigation
                 QPolygonF polygon;
                 for (auto p : personal)
                     polygon << QPointF(p.x, p.z);
-                polylines_personal.push_back(polygon);
+                personalSpaces.push_back(polygon);
             }
 
             for (auto social : social_seq)
@@ -334,52 +328,37 @@ class Navigation
                 QPolygonF polygon;
                 for (auto s : social)
                     polygon << QPointF(s.x, s.z);
-                polylines_social.push_back(polygon);
+                socialSpaces.push_back(polygon);
             }
 
-            for (auto object : object_seq)
+            gridChanged = true;
+
+        }
+        void updateAffordancesPolylines(const SRObjectSeq objects_seq)
+        {
+            totalAffordances.clear();
+            mapCostObjects.clear();
+            affordancesBlocked.clear();
+
+            for (auto obj: objects_seq)
             {
                 QPolygonF polygon;
-                for (auto o : object)
-                    polygon << QPointF(o.x, o.z);
-                polylines_objects_total.push_back(polygon);
+                for(auto point : obj.affordance)
+                    polygon << QPointF(point.x,point.z);
+
+                mapCostObjects[obj.cost].push_back(polygon);
+
+                if (obj.interacting == true)
+                    affordancesBlocked.push_back(polygon);
+
+                totalAffordances.push_back(polygon);
             }
 
-            for (auto object : object_lowProbVisited)
-            {
-                QPolygonF polygon;
-                for (auto o : object)
-                    polygon << QPointF(o.x, o.z);
-                polylines_lowVisited.push_back(polygon);
-            }
 
-            for (auto object : object_mediumProbVisited)
-            {
-                QPolygonF polygon;
-                for (auto o : object)
-                    polygon << QPointF(o.x, o.z);
-                polylines_mediumVisited.push_back(polygon);
-            }
 
-            for (auto object : object_highProbVisited)
-            {
-                QPolygonF polygon;
-                for (auto o : object)
-                    polygon << QPointF(o.x, o.z);
-                polylines_highVisited.push_back(polygon);
-            }
+            gridChanged = true;
 
-            for (auto object_block : objectsblocking_seq)
-            {
-                QPolygonF polygon;
-                for (auto ob : object_block)
-                    polygon << QPointF(ob.x, ob.z);
-                polylines_objects_blocked.push_back(polygon);
-            }
-
-            updateFreeSpaceMap();
-
-        };
+        }
 
 
 
@@ -396,8 +375,6 @@ class Navigation
 
         TMap grid;
         TController controller;
-
-        std::vector<QPolygonF> polylines_intimate,polylines_personal,polylines_social,polylines_objects_total,polylines_objects_blocked, polylines_lowVisited ,polylines_mediumVisited ,polylines_highVisited;
 
         // ElasticBand
         std::vector<QPointF> pathPoints;
@@ -418,6 +395,12 @@ class Navigation
         float robotXWidth, robotZLong; //robot dimensions read from config
 
         bool targetBehindRobot = false;
+        bool gridChanged = false;
+
+        vector<QPolygonF> intimateSpaces,personalSpaces,socialSpaces, totalAffordances;
+        vector<QPolygonF> affordancesBlocked;
+
+        std::map<float, vector<QPolygonF>> mapCostObjects;
 
     ////////// GRID RELATED METHODS //////////
     void updateFreeSpaceMap()
@@ -428,26 +411,19 @@ class Navigation
         grid.resetGrid();
 
         //To set occupied
-        for (auto &&poly_intimate : iter::chain(polylines_intimate, polylines_objects_blocked))
+        for (auto &&poly_intimate : iter::chain(intimateSpaces, affordancesBlocked))
             grid.markAreaInGridAs(poly_intimate, false);
 
-        //To modify cost
-        for (auto &&poly_object : polylines_objects_total)
-            grid.modifyCostInGrid(poly_object, 1.5);
+        for(auto [cost,polygonVec] : mapCostObjects)
+        {
+            for (auto polygon : polygonVec)
+                grid.modifyCostInGrid(polygon, cost);
+        }
 
-        for (auto &&poly_l : polylines_lowVisited)
-            grid.modifyCostInGrid(poly_l, 2);
-
-        for (auto &&poly_m : polylines_mediumVisited)
-            grid.modifyCostInGrid(poly_m, 2.5);
-
-        for (auto &&poly_h : polylines_highVisited)
-            grid.modifyCostInGrid(poly_h, 3);
-
-        for (auto &&poly_soc : polylines_social)
+        for (auto &&poly_soc : socialSpaces)
             grid.modifyCostInGrid(poly_soc, 4.0);
 
-        for (auto &&poly_per : polylines_personal)
+        for (auto &&poly_per : personalSpaces)
             grid.modifyCostInGrid(poly_per, 6.0);
 
         grid.draw(viewer);
@@ -465,7 +441,7 @@ class Navigation
         laserCombined = laserData;
 
 
-        for (const auto &polyline : iter::chain(polylines_intimate,polylines_objects_blocked))
+        for (const auto &polyline : iter::chain(intimateSpaces,affordancesBlocked))
         {
             float min = std::numeric_limits<float>::max();
             float max = std::numeric_limits<float>::min();
@@ -672,7 +648,7 @@ class Navigation
             QPointF temp_p = p + total.toPointF();
             if(isVisible(temp_p)
                     and (currentRobotPolygon.containsPoint(temp_p, Qt::OddEvenFill) == false)
-                    and (std::none_of(std::begin(polylines_intimate), std::end(polylines_intimate),[temp_p](const auto &poly) { return poly.containsPoint(temp_p, Qt::OddEvenFill);})))
+                    and (std::none_of(std::begin(intimateSpaces), std::end(intimateSpaces),[temp_p](const auto &poly) { return poly.containsPoint(temp_p, Qt::OddEvenFill);})))
                 p = temp_p;
         }
 

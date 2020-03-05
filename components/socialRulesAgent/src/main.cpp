@@ -136,7 +136,7 @@ int ::socialRulesAgent::run(int argc, char* argv[])
 
 	int status=EXIT_SUCCESS;
 
-	SocialRulesDataPrx socialrulesdata_pubproxy;
+	SocialRulesPrx socialrules_pubproxy;
 	AGMExecutivePrx agmexecutive_proxy;
 	SocialNavigationGaussianPrx socialnavigationgaussian_proxy;
 
@@ -187,31 +187,31 @@ int ::socialRulesAgent::run(int argc, char* argv[])
 		cout << "[" << PROGRAM_NAME << "]: Exception: STORM not running: " << ex << endl;
 		return EXIT_FAILURE;
 	}
-	IceStorm::TopicPrx socialrulesdata_topic;
+	IceStorm::TopicPrx socialrules_topic;
 
-	while (!socialrulesdata_topic)
+	while (!socialrules_topic)
 	{
 		try
 		{
-			socialrulesdata_topic = topicManager->retrieve("SocialRulesData");
+			socialrules_topic = topicManager->retrieve("SocialRules");
 		}
 		catch (const IceStorm::NoSuchTopic&)
 		{
-			cout << "[" << PROGRAM_NAME << "]: ERROR retrieving SocialRulesData topic. \n";
+			cout << "[" << PROGRAM_NAME << "]: ERROR retrieving SocialRules topic. \n";
 			try
 			{
-				socialrulesdata_topic = topicManager->create("SocialRulesData");
+				socialrules_topic = topicManager->create("SocialRules");
 			}
 			catch (const IceStorm::TopicExists&){
 				// Another client created the topic.
-				cout << "[" << PROGRAM_NAME << "]: ERROR publishing the SocialRulesData topic. It's possible that other component have created\n";
+				cout << "[" << PROGRAM_NAME << "]: ERROR publishing the SocialRules topic. It's possible that other component have created\n";
 			}
 		}
 	}
 
-	Ice::ObjectPrx socialrulesdata_pub = socialrulesdata_topic->getPublisher()->ice_oneway();
-	socialrulesdata_pubproxy = SocialRulesDataPrx::uncheckedCast(socialrulesdata_pub);
-	mprx["SocialRulesDataPub"] = (::IceProxy::Ice::Object*)(&socialrulesdata_pubproxy);
+	Ice::ObjectPrx socialrules_pub = socialrules_topic->getPublisher()->ice_oneway();
+	socialrules_pubproxy = SocialRulesPrx::uncheckedCast(socialrules_pub);
+	mprx["SocialRulesPub"] = (::IceProxy::Ice::Object*)(&socialrules_pubproxy);
 
 	SpecificWorker *worker = new SpecificWorker(mprx);
 	//Monitor thread

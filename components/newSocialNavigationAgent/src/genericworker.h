@@ -33,13 +33,13 @@
 #include <QState>
 #include <CommonBehavior.h>
 
-#include <SocialNavigationGaussian.h>
 #include <GenericBase.h>
 #include <Planning.h>
+#include <SocialNavigationGaussian.h>
 #include <Laser.h>
 #include <OmniRobot.h>
 #include <RCISMousePicker.h>
-#include <SocialRulesData.h>
+#include <SocialRules.h>
 #include <AGMCommonBehavior.h>
 #include <AGMExecutive.h>
 #include <AGMExecutiveTopic.h>
@@ -52,13 +52,13 @@
 #define BASIC_PERIOD 100
 
 using namespace std;
-using namespace RoboCompSocialNavigationGaussian;
 using namespace RoboCompGenericBase;
 using namespace RoboCompPlanning;
+using namespace RoboCompSocialNavigationGaussian;
 using namespace RoboCompLaser;
 using namespace RoboCompOmniRobot;
 using namespace RoboCompRCISMousePicker;
-using namespace RoboCompSocialRulesData;
+using namespace RoboCompSocialRules;
 using namespace RoboCompAGMCommonBehavior;
 using namespace RoboCompAGMExecutive;
 using namespace RoboCompAGMExecutiveTopic;
@@ -114,8 +114,8 @@ public:
 	virtual void AGMExecutiveTopic_symbolUpdated(const RoboCompAGMWorldModel::Node &modification) = 0;
 	virtual void AGMExecutiveTopic_symbolsUpdated(const RoboCompAGMWorldModel::NodeSequence &modifications) = 0;
 	virtual void RCISMousePicker_setPick(const Pick &myPick) = 0;
-	virtual void SocialRulesData_objectsChanged(const SRObjectSeq &objectsAffordances) = 0;
-	virtual void SocialRulesData_personalSpacesChanged(const RoboCompSocialNavigationGaussian::SNGPolylineSeq &intimateSpaces, const RoboCompSocialNavigationGaussian::SNGPolylineSeq &personalSpaces, const RoboCompSocialNavigationGaussian::SNGPolylineSeq &socialSpaces) = 0;
+	virtual void SocialRules_objectsChanged(const SRObjectSeq &objectsAffordances) = 0;
+	virtual void SocialRules_personalSpacesChanged(const RoboCompSocialNavigationGaussian::SNGPolylineSeq &intimateSpaces, const RoboCompSocialNavigationGaussian::SNGPolylineSeq &personalSpaces, const RoboCompSocialNavigationGaussian::SNGPolylineSeq &socialSpaces) = 0;
 
 protected:
 //State Machine

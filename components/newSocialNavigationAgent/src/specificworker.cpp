@@ -43,11 +43,7 @@ SpecificWorker::~SpecificWorker()
 
 bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 {
-    try{ robotname = params.at("RobotName").value;}
-    catch(const std::exception &e){ std::cout << e.what() << "SpecificWorker::SpecificWorker - Robot name defined in config. Using default 'robot' " << std::endl;}
-
     confParams  = std::make_shared<RoboCompCommonBehavior::ParameterList>(params);
-
 
 	defaultMachine.start();
 
@@ -60,43 +56,14 @@ void SpecificWorker::initialize(int period)
 
     std::cout << "Initialize worker" << std::endl;
 
-    connect(draw_gaussian_button,SIGNAL(clicked()),&socialbehaviour, SLOT(drawGauss()));
-    connect(save_data_button,SIGNAL(clicked()),&socialbehaviour, SLOT(saveData()));
-    connect(gotoperson_button,SIGNAL(clicked()),&socialbehaviour, SLOT(goToPerson()));
-
-    connect(follow_checkbox, SIGNAL (clicked()),&socialbehaviour,SLOT(checkstate()));
-    connect(accompany_checkbox, SIGNAL (clicked()),&socialbehaviour,SLOT(checkstate()));
-    connect(passonright_checkbox, SIGNAL (clicked()),&socialbehaviour,SLOT(checkstate()));
-
     connect(autoMov_checkbox, SIGNAL(clicked()),this, SLOT(checkRobotAutoMovState()));
     connect(robotMov_checkbox, SIGNAL(clicked()),this, SLOT(moveRobot()));
-
-    connect(object_slider, SIGNAL (valueChanged(int)),&socialbehaviour,SLOT(affordanceSliderChanged(int)));
-    connect(currentTime_timeEdit, SIGNAL (timeChanged(const QTime)),&socialbehaviour,SLOT(affordanceTimeEditChanged(const QTime)));
-
-
-	connect(setTherapy_button, SIGNAL (clicked()),&socialbehaviour,SLOT(programTherapy()));
-	connect(removeT_button, SIGNAL (clicked()),&socialbehaviour,SLOT(removeTherapy()));
-	connect(currtime_slider, SIGNAL (valueChanged(int)),&socialbehaviour,SLOT(affordanceTimeSliderChanged(int)));
 
     connect(ki_slider, SIGNAL (valueChanged(int)),this,SLOT(forcesSliderChanged(int)));
     connect(ke_slider, SIGNAL (valueChanged(int)),this,SLOT(forcesSliderChanged(int)));
 
     forcesSliderChanged();
     moveRobot();
-
-    socialbehaviour.idselect_combobox = idselect_combobox;
-    socialbehaviour.follow_checkbox = follow_checkbox;
-    socialbehaviour.accompany_checkbox = accompany_checkbox;
-    socialbehaviour.passonright_checkbox = passonright_checkbox;
-
-    socialbehaviour.currtime_slider = currtime_slider;
-    socialbehaviour.idobject_combobox = idobject_combobox;
-    socialbehaviour.therapies_list = therapies_list;
-    socialbehaviour.startTherapy_timeEdit = startTherapy_timeEdit;
-    socialbehaviour.endTherapy_timeEdit = endTherapy_timeEdit;
-    socialbehaviour.currentTime_timeEdit = currentTime_timeEdit;
-
 
 
 #ifdef USE_QTGUI
@@ -116,12 +83,8 @@ void SpecificWorker::initialize(int period)
     }
 
     navigation.initialize(innerModel, viewer, confParams, omnirobot_proxy);
-	socialbehaviour.initialize(worldModel);
 
     qDebug()<<"Classes initialized correctly";
-
-
-    specificWorkerInitialized = true;
 
     this->Period = period;
     timer.start(period);
@@ -129,46 +92,36 @@ void SpecificWorker::initialize(int period)
 
     emit this->t_initialize_to_compute();
 
-
 }
 
 void SpecificWorker::compute()
 {
 //    qDebug()<< __FUNCTION__;
 
-    QMutexLocker lockIM(mutex);
-
-    static QTime reloj = QTime::currentTime();
+//    static QTime reloj = QTime::currentTime();
 
     bool needsReplaning = false;
 
-    if (structuralChange or edgesUpdated or socialbehaviour.costChanged)
-    {
-        auto [personMoved, totalpersons, intimate_seq, personal_seq, social_seq, object_seq,
-                object_lowProbVisited, object_mediumProbVisited, object_highProbVisited, objectblock_seq] = socialbehaviour.update(worldModel);
+    if(personalSpacesChanged)
+	{
+    	navigation.updatePersonalPolylines(intimate_seq, personal_seq, social_seq);
+		personalSpacesChanged = false;
+		needsReplaning = true;
+	}
 
-//		if (personMoved) //se comprueba si alguna de las personas ha cambiado de posicion
-			navigation.updatePolylines(totalpersons, intimate_seq, personal_seq, social_seq, object_seq,
-			        object_lowProbVisited, object_mediumProbVisited, object_highProbVisited, objectblock_seq);
+	if(affordancesChanged)
+	{
+    	navigation.updateAffordancesPolylines(objects_seq);
+		affordancesChanged = false;
+		needsReplaning = true;
+	}
 
-
-        if(structuralChange or socialbehaviour.costChanged or personMoved) needsReplaning = true;
-
-        structuralChange = false;
-		edgesUpdated = false;
-
-
-    }
-
+    QMutexLocker lockIM(mutex);
 
     RoboCompLaser::TLaserData laserData = updateLaser();
-
 	navigation.update(laserData, needsReplaning);
 
     viewer->run();
-
-    socialbehaviour.checkRobotmov();
-
 
 //    qDebug()<< "Compute time " <<reloj.restart();
 
@@ -197,6 +150,7 @@ void  SpecificWorker::moveRobot()
 
     if(robotMov_checkbox->checkState() == Qt::CheckState(2))
     {
+        autoMov_checkbox->setEnabled(true);
         navigation.moveRobot = true;
 		navigation.stopMovingRobot = false;
     }
@@ -209,9 +163,12 @@ void  SpecificWorker::moveRobot()
         }
         else
 		{
-			navigation.moveRobot = false;
+
+            navigation.moveRobot = false;
 			navigation.stopMovingRobot = false;
 		}
+
+        autoMov_checkbox->setEnabled(false);
 
     }
 
@@ -266,16 +223,26 @@ void SpecificWorker::RCISMousePicker_setPick(const Pick &myPick)
     navigation.newTarget(QPointF(myPick.x,myPick.z));
 }
 
-void SpecificWorker::SocialRulesData_objectsChanged(const SRObjectSeq &objectsAffordances)
+void SpecificWorker::SocialRules_objectsChanged(const SRObjectSeq &objectsAffordances)
 {
-//subscribesToCODE
+    //subscribesToCODE
+    qDebug() << __FUNCTION__ << objectsAffordances.size();
+
+    objects_seq = objectsAffordances;
+
+	affordancesChanged = true;
 
 }
 
-void SpecificWorker::SocialRulesData_personalSpacesChanged(const RoboCompSocialNavigationGaussian::SNGPolylineSeq &intimateSpaces, const RoboCompSocialNavigationGaussian::SNGPolylineSeq &personalSpaces, const RoboCompSocialNavigationGaussian::SNGPolylineSeq &socialSpaces)
+void SpecificWorker::SocialRules_personalSpacesChanged(const RoboCompSocialNavigationGaussian::SNGPolylineSeq &intimateSpaces, const RoboCompSocialNavigationGaussian::SNGPolylineSeq &personalSpaces, const RoboCompSocialNavigationGaussian::SNGPolylineSeq &socialSpaces)
 {
-//subscribesToCODE
+    qDebug() << __FUNCTION__;
 
+	intimate_seq = intimateSpaces;
+	personal_seq = personalSpaces;
+	social_seq = socialSpaces;
+
+	personalSpacesChanged = true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -359,7 +326,6 @@ void SpecificWorker::AGMExecutiveTopic_selfEdgeAdded(const int nodeid, const str
 
 	try {
 		innerModel.reset(AGMInner::extractInnerModel(worldModel));
-//        innerModel = std::make_shared<InnerModel>(AGMInner::extractInnerModel(worldModel));
 
         viewer->reloadInnerModel(innerModel);
 		navigation.updateInnerModel(innerModel);
@@ -377,7 +343,6 @@ void SpecificWorker::AGMExecutiveTopic_selfEdgeDeleted(const int nodeid, const s
 
 	try {
         innerModel.reset(AGMInner::extractInnerModel(worldModel));
-//        innerModel = std::make_shared<InnerModel>(AGMInner::extractInnerModel(worldModel));
 
         viewer->reloadInnerModel(innerModel);
 		navigation.updateInnerModel(innerModel);
@@ -390,23 +355,12 @@ void SpecificWorker::AGMExecutiveTopic_selfEdgeDeleted(const int nodeid, const s
 void SpecificWorker::AGMExecutiveTopic_edgeUpdated(const RoboCompAGMWorldModel::Edge &modification)
 {
 
-//    qDebug() << __FUNCTION__;
-//
-//    if(!specificWorkerInitialized)
-//    {
-//        QMutexLocker lockIM(mutex);
-//    }
     QMutexLocker lockIM(mutex);
 
 
     AGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);
 	AGMInner::updateImNodeFromEdge(worldModel, modification, innerModel.get());
 
-    auto symbol1 = worldModel->getSymbolByIdentifier(modification.a);
-    auto symbol2 = worldModel->getSymbolByIdentifier(modification.b);
-
-    if(symbol1.get()->symbolType == "person" or symbol2.get()->symbolType == "person")
-        edgesUpdated = true;
 
 
 }
@@ -428,12 +382,6 @@ void SpecificWorker::AGMExecutiveTopic_edgesUpdated(const RoboCompAGMWorldModel:
 	{
 		AGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);
 		AGMInner::updateImNodeFromEdge(worldModel, modification, innerModel.get());
-
-		auto symbol1 = worldModel->getSymbolByIdentifier(modification.a);
-		auto symbol2 = worldModel->getSymbolByIdentifier(modification.b);
-
-		if(symbol1.get()->symbolType == "person" or symbol2.get()->symbolType == "person")
-            edgesUpdated = true;
 	}
 
 
@@ -443,28 +391,16 @@ void SpecificWorker::AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldMo
 {
 	qDebug() << __FUNCTION__;
 
-//    static bool first = true;
-//
-//    if(!first)
-//        navigation.stopRobot();
-//    else
-//        first = false;
 
     QMutexLocker lockIM(mutex);
 
 
 	try {
 		AGMModelConverter::fromIceToInternal(w, worldModel);
-		static QTime reloj = QTime::currentTime();
-
 		innerModel.reset(AGMInner::extractInnerModel(worldModel));
-
-		qDebug()<<"------------------" << reloj.restart();
 
 		viewer->reloadInnerModel(innerModel);
 		navigation.updateInnerModel(innerModel);
-
-		structuralChange = true;
 
 	} catch(...) { qDebug()<<__FUNCTION__<<"Can't extract an InnerModel from the current model."; }
 
@@ -473,9 +409,6 @@ void SpecificWorker::AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldMo
 
 void SpecificWorker::AGMExecutiveTopic_symbolUpdated(const RoboCompAGMWorldModel::Node &modification)
 {
-//subscribesToCODE
-//	qDebug() << __FUNCTION__;
-
 	QMutexLocker locker(mutex);
 	AGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);
 
@@ -484,8 +417,6 @@ void SpecificWorker::AGMExecutiveTopic_symbolUpdated(const RoboCompAGMWorldModel
 
 void SpecificWorker::AGMExecutiveTopic_symbolsUpdated(const RoboCompAGMWorldModel::NodeSequence &modifications)
 {
-//subscribesToCODE
-//	qDebug() << __FUNCTION__;
 
 	QMutexLocker l(mutex);
 
