@@ -1,4 +1,4 @@
-import "SocialRulesData.idsl";
+import "SocialRules.idsl";
 import "DifferentialRobot.idsl";
 import "OmniRobot.idsl";
 import "Laser.idsl";
@@ -9,7 +9,7 @@ Component socialNavigationAgent
     Communications
     {
 		requires OmniRobot, Laser;
-		subscribesTo RCISMousePicker, SocialRulesData;
+		subscribesTo RCISMousePicker, SocialRules;
     };
     language Cpp;
     gui Qt(QWidget);

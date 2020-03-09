@@ -71,9 +71,17 @@ void SpecificWorker::initialize(int period)
     connect(removeT_button, SIGNAL (clicked()),this,SLOT(removeTherapy()));
     connect(currtime_slider, SIGNAL (valueChanged(int)),this,SLOT(affordanceTimeSliderChanged(int)));
 
+    checkObjectAffordance();
+
 	auto timeValue = currtime_slider->value();
 	QTime currentTime = QTime(timeValue / 60, timeValue % 60);
 	currentTime_timeEdit->setTime(currentTime);
+
+    QString hour = currentTime.toString(Qt::SystemLocaleShortDate);
+    for (auto const &[key,obj] : mapIdObjects)
+    {
+        mapCostsPerHour[hour].push_back(obj.cost);
+    }
 
 
 	this->Period = period;
@@ -84,16 +92,13 @@ void SpecificWorker::initialize(int period)
 
 void SpecificWorker::compute()
 {
-//QMutexLocker locker(mutex);
 
 	if (worldModelChanged)
 	{
 		updatePeopleInModel();
         checkInteractions();
-
 		checkObjectAffordance();
         applySocialRules();
-        //publish affordances and personal spaces updates
 
         publishPersonalSpaces();
         publishAffordances();
@@ -104,7 +109,6 @@ void SpecificWorker::compute()
 
 	else if (costChanged)
     {
-//        checkObjectAffordance();
         publishAffordances();
 
         costChanged = false;
@@ -280,7 +284,6 @@ void SpecificWorker::applySocialRules()
 
 }
 
-
 void SpecificWorker::drawPersonalSpace()
 {
     if (!interactingPersonsVec.empty())
@@ -296,22 +299,16 @@ void SpecificWorker::drawPersonalSpace()
 
 //---------------------- Objects ----------------------//
 
-
 void SpecificWorker::checkObjectAffordance()
 {
     qDebug()<< __FUNCTION__;
-
-    object_normalProbVisited.clear();
-    object_lowProbVisited.clear();
-    object_mediumProbVisited.clear();
-    object_highProbVisited.clear();
-    objectblock_seq.clear();
 
     auto vectorObjects = worldModel->getSymbolsByType("object");
 
     if (vectorObjects.size() != mapIdObjects.size())
     {
         mapIdObjects.clear();
+
 
         for (auto obj : vectorObjects) {
 
@@ -352,7 +349,6 @@ void SpecificWorker::checkObjectAffordance()
                 idobject_combobox->addItem(imName);
 
                 //Defining the affordance
-
                 if (object.shape == "trapezoid")
                     object.affordance = affordanceTrapezoidal(object);
 
@@ -370,39 +366,20 @@ void SpecificWorker::checkObjectAffordance()
 
             }
 
-
             mapIdObjects[imName] = object;
 
         }
     }
 
-    for (auto obj : vectorObjects)
-
+    for (auto obj : vectorObjects) //check if anyone is interacting with the object
     {
         QString imName = QString::fromStdString( obj->getAttribute("imName"));
-
-        auto cost = mapIdObjects[imName].cost;
-
-        if (cost == 1.5)
-            object_normalProbVisited.push_back(mapIdObjects[imName].affordance);
-
-        if (cost == 2)
-            object_lowProbVisited.push_back(mapIdObjects[imName].affordance);
-
-        if (cost == 2.5)
-            object_mediumProbVisited.push_back(mapIdObjects[imName].affordance);
-
-        if (cost == 3)
-            object_highProbVisited.push_back(mapIdObjects[imName].affordance);
-
-        qDebug()<< __FUNCTION__ << " cost is "<< cost;
 
         for (AGMModelSymbol::iterator it=obj->edgesBegin(worldModel); it != obj->edgesEnd(worldModel); it++)
         {
             AGMModelEdge edge = *it;
             if(edge->getLabel() == "interacting")
             {
-                objectblock_seq.push_back(mapIdObjects[imName].affordance);
                 mapIdObjects[imName].interacting = true;
                 break;
             }
@@ -539,7 +516,7 @@ void SpecificWorker::affordanceTimeSliderChanged(int step)
     QTime currentTime = QTime(hours,minutes);
     currentTime_timeEdit->setTime(currentTime);
 
-    for (auto [key,obj] : mapIdObjects)
+    for (auto const &[key,obj] : mapIdObjects)
     {
         if (obj.therapyProgrammed)
         {
@@ -574,6 +551,19 @@ void SpecificWorker::affordanceTimeSliderChanged(int step)
             mapIdObjects[key].prevCost = mapIdObjects[key].cost;
         }
     }
+
+
+    if(minutes % 10 == 0 or minutes % 10 == 5)
+    {
+        QString hour = currentTime.toString(Qt::SystemLocaleShortDate);
+        for (auto const &[key,obj] : mapIdObjects)
+        {
+            mapCostsPerHour[hour].push_back(obj.cost);
+        }
+    }
+
+
+
 }
 
 void SpecificWorker::affordanceTimeEditChanged(const QTime &time)
@@ -672,52 +662,79 @@ void SpecificWorker::recordData()
     }
     file5.close();
 
-
     qDebug()<< "-- Saving Affordances --";
+
     ofstream file7("results/object_normal.txt", ofstream::out);
-    for (auto s:object_normalProbVisited)
+    ofstream file8("results/object_lowP.txt", ofstream::out);
+    ofstream file9("results/object_medP.txt", ofstream::out);
+    ofstream file10("results/object_highP.txt", ofstream::out);
+    ofstream file11 ("results/objects.txt", ofstream::out);
+
+    std::ofstream costFile("results/costs.csv", ofstream::out);
+    vector<string> headers;
+
+    costFile<<"Time ";
+
+    for (auto const &[k,o] : mapIdObjects)
     {
-        for (auto p: s)
-            file7<< p.x << " " <<p.z<<" "<< endl;
-        file7<<" "<<endl;
+        costFile<< k.toStdString() << " ";
+
+        file11 << o.shape.toStdString() << " " << o.x << " " << o.z << " " << o.rot<< " " << o.width << " " << o.depth << endl;
+
+        if(o.cost == 1.5)
+        {
+            for (auto p: o.affordance)
+                file7 << p.x << " " << p.z << " " << endl;
+            file7 <<" "<<endl;
+        }
+
+        else if(o.cost == 2.0)
+        {
+            for (auto p: o.affordance)
+                file8 << p.x << " " << p.z << " "<< endl;
+            file8 <<" "<<endl;
+        }
+
+        else if(o.cost == 2.5)
+        {
+            for (auto p: o.affordance)
+                file9 << p.x << " " << p.z << " " << endl;
+            file9 <<" "<<endl;
+        }
+
+        else if(o.cost == 3.0)
+        {
+            for (auto p: o.affordance)
+                file10 << p.x << " " << p.z << " " << endl;
+            file10 <<" "<<endl;
+        }
     }
+
+    costFile<<std::endl;
+
+    for (auto const &[hour, costs] : mapCostsPerHour)
+    {
+
+        costFile << hour.toStdString() <<" ";
+        for(auto const& c: costs)
+        {
+            costFile << c <<" ";
+        }
+        costFile<<std::endl;
+    }
+
 
     file7.close();
-
-    ofstream file8("results/object_lowP.txt", ofstream::out);
-    for (auto s:object_lowProbVisited)
-    {
-        for (auto p: s)
-            file8<< p.x << " " <<p.z<<" "<< endl;
-        file8<<" "<<endl;
-    }
     file8.close();
-
-    ofstream file9("results/object_medP.txt", ofstream::out);
-    for (auto s:object_mediumProbVisited)
-    {
-        for (auto p: s)
-            file9<< p.x << " " <<p.z<<" "<< endl;
-        file9<<" "<<endl;
-    }
     file9.close();
-
-    ofstream file10("results/object_highP.txt", ofstream::out);
-    for (auto s:object_highProbVisited)
-    {
-        for (auto p: s)
-            file10<< p.x << " " <<p.z<<" "<< endl;
-        file10<<" "<<endl;
-    }
     file10.close();
-
-    ofstream file11 ("results/objects.txt", ofstream::out);
-    for (auto [k,o] : mapIdObjects)
-    {
-        file11 << o.shape.toStdString() <<" " <<o.x << " " <<o.z<<" "<<o.rot<< " " <<o.width <<" " << o.depth << endl;
-
-    }
     file11.close();
+    costFile.close();
+
+
+
+
+
 
 }
 

@@ -64,7 +64,6 @@ public slots:
 	void sm_initialize();
 	void sm_finalize();
 //--------------------
-
     void affordanceSliderChanged(int value);
     void affordanceTimeSliderChanged(int step);
     void affordanceTimeEditChanged(const QTime &time);
@@ -114,10 +113,8 @@ private:
     bool costChanged = false;
 
     SNGPolylineSeq intimateSpace_seq, personalSpace_seq, socialSpace_seq;
-    SNGPolylineSeq objectblock_seq, object_normalProbVisited, object_lowProbVisited, object_mediumProbVisited, object_highProbVisited;
 
-    //PARA GUARDAR LOS DATOS EN UN ARCHIVO
-
+    //To save data to file
     int32_t robotSymbolId;
     SNGPerson robot;
 
@@ -125,6 +122,9 @@ private:
     Point point;
     vector <Point> poserobot;
     float totaldist = 0;
+
+    std::map<QString, vector<float>> mapCostsPerHour;
+
 
     //------------------------------------------//
     std::shared_ptr<InnerModel> innerModel;
