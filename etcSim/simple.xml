@@ -41,8 +41,8 @@
   <upCommand command="rcremote localhost rgbd /home/robocomp/robocomp/components/robocomp-viriato/etcSim rcis simulation.xml -f 100" />
   <downCommand command="killall -9 rcis" />
   <configFile path="rcremote localhost configs /home/robocomp/robocomp/components/robocomp-viriato/etcSim kate simulation.xml" />
-  <xpos value="-58.4646681749" />
-  <ypos value="165.374688364" />
+  <xpos value="-158.4646681749" />
+  <ypos value="50.5106363282" />
   <radius value="10.0" />
   <color value="#3333FF" />
  </node>
@@ -53,8 +53,8 @@
   <upCommand command="rcremote localhost jstck /home/robocomp/robocomp/components/robocomp-robolab/components/hardware/external_control/joystickomni/ ./bin/joystickomni --Ice.Config=/home/robocomp/robocomp/components/robocomp-robolab/components/hardware/external_control/joystickomni/etc/config" />
   <downCommand command="killall -9 joystickomni" />
   <configFile path="/home/robocomp/robocomp/components/robocomp-robolab/components/hardware/external_control/joystickomni/etc/config" />
-  <xpos value="-185.691178623" />
-  <ypos value="162.195272272" />
+  <xpos value="-280.691178623" />
+  <ypos value="50.5106363282" />
   <radius value="10.0" />
   <color value="#FF3333" />
  </node>
@@ -64,8 +64,8 @@
   <upCommand command="rcremote localhost rgbd /home/robocomp/robocomp/components/robocomp-viriato/etcSim rcis simulation.xml -f 100" />
   <downCommand command="killall -9 rcis" />
   <configFile path="rcremote localhost configs /home/robocomp/robocomp/components/robocomp-viriato/etcSim kate simulation.xml" />
-  <xpos value="-116.350970747" />
-  <ypos value="164.639174274" />
+  <xpos value="-216.350970747" />
+  <ypos value="50.5106363282" />
   <radius value="10.0" />
   <color value="#FF3333" />
  </node>
@@ -75,8 +75,8 @@
   <upCommand command="rcremote localhost IS /home/robocomp/robocomp/components/robocomp-shelly/etc/ rcnode" />
   <downCommand command="killall -9 icebox" />
   <configFile path="/home/robocomp/robocomp/components/robocomp-shelly/etc/ursus.conf" />
-  <xpos value="-12.5219184602" />
-  <ypos value="50.4277941513" />
+  <xpos value="58.22150957623" />
+  <ypos value="-115.512538117" />
   <radius value="10.0" />
   <color value="#FF3333" />
  </node>
@@ -126,14 +126,14 @@
   <upCommand command="rcremote localhost socialnavAgnt /home/robocomp/robocomp/components/robocomp-viriato/components/newSocialNavigationAgent ./bin/socialNavigationAgent /home/robocomp/robocomp/components/robocomp-viriato/components/newSocialNavigationAgent/etc/config" />
   <downCommand command="killall -9 socialNavigationAgent" />
   <configFile path="/home/robocomp/robocomp/components/robocomp-viriato/components/newSocialNavigationAgent/etc/config" />
-  <xpos value="-271.097569307" />
-  <ypos value="20.5106363282" />
+  <xpos value="-60.097569307" />
+  <ypos value="-30.5106363282" />
   <radius value="10.0" />
   <color value="#33FF33" />
  </node>
 
  <node alias="socialRulesAgent" endpoint="agmcommonbehavior:tcp -h localhost -p 10331">
-  <dependence alias="socialRulesAgent" />
+  <dependence alias="newSocialnavigA" />
   <dependence alias="socialnavigG" />
   <dependence alias="executive" />
 
@@ -141,8 +141,8 @@
   <upCommand command="rcremote localhost socialRulesAgent /home/robocomp/robocomp/components/robocomp-viriato/components/socialRulesAgent ./bin/socialRulesAgent /home/robocomp/robocomp/components/robocomp-viriato/components/socialRulesAgent/etc/config" />
   <downCommand command="killall -9 socialRulesAgent" />
   <configFile path="/home/robocomp/robocomp/components/robocomp-viriato/components/socialRulesAgent/etc/config" />
-  <xpos value="-071.097569307" />
-  <ypos value="20.5106363282" />
+  <xpos value="-8.097569307" />
+  <ypos value="50.5106363282" />
   <radius value="10.0" />
   <color value="#33FF33" />
  </node>
@@ -152,8 +152,8 @@
   <upCommand command="rcremote localhost socialnavGauss /home/robocomp/robocomp/components/robocomp-viriato/components/socialnavigationGaussian python src/socialnavigationGaussian.py etc/config" />
   <downCommand command="pkill -9 -f socialnavigationGaussian.py"/>
 <configFile path="/home/robocomp/robocomp/components/robocomp-viriato/etcSim/socialnavigationGaussian.conf" />
-  <xpos value="-171.097569307" />
-  <ypos value="20.5106363282" />
+  <xpos value="100.097569307" />
+  <ypos value="50.5106363282" />
   <radius value="10.0" />
   <color value="#33FF33" />
  </node>
@@ -168,8 +168,8 @@
   <upCommand command="rcremote localhost humanFakeA /home/robocomp/robocomp/components/robocomp-viriato/components/fakeHumanAgent ./bin/fakeHumanAgent /home/robocomp/robocomp/components/robocomp-viriato/etcSim/humanFake.conf" />
   <downCommand command="killall -9 fakeHumanAgent" />
   <configFile path="/home/robocomp/robocomp/components/robocomp-viriato/etcSim/humanFake.conf" />
-  <xpos value="-250.9789855056" />
-  <ypos value="-240.5106363282" />
+  <xpos value="-150.9789855056" />
+  <ypos value="-224.933874221" />
   <radius value="10.0" />
   <color value="#33FF33" />
  </node>
@@ -181,8 +181,8 @@
   <upCommand command="rcremote localhost humanObserver /home/robocomp/robocomp/components/robocomp-viriato/components/humanObserverAgent ./bin/humanObserverAgent /home/robocomp/robocomp/components/robocomp-viriato/etcSim/humanObserverAgent.conf" />
   <downCommand command="killall -9 humanObserverAgent" />
   <configFile path="/home/robocomp/robocomp/components/robocomp-viriato/etcSim/humanObserverAgent.conf" />
-  <xpos value="-400.9789855056" />
-  <ypos value="-240.5106363282" />
+  <xpos value="-300.9789855056" />
+  <ypos value="-224.933874221" />
   <radius value="10.0" />
   <color value="#33FF33" />
  </node>

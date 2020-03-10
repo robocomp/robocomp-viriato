@@ -17,6 +17,7 @@
  *    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "specificworker.h"
+#include <cppitertools/zip.hpp>
 
 /**
 * \brief Default constructor
@@ -100,6 +101,8 @@ void SpecificWorker::compute()
 		checkObjectAffordance();
         applySocialRules();
 
+        updatePersonalSpacesInGraph();
+
         publishPersonalSpaces();
         publishAffordances();
 
@@ -121,7 +124,7 @@ void SpecificWorker::updatePeopleInModel()
 {
 	qDebug()<< __FUNCTION__;
 
-	totalPersonsSeq.clear();
+	sngPersonSeq.clear();
 	mapIdPersons.clear();
 
 	auto vectorPersons = worldModel->getSymbolsByType("person");
@@ -144,7 +147,7 @@ void SpecificWorker::updatePeopleInModel()
 		cout << "[FOUND] Person " << person.id << " x = " << person.x << " z = " << person.z << " rot " << person.angle << endl;
 
 		mapIdPersons[person.id] = person; //para acceder a la persona teniendo su id
-		totalPersonsSeq.push_back(person);
+		sngPersonSeq.push_back(person);
 	}
 }
 
@@ -157,7 +160,7 @@ void SpecificWorker::checkInteractions()
 	interactingPersonsVec.clear();
 
 
-	for (auto p: totalPersonsSeq) {
+	for (auto p: sngPersonSeq) {
 		auto id = p.id;
 		AGMModelSymbol::SPtr personAGM = worldModel->getSymbol(id);
 		int32_t pairId = -1;
@@ -265,21 +268,61 @@ void SpecificWorker::applySocialRules()
     {
         try
         {
-            for (auto personGroup: interactingPersonsVec)
-            {
-                SNGPolylineSeq initmate_result, personal_result, social_result;
-                socialnavigationgaussian_proxy-> getAllPersonalSpaces(personGroup, false, initmate_result, personal_result, social_result);
+            for (auto const &personGroup: interactingPersonsVec) {
+                SNGPolylineSeq intimateResult, personalResult, socialResult;
 
-                for (auto s:initmate_result) {intimateSpace_seq.push_back(s);}
-                for (auto s:personal_result) {personalSpace_seq.push_back(s);}
-                for (auto s:social_result) {socialSpace_seq.push_back(s);}
+                vector<QPolygonF> intimatePolygon, personalPolygon, socialPolygon;
+
+                socialnavigationgaussian_proxy->getAllPersonalSpaces(personGroup, false, intimateResult,
+                        personalResult, socialResult);
+
+
+                for (auto s:intimateResult) {intimateSpace_seq.push_back(s);}
+                for (auto s:personalResult) {personalSpace_seq.push_back(s);}
+                for (auto s:socialResult) {socialSpace_seq.push_back(s);}
+
+                arrangePersonalSpaces(personGroup, intimateResult, personalResult, socialResult);
             }
+
         }
 
         catch( const Ice::Exception &e)
         {
             std::cout << e << std::endl;
         }
+    }
+
+}
+
+void SpecificWorker::arrangePersonalSpaces(SNGPersonSeq personGroup,SNGPolylineSeq intimate,
+        SNGPolylineSeq personal, SNGPolylineSeq social)
+{
+    vector<int> groupIDs;
+
+    for(auto const &person:personGroup)
+        groupIDs.push_back(person.id);
+
+    qDebug()<<"Group ID " <<groupIDs;
+    qDebug()<< "----";
+
+
+    for(auto const &person: personGroup)
+    {
+        vector<int> sharingWith = groupIDs;
+        sharingWith.erase(std::remove(sharingWith.begin(), sharingWith.end(), person.id), sharingWith.end());
+
+        qDebug()<< person.id <<" is sharing polylines with " << sharingWith;
+
+        if(sharingWith.size() == 0)
+            mapIdSpaces[person.id].spacesSharedWith.clear();
+        else
+            mapIdSpaces[person.id].spacesSharedWith = sharingWith;
+
+
+        mapIdSpaces[person.id].intimatePolylines = intimate;
+        mapIdSpaces[person.id].personalPolylines = personal;
+        mapIdSpaces[person.id].socialPolylines = social;
+
     }
 
 }
@@ -577,7 +620,6 @@ void SpecificWorker::affordanceTimeEditChanged(const QTime &time)
     currtime_slider->setValue(totalMinutes);
 }
 
-
 void SpecificWorker::programTherapy()
 {
     qDebug()<<__FUNCTION__;
@@ -606,8 +648,6 @@ void SpecificWorker::removeTherapy()
     therapies_list->takeItem(item_to_delete);
 
     mapIdObjects[idobject_combobox->currentText()].therapyProgrammed = false;
-
-
 }
 
 void SpecificWorker::recordData()
@@ -624,7 +664,7 @@ void SpecificWorker::recordData()
 
     qDebug()<< "Saving in personpose.txt the human's poses";
     ofstream file2("results/personpose.txt", ofstream::out);
-    for (auto person:totalPersonsSeq)
+    for (auto person:sngPersonSeq)
     {
         file2<< person.x << " " <<person.z<<" "<<person.angle<< endl;
     }
@@ -731,13 +771,7 @@ void SpecificWorker::recordData()
     file11.close();
     costFile.close();
 
-
-
-
-
-
 }
-
 
 void SpecificWorker::checkRobotmov()
 {
@@ -766,7 +800,6 @@ void SpecificWorker::checkRobotmov()
     poserobot.push_back(point);
 
 }
-
 
 
 void SpecificWorker::publishPersonalSpaces()
@@ -812,6 +845,143 @@ void SpecificWorker::publishAffordances()
         qDebug()<< "Can't publish affordances";
     }
 
+}
+
+void SpecificWorker::updatePersonalSpacesInGraph()
+{
+
+    AGMModel::SPtr newModel(new AGMModel(worldModel));
+    bool newSymbol = false;
+
+    auto vectorSpacesInGraph = worldModel->getSymbolsByType("personalSpace");
+
+    vector<AGMModelEdge> edgesToPublish;
+
+    for(auto [personID,spaces] : mapIdSpaces)
+    {
+        std::string type = "personalSpace" ;
+        std::string imName = "personalSpace" + std::to_string(personID);
+
+        int spaceSymbolId = -1;
+
+        cout << "Type = "<<type << " " <<"imName = "<<imName<< endl;
+
+        for(auto spaces:vectorSpacesInGraph)
+        {
+            auto id = spaces->identifier;
+
+            if(newModel->getSymbolByIdentifier(id)->getAttribute("imName") == imName)
+            {
+                spaceSymbolId = id;
+                break;
+            }
+        }
+
+        if(spaceSymbolId == -1)  //Symbol not found
+        {
+            qDebug()<< "symbol not found";
+
+            // Symbolic part
+            AGMModelSymbol::SPtr personalSpace = newModel->newSymbol("personalSpace");
+            int spaceSymbolId = personalSpace->identifier;
+            printf("Got personalSpaceSymbolID: %d\n", spaceSymbolId);
+            personalSpace->setAttribute("imName", imName);
+            personalSpace->setAttribute("imType", "transform");
+
+
+            vector<string> polylinesStr = {"","",""};
+            vector <SNGPolylineSeq> polylinesSeq {spaces.intimatePolylines, spaces.personalPolylines, spaces.socialPolylines};
+
+            for (auto&&[str, polyline] : iter::zip(polylinesStr, polylinesSeq))
+            {
+                for(auto pol: polyline)
+                {
+                    for (auto p: pol)
+                    {
+
+                        string pointStr = to_string(p.x) + "," + to_string(p.z) + " ";
+                        str += pointStr;
+                    }
+                    str += ";";
+                }
+            }
+
+//            personalSpace->setAttribute("intimate", polylinesStr[0]);
+//            personalSpace->setAttribute("personal", polylinesStr[1]);
+//            personalSpace->setAttribute("social", polylinesStr[2]);
+//
+//            newModel->addEdgeByIdentifiers(personID,spaceSymbolId," ");
+
+//             Geometric part
+            std::map<std::string, std::string> edgeRTAtrs;
+
+            edgeRTAtrs["intimate"] = polylinesStr[0];
+            edgeRTAtrs["personal"] = polylinesStr[1];
+            edgeRTAtrs["social"] = polylinesStr[2];
+
+            newModel->addEdgeByIdentifiers(spaceSymbolId, personID, "RT", edgeRTAtrs);
+
+            newSymbol = true;
+        }
+
+        else
+        {
+            qDebug()<< "Symbol already in model";
+
+            vector<string> polylinesStr = {"","",""};
+            vector <SNGPolylineSeq> polylinesSeq {spaces.intimatePolylines, spaces.personalPolylines, spaces.socialPolylines};
+
+            for (auto&&[str, polyline] : iter::zip(polylinesStr, polylinesSeq))
+            {
+                for(auto pol: polyline)
+                {
+                    for (auto p: pol)
+                    {
+
+                        string pointStr = to_string(p.x) + "," + to_string(p.z) + " ";
+                        str += pointStr;
+                    }
+                    str += ";";
+                }
+            }
+
+            AGMModelEdge &edgeRT  = worldModel->getEdgeByIdentifiers(spaceSymbolId, personID, "RT");
+
+            edgeRT.attributes["intimate"] = polylinesStr[0];
+            edgeRT.attributes["personal"] = polylinesStr[1];
+            edgeRT.attributes["social"] = polylinesStr[2];
+
+            edgesToPublish.push_back(edgeRT);
+
+        }
+
+    }
+
+    if(newSymbol)
+    {
+        try {
+            sendModificationProposal(worldModel, newModel);
+        }
+        catch(...)
+        {
+            qDebug()<< "Can't send modification proposal";
+        }
+    }
+
+    else
+    {
+        for(auto edgeRT : edgesToPublish)
+        {
+            try
+            {
+                AGMMisc::publishEdgeUpdate(edgeRT, agmexecutive_proxy);
+            }
+            catch(std::exception& e)
+            {
+                std::cout<<"Exception moving in AGM: "<<e.what()<<std::endl;
+            }
+        }
+    }
 }
 
 

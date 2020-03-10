@@ -31,6 +31,7 @@
 #include <genericworker.h>
 #include <innermodel/innermodel.h>
 
+
 class SpecificWorker : public GenericWorker
 {
 Q_OBJECT
@@ -75,11 +76,25 @@ public slots:
 
 private:
 
-    SNGPersonSeq totalPersonsSeq;
+    SNGPersonSeq sngPersonSeq;
     std::map<int32_t, SNGPerson> mapIdPersons;
     vector <SNGPersonSeq> interactingPersonsVec; //vector de grupos que interactuan entre ellos
 
-    bool worldModelChanged = false;
+    struct PersonalSpaceType
+    {
+		SNGPolylineSeq intimatePolylines;
+		SNGPolylineSeq personalPolylines;
+		SNGPolylineSeq socialPolylines;
+
+        vector<int> spacesSharedWith;
+    };
+
+    std::map<int32_t, PersonalSpaceType> mapIdSpaces;
+
+	SNGPolylineSeq intimateSpace_seq, personalSpace_seq, socialSpace_seq;
+
+
+	bool worldModelChanged = false;
 
     struct ObjectType
     {
@@ -112,7 +127,6 @@ private:
     std::map<QString, ObjectType> mapIdObjects;
     bool costChanged = false;
 
-    SNGPolylineSeq intimateSpace_seq, personalSpace_seq, socialSpace_seq;
 
     //To save data to file
     int32_t robotSymbolId;
@@ -148,6 +162,10 @@ private:
 	void applySocialRules();
 	void publishPersonalSpaces();
 	void publishAffordances();
+
+	void updatePersonalSpacesInGraph();
+	void arrangePersonalSpaces(SNGPersonSeq personGroup,SNGPolylineSeq intimate,
+			SNGPolylineSeq personal, SNGPolylineSeq social);
 
     void checkRobotmov();
 

@@ -275,7 +275,7 @@ int ::localizationAgent::run(int argc, char* argv[])
 			AGMExecutiveTopicPtr agmexecutivetopicI_ =  new AGMExecutiveTopicI(worker);
 			Ice::ObjectPrx agmexecutivetopic = AGMExecutiveTopic_adapter->addWithUUID(agmexecutivetopicI_)->ice_oneway();
 			if(!agmexecutivetopic_topic)
-			{
+
 				try {
 					agmexecutivetopic_topic = topicManager->create("AGMExecutiveTopic");
 				}

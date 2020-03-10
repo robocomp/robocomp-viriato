@@ -294,7 +294,7 @@ void SpecificWorker::sm_publish()
 
 void SpecificWorker::sm_pop_data()
 {
-	std::cout<<"Entered state pop_data"<<std::endl;
+//	std::cout<<"Entered state pop_data"<<std::endl;
 	if(not db.isEmpty())
 	{
 		poseRead = db.get();
@@ -316,7 +316,7 @@ void SpecificWorker::sm_pop_data()
 	}
 	else
 	{
-		std::cout<<"No data"<<std::endl;
+//		std::cout<<"No data"<<std::endl;
 		QTimer::singleShot(200,this, SIGNAL(t_pop_data_to_pop_data()));
 	}
 }
@@ -460,6 +460,24 @@ StateStruct SpecificWorker::AGMCommonBehavior_getAgentState()
 	}
 	s.info = p.action.name;
 	return s;
+}
+
+void SpecificWorker::AGMExecutiveTopic_selfEdgeAdded(const int nodeid, const string &edgeType, const RoboCompAGMWorldModel::StringDictionary &attributes)
+{
+//subscribesToCODE
+    QMutexLocker lockIM(mutex);
+    try { worldModel->addEdgeByIdentifiers(nodeid, nodeid, edgeType, attributes); } catch(...){ printf("Couldn't add an edge. Duplicate?\n"); }
+
+    try { innerModel = std::make_shared<InnerModel>(AGMInner::extractInnerModel(worldModel)); } catch(...) { printf("Can't extract an InnerModel from the current model.\n"); }
+}
+
+void SpecificWorker::AGMExecutiveTopic_selfEdgeDeleted(const int nodeid, const string &edgeType)
+{
+//subscribesToCODE
+    QMutexLocker lockIM(mutex);
+    try { worldModel->removeEdgeByIdentifiers(nodeid, nodeid, edgeType); } catch(...) { printf("Couldn't remove an edge\n"); }
+
+    try { innerModel = std::make_shared<InnerModel>(AGMInner::extractInnerModel(worldModel)); } catch(...) { printf("Can't extract an InnerModel from the current model.\n"); }
 }
 
 void SpecificWorker::AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldModel::World &w)
