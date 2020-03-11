@@ -294,8 +294,35 @@ bool SpecificWorker::removeFromAGM(int id)
 	printf("removeFromAGM begins\n");
 	bool result = false;
 	AGMModel::SPtr newModel(new AGMModel(worldModel));
+
+	AGMModelSymbol::SPtr personAGM = worldModel->getSymbolByIdentifier(personMap[id].personSymbolId);
+
+
+	for (AGMModelSymbol::iterator edge = personAGM->edgesBegin(worldModel);
+		 edge!=personAGM->edgesEnd(worldModel);
+		 edge++) {
+        const std::pair<int32_t, int32_t> symbolPair = edge->getSymbolPair();
+
+        AGMModelSymbol::SPtr first = worldModel->getSymbol(symbolPair.first);
+        AGMModelSymbol::SPtr second = worldModel->getSymbol(symbolPair.second);
+        string firstType = first->typeString();
+        string secondType = second->typeString();
+
+        qDebug()<< "FIRST "<< QString::fromStdString(first->typeString()) << "SECOND "<< QString::fromStdString(secondType);
+
+        if(firstType == "person" and secondType != "room")
+        {
+            qDebug() << "Identifier "<<second->identifier << " Type "<< QString::fromStdString(secondType);
+            newModel->removeEdgesRelatedToSymbol(second->identifier);
+            newModel->removeSymbol(second->identifier);
+        }
+
+
+	}
+
 	newModel->removeEdgesRelatedToSymbol(personMap[id].personSymbolId);
 	newModel->removeSymbol(personMap[id].personSymbolId);
+
 	while (true)
 	{
 		try
@@ -318,6 +345,8 @@ bool SpecificWorker::removeFromAGM(int id)
 		}
 		sleep(1);
 	}
+
+
 	printf("removeFromAGM ends\n");
 	return result;
 }
