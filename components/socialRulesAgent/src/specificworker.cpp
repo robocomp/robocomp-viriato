@@ -94,7 +94,7 @@ void SpecificWorker::initialize(int period)
 void SpecificWorker::compute()
 {
 
-	if (worldModelChanged)
+    if (worldModelChanged)
 	{
 		updatePeopleInModel();
         checkInteractions();
@@ -850,23 +850,26 @@ void SpecificWorker::publishAffordances()
 void SpecificWorker::updatePersonalSpacesInGraph()
 {
 
+    qDebug()<<__FUNCTION__;
+    //queda publicar la lista de ids que comparten esos espacios y ver si es mejor publicarlo como atributos del nodo
+
     AGMModel::SPtr newModel(new AGMModel(worldModel));
     bool newSymbol = false;
 
-    auto vectorSpacesInGraph = worldModel->getSymbolsByType("personalSpace");
+    auto vectorSpacesInGraph = newModel->getSymbolsByType("personalSpace");
+
+    qDebug()<< "Number of personal spaces in graph = " << vectorSpacesInGraph.size();
 
     vector<AGMModelEdge> edgesToPublish;
 
     for(auto [personID,spaces] : mapIdSpaces)
     {
         std::string type = "personalSpace" ;
-        std::string imName = "personalSpace" + std::to_string(personID);
+        std::string imName = "personalSpaceOf" + std::to_string(personID);
 
         int spaceSymbolId = -1;
 
-        cout << "Type = "<<type << " " <<"imName = "<<imName<< endl;
-
-        for(auto spaces:vectorSpacesInGraph)
+        for(auto spaces : vectorSpacesInGraph)
         {
             auto id = spaces->identifier;
 
@@ -879,12 +882,20 @@ void SpecificWorker::updatePersonalSpacesInGraph()
 
         if(spaceSymbolId == -1)  //Symbol not found
         {
-            qDebug()<< "symbol not found";
+            qDebug()<< "----- Symbol not found ----- ";
+            qDebug() << "imName = "<< QString::fromStdString(imName) << " " <<"symbolId = "<<spaceSymbolId;
+
+            try { AGMModelSymbol::SPtr personSymbol = newModel->getSymbol(personID); }
+            catch(...)
+            {
+                qDebug() << "PERSON "<< personID << " NOT FOUND IN WORDMODEL ";
+                return;
+            }
 
             // Symbolic part
             AGMModelSymbol::SPtr personalSpace = newModel->newSymbol("personalSpace");
-            int spaceSymbolId = personalSpace->identifier;
-            printf("Got personalSpaceSymbolID: %d\n", spaceSymbolId);
+            spaceSymbolId = personalSpace->identifier;
+            printf("Got SpaceSymbolID: %d\n", spaceSymbolId);
             personalSpace->setAttribute("imName", imName);
             personalSpace->setAttribute("imType", "transform");
 
@@ -906,27 +917,22 @@ void SpecificWorker::updatePersonalSpacesInGraph()
                 }
             }
 
-//            personalSpace->setAttribute("intimate", polylinesStr[0]);
-//            personalSpace->setAttribute("personal", polylinesStr[1]);
-//            personalSpace->setAttribute("social", polylinesStr[2]);
-//
-//            newModel->addEdgeByIdentifiers(personID,spaceSymbolId," ");
-
 //             Geometric part
-            std::map<std::string, std::string> edgeRTAtrs;
+            std::map<std::string, std::string> edgeAtrs;
 
-            edgeRTAtrs["intimate"] = polylinesStr[0];
-            edgeRTAtrs["personal"] = polylinesStr[1];
-            edgeRTAtrs["social"] = polylinesStr[2];
+            edgeAtrs["intimate"] = polylinesStr[0];
+            edgeAtrs["personal"] = polylinesStr[1];
+            edgeAtrs["social"] = polylinesStr[2];
 
-            newModel->addEdgeByIdentifiers(spaceSymbolId, personID, "RT", edgeRTAtrs);
+            newModel->addEdgeByIdentifiers(personID,spaceSymbolId, "has", edgeAtrs);
 
             newSymbol = true;
         }
 
         else
         {
-            qDebug()<< "Symbol already in model";
+            qDebug()<< " ----- Symbol already in model -----";
+            qDebug() << "imName = "<< QString::fromStdString(imName) << " " <<"symbolId = "<<spaceSymbolId;
 
             vector<string> polylinesStr = {"","",""};
             vector <SNGPolylineSeq> polylinesSeq {spaces.intimatePolylines, spaces.personalPolylines, spaces.socialPolylines};
@@ -945,13 +951,23 @@ void SpecificWorker::updatePersonalSpacesInGraph()
                 }
             }
 
-            AGMModelEdge &edgeRT  = worldModel->getEdgeByIdentifiers(spaceSymbolId, personID, "RT");
+            try
+            {
+                AGMModelSymbol::SPtr spaceParent = worldModel->getParentByLink(spaceSymbolId, "has");
+                AGMModelEdge &edgePS  = newModel->getEdgeByIdentifiers(spaceParent->identifier,spaceSymbolId, "has");
 
-            edgeRT.attributes["intimate"] = polylinesStr[0];
-            edgeRT.attributes["personal"] = polylinesStr[1];
-            edgeRT.attributes["social"] = polylinesStr[2];
+                edgePS.attributes["intimate"] = polylinesStr[0];
+                edgePS.attributes["personal"] = polylinesStr[1];
+                edgePS.attributes["social"] = polylinesStr[2];
 
-            edgesToPublish.push_back(edgeRT);
+                edgesToPublish.push_back(edgePS);
+
+            }
+
+            catch(...)
+            {
+                qDebug()<< "[ERROR] CANT READ EDGE FROM AGM";
+            }
 
         }
 
@@ -970,17 +986,15 @@ void SpecificWorker::updatePersonalSpacesInGraph()
 
     else
     {
-        for(auto edgeRT : edgesToPublish)
+        try
         {
-            try
-            {
-                AGMMisc::publishEdgeUpdate(edgeRT, agmexecutive_proxy);
-            }
-            catch(std::exception& e)
-            {
-                std::cout<<"Exception moving in AGM: "<<e.what()<<std::endl;
-            }
+            AGMMisc::publishEdgesUpdate(edgesToPublish, agmexecutive_proxy);
         }
+        catch(std::exception& e)
+        {
+            std::cout<<"Exception moving in AGM: "<<e.what()<<std::endl;
+        }
+
     }
 }
 
