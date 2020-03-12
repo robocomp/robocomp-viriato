@@ -96,6 +96,13 @@ private:
 
 	bool worldModelChanged = false;
 
+	struct Therapy
+	{
+		int id;
+		QTime startT;
+		QTime endT;
+	};
+
     struct ObjectType
     {
         int id;
@@ -118,9 +125,8 @@ private:
         float inter_angle;
 
 
-        bool therapyProgrammed = false;
-        QTime startT;
-        QTime endT;
+        bool therapiesProgrammed = false;
+		vector<Therapy> therapies;
 
     };
 

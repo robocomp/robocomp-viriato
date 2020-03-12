@@ -303,6 +303,9 @@ class Navigation
 
         void updatePersonalPolylines(SNGPolylineSeq intimate_seq, SNGPolylineSeq personal_seq, SNGPolylineSeq social_seq)
         {
+
+
+
             intimateSpaces.clear();
             personalSpaces.clear();
             socialSpaces.clear();

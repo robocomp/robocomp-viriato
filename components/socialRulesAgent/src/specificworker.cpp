@@ -79,9 +79,9 @@ void SpecificWorker::initialize(int period)
 	currentTime_timeEdit->setTime(currentTime);
 
     QString hour = currentTime.toString(Qt::SystemLocaleShortDate);
-    for (auto const &[key,obj] : mapIdObjects)
+    for (auto const &map : mapIdObjects)
     {
-        mapCostsPerHour[hour].push_back(obj.cost);
+        mapCostsPerHour[hour].push_back(map.second.cost);
     }
 
 
@@ -101,7 +101,7 @@ void SpecificWorker::compute()
 		checkObjectAffordance();
         applySocialRules();
 
-        updatePersonalSpacesInGraph();
+//        updatePersonalSpacesInGraph();
 
         publishPersonalSpaces();
         publishAffordances();
@@ -561,37 +561,72 @@ void SpecificWorker::affordanceTimeSliderChanged(int step)
 
     for (auto const &[key,obj] : mapIdObjects)
     {
-        if (obj.therapyProgrammed)
+        if (obj.therapiesProgrammed)
         {
-            auto before30 = obj.startT.addSecs(-(60*30));
-            auto before15 = obj.startT.addSecs(-(60*15));
-            auto after15 = obj.endT.addSecs(60*15);
-            auto after30 = obj.endT.addSecs(60*30);
-
-
-            if(obj.startT <= currentTime and currentTime <= obj.endT)
+            for(auto const & th : obj.therapies)
             {
-                mapIdObjects[key].cost = 3.0;
-            }
-            else if ((before15 <= currentTime and currentTime <= obj.startT) or (obj.endT <= currentTime and currentTime <= after15))
-            {
-                mapIdObjects[key].cost = 2.5;
+                auto idTherapy = th.id;
 
-            }
-            else if ((before30 <= currentTime and currentTime <= before15) or (after15 <= currentTime and currentTime <= after30))
-            {
-                mapIdObjects[key].cost = 2.0;
+                auto before30 = th.startT.addSecs(-(60*30));
+                auto before15 = th.startT.addSecs(-(60*15));
+                auto after15 = th.endT.addSecs(60*15);
+                auto after30 = th.endT.addSecs(60*30);
+
+
+                if(th.startT <= currentTime and currentTime <= th.endT)
+                {
+                    mapIdObjects[key].cost = 3.0;
+                }
+                else if ((before15 <= currentTime and currentTime <= th.startT) or (th.endT <= currentTime and currentTime <= after15))
+                {
+                    mapIdObjects[key].cost = 2.5;
+                }
+                else if ((before30 <= currentTime and currentTime <= before15) or (after15 <= currentTime and currentTime <= after30))
+                {
+                    mapIdObjects[key].cost = 2.0;
+                }
+
+                if (currentTime > after30)
+                {
+                    mapIdObjects[key].therapies.erase(std::remove_if( mapIdObjects[key].therapies.begin(),
+                            mapIdObjects[key].therapies.end(), [idTherapy](auto &th) { return idTherapy == th.id; }),
+                            mapIdObjects[key].therapies.end());
+
+
+                    for(int i = 0; i < therapies_list->count(); ++i)
+                    {
+                        int idTherapyInList = therapies_list->item(i)->text().split(" ")[0].toFloat();
+
+                        if (idTherapyInList == idTherapy)
+                        {
+                            therapies_list->takeItem(i);
+                            break;
+                        }
+                    }
+
+                    if (mapIdObjects[key].therapies.size() == 0)
+                        mapIdObjects[key].therapiesProgrammed = false;
+
+                    mapIdObjects[key].cost = 1.5;
+
+                }
+//                else
+//                {
+//                    mapIdObjects[key].cost = 1.5;
+//                }
+
+                if(mapIdObjects[key].cost != mapIdObjects[key].prevCost)
+                    costChanged = true;
+
+                mapIdObjects[key].prevCost = mapIdObjects[key].cost;
             }
 
-            else
-            {
-                mapIdObjects[key].cost = 1.5;
-            }
+        }
 
-            if(mapIdObjects[key].cost != mapIdObjects[key].prevCost)
-                costChanged = true;
+        else
+        {
+            mapIdObjects[key].cost = 1.5;
 
-            mapIdObjects[key].prevCost = mapIdObjects[key].cost;
         }
     }
 
@@ -599,9 +634,9 @@ void SpecificWorker::affordanceTimeSliderChanged(int step)
     if(minutes % 10 == 0 or minutes % 10 == 5)
     {
         QString hour = currentTime.toString(Qt::SystemLocaleShortDate);
-        for (auto const &[key,obj] : mapIdObjects)
+        for (auto const &map : mapIdObjects)
         {
-            mapCostsPerHour[hour].push_back(obj.cost);
+            mapCostsPerHour[hour].push_back(map.second.cost);
         }
     }
 
@@ -620,9 +655,12 @@ void SpecificWorker::affordanceTimeEditChanged(const QTime &time)
     currtime_slider->setValue(totalMinutes);
 }
 
-void SpecificWorker::programTherapy()
+void SpecificWorker::programTherapy() //comprobar que no haya una terapia programada a esa hora o que no se solapen
 {
     qDebug()<<__FUNCTION__;
+
+    static int idTherapy = 0;
+
     if(idobject_combobox->currentText() == "")
     {
         qDebug()<< "Please, select object to program the therapy";
@@ -631,23 +669,44 @@ void SpecificWorker::programTherapy()
 
     qDebug() << "Programing therapy with " << idobject_combobox->currentText() << " from " << startTherapy_timeEdit->time()<< " to " << endTherapy_timeEdit->time();
 
-    auto therapy = (idobject_combobox->currentText() +QString ("    ")+ startTherapy_timeEdit->time().toString(Qt::SystemLocaleShortDate)
-            + " - " + endTherapy_timeEdit->time().toString(Qt::SystemLocaleShortDate));
+
+    Therapy ther;
+    ther.startT = startTherapy_timeEdit->time();
+    ther.endT = endTherapy_timeEdit->time();
+    ther.id = idTherapy;
+    idTherapy++;
+
+    auto therapy = ( QString::number(ther.id) + QString ("    ") + idobject_combobox->currentText() +QString ("    ")+ startTherapy_timeEdit->time().toString(Qt::SystemLocaleShortDate)
+            + "-" + endTherapy_timeEdit->time().toString(Qt::SystemLocaleShortDate));
 
     therapies_list->addItem(therapy);
 
-    mapIdObjects[idobject_combobox->currentText()].therapyProgrammed = true;
-    mapIdObjects[idobject_combobox->currentText()].startT = startTherapy_timeEdit->time();
-    mapIdObjects[idobject_combobox->currentText()].endT = endTherapy_timeEdit->time();
+    mapIdObjects[idobject_combobox->currentText()].therapies.push_back(ther);
+    mapIdObjects[idobject_combobox->currentText()].therapiesProgrammed = true;
+
+
+//    mapIdObjects[idobject_combobox->currentText()].startT = startTherapy_timeEdit->time();
+//    mapIdObjects[idobject_combobox->currentText()].endT = endTherapy_timeEdit->time();
 
 }
 
 void SpecificWorker::removeTherapy()
 {
     auto item_to_delete = therapies_list->currentRow();
+    auto item = therapies_list->item(item_to_delete)->text();
+
+    int idTherapy = item.split(" ")[0].toFloat();
+
+
+     mapIdObjects[idobject_combobox->currentText()].therapies.erase(std::remove_if( mapIdObjects[idobject_combobox->currentText()].therapies.begin(),
+             mapIdObjects[idobject_combobox->currentText()].therapies.end(), [idTherapy](auto &th) { return idTherapy == th.id; }),
+                     mapIdObjects[idobject_combobox->currentText()].therapies.end());
+
     therapies_list->takeItem(item_to_delete);
 
-    mapIdObjects[idobject_combobox->currentText()].therapyProgrammed = false;
+    if( mapIdObjects[idobject_combobox->currentText()].therapies.size() == 0)
+        mapIdObjects[idobject_combobox->currentText()].therapiesProgrammed = false;
+
 }
 
 void SpecificWorker::recordData()
@@ -822,16 +881,16 @@ void SpecificWorker::publishAffordances()
 
     SRObjectSeq objectsToSend;
 
-    for (auto [k,o] : mapIdObjects)
+    for (auto const &map : mapIdObjects)
     {
         SRObject object;
-        object.name = o.imName;
-        object.x = o.x;
-        object.z = o.z;
-        object.interacting = o.interacting;
+        object.name = map.second.imName;
+        object.x = map.second.x;
+        object.z = map.second.z;
+        object.interacting = map.second.interacting;
 
-        object.cost = o.cost;
-        object.affordance = o.affordance;
+        object.cost = map.second.cost;
+        object.affordance = map.second.affordance;
 
         objectsToSend.push_back(object);
     }
@@ -860,7 +919,7 @@ void SpecificWorker::updatePersonalSpacesInGraph()
 
     qDebug()<< "Number of personal spaces in graph = " << vectorSpacesInGraph.size();
 
-    vector<AGMModelEdge> edgesToPublish;
+    vector<AGMModelSymbol::SPtr> symbolsToPublish;
 
     for(auto [personID,spaces] : mapIdSpaces)
     {
@@ -880,6 +939,34 @@ void SpecificWorker::updatePersonalSpacesInGraph()
             }
         }
 
+        vector<string> polylinesStr = {"","",""};
+        vector <SNGPolylineSeq> polylinesSeq {spaces.intimatePolylines, spaces.personalPolylines, spaces.socialPolylines};
+
+        for (auto&&[str, polyline] : iter::zip(polylinesStr, polylinesSeq))
+        {
+            for(auto pol: polyline)
+            {
+                for (auto p: pol)
+                {
+
+                    string pointStr = to_string(p.x) + "," + to_string(p.z) + " ";
+                    str += pointStr;
+                }
+                str += ";";
+            }
+        }
+
+        string sharedWith;
+        if(spaces.spacesSharedWith.size() == 0)
+            sharedWith = "";
+        else
+        {
+            for(auto id: spaces.spacesSharedWith)
+                sharedWith += to_string(id) + " ";
+
+        }
+
+
         if(spaceSymbolId == -1)  //Symbol not found
         {
             qDebug()<< "----- Symbol not found ----- ";
@@ -897,34 +984,15 @@ void SpecificWorker::updatePersonalSpacesInGraph()
             spaceSymbolId = personalSpace->identifier;
             printf("Got SpaceSymbolID: %d\n", spaceSymbolId);
             personalSpace->setAttribute("imName", imName);
-            personalSpace->setAttribute("imType", "transform");
+
+            personalSpace->setAttribute("intimate", polylinesStr[0]);
+            personalSpace->setAttribute("personal", polylinesStr[1]);
+            personalSpace->setAttribute("social", polylinesStr[2]);
+            personalSpace->setAttribute("sharedWith", sharedWith);
 
 
-            vector<string> polylinesStr = {"","",""};
-            vector <SNGPolylineSeq> polylinesSeq {spaces.intimatePolylines, spaces.personalPolylines, spaces.socialPolylines};
 
-            for (auto&&[str, polyline] : iter::zip(polylinesStr, polylinesSeq))
-            {
-                for(auto pol: polyline)
-                {
-                    for (auto p: pol)
-                    {
-
-                        string pointStr = to_string(p.x) + "," + to_string(p.z) + " ";
-                        str += pointStr;
-                    }
-                    str += ";";
-                }
-            }
-
-//             Geometric part
-            std::map<std::string, std::string> edgeAtrs;
-
-            edgeAtrs["intimate"] = polylinesStr[0];
-            edgeAtrs["personal"] = polylinesStr[1];
-            edgeAtrs["social"] = polylinesStr[2];
-
-            newModel->addEdgeByIdentifiers(personID,spaceSymbolId, "has", edgeAtrs);
+            newModel->addEdgeByIdentifiers(personID,spaceSymbolId, "has");
 
             newSymbol = true;
         }
@@ -934,33 +1002,16 @@ void SpecificWorker::updatePersonalSpacesInGraph()
             qDebug()<< " ----- Symbol already in model -----";
             qDebug() << "imName = "<< QString::fromStdString(imName) << " " <<"symbolId = "<<spaceSymbolId;
 
-            vector<string> polylinesStr = {"","",""};
-            vector <SNGPolylineSeq> polylinesSeq {spaces.intimatePolylines, spaces.personalPolylines, spaces.socialPolylines};
-
-            for (auto&&[str, polyline] : iter::zip(polylinesStr, polylinesSeq))
-            {
-                for(auto pol: polyline)
-                {
-                    for (auto p: pol)
-                    {
-
-                        string pointStr = to_string(p.x) + "," + to_string(p.z) + " ";
-                        str += pointStr;
-                    }
-                    str += ";";
-                }
-            }
-
             try
             {
-                AGMModelSymbol::SPtr spaceParent = worldModel->getParentByLink(spaceSymbolId, "has");
-                AGMModelEdge &edgePS  = newModel->getEdgeByIdentifiers(spaceParent->identifier,spaceSymbolId, "has");
+                AGMModelSymbol::SPtr spaceSymbol = worldModel->getSymbolByIdentifier(spaceSymbolId);
 
-                edgePS.attributes["intimate"] = polylinesStr[0];
-                edgePS.attributes["personal"] = polylinesStr[1];
-                edgePS.attributes["social"] = polylinesStr[2];
+                spaceSymbol->setAttribute("intimate", polylinesStr[0]);
+                spaceSymbol->setAttribute("personal", polylinesStr[1]);
+                spaceSymbol->setAttribute("social", polylinesStr[2]);
+                spaceSymbol->setAttribute("sharedWith", sharedWith);
 
-                edgesToPublish.push_back(edgePS);
+                symbolsToPublish.push_back(spaceSymbol);
 
             }
 
@@ -978,22 +1029,24 @@ void SpecificWorker::updatePersonalSpacesInGraph()
         try {
             sendModificationProposal(worldModel, newModel);
         }
-        catch(...)
+        catch(std::exception& e)
         {
-            qDebug()<< "Can't send modification proposal";
+            std::cout<<"Exception moving in AGM: "<<e.what()<<std::endl;
         }
     }
 
     else
     {
+
         try
         {
-            AGMMisc::publishEdgesUpdate(edgesToPublish, agmexecutive_proxy);
+            AGMMisc::publishNodesUpdate(symbolsToPublish, agmexecutive_proxy);
         }
         catch(std::exception& e)
         {
-            std::cout<<"Exception moving in AGM: "<<e.what()<<std::endl;
+            std::cout<<"Exception updating SYMBOLS AGM: "<<e.what()<<std::endl;
         }
+
 
     }
 }
@@ -1016,10 +1069,6 @@ void SpecificWorker::sm_finalize()
 {
 //	std::cout<<"Entered final state finalize"<<std::endl;
 }
-
-
-
-
 
 bool SpecificWorker::AGMCommonBehavior_activateAgent(const ParameterMap &prs)
 {
@@ -1094,6 +1143,7 @@ int SpecificWorker::AGMCommonBehavior_uptimeAgent()
 
 void SpecificWorker::AGMExecutiveTopic_edgeUpdated(const RoboCompAGMWorldModel::Edge &modification)
 {
+    qDebug()<< __FUNCTION__;
 //subscribesToCODE
 	QMutexLocker locker(mutex);
 	AGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);
@@ -1109,6 +1159,7 @@ void SpecificWorker::AGMExecutiveTopic_edgeUpdated(const RoboCompAGMWorldModel::
 
 void SpecificWorker::AGMExecutiveTopic_edgesUpdated(const RoboCompAGMWorldModel::EdgeSequence &modifications)
 {
+    qDebug()<< __FUNCTION__;
 //subscribesToCODE
 	QMutexLocker lockIM(mutex);
 	for (auto modification : modifications)
@@ -1127,6 +1178,7 @@ void SpecificWorker::AGMExecutiveTopic_edgesUpdated(const RoboCompAGMWorldModel:
 
 void SpecificWorker::AGMExecutiveTopic_selfEdgeAdded(const int nodeid, const string &edgeType, const RoboCompAGMWorldModel::StringDictionary &attributes)
 {
+    qDebug()<< __FUNCTION__;
 //subscribesToCODE
 	QMutexLocker lockIM(mutex);
  	try { worldModel->addEdgeByIdentifiers(nodeid, nodeid, edgeType, attributes); } catch(...){ printf("Couldn't add an edge. Duplicate?\n"); }
@@ -1136,6 +1188,7 @@ void SpecificWorker::AGMExecutiveTopic_selfEdgeAdded(const int nodeid, const str
 
 void SpecificWorker::AGMExecutiveTopic_selfEdgeDeleted(const int nodeid, const string &edgeType)
 {
+    qDebug()<< __FUNCTION__;
 //subscribesToCODE
 	QMutexLocker lockIM(mutex);
  	try { worldModel->removeEdgeByIdentifiers(nodeid, nodeid, edgeType); } catch(...) { printf("Couldn't remove an edge\n"); }
@@ -1145,6 +1198,7 @@ void SpecificWorker::AGMExecutiveTopic_selfEdgeDeleted(const int nodeid, const s
 
 void SpecificWorker::AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldModel::World &w)
 {
+    qDebug()<< __FUNCTION__;
 //subscribesToCODE
 	QMutexLocker lockIM(mutex);
  	AGMModelConverter::fromIceToInternal(w, worldModel);
@@ -1156,6 +1210,7 @@ void SpecificWorker::AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldMo
 
 void SpecificWorker::AGMExecutiveTopic_symbolUpdated(const RoboCompAGMWorldModel::Node &modification)
 {
+    qDebug()<< __FUNCTION__;
 //subscribesToCODE
 	QMutexLocker locker(mutex);
 	AGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);
@@ -1164,7 +1219,7 @@ void SpecificWorker::AGMExecutiveTopic_symbolUpdated(const RoboCompAGMWorldModel
 
 void SpecificWorker::AGMExecutiveTopic_symbolsUpdated(const RoboCompAGMWorldModel::NodeSequence &modifications)
 {
-
+    qDebug()<< __FUNCTION__;
 //subscribesToCODE
 	QMutexLocker l(mutex);
 	for (auto modification : modifications)
@@ -1223,6 +1278,8 @@ bool SpecificWorker::setParametersAndPossibleActivation(const ParameterMap &prs,
 }
 void SpecificWorker::sendModificationProposal(AGMModel::SPtr &worldModel, AGMModel::SPtr &newModel)
 {
+
+    qDebug()<< __FUNCTION__;
 	try
 	{
 		AGMMisc::publishModification(newModel, agmexecutive_proxy, "socialRulesAgentAgent");
