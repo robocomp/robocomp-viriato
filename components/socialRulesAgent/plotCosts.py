@@ -14,11 +14,12 @@ matplotlib.use('TkAgg')
 
 df = pd.read_csv('results/costs.csv', delimiter=' ')
 
-df['Time'] = pd.to_datetime(df['Time'], format='%H:%M').dt.time
+df['Time'] = pd.to_datetime(df['Time'],errors='coerce', format='%H:%M').dt.time
 df = df.sort_values(by='Time')
+print (df['Time'])
 
+print(df.columns)
 headers = df.columns[1:]
-print(headers)
 
 fig, (ax0, ax1, ax2) = plt.subplots(nrows=3)
 
@@ -27,9 +28,13 @@ dict_colors = {'bed': 'red', 'tableD': 'green', 'board': 'blue'}
 
 yticks = np.arange(start=0, stop=3.5, step=0.5)
 
-index = pd.Index(df['Time'][::12])
+# index = pd.Index(df['Time'][::12])
+index = pd.Index(df['Time'][::4])
+
 all_labels = df['Time'].apply(lambda x: x.strftime('%H:%M'))
-labels = all_labels[::12]
+
+# labels = all_labels[::12]
+labels = all_labels[::4]
 
 for ax in [ax0, ax1, ax2]:
     ax.yaxis.set_ticks(yticks)

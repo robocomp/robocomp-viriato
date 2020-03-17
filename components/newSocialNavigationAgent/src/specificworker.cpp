@@ -104,6 +104,7 @@ void SpecificWorker::compute()
 
     if(personalSpacesChanged)
 	{
+        getPolylinesFromModel();
     	navigation.updatePersonalPolylines(intimate_seq, personal_seq, social_seq);
 		personalSpacesChanged = false;
 		needsReplaning = true;
@@ -143,6 +144,77 @@ RoboCompLaser::TLaserData  SpecificWorker::updateLaser()
 
     return laserData;
 }
+
+void SpecificWorker::getPolylinesFromModel()
+{
+
+	qDebug()<<__FUNCTION__;
+    intimate_seq.clear();
+    personal_seq.clear();
+    social_seq.clear();
+
+
+    auto personalSpaces = worldModel->getSymbolsByType("personalSpace");
+
+
+    for( auto space : personalSpaces)
+    {
+
+        QString intimate = QString::fromStdString(space->getAttribute("intimate"));
+        QString personal = QString::fromStdString(space->getAttribute("personal"));
+        QString social = QString::fromStdString(space->getAttribute("social"));
+        qDebug()<< intimate;
+        qDebug()<< "-------";
+
+        vector<QString> polylinesStr = {intimate,personal,social};
+        SNGPolylineSeq intimateSeq, personalSeq, socialSeq;
+        vector <SNGPolylineSeq> polylinesSeq {intimateSeq, personalSeq, socialSeq};
+
+        for (auto&&[str, polyline] : iter::zip(polylinesStr, polylinesSeq))
+        {
+            for(auto pol: str.split(";;"))
+            {
+                if(pol.size() == 1)
+                    continue;
+
+                SNGPolyline intimatePol;
+
+                for (auto pxz : pol.split(";"))
+                {
+
+                    SNGPoint2D point;
+                    auto p = pxz.split(" ");
+
+                    if (p.size() != 2)
+                        continue;
+
+                    point.x = std::stof(p[0].toStdString());
+                    point.z = std::stof(p[1].toStdString());
+
+
+                    qDebug()<< point.x << point.z;
+                    qDebug()<< "-------";
+
+                    intimatePol.push_back(point);
+                }
+
+                polyline.push_back(intimatePol);
+            }
+
+		}
+
+		for(auto p: polylinesSeq[0])
+			intimate_seq.push_back(p);
+		for(auto p: polylinesSeq[1])
+			personal_seq.push_back(p);
+		for(auto p: polylinesSeq[2])
+			social_seq.push_back(p);
+    }
+
+
+    qDebug()<< "END "<< __FUNCTION__ << intimate_seq.size();
+}
+
 
 void  SpecificWorker::moveRobot()
 {
@@ -193,7 +265,8 @@ void  SpecificWorker::checkRobotAutoMovState()
 }
 
 
-void SpecificWorker::forcesSliderChanged(int value)
+void SpecificWorker::
+forcesSliderChanged(int value)
 {
     navigation.KI = (float) ki_slider -> sliderPosition();
     navigation.KE = (float) ke_slider -> sliderPosition();
@@ -409,8 +482,16 @@ void SpecificWorker::AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldMo
 
 void SpecificWorker::AGMExecutiveTopic_symbolUpdated(const RoboCompAGMWorldModel::Node &modification)
 {
+    qDebug()<< __FUNCTION__;
+
 	QMutexLocker locker(mutex);
 	AGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);
+
+    if (modification.nodeType == "personalSpace")
+    {
+        personalSpacesChanged = true;
+    }
+
 
 
 }
@@ -418,11 +499,24 @@ void SpecificWorker::AGMExecutiveTopic_symbolUpdated(const RoboCompAGMWorldModel
 void SpecificWorker::AGMExecutiveTopic_symbolsUpdated(const RoboCompAGMWorldModel::NodeSequence &modifications)
 {
 
+    qDebug()<< __FUNCTION__;
+
 	QMutexLocker l(mutex);
 
-
     for (auto modification : modifications)
-		AGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);
+    {
+        AGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);
+
+        for(auto node : modifications)
+        {
+            if (node.nodeType == "personalSpace")
+            {
+                personalSpacesChanged = true;
+            }
+
+        }
+
+    }
 
 }
 

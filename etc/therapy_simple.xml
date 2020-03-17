@@ -115,7 +115,7 @@
 				</transform>
 
 			 	<transform id="tablebase" ty="-700" >
-					<mesh id="tablebase_mesh" file="/home/robocomp/robocomp/files/osgModels/basics/cylinder.3ds" scale="900,600,10" rx="1.570799947" collide="1"/>
+					<mesh id="tablebase_mesh" file="/home/robocomp/robocomp/files/osgModels/basics/cylinder.3ds" scale="1400,800,10" rx="1.570799947" collide="1"/>
 				</transform>
 		
 

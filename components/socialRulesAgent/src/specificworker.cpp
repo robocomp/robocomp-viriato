@@ -101,9 +101,9 @@ void SpecificWorker::compute()
 		checkObjectAffordance();
         applySocialRules();
 
-//        updatePersonalSpacesInGraph();
+        updatePersonalSpacesInGraph();
 
-        publishPersonalSpaces();
+//        publishPersonalSpaces();
         publishAffordances();
 
 		worldModelChanged = false;
@@ -631,9 +631,12 @@ void SpecificWorker::affordanceTimeSliderChanged(int step)
     }
 
 
-    if(minutes % 10 == 0 or minutes % 10 == 5)
+    if(minutes  == 0 or minutes == 15  or minutes == 30 or minutes == 45) // para guardar cada 15 min
+//    if(minutes % 10 == 0 or minutes % 10 == 5) // para guardar cada 5 min
     {
         QString hour = currentTime.toString(Qt::SystemLocaleShortDate);
+        if(mapCostsPerHour[hour].size() == 3) mapCostsPerHour[hour].clear();
+
         for (auto const &map : mapIdObjects)
         {
             mapCostsPerHour[hour].push_back(map.second.cost);
@@ -772,11 +775,11 @@ void SpecificWorker::recordData()
     std::ofstream costFile("results/costs.csv", ofstream::out);
     vector<string> headers;
 
-    costFile<<"Time ";
+    costFile<<"Time";
 
     for (auto const &[k,o] : mapIdObjects)
     {
-        costFile<< k.toStdString() << " ";
+        costFile<< " "<<k.toStdString();
 
         file11 << o.shape.toStdString() << " " << o.x << " " << o.z << " " << o.rot<< " " << o.width << " " << o.depth << endl;
 
@@ -813,11 +816,10 @@ void SpecificWorker::recordData()
 
     for (auto const &[hour, costs] : mapCostsPerHour)
     {
-
-        costFile << hour.toStdString() <<" ";
+        costFile << hour.toStdString();
         for(auto const& c: costs)
         {
-            costFile << c <<" ";
+            costFile  <<" " << c ;
         }
         costFile<<std::endl;
     }
@@ -949,10 +951,10 @@ void SpecificWorker::updatePersonalSpacesInGraph()
                 for (auto p: pol)
                 {
 
-                    string pointStr = to_string(p.x) + "," + to_string(p.z) + " ";
+                    string pointStr = to_string(p.x) + " " + to_string(p.z) + ";";
                     str += pointStr;
                 }
-                str += ";";
+                str += ";;";
             }
         }
 
@@ -1046,7 +1048,6 @@ void SpecificWorker::updatePersonalSpacesInGraph()
         {
             std::cout<<"Exception updating SYMBOLS AGM: "<<e.what()<<std::endl;
         }
-
 
     }
 }
@@ -1143,7 +1144,6 @@ int SpecificWorker::AGMCommonBehavior_uptimeAgent()
 
 void SpecificWorker::AGMExecutiveTopic_edgeUpdated(const RoboCompAGMWorldModel::Edge &modification)
 {
-    qDebug()<< __FUNCTION__;
 //subscribesToCODE
 	QMutexLocker locker(mutex);
 	AGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);
@@ -1159,7 +1159,6 @@ void SpecificWorker::AGMExecutiveTopic_edgeUpdated(const RoboCompAGMWorldModel::
 
 void SpecificWorker::AGMExecutiveTopic_edgesUpdated(const RoboCompAGMWorldModel::EdgeSequence &modifications)
 {
-    qDebug()<< __FUNCTION__;
 //subscribesToCODE
 	QMutexLocker lockIM(mutex);
 	for (auto modification : modifications)
@@ -1178,7 +1177,6 @@ void SpecificWorker::AGMExecutiveTopic_edgesUpdated(const RoboCompAGMWorldModel:
 
 void SpecificWorker::AGMExecutiveTopic_selfEdgeAdded(const int nodeid, const string &edgeType, const RoboCompAGMWorldModel::StringDictionary &attributes)
 {
-    qDebug()<< __FUNCTION__;
 //subscribesToCODE
 	QMutexLocker lockIM(mutex);
  	try { worldModel->addEdgeByIdentifiers(nodeid, nodeid, edgeType, attributes); } catch(...){ printf("Couldn't add an edge. Duplicate?\n"); }
@@ -1188,7 +1186,6 @@ void SpecificWorker::AGMExecutiveTopic_selfEdgeAdded(const int nodeid, const str
 
 void SpecificWorker::AGMExecutiveTopic_selfEdgeDeleted(const int nodeid, const string &edgeType)
 {
-    qDebug()<< __FUNCTION__;
 //subscribesToCODE
 	QMutexLocker lockIM(mutex);
  	try { worldModel->removeEdgeByIdentifiers(nodeid, nodeid, edgeType); } catch(...) { printf("Couldn't remove an edge\n"); }
@@ -1198,7 +1195,6 @@ void SpecificWorker::AGMExecutiveTopic_selfEdgeDeleted(const int nodeid, const s
 
 void SpecificWorker::AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldModel::World &w)
 {
-    qDebug()<< __FUNCTION__;
 //subscribesToCODE
 	QMutexLocker lockIM(mutex);
  	AGMModelConverter::fromIceToInternal(w, worldModel);
@@ -1210,7 +1206,6 @@ void SpecificWorker::AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldMo
 
 void SpecificWorker::AGMExecutiveTopic_symbolUpdated(const RoboCompAGMWorldModel::Node &modification)
 {
-    qDebug()<< __FUNCTION__;
 //subscribesToCODE
 	QMutexLocker locker(mutex);
 	AGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);
@@ -1219,7 +1214,6 @@ void SpecificWorker::AGMExecutiveTopic_symbolUpdated(const RoboCompAGMWorldModel
 
 void SpecificWorker::AGMExecutiveTopic_symbolsUpdated(const RoboCompAGMWorldModel::NodeSequence &modifications)
 {
-    qDebug()<< __FUNCTION__;
 //subscribesToCODE
 	QMutexLocker l(mutex);
 	for (auto modification : modifications)
@@ -1279,7 +1273,6 @@ bool SpecificWorker::setParametersAndPossibleActivation(const ParameterMap &prs,
 void SpecificWorker::sendModificationProposal(AGMModel::SPtr &worldModel, AGMModel::SPtr &newModel)
 {
 
-    qDebug()<< __FUNCTION__;
 	try
 	{
 		AGMMisc::publishModification(newModel, agmexecutive_proxy, "socialRulesAgentAgent");

@@ -301,22 +301,30 @@ class Navigation
         const TMap& getMap() const { return grid; };
 
 
-        void updatePersonalPolylines(SNGPolylineSeq intimate_seq, SNGPolylineSeq personal_seq, SNGPolylineSeq social_seq)
-        {
 
+    void updatePersonalPolylines(SNGPolylineSeq intimate_seq, SNGPolylineSeq personal_seq, SNGPolylineSeq social_seq)
+        {
 
 
             intimateSpaces.clear();
             personalSpaces.clear();
             socialSpaces.clear();
 
+            qDebug()<<__FUNCTION__<< "Intimate seq size " << intimate_seq.size();
+
             for (auto intimate: intimate_seq)
             {
                 QPolygonF polygon;
                 for (auto i : intimate)
+                {
                     polygon << QPointF(i.x, i.z);
+                    qDebug()<< i.x << " " << i.z << QPointF(i.x,i.z);
+                }
                 intimateSpaces.push_back(polygon);
             }
+
+            qDebug()<< "POLYGON INTIMATE SIZE "<< intimateSpaces.size();
+            qDebug()<< intimateSpaces;
 
             for (auto personal : personal_seq)
             {
