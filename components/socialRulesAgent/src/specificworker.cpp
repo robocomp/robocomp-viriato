@@ -102,9 +102,9 @@ void SpecificWorker::compute()
         applySocialRules();
 
         updatePersonalSpacesInGraph();
-
+        updateAffordancesInGraph();
 //        publishPersonalSpaces();
-        publishAffordances();
+//        publishAffordances();
 
 		worldModelChanged = false;
         costChanged = false;
@@ -112,7 +112,9 @@ void SpecificWorker::compute()
 
 	else if (costChanged)
     {
-        publishAffordances();
+        updateAffordancesInGraph();
+
+//        publishAffordances();
 
         costChanged = false;
     }
@@ -1052,6 +1054,127 @@ void SpecificWorker::updatePersonalSpacesInGraph()
     }
 }
 
+void SpecificWorker::updateAffordancesInGraph()
+{
+
+    qDebug()<<__FUNCTION__;
+    //queda publicar la lista de ids que comparten esos espacios y ver si es mejor publicarlo como atributos del nodo
+
+    AGMModel::SPtr newModel(new AGMModel(worldModel));
+    bool newSymbol = false;
+
+    auto vectorAffordancesInGraph = newModel->getSymbolsByType("affordanceSpace");
+
+    qDebug()<< "Number of personal spaces in graph = " << vectorAffordancesInGraph.size();
+
+    vector<AGMModelSymbol::SPtr> symbolsToPublish;
+
+    for(auto const [ID,object] : mapIdObjects)
+    {
+        std::string type = "affordanceSpace" ;
+        std::string imName = "affordanceOf" + ID.toStdString();
+
+        int spaceSymbolId = -1;
+
+        for(auto spaces : vectorAffordancesInGraph)
+        {
+            auto id = spaces->identifier;
+
+            if(newModel->getSymbolByIdentifier(id)->getAttribute("imName") == imName)
+            {
+                spaceSymbolId = id;
+                break;
+            }
+        }
+
+        string str;
+
+        for(auto p: object.affordance)
+        {
+                string pointStr = to_string(p.x) + " " + to_string(p.z) + ";";
+                str += pointStr;
+        }
+        str += ";;";
+
+
+        if(spaceSymbolId == -1)  //Symbol not found
+        {
+            qDebug()<< "----- Symbol not found ----- ";
+            qDebug() << "imName = "<< QString::fromStdString(imName) << " " <<"symbolId = "<<spaceSymbolId;
+
+            try { AGMModelSymbol::SPtr objectSymbol = newModel->getSymbol(object.id); }
+
+            catch(...)
+            {
+                qDebug() << "OBJECT "<< ID << " NOT FOUND IN WORDMODEL ";
+                return;
+            }
+
+            // Symbolic part
+            AGMModelSymbol::SPtr spaceSymbol = newModel->newSymbol("affordanceSpace");
+            spaceSymbolId = spaceSymbol->identifier;
+            printf("Got SpaceSymbolID: %d\n", spaceSymbolId);
+            spaceSymbol->setAttribute("imName", imName);
+
+            spaceSymbol->setAttribute("affordance", str);
+            spaceSymbol->setAttribute("cost", to_string(object.cost));
+
+
+            newModel->addEdgeByIdentifiers(object.id,spaceSymbolId, "has");
+
+            newSymbol = true;
+        }
+
+        else
+        {
+            qDebug()<< " ----- Symbol already in model -----";
+            qDebug() << "imName = "<< QString::fromStdString(imName) << " " <<"symbolId = "<<spaceSymbolId;
+
+            try
+            {
+                AGMModelSymbol::SPtr spaceSymbol = worldModel->getSymbolByIdentifier(spaceSymbolId);
+
+                spaceSymbol->setAttribute("affordance", str);
+                spaceSymbol->setAttribute("cost", to_string(object.cost));
+
+                symbolsToPublish.push_back(spaceSymbol);
+
+            }
+
+            catch(...)
+            {
+                qDebug()<< "[ERROR] CANT READ EDGE FROM AGM";
+            }
+
+        }
+
+    }
+
+    if(newSymbol)
+    {
+        try {
+            sendModificationProposal(worldModel, newModel);
+        }
+        catch(std::exception& e)
+        {
+            std::cout<<"Exception moving in AGM: "<<e.what()<<std::endl;
+        }
+    }
+
+    else
+    {
+
+        try
+        {
+            AGMMisc::publishNodesUpdate(symbolsToPublish, agmexecutive_proxy);
+        }
+        catch(std::exception& e)
+        {
+            std::cout<<"Exception updating SYMBOLS AGM: "<<e.what()<<std::endl;
+        }
+
+    }
+}
 
 //////////////////////// State machine methods ////////////////////////////////////////
 

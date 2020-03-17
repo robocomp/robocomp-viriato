@@ -170,6 +170,7 @@ private:
 	void publishAffordances();
 
 	void updatePersonalSpacesInGraph();
+	void updateAffordancesInGraph();
 	void arrangePersonalSpaces(SNGPersonSeq personGroup,SNGPolylineSeq intimate,
 			SNGPolylineSeq personal, SNGPolylineSeq social);
 
