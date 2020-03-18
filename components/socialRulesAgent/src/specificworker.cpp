@@ -956,7 +956,7 @@ void SpecificWorker::updatePersonalSpacesInGraph()
                     string pointStr = to_string(p.x) + " " + to_string(p.z) + ";";
                     str += pointStr;
                 }
-                str += ";;";
+                str += ";";
             }
         }
 
@@ -1094,7 +1094,7 @@ void SpecificWorker::updateAffordancesInGraph()
                 string pointStr = to_string(p.x) + " " + to_string(p.z) + ";";
                 str += pointStr;
         }
-        str += ";;";
+        str += ";";
 
 
         if(spaceSymbolId == -1)  //Symbol not found
@@ -1118,6 +1118,7 @@ void SpecificWorker::updateAffordancesInGraph()
 
             spaceSymbol->setAttribute("affordance", str);
             spaceSymbol->setAttribute("cost", to_string(object.cost));
+            spaceSymbol->setAttribute("interacting", to_string(object.interacting));
 
 
             newModel->addEdgeByIdentifiers(object.id,spaceSymbolId, "has");
@@ -1136,6 +1137,7 @@ void SpecificWorker::updateAffordancesInGraph()
 
                 spaceSymbol->setAttribute("affordance", str);
                 spaceSymbol->setAttribute("cost", to_string(object.cost));
+                spaceSymbol->setAttribute("interacting", to_string(object.interacting));
 
                 symbolsToPublish.push_back(spaceSymbol);
 

@@ -373,7 +373,6 @@ class Navigation
 
 
 
-
     private:
         std::shared_ptr<Collisions> collisions;
         std::shared_ptr<InnerModel> innerModel;

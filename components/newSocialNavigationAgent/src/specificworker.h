@@ -117,7 +117,9 @@ private:
     bool affordancesChanged = false;
 
     RoboCompLaser::TLaserData updateLaser();
+
     void getPolylinesFromModel();
+    SRObjectSeq getAffordancesFromModel();
 
 	bool setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated);
 	void sendModificationProposal(AGMModel::SPtr &worldModel, AGMModel::SPtr &newModel);

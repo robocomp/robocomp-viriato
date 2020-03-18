@@ -70,7 +70,6 @@ void SpecificWorker::initialize(int period)
 	viewer = std::make_shared<InnerViewer>(innerModel, "Social Navigation");  //InnerViewer copies internally innerModel so it has to be resynchronized
 #endif
 
-
     try
     {
         RoboCompAGMWorldModel::World w = agmexecutive_proxy->getModel();
@@ -112,7 +111,9 @@ void SpecificWorker::compute()
 
 	if(affordancesChanged)
 	{
-    	navigation.updateAffordancesPolylines(objects_seq);
+        auto objectSeq = getAffordancesFromModel();
+
+        navigation.updateAffordancesPolylines(objectSeq);
 		affordancesChanged = false;
 		needsReplaning = true;
 	}
@@ -155,16 +156,50 @@ void SpecificWorker::getPolylinesFromModel()
 
 
     auto personalSpaces = worldModel->getSymbolsByType("personalSpace");
-
+    vector<int> personIDshared;
 
     for( auto space : personalSpaces)
     {
+        int owner = -1;
+
+        for (AGMModelSymbol::iterator edge = space->edgesBegin(worldModel);
+             edge!=space->edgesEnd(worldModel);
+             edge++) {
+            if (edge->getLabel()=="has") {
+                const std::pair<int32_t, int32_t> symbolPair = edge->getSymbolPair();
+                owner = symbolPair.first;
+
+            }
+        }
 
         QString intimate = QString::fromStdString(space->getAttribute("intimate"));
         QString personal = QString::fromStdString(space->getAttribute("personal"));
         QString social = QString::fromStdString(space->getAttribute("social"));
-        qDebug()<< intimate;
+
+        QString sharedWith = QString::fromStdString(space->getAttribute("sharedWith"));
+        vector<int> sharedWithID;
+
+        for (auto sh : sharedWith.split(" ")) {
+            if (sh.toInt() != 0)
+                sharedWithID.push_back(sh.toInt());
+        }
+
+        qDebug()<< "personIDshared";
+        for(auto id: personIDshared)
+            qDebug()<<id;
         qDebug()<< "-------";
+
+        if(!sharedWithID.empty())
+        {
+            qDebug()<< "Searching for " << owner;
+            if( std::find(std::begin(personIDshared), std::end(personIDshared), owner) != std::end(personIDshared))
+            {
+                continue;
+            }
+        }
+
+        qDebug()<< "PERSONAL SPACE NOT SHARED OR NOT ADDED";
+
 
         vector<QString> polylinesStr = {intimate,personal,social};
         SNGPolylineSeq intimateSeq, personalSeq, socialSeq;
@@ -174,7 +209,7 @@ void SpecificWorker::getPolylinesFromModel()
         {
             for(auto pol: str.split(";;"))
             {
-                if(pol.size() == 1)
+                if(pol.size() == 0)
                     continue;
 
                 SNGPolyline intimatePol;
@@ -191,10 +226,6 @@ void SpecificWorker::getPolylinesFromModel()
                     point.x = std::stof(p[0].toStdString());
                     point.z = std::stof(p[1].toStdString());
 
-
-                    qDebug()<< point.x << point.z;
-                    qDebug()<< "-------";
-
                     intimatePol.push_back(point);
                 }
 
@@ -209,10 +240,67 @@ void SpecificWorker::getPolylinesFromModel()
 			personal_seq.push_back(p);
 		for(auto p: polylinesSeq[2])
 			social_seq.push_back(p);
+
+		for(auto id : sharedWithID) {
+            if (std::find(std::begin(personIDshared), std::end(personIDshared), id)==std::end(personIDshared)) {
+                personIDshared.push_back(id);
+
+            }
+        }
     }
 
 
-    qDebug()<< "END "<< __FUNCTION__ << intimate_seq.size();
+    qDebug()<< "END "<< __FUNCTION__;
+}
+
+SRObjectSeq SpecificWorker::getAffordancesFromModel()
+{
+
+    qDebug()<<__FUNCTION__;
+
+    SRObjectSeq objectSeq;
+
+    auto affordanceSpaces = worldModel->getSymbolsByType("affordanceSpace");
+
+
+    for( auto affordance : affordanceSpaces)
+    {
+        SRObject object;
+
+        QString polyline = QString::fromStdString(affordance->getAttribute("affordance"));
+        object.cost = std::stof(affordance->getAttribute("cost"));
+        object.interacting = (affordance->getAttribute("interacting") == "1");
+
+        for(auto pol: polyline.split(";;"))
+        {
+            if(pol.size() == 0)
+                continue;
+
+            for (auto pxz : pol.split(";"))
+            {
+                SNGPoint2D point;
+                auto p = pxz.split(" ");
+
+                if (p.size() != 2)
+                    continue;
+
+                point.x = std::stof(p[0].toStdString());
+                point.z = std::stof(p[1].toStdString());
+
+
+                object.affordance.push_back(point);
+
+            }
+
+            objectSeq.push_back(object);
+
+        }
+    }
+
+
+    qDebug()<< "END "<< __FUNCTION__;
+
+    return objectSeq;
 }
 
 
@@ -491,7 +579,10 @@ void SpecificWorker::AGMExecutiveTopic_symbolUpdated(const RoboCompAGMWorldModel
     {
         personalSpacesChanged = true;
     }
-
+    if (modification.nodeType == "affordanceSpace")
+    {
+        affordancesChanged = true;
+    }
 
 
 }
@@ -512,6 +603,10 @@ void SpecificWorker::AGMExecutiveTopic_symbolsUpdated(const RoboCompAGMWorldMode
             if (node.nodeType == "personalSpace")
             {
                 personalSpacesChanged = true;
+            }
+            if (modification.nodeType == "affordanceSpace")
+            {
+                affordancesChanged = true;
             }
 
         }
