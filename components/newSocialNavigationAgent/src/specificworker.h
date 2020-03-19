@@ -49,6 +49,8 @@ class SpecificWorker : public GenericWorker
 
 Q_OBJECT
 public:
+
+
 	SpecificWorker(MapPrx& mprx);
 	~SpecificWorker();
 	bool setParams(RoboCompCommonBehavior::ParameterList params);
@@ -118,8 +120,11 @@ private:
 
     RoboCompLaser::TLaserData updateLaser();
 
-    void getPolylinesFromModel();
-    SRObjectSeq getAffordancesFromModel();
+	using retPersonalSpaces = std::tuple <vector<QPolygonF>,vector<QPolygonF>,vector<QPolygonF>>;
+	using retAffordanceSpaces = std::tuple <std::map<float, vector<QPolygonF>>,vector<QPolygonF>,vector<QPolygonF>>;
+
+	retPersonalSpaces getPolylinesFromModel();
+	retAffordanceSpaces getAffordancesFromModel();
 
 	bool setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated);
 	void sendModificationProposal(AGMModel::SPtr &worldModel, AGMModel::SPtr &newModel);

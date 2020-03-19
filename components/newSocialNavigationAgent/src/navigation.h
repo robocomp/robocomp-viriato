@@ -301,75 +301,25 @@ class Navigation
         const TMap& getMap() const { return grid; };
 
 
+    void updatePersonalPolylines(vector<QPolygonF> intimateSpaces_, vector<QPolygonF> personalSpaces_, vector<QPolygonF> socialSpaces_){
+        intimateSpaces = intimateSpaces_;
+        personalSpaces = personalSpaces_;
+        socialSpaces = socialSpaces_;
 
-    void updatePersonalPolylines(SNGPolylineSeq intimate_seq, SNGPolylineSeq personal_seq, SNGPolylineSeq social_seq)
-        {
+        gridChanged = true;
+    }
 
+    void updateAffordancesPolylines(std::map<float, vector<QPolygonF>> mapCostObjects_,
+            vector<QPolygonF>totalAffordances_, vector<QPolygonF>affordancesBlocked_)
+    {
+        totalAffordances = totalAffordances_;
+        mapCostObjects = mapCostObjects_;
+        affordancesBlocked = affordancesBlocked_;
 
-            intimateSpaces.clear();
-            personalSpaces.clear();
-            socialSpaces.clear();
+        gridChanged = true;
 
-            qDebug()<<__FUNCTION__<< "Intimate seq size " << intimate_seq.size();
+    }
 
-            for (auto intimate: intimate_seq)
-            {
-                QPolygonF polygon;
-                for (auto i : intimate)
-                {
-                    polygon << QPointF(i.x, i.z);
-                    qDebug()<< i.x << " " << i.z << QPointF(i.x,i.z);
-                }
-                intimateSpaces.push_back(polygon);
-            }
-
-            qDebug()<< "POLYGON INTIMATE SIZE "<< intimateSpaces.size();
-            qDebug()<< intimateSpaces;
-
-            for (auto personal : personal_seq)
-            {
-                QPolygonF polygon;
-                for (auto p : personal)
-                    polygon << QPointF(p.x, p.z);
-                personalSpaces.push_back(polygon);
-            }
-
-            for (auto social : social_seq)
-            {
-                QPolygonF polygon;
-                for (auto s : social)
-                    polygon << QPointF(s.x, s.z);
-                socialSpaces.push_back(polygon);
-            }
-
-            gridChanged = true;
-
-        }
-        void updateAffordancesPolylines(const SRObjectSeq objects_seq)
-        {
-            totalAffordances.clear();
-            mapCostObjects.clear();
-            affordancesBlocked.clear();
-
-            for (auto obj: objects_seq)
-            {
-                QPolygonF polygon;
-                for(auto point : obj.affordance)
-                    polygon << QPointF(point.x,point.z);
-
-                mapCostObjects[obj.cost].push_back(polygon);
-
-                if (obj.interacting == true)
-                    affordancesBlocked.push_back(polygon);
-
-                totalAffordances.push_back(polygon);
-            }
-
-
-
-            gridChanged = true;
-
-        }
 
 
 
@@ -524,7 +474,7 @@ class Navigation
 
         if(isVisible(currentRobotNose))
         {
-            std::list<QPointF> path = grid.computePath(QPointF(currentRobotNose.x() ,currentRobotNose.y()), target);
+            std::list<QPointF> path = grid.computePath(currentRobotNose, target);
 
 
             if (path.size() > 0)

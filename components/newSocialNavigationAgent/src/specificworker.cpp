@@ -103,17 +103,17 @@ void SpecificWorker::compute()
 
     if(personalSpacesChanged)
 	{
-        getPolylinesFromModel();
-    	navigation.updatePersonalPolylines(intimate_seq, personal_seq, social_seq);
+        auto [intimate,personal,social] = getPolylinesFromModel();
+    	navigation.updatePersonalPolylines(intimate,personal,social);
 		personalSpacesChanged = false;
 		needsReplaning = true;
 	}
 
 	if(affordancesChanged)
 	{
-        auto objectSeq = getAffordancesFromModel();
+        auto [mapCostObjects,totalAffordances,blockedAffordances] = getAffordancesFromModel();
 
-        navigation.updateAffordancesPolylines(objectSeq);
+        navigation.updateAffordancesPolylines(mapCostObjects,totalAffordances,blockedAffordances);
 		affordancesChanged = false;
 		needsReplaning = true;
 	}
@@ -146,17 +146,20 @@ RoboCompLaser::TLaserData  SpecificWorker::updateLaser()
     return laserData;
 }
 
-void SpecificWorker::getPolylinesFromModel()
-{
 
+SpecificWorker::retPersonalSpaces SpecificWorker::getPolylinesFromModel()
+{
 	qDebug()<<__FUNCTION__;
-    intimate_seq.clear();
-    personal_seq.clear();
-    social_seq.clear();
+
+    vector<QPolygonF> intimatePolygon;
+    vector<QPolygonF> personalPolygon;
+    vector<QPolygonF> socialPolygon;
+
+    vector <vector<QPolygonF>> polylinesSeq {intimatePolygon, personalPolygon, socialPolygon};
 
 
     auto personalSpaces = worldModel->getSymbolsByType("personalSpace");
-    vector<int> personIDshared;
+    vector<int> IDsAlreadyIncluded;
 
     for( auto space : personalSpaces)
     {
@@ -168,7 +171,6 @@ void SpecificWorker::getPolylinesFromModel()
             if (edge->getLabel()=="has") {
                 const std::pair<int32_t, int32_t> symbolPair = edge->getSymbolPair();
                 owner = symbolPair.first;
-
             }
         }
 
@@ -177,99 +179,81 @@ void SpecificWorker::getPolylinesFromModel()
         QString social = QString::fromStdString(space->getAttribute("social"));
 
         QString sharedWith = QString::fromStdString(space->getAttribute("sharedWith"));
-        vector<int> sharedWithID;
+        vector<int> sharedWithIDs;
 
         for (auto sh : sharedWith.split(" ")) {
             if (sh.toInt() != 0)
-                sharedWithID.push_back(sh.toInt());
+                sharedWithIDs.push_back(sh.toInt());
         }
 
-        qDebug()<< "personIDshared";
-        for(auto id: personIDshared)
-            qDebug()<<id;
-        qDebug()<< "-------";
-
-        if(!sharedWithID.empty())
+        if(!sharedWithIDs.empty())
         {
             qDebug()<< "Searching for " << owner;
-            if( std::find(std::begin(personIDshared), std::end(personIDshared), owner) != std::end(personIDshared))
-            {
+            if( std::find(std::begin(IDsAlreadyIncluded), std::end(IDsAlreadyIncluded), owner) != std::end(IDsAlreadyIncluded))
                 continue;
-            }
         }
-
-        qDebug()<< "PERSONAL SPACE NOT SHARED OR NOT ADDED";
 
 
         vector<QString> polylinesStr = {intimate,personal,social};
-        SNGPolylineSeq intimateSeq, personalSeq, socialSeq;
-        vector <SNGPolylineSeq> polylinesSeq {intimateSeq, personalSeq, socialSeq};
 
-        for (auto&&[str, polyline] : iter::zip(polylinesStr, polylinesSeq))
+        for (auto &&[str, polygonSeq] : iter::zip(polylinesStr, polylinesSeq))
         {
             for(auto pol: str.split(";;"))
             {
                 if(pol.size() == 0)
                     continue;
 
-                SNGPolyline intimatePol;
+                QPolygonF polygon;
 
                 for (auto pxz : pol.split(";"))
                 {
-
-                    SNGPoint2D point;
                     auto p = pxz.split(" ");
 
                     if (p.size() != 2)
                         continue;
 
-                    point.x = std::stof(p[0].toStdString());
-                    point.z = std::stof(p[1].toStdString());
+                    auto x = std::stof(p[0].toStdString());
+                    auto z = std::stof(p[1].toStdString());
 
-                    intimatePol.push_back(point);
+                    polygon<< QPointF(x,z);
                 }
 
-                polyline.push_back(intimatePol);
+                polygonSeq.push_back(polygon);
             }
+
 
 		}
 
-		for(auto p: polylinesSeq[0])
-			intimate_seq.push_back(p);
-		for(auto p: polylinesSeq[1])
-			personal_seq.push_back(p);
-		for(auto p: polylinesSeq[2])
-			social_seq.push_back(p);
-
-		for(auto id : sharedWithID) {
-            if (std::find(std::begin(personIDshared), std::end(personIDshared), id)==std::end(personIDshared)) {
-                personIDshared.push_back(id);
+		for(auto id : sharedWithIDs) {
+            if (std::find(std::begin(IDsAlreadyIncluded), std::end(IDsAlreadyIncluded), id)==std::end(IDsAlreadyIncluded)) {
+                IDsAlreadyIncluded.push_back(id);
 
             }
         }
     }
+    return std::make_tuple(polylinesSeq[0],polylinesSeq[1],polylinesSeq[2]);
 
-
-    qDebug()<< "END "<< __FUNCTION__;
 }
 
-SRObjectSeq SpecificWorker::getAffordancesFromModel()
+SpecificWorker::retAffordanceSpaces SpecificWorker::getAffordancesFromModel()
 {
 
     qDebug()<<__FUNCTION__;
 
-    SRObjectSeq objectSeq;
+    vector<QPolygonF> totalAffordances;
+    vector<QPolygonF> blockedAffordances;
+    std::map<float,vector<QPolygonF>> mapCostObjects;
 
     auto affordanceSpaces = worldModel->getSymbolsByType("affordanceSpace");
 
 
     for( auto affordance : affordanceSpaces)
     {
-        SRObject object;
+        QPolygonF object;
 
         QString polyline = QString::fromStdString(affordance->getAttribute("affordance"));
-        object.cost = std::stof(affordance->getAttribute("cost"));
-        object.interacting = (affordance->getAttribute("interacting") == "1");
+        float cost = std::stof(affordance->getAttribute("cost"));
+        bool interacting = (affordance->getAttribute("interacting") == "1");
 
         for(auto pol: polyline.split(";;"))
         {
@@ -278,21 +262,20 @@ SRObjectSeq SpecificWorker::getAffordancesFromModel()
 
             for (auto pxz : pol.split(";"))
             {
-                SNGPoint2D point;
                 auto p = pxz.split(" ");
 
                 if (p.size() != 2)
                     continue;
 
-                point.x = std::stof(p[0].toStdString());
-                point.z = std::stof(p[1].toStdString());
+                auto x = std::stof(p[0].toStdString());
+                auto z = std::stof(p[1].toStdString());
 
-
-                object.affordance.push_back(point);
-
+                object<< QPointF(x,z);
             }
 
-            objectSeq.push_back(object);
+            mapCostObjects[cost].push_back(object);
+            totalAffordances.push_back(object);
+            if(interacting) blockedAffordances.push_back(object);
 
         }
     }
@@ -300,7 +283,7 @@ SRObjectSeq SpecificWorker::getAffordancesFromModel()
 
     qDebug()<< "END "<< __FUNCTION__;
 
-    return objectSeq;
+    return std::make_tuple(mapCostObjects,totalAffordances,blockedAffordances);
 }
 
 
