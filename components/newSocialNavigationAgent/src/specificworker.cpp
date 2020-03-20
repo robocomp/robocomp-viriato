@@ -215,7 +215,7 @@ SpecificWorker::retPersonalSpaces SpecificWorker::getPolylinesFromModel()
                     auto x = std::stof(p[0].toStdString());
                     auto z = std::stof(p[1].toStdString());
 
-                    polygon<< QPointF(x,z);
+                    polygon << QPointF(x,z);
                 }
 
                 polygonSeq.push_back(polygon);

@@ -251,17 +251,8 @@ bool SpecificWorker::checkObjectInteraction()
 		for (auto object : totalObjects)
 		{
             QVec VI = QVec::vec2((person.x - object.x),(person.z -object.z));
-            QPolygonF affordance;
-            if (object.shape == "trapezoid")
-                affordance = affordanceTrapezoidal(object);
 
-            if (object.shape == "circle")
-                affordance = affordanceCircular(object);
-
-            if (object.shape == "rectangle")
-                affordance = affordanceRectangular(object);
-
-//            auto affordance = calculateAffordance(object);
+            QPolygonF affordance = getAffordance(object.id);
 
             bool inside_affordance = affordance.containsPoint(QPointF(person.x,person.z),Qt::OddEvenFill);
 
@@ -300,73 +291,54 @@ bool SpecificWorker::checkObjectInteraction()
 	return changeInEdges;
 }
 
-QPolygonF SpecificWorker::affordanceTrapezoidal(ObjectType obj)
+
+QPolygonF SpecificWorker::getAffordance(int objectID)
 {
-    cout << "Entered calculateAffordance"<<endl;
-    QPolygonF aff_qp;
+    qDebug()<<__FUNCTION__;
 
+    QString polyline;
+    QPolygonF objectPolygon;
 
-    auto left_angle = obj.rot + obj.inter_angle/2;
-    auto right_angle = obj.rot - obj.inter_angle/2;
+    AGMModelSymbol::SPtr objectAGM = worldModel->getSymbol(objectID);
 
-    auto point_x_left = obj.x + obj.inter_space*(cos(M_PI_2 - left_angle));
-    auto point_z_left = obj.z + obj.inter_space*(sin( M_PI_2 - left_angle));
+    for (AGMModelSymbol::iterator edge = objectAGM->edgesBegin(worldModel);
+         edge!=objectAGM->edgesEnd(worldModel);
+         edge++) {
+        if (edge->getLabel()=="has") {
+            const std::pair<int32_t, int32_t> symbolPair = edge->getSymbolPair();
+            auto second = worldModel->getSymbol(symbolPair.second);
+            const string secondType = worldModel->getSymbol(symbolPair.second)->symbolType;
 
-    auto point_x_right = obj.x + obj.inter_space*(cos(M_PI_2 - right_angle));
-    auto point_z_right = obj.z + obj.inter_space*(sin(M_PI_2 - right_angle));
-
-    aff_qp << QPointF(obj.x - obj.width/2,obj.z);
-    aff_qp << QPointF(obj.x + obj.width/2,obj.z);
-    aff_qp << QPointF(point_x_left,point_z_left);
-    aff_qp << QPointF(point_x_right,point_z_right);
-
-   qDebug()<<aff_qp;
-
-    return aff_qp;
-
-}
-
-
-QPolygonF SpecificWorker::affordanceRectangular(ObjectType obj)
-{
-    qDebug()<< __FUNCTION__;
-
-    QPolygonF aff_qp;
-
-    aff_qp << QPointF (obj.x - obj.width/2 - obj.inter_space , obj.z - obj.depth/2 -obj.inter_space) ;
-
-    aff_qp << QPointF ( obj.x + obj.width/2 + obj.inter_space, obj.z - obj.depth/2 -obj.inter_space) ;
-
-    aff_qp << QPointF ( obj.x + obj.width/2 + obj.inter_space, obj.z + obj.depth/2 +obj.inter_space) ;
-
-    aff_qp << QPointF (obj.x - obj.width/2 - obj.inter_space, obj.z + obj.depth/2 + obj.inter_space) ;
-
-
-    return aff_qp;
-
-}
-
-QPolygonF SpecificWorker::affordanceCircular(ObjectType obj)
-{
-    qDebug()<< __FUNCTION__;
-
-    QPolygonF aff_qp;
-
-    int points = 50;
-
-    float angle_shift = M_PI*2 / points, phi = 0;
-
-    for (int i = 0; i < points; ++i) {
-        phi += angle_shift;
-        aff_qp << QPointF ( obj.x + ((obj.width/2 + obj.inter_space)*sin(phi)),obj.z +  ((obj.depth/2 + obj.inter_space)*cos(phi)) );
+            if (symbolPair.first==objectID and secondType=="affordanceSpace") {
+                polyline = QString::fromStdString(second->getAttribute("affordance"));
+                break;
+            }
+        }
     }
 
+    if(!polyline.isEmpty())
+    {
+        for(auto pol: polyline.split(";;")) {
+            if (pol.size()==0)
+                continue;
 
-    return aff_qp;
+            for (auto pxz : pol.split(";")) {
+                auto p = pxz.split(" ");
 
+                if (p.size()!=2)
+                    continue;
+
+                auto x = std::stof(p[0].toStdString());
+                auto z = std::stof(p[1].toStdString());
+
+                objectPolygon << QPointF(x, z);
+            }
+        }
+
+    }
+
+    return objectPolygon;
 }
-
-
 
 
 ////////////////////////////////////////////////////////////////////////////////////////

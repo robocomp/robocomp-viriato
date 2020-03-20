@@ -75,17 +75,6 @@ public:
 
     vector<PersonType> totalPersons;
 
-//    struct ObjectType
-//    {
-//        QString imName; //Nombre del nodo geometrico en AGM
-//        int id;
-//        float x;
-//        float z;
-//        float rot;
-//        float width;
-//        float inter_space;
-//        float inter_angle;
-//    };
 
     struct ObjectType
     {
@@ -114,9 +103,7 @@ public:
     void loadInfoFromAGM();
     bool checkHumanInteraction();
     bool checkObjectInteraction();
-    QPolygonF affordanceTrapezoidal(ObjectType obj);
-    QPolygonF affordanceRectangular(ObjectType obj);
-    QPolygonF affordanceCircular(ObjectType obj);
+    QPolygonF getAffordance(int objectID);
 
 
 

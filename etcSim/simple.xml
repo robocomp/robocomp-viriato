@@ -164,6 +164,7 @@
  <node alias="humanFakeA" endpoint="agmcommonbehavior:tcp -h localhost -p 10210">
   <dependence alias="executive" />
  <dependence alias="base" />
+ <dependence alias="humanObserver" />
   <workingDir path="/home/robocomp/" />
   <upCommand command="rcremote localhost humanFakeA /home/robocomp/robocomp/components/robocomp-viriato/components/fakeHumanAgent ./bin/fakeHumanAgent /home/robocomp/robocomp/components/robocomp-viriato/etcSim/humanFake.conf" />
   <downCommand command="killall -9 fakeHumanAgent" />
@@ -175,8 +176,7 @@
  </node>
 
  <node alias="humanObserver" endpoint="agmcommonbehavior:tcp -h localhost -p 14330">
-  <dependence alias="humanFakeA" />
-
+ <dependence alias="socialRulesAgent" />
   <workingDir path="/home/robocomp/" />
   <upCommand command="rcremote localhost humanObserver /home/robocomp/robocomp/components/robocomp-viriato/components/humanObserverAgent ./bin/humanObserverAgent /home/robocomp/robocomp/components/robocomp-viriato/etcSim/humanObserverAgent.conf" />
   <downCommand command="killall -9 humanObserverAgent" />
