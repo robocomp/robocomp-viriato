@@ -127,8 +127,99 @@ void SpecificWorker::compute()
 
 //    qDebug()<< "Compute time " <<reloj.restart();
 
+    newModel = AGMModel::SPtr(new AGMModel(worldModel));
+
+    if(checkHumanBlock())
+    {
+        try
+        {
+            sendModificationProposal(worldModel, newModel);
+        }
+        catch(...)
+        {
+            std::cout<<"No se puede actualizar worldModel"<<std::endl;
+        }
+    }
+
 }
 
+
+bool SpecificWorker::checkHumanBlock()
+{
+    auto vectorPersons = worldModel->getSymbolsByType("person");
+
+    if (vectorPersons.size() == 0) {
+        qDebug() << "No persons found";
+        return false;
+    }
+
+    vector <int32_t> blockingIDs;
+
+    QPolygonF blockingPolygon = navigation.blockingPolygon;
+
+
+    for (auto p: vectorPersons) {
+        auto id = p->identifier;
+        AGMModelSymbol::SPtr personParent = worldModel->getParentByLink(id, "RT");
+        AGMModelEdge& edgeRT = worldModel->getEdgeByIdentifiers(personParent->identifier, id, "RT");
+
+        auto poseX = str2float(edgeRT.attributes["tx"]);
+        auto poseZ = str2float(edgeRT.attributes["tz"]);
+
+        if(blockingPolygon.containsPoint(QPointF(poseX,poseZ),Qt::OddEvenFill))
+        {
+            qDebug()<< "PERSON "<< id << "IS BLOCKING THE PATH";
+            blockingIDs.push_back(id);
+        }
+    }
+
+    if(prev_blockingIDs != blockingIDs)
+    {
+        qDebug()<< "prev Blocking != blocking list";
+
+        auto robotID = newModel->getIdentifierByType("robot");
+
+        for(auto id: prev_blockingIDs)
+        {
+            try
+            {
+                newModel->removeEdgeByIdentifiers(id, robotID, "block");
+                qDebug ()<<"Se elimina el enlace block a la persona  " << id;
+            }
+
+            catch(...)
+            {
+                std::cout<<__FUNCTION__<<"No existe el enlace"<<std::endl;
+
+            }
+        }
+
+        for(auto id: blockingIDs)
+        {
+            try
+            {
+                newModel->addEdgeByIdentifiers(id, robotID, "block");
+                qDebug ()<<"Se añade el enlace block a la persona  " << id;
+            }
+
+            catch(...)
+            {
+                std::cout<<__FUNCTION__<<"No existe el enlace"<<std::endl;
+
+            }
+        }
+
+
+        prev_blockingIDs = blockingIDs;
+
+        return true;
+    }
+
+    else
+        return false;
+
+
+}
 
 RoboCompLaser::TLaserData  SpecificWorker::updateLaser()
 {
@@ -156,7 +247,6 @@ SpecificWorker::retPersonalSpaces SpecificWorker::getPolylinesFromModel()
     vector<QPolygonF> socialPolygon;
 
     vector <vector<QPolygonF>> polylinesSeq {intimatePolygon, personalPolygon, socialPolygon};
-
 
     auto personalSpaces = worldModel->getSymbolsByType("personalSpace");
     vector<int> IDsAlreadyIncluded;
@@ -220,16 +310,16 @@ SpecificWorker::retPersonalSpaces SpecificWorker::getPolylinesFromModel()
 
                 polygonSeq.push_back(polygon);
             }
-
-
 		}
+
 
 		for(auto id : sharedWithIDs) {
             if (std::find(std::begin(IDsAlreadyIncluded), std::end(IDsAlreadyIncluded), id)==std::end(IDsAlreadyIncluded)) {
                 IDsAlreadyIncluded.push_back(id);
-
             }
         }
+
+
     }
     return std::make_tuple(polylinesSeq[0],polylinesSeq[1],polylinesSeq[2]);
 
@@ -301,12 +391,10 @@ void  SpecificWorker::moveRobot()
     else
     {
         if(navigation.current_target.active.load())
-        {
 			navigation.stopMovingRobot = true;
-        }
+
         else
 		{
-
             navigation.moveRobot = false;
 			navigation.stopMovingRobot = false;
 		}
@@ -646,26 +734,30 @@ bool SpecificWorker::setParametersAndPossibleActivation(const ParameterMap &prs,
 
 	return true;
 }
+
+
 void SpecificWorker::sendModificationProposal(AGMModel::SPtr &worldModel, AGMModel::SPtr &newModel)
 {
-	qDebug() << __FUNCTION__;
+    qDebug()<<__FUNCTION__;
+    QMutexLocker locker(mutex);
 
-	try
-	{
-		AGMMisc::publishModification(newModel, agmexecutive_proxy, "socialNavigationAgentAgent");
-	}
-/*	catch(const RoboCompAGMExecutive::Locked &e)
-	{
-	}
-	catch(const RoboCompAGMExecutive::OldModel &e)
-	{
-	}
-	catch(const RoboCompAGMExecutive::InvalidChange &e)
-	{
-	}
-*/
-	catch(const Ice::Exception& e)
-	{
-		exit(1);
-	}
+    try
+    {
+        AGMMisc::publishModification(newModel, agmexecutive_proxy, std::string( "SocialnavigationAgent"));
+    }
+    catch(const RoboCompAGMExecutive::Locked &e)
+    {
+    }
+    catch(const RoboCompAGMExecutive::OldModel &e)
+    {
+        printf("modelo viejo\n");
+    }
+    catch(const RoboCompAGMExecutive::InvalidChange &e)
+    {
+        printf("modelo invalido\n");
+    }
+    catch(const Ice::Exception& e)
+    {
+        exit(1);
+    }
 }

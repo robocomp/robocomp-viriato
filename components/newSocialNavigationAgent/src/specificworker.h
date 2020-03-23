@@ -50,7 +50,6 @@ class SpecificWorker : public GenericWorker
 Q_OBJECT
 public:
 
-
 	SpecificWorker(MapPrx& mprx);
 	~SpecificWorker();
 	bool setParams(RoboCompCommonBehavior::ParameterList params);
@@ -80,8 +79,6 @@ public:
 	#endif
 
 
-
-
 public slots:
     void compute();
     void initialize(int period);
@@ -101,8 +98,10 @@ private:
 	std::string action;
 	ParameterMap params;
 
-    AGMModel::SPtr worldModel;
+    AGMModel::SPtr worldModel, newModel;
 	bool active;
+
+	vector <int32_t> prev_blockingIDs = {};
 
 
     #ifdef USE_QTGUI
@@ -125,6 +124,8 @@ private:
 
 	retPersonalSpaces getPolylinesFromModel();
 	retAffordanceSpaces getAffordancesFromModel();
+
+	bool checkHumanBlock();
 
 	bool setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated);
 	void sendModificationProposal(AGMModel::SPtr &worldModel, AGMModel::SPtr &newModel);
