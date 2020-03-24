@@ -49,6 +49,7 @@ public:
         QPointF p;
         std::atomic_bool active = false;
         std::atomic_bool blocked = true;
+        std::atomic_bool humanBlock = false;
     };
 
     Target current_target;
@@ -88,10 +89,10 @@ void initialize(const std::shared_ptr<InnerModel> &innerModel_, const std::share
 
     robotXWidth = std::stof(configparams->at("RobotXWidth").value);
     robotZLong = std::stof(configparams->at("RobotZLong").value);
-    robotBottomLeft     = QVec::vec3(- robotXWidth/2 -100, 0, - robotZLong/2-100);
-    robotBottomRight    = QVec::vec3(+ robotXWidth/2+100, 0, - robotZLong/2 -100);
-    robotTopRight       = QVec::vec3( + robotXWidth/2+100, 0 , + robotZLong/2 +100);
-    robotTopLeft        = QVec::vec3(- robotXWidth/2 -100, 0, + robotZLong/2 +100);
+    robotBottomLeft     = QVec::vec3(- robotXWidth/2 - 100, 0, - robotZLong/2 - 100);
+    robotBottomRight    = QVec::vec3(+ robotXWidth/2 + 100, 0, - robotZLong/2 - 100);
+    robotTopRight       = QVec::vec3(+ robotXWidth/2 + 100, 0, + robotZLong/2 + 100);
+    robotTopLeft        = QVec::vec3(- robotXWidth/2 - 100, 0, + robotZLong/2 + 100);
 
     reloj.restart();
 
@@ -206,14 +207,16 @@ bool checkPathState()
 
                 qDebug()<< "checkPathState - Path not found";
 
-                if (targetBehindRobot)
+                if (targetBehindRobot )
                 {
                     timesBlocked++;
 
                     if (timesBlocked < 100 )
                         return false;
-
                 }
+
+                if(current_target.humanBlock.load())
+                    return false;
 
                 qDebug()<< "checkPathState - Deactivating current target";
 
@@ -504,7 +507,8 @@ bool findNewPath()
 
     std::list<QPointF> path_back = grid.computePath(QPointF(robotBack.x() ,robotBack.y()), target);
 
-    if (path_back.size() > 0) {
+    if (path_back.size() > 0)
+    {
 
         blockingPolygon.clear();
 
@@ -524,11 +528,15 @@ bool findNewPath()
         qDebug() << __FUNCTION__ << "Path not found";
         targetBehindRobot = false;
 
-        checkHumanBlock();
+        if(checkHumanBlock())
+        {
+            this->current_target.lock();
+            current_target.humanBlock.store(true);
+            this->current_target.unlock();
 
+        }
     }
 
-//        grid.markAreaInGridAs(currentRobotPolygon, true);
     return false;
 
 

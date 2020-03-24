@@ -127,6 +127,7 @@ void SpecificWorker::compute()
 
 //    qDebug()<< "Compute time " <<reloj.restart();
 
+
     newModel = AGMModel::SPtr(new AGMModel(worldModel));
 
     if(checkHumanBlock())
@@ -158,7 +159,8 @@ bool SpecificWorker::checkHumanBlock()
     QPolygonF blockingPolygon = navigation.blockingPolygon;
 
 
-    for (auto p: vectorPersons) {
+    for (auto p: vectorPersons)
+    {
         auto id = p->identifier;
         AGMModelSymbol::SPtr personParent = worldModel->getParentByLink(id, "RT");
         AGMModelEdge& edgeRT = worldModel->getEdgeByIdentifiers(personParent->identifier, id, "RT");
@@ -167,10 +169,8 @@ bool SpecificWorker::checkHumanBlock()
         auto poseZ = str2float(edgeRT.attributes["tz"]);
 
         if(blockingPolygon.containsPoint(QPointF(poseX,poseZ),Qt::OddEvenFill))
-        {
-            qDebug()<< "PERSON "<< id << "IS BLOCKING THE PATH";
             blockingIDs.push_back(id);
-        }
+
     }
 
     if(prev_blockingIDs != blockingIDs)
