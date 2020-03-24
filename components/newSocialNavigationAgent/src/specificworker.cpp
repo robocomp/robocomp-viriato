@@ -636,6 +636,9 @@ void SpecificWorker::AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldMo
 
 	} catch(...) { qDebug()<<__FUNCTION__<<"Can't extract an InnerModel from the current model."; }
 
+	personalSpacesChanged = true;
+	affordancesChanged = true;
+
 
 }
 
@@ -650,6 +653,7 @@ void SpecificWorker::AGMExecutiveTopic_symbolUpdated(const RoboCompAGMWorldModel
     {
         personalSpacesChanged = true;
     }
+
     if (modification.nodeType == "affordanceSpace")
     {
         affordancesChanged = true;

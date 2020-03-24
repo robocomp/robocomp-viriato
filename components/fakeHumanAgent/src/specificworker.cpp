@@ -310,7 +310,7 @@ bool SpecificWorker::removeFromAGM(int id)
 
         qDebug()<< "FIRST "<< QString::fromStdString(first->typeString()) << "SECOND "<< QString::fromStdString(secondType);
 
-        if(firstType == "person" and secondType != "room")
+        if(firstType == "person" and secondType == "personalSpace")
         {
             qDebug() << "Identifier "<<second->identifier << " Type "<< QString::fromStdString(secondType);
             newModel->removeEdgesRelatedToSymbol(second->identifier);

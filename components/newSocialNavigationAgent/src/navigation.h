@@ -211,11 +211,11 @@ bool checkPathState()
                 {
                     timesBlocked++;
 
-                    if (timesBlocked < 100 )
+                    if (timesBlocked < 100)
                         return false;
                 }
 
-                if(current_target.humanBlock.load())
+                if(current_target.humanBlock.load()) //if the path is blocked by human the target is not deactivated
                     return false;
 
                 qDebug()<< "checkPathState - Deactivating current target";
