@@ -263,6 +263,7 @@ void SpecificWorker::applySocialRules()
     socialSpace_seq.clear();
     personalSpace_seq.clear();
     intimateSpace_seq.clear();
+    mapIdSpaces.clear();
 
     SNGPolylineSeq seq;
 
@@ -300,6 +301,7 @@ void SpecificWorker::arrangePersonalSpaces(SNGPersonSeq personGroup,SNGPolylineS
         SNGPolylineSeq personal, SNGPolylineSeq social)
 {
     vector<int> groupIDs;
+
 
     for(auto const &person:personGroup)
         groupIDs.push_back(person.id);
@@ -914,33 +916,45 @@ void SpecificWorker::updatePersonalSpacesInGraph()
 {
 
     qDebug()<<__FUNCTION__;
-    //queda publicar la lista de ids que comparten esos espacios y ver si es mejor publicarlo como atributos del nodo
 
     AGMModel::SPtr newModel(new AGMModel(worldModel));
     bool newSymbol = false;
-
-    auto vectorSpacesInGraph = newModel->getSymbolsByType("personalSpace");
-
-    qDebug()<< "Number of personal spaces in graph = " << vectorSpacesInGraph.size();
-
     vector<AGMModelSymbol::SPtr> symbolsToPublish;
 
-    for(auto [personID,spaces] : mapIdSpaces)
+    auto personsInGraph = newModel->getSymbolsByType("person");
+
+    for(auto personAGM : personsInGraph)
     {
+        int32_t personID = personAGM->identifier;
+        int32_t spaceSymbolId = -1;
+
+        for (AGMModelSymbol::iterator edge = personAGM->edgesBegin(worldModel);
+             edge!=personAGM->edgesEnd(worldModel);
+             edge++)
+        {
+            const std::pair<int32_t, int32_t> symbolPair = edge->getSymbolPair();
+
+            string firstType = worldModel->getSymbol(symbolPair.first)->typeString();
+            string secondType = worldModel->getSymbol(symbolPair.second)->typeString();
+
+            if (firstType == "person" and secondType == "personalSpace")
+            {
+                spaceSymbolId = symbolPair.second;
+                break;
+            }
+        }
+
         std::string type = "personalSpace" ;
         std::string imName = "personalSpaceOf" + std::to_string(personID);
 
-        int spaceSymbolId = -1;
+        PersonalSpaceType spaces;
 
-        for(auto spaces : vectorSpacesInGraph)
-        {
-            auto id = spaces->identifier;
-
-            if(newModel->getSymbolByIdentifier(id)->getAttribute("imName") == imName)
-            {
-                spaceSymbolId = id;
-                break;
-            }
+        try{
+            spaces = mapIdSpaces[personID];
+        }
+        catch(...){
+            qDebug()<<"Person not found in mapIdSpaces";
+            continue;
         }
 
         vector<string> polylinesStr = {"","",""};
@@ -976,13 +990,6 @@ void SpecificWorker::updatePersonalSpacesInGraph()
             qDebug()<< "----- Symbol not found ----- ";
             qDebug() << "imName = "<< QString::fromStdString(imName) << " " <<"symbolId = "<<spaceSymbolId;
 
-            try { AGMModelSymbol::SPtr personSymbol = newModel->getSymbol(personID); }
-            catch(...)
-            {
-                qDebug() << "PERSON "<< personID << " NOT FOUND IN WORDMODEL ";
-                return;
-            }
-
             // Symbolic part
             AGMModelSymbol::SPtr personalSpace = newModel->newSymbol("personalSpace");
             spaceSymbolId = personalSpace->identifier;
@@ -993,8 +1000,6 @@ void SpecificWorker::updatePersonalSpacesInGraph()
             personalSpace->setAttribute("personal", polylinesStr[1]);
             personalSpace->setAttribute("social", polylinesStr[2]);
             personalSpace->setAttribute("sharedWith", sharedWith);
-
-
 
             newModel->addEdgeByIdentifiers(personID,spaceSymbolId, "has");
 
@@ -1030,26 +1035,14 @@ void SpecificWorker::updatePersonalSpacesInGraph()
 
     if(newSymbol)
     {
-        try {
-            sendModificationProposal(worldModel, newModel);
-        }
-        catch(std::exception& e)
-        {
-            std::cout<<"Exception moving in AGM: "<<e.what()<<std::endl;
-        }
+        try { sendModificationProposal(worldModel, newModel); }
+        catch(std::exception& e) { std::cout<<"Exception updating AGM: "<<e.what()<<std::endl; }
     }
 
     else
     {
-
-        try
-        {
-            AGMMisc::publishNodesUpdate(symbolsToPublish, agmexecutive_proxy);
-        }
-        catch(std::exception& e)
-        {
-            std::cout<<"Exception updating SYMBOLS AGM: "<<e.what()<<std::endl;
-        }
+        try { AGMMisc::publishNodesUpdate(symbolsToPublish, agmexecutive_proxy); }
+        catch(std::exception& e) { std::cout<<"Exception updating SYMBOLS AGM: "<<e.what()<<std::endl; }
 
     }
 }
@@ -1348,8 +1341,6 @@ void SpecificWorker::AGMExecutiveTopic_symbolsUpdated(const RoboCompAGMWorldMode
 
 
 }
-
-
 
 bool SpecificWorker::setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated)
 {

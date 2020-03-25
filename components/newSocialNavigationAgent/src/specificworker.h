@@ -101,7 +101,7 @@ private:
     AGMModel::SPtr worldModel, newModel;
 	bool active;
 
-	vector <int32_t> prev_blockingIDs = {};
+	vector <int32_t> prev_blockingIDs = {}, prev_softBlockingIDs = {};
 
 
     #ifdef USE_QTGUI

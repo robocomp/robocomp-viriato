@@ -155,8 +155,10 @@ bool SpecificWorker::checkHumanBlock()
     }
 
     vector <int32_t> blockingIDs;
+    vector <int32_t> softBlockingIDs;
 
-    QPolygonF blockingPolygon = navigation.blockingPolygon;
+    QPolygonF blockingPolygon = navigation.blockPolygon;
+    vector<QPolygonF> softBlockingPolygonList = navigation.softBlockPolygonList;
 
 
     for (auto p: vectorPersons)
@@ -171,19 +173,31 @@ bool SpecificWorker::checkHumanBlock()
         if(blockingPolygon.containsPoint(QPointF(poseX,poseZ),Qt::OddEvenFill))
             blockingIDs.push_back(id);
 
+        for(auto sbPol : softBlockingPolygonList)
+        {
+            if(sbPol.containsPoint(QPointF(poseX,poseZ),Qt::OddEvenFill))
+                softBlockingIDs.push_back(id);
+        }
+
     }
 
-    if(prev_blockingIDs != blockingIDs)
+    if((prev_blockingIDs != blockingIDs) or (prev_softBlockingIDs != softBlockingIDs))
     {
-        qDebug()<< "prev Blocking != blocking list";
 
         auto robotID = newModel->getIdentifierByType("robot");
+
+        //////////////////////// block /////////////////////////////
+
+        string edgeName;
+
+        if(prev_blockingIDs.size() == 1) edgeName = "block";
+        else edgeName = "strongInterBlock";
 
         for(auto id: prev_blockingIDs)
         {
             try
             {
-                newModel->removeEdgeByIdentifiers(id, robotID, "block");
+                newModel->removeEdgeByIdentifiers(id, robotID, edgeName);
                 qDebug ()<<"Se elimina el enlace block a la persona  " << id;
             }
 
@@ -194,11 +208,14 @@ bool SpecificWorker::checkHumanBlock()
             }
         }
 
+        if(blockingIDs.size() == 1) edgeName = "block";
+        else edgeName = "strongInterBlock";
+
         for(auto id: blockingIDs)
         {
             try
             {
-                newModel->addEdgeByIdentifiers(id, robotID, "block");
+                newModel->addEdgeByIdentifiers(id, robotID, edgeName);
                 qDebug ()<<"Se añade el enlace block a la persona  " << id;
             }
 
@@ -209,8 +226,45 @@ bool SpecificWorker::checkHumanBlock()
             }
         }
 
+        ////////////////////////// softBlock //////////////////////////////
+
+        edgeName = "softBlock";
+
+        for(auto id: prev_softBlockingIDs)
+        {
+            try
+            {
+                newModel->removeEdgeByIdentifiers(id, robotID, edgeName);
+                qDebug ()<<"Se elimina el enlace softBlock a la persona  " << id;
+            }
+
+            catch(...)
+            {
+                std::cout<<__FUNCTION__<<"No existe el enlace"<<std::endl;
+
+            }
+        }
+
+
+        for(auto id: softBlockingIDs)
+        {
+            try
+            {
+                newModel->addEdgeByIdentifiers(id, robotID, edgeName);
+                qDebug ()<<"Se añade el enlace softBlock a la persona  " << id;
+            }
+
+            catch(...)
+            {
+                std::cout<<__FUNCTION__<<"No existe el enlace"<<std::endl;
+
+            }
+        }
+
+        ///////////////////////////////////////////////////////////////////
 
         prev_blockingIDs = blockingIDs;
+        prev_softBlockingIDs = softBlockingIDs;
 
         return true;
     }
@@ -650,16 +704,10 @@ void SpecificWorker::AGMExecutiveTopic_symbolUpdated(const RoboCompAGMWorldModel
 	AGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);
 
     if (modification.nodeType == "personalSpace")
-    {
         personalSpacesChanged = true;
-    }
 
     if (modification.nodeType == "affordanceSpace")
-    {
         affordancesChanged = true;
-    }
-
-
 }
 
 void SpecificWorker::AGMExecutiveTopic_symbolsUpdated(const RoboCompAGMWorldModel::NodeSequence &modifications)
@@ -676,21 +724,15 @@ void SpecificWorker::AGMExecutiveTopic_symbolsUpdated(const RoboCompAGMWorldMode
         for(auto node : modifications)
         {
             if (node.nodeType == "personalSpace")
-            {
                 personalSpacesChanged = true;
-            }
-            if (modification.nodeType == "affordanceSpace")
-            {
-                affordancesChanged = true;
-            }
 
+            if (modification.nodeType == "affordanceSpace")
+                affordancesChanged = true;
         }
 
     }
 
 }
-
-
 
 bool SpecificWorker::setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated)
 {
@@ -738,7 +780,6 @@ bool SpecificWorker::setParametersAndPossibleActivation(const ParameterMap &prs,
 
 	return true;
 }
-
 
 void SpecificWorker::sendModificationProposal(AGMModel::SPtr &worldModel, AGMModel::SPtr &newModel)
 {

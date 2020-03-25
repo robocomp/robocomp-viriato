@@ -62,7 +62,8 @@ public:
     float KE;
     float KI;
 
-    QPolygonF blockingPolygon;
+    QPolygonF blockPolygon;
+    vector<QPolygonF> softBlockPolygonList;
 
 
 void initialize(const std::shared_ptr<InnerModel> &innerModel_, const std::shared_ptr<InnerViewer> &viewer_,
@@ -89,10 +90,10 @@ void initialize(const std::shared_ptr<InnerModel> &innerModel_, const std::share
 
     robotXWidth = std::stof(configparams->at("RobotXWidth").value);
     robotZLong = std::stof(configparams->at("RobotZLong").value);
-    robotBottomLeft     = QVec::vec3(- robotXWidth/2 - 100, 0, - robotZLong/2 - 100);
-    robotBottomRight    = QVec::vec3(+ robotXWidth/2 + 100, 0, - robotZLong/2 - 100);
-    robotTopRight       = QVec::vec3(+ robotXWidth/2 + 100, 0, + robotZLong/2 + 100);
-    robotTopLeft        = QVec::vec3(- robotXWidth/2 - 100, 0, + robotZLong/2 + 100);
+    robotBottomLeft     = QVec::vec3( - robotXWidth / 2 - 100, 0, - robotZLong / 2 - 100);
+    robotBottomRight    = QVec::vec3( + robotXWidth / 2 + 100, 0, - robotZLong / 2 - 100);
+    robotTopRight       = QVec::vec3( + robotXWidth / 2 + 100, 0, + robotZLong / 2 + 100);
+    robotTopLeft        = QVec::vec3( - robotXWidth / 2 - 100, 0, + robotZLong / 2 + 100);
 
     reloj.restart();
 
@@ -196,7 +197,6 @@ void stopRobot()
 
 bool checkPathState()
 {
-    static int  timesBlocked = 0;
 //            qDebug()<<"Navigation - "<< __FUNCTION__;
 
     if (current_target.active.load())
@@ -206,14 +206,6 @@ bool checkPathState()
             if (findNewPath() == false) {
 
                 qDebug()<< "checkPathState - Path not found";
-
-                if (targetBehindRobot )
-                {
-                    timesBlocked++;
-
-                    if (timesBlocked < 100)
-                        return false;
-                }
 
                 if(current_target.humanBlock.load()) //if the path is blocked by human the target is not deactivated
                     return false;
@@ -230,8 +222,6 @@ bool checkPathState()
 
                 if(robotAutoMov) newRandomTarget();
 
-                timesBlocked = 0;
-                targetBehindRobot = false;
 
                 return false;
             }
@@ -245,9 +235,6 @@ bool checkPathState()
 
                 drawRoad();
                 reloj.restart();
-
-                timesBlocked = 0;
-
             }
         }
 
@@ -298,13 +285,11 @@ void newTarget(QPointF newT)
     this->current_target.lock();
         current_target.active.store(true);
         current_target.blocked.store(true);
+        current_target.humanBlock.store(false);
         current_target.p = newT;
 
     this->current_target.unlock();
 }
-
-const TMap& getMap() const { return grid; };
-
 
 void updatePersonalPolylines(vector<QPolygonF> intimateSpaces_, vector<QPolygonF> personalSpaces_, vector<QPolygonF> socialSpaces_){
     intimateSpaces = intimateSpaces_;
@@ -359,7 +344,6 @@ private:
     float robotXWidth, robotZLong; //robot dimensions read from config
     QVec robotBottomLeft, robotBottomRight, robotTopRight, robotTopLeft;
 
-    bool targetBehindRobot = false;
     bool gridChanged = false;
 
     vector<QPolygonF> intimateSpaces,personalSpaces,socialSpaces, totalAffordances;
@@ -475,71 +459,48 @@ bool findNewPath()
     this->current_target.unlock();
 
 
-    if(isVisible(currentRobotNose))
-    {
-        std::list<QPointF> path = grid.computePath(currentRobotNose, target);
+    std::list<QPointF> path = grid.computePath(currentRobotNose, target);
 
-        if (path.size() > 0)
+    if (path.size() > 0)
+    {
+        blockPolygon.clear();
+
+        pathPoints.push_back(currentRobotNose);
+
+        for (const QPointF &p : path)
+            pathPoints.push_back(p);
+
+        lastPointInPath = pathPoints[pathPoints.size()-1];
+
+        if(checkHumanSoftBlock())
         {
-            blockingPolygon.clear();
+            this->current_target.lock();
+                current_target.humanBlock.store(true);
+            this->current_target.unlock();
 
-            qDebug()<< "RobotNose visible -- Path found ";
-
-            pathPoints.push_back(currentRobotNose);
-
-            for (const QPointF &p : path)
-            {
-                pathPoints.push_back(p);
-            }
-
-            lastPointInPath = pathPoints[pathPoints.size()-1];
-
-            targetBehindRobot = false;
-
-            return true;
+            return false;
         }
-    }
 
-    qDebug()<< "Path NOT found -- searching path behind the robot ";
 
-    auto robot = QPointF(currentRobotPose.x(),currentRobotPose.z());
-    QPointF robotBack =  (robot + QPointF( (robotZLong/2 + 150) * - sin(currentRobotPose.ry()), (robotZLong/2 + 150) * -cos(currentRobotPose.ry())));
-
-    std::list<QPointF> path_back = grid.computePath(QPointF(robotBack.x() ,robotBack.y()), target);
-
-    if (path_back.size() > 0)
-    {
-
-        blockingPolygon.clear();
-
-        qDebug()<< "Path found BEHIND ROBOT -- rotating robot";
-            omnirobot_proxy->setSpeedBase(0,0,0.6);
-
-        this->current_target.lock();
-            current_target.blocked.store(true);
-        this->current_target.unlock();
-
-        targetBehindRobot = true;
-
+        return true;
     }
 
     else
     {
         qDebug() << __FUNCTION__ << "Path not found";
-        targetBehindRobot = false;
 
         if(checkHumanBlock())
         {
+            softBlockPolygonList.clear();
+
             this->current_target.lock();
-            current_target.humanBlock.store(true);
+                current_target.humanBlock.store(true);
             this->current_target.unlock();
 
         }
+
+        return false;
     }
-
-    return false;
-
-
 }
 
 bool checkHumanBlock()
@@ -547,7 +508,7 @@ bool checkHumanBlock()
     qDebug()<<__FUNCTION__;
 
     grid.resetGrid();
-    blockingPolygon.clear();
+    blockPolygon.clear();
 
     bool blockFound = false;
 
@@ -567,7 +528,7 @@ bool checkHumanBlock()
             if (path.empty())
             {
                 blockFound = true;
-                blockingPolygon = pol;
+                blockPolygon = pol;
                 break;
             }
         }
@@ -577,6 +538,30 @@ bool checkHumanBlock()
     updateFreeSpaceMap(false);
 
     return blockFound;
+}
+
+bool checkHumanSoftBlock()
+{
+    qDebug()<<__FUNCTION__;
+
+    softBlockPolygonList.clear();
+
+    bool softBlockFound = false;
+
+    for(auto pol : personalSpaces) //change to intimateSpaces
+    {
+        for (auto p: pathPoints)
+        {
+            if (pol.containsPoint(p, Qt::OddEvenFill))
+            {
+                softBlockFound = true;
+                softBlockPolygonList.push_back(pol);
+                break;
+            }
+        }
+    }
+
+    return softBlockFound;
 }
 
 
