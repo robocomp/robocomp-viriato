@@ -1,5 +1,4 @@
 cmake_minimum_required(VERSION 2.8.11)
-PROJECT( socialNavigationAgent )
 
 
 IF ( "$ENV{ROBOCOMP}" STREQUAL "")
@@ -41,7 +40,7 @@ SET (LIBS ${LIBS} -lagm )
 
 #ROBOCOMP
 ROBOCOMP_INITIALIZE( $ENV{ROBOCOMP}/ )
-ROBOCOMP_WRAP_ICE( CommonBehavior GenericBase Planning SocialNavigationGaussian Laser OmniRobot RCISMousePicker SocialRules AGMCommonBehavior AGMExecutive AGMExecutiveTopic AGMWorldModel AGMExecutive AGMExecutiveTopic )
+ROBOCOMP_WRAP_ICE( CommonBehavior SocialNavigationGaussian GenericBase Planning Laser OmniRobot RCISMousePicker SocialRules AGMCommonBehavior AGMExecutive AGMExecutiveTopic AGMWorldModel AGMExecutive AGMExecutiveTopic )
 SET (EXECUTABLE_OUTPUT_PATH ${RC_COMPONENT_DEVEL_PATH}/bin)
 
 QT_WRAP_UI( UI_HEADERS mainUI.ui )

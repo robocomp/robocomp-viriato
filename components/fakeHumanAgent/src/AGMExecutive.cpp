@@ -67,9 +67,11 @@ const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_ids[2] =
 const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_ops[] =
 {
     "activate",
+    "addSelfEdge",
     "broadcastModel",
     "broadcastPlan",
     "deactivate",
+    "delSelfEdge",
     "edgeUpdate",
     "edgesUpdate",
     "getData",
@@ -92,6 +94,8 @@ const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_symbolUpdate_name = "
 const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_symbolsUpdate_name = "symbolsUpdate";
 const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_edgeUpdate_name = "edgeUpdate";
 const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_edgesUpdate_name = "edgesUpdate";
+const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_addSelfEdge_name = "addSelfEdge";
+const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_delSelfEdge_name = "delSelfEdge";
 const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_setMission_name = "setMission";
 const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_getModel_name = "getModel";
 const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_getNode_name = "getNode";
@@ -248,6 +252,35 @@ RoboCompAGMExecutive::AGMExecutive::_iceD_edgesUpdate(::IceInternal::Incoming& i
 }
 
 bool
+RoboCompAGMExecutive::AGMExecutive::_iceD_addSelfEdge(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
+    auto istr = inS.startReadParams();
+    int iceP_nodeid;
+    ::std::string iceP_edgeType;
+    ::RoboCompAGMWorldModel::StringDictionary iceP_attributes;
+    istr->readAll(iceP_nodeid, iceP_edgeType, iceP_attributes);
+    inS.endReadParams();
+    this->addSelfEdge(iceP_nodeid, ::std::move(iceP_edgeType), ::std::move(iceP_attributes), current);
+    inS.writeEmptyParams();
+    return true;
+}
+
+bool
+RoboCompAGMExecutive::AGMExecutive::_iceD_delSelfEdge(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
+    auto istr = inS.startReadParams();
+    int iceP_nodeid;
+    ::std::string iceP_edgeType;
+    istr->readAll(iceP_nodeid, iceP_edgeType);
+    inS.endReadParams();
+    this->delSelfEdge(iceP_nodeid, ::std::move(iceP_edgeType), current);
+    inS.writeEmptyParams();
+    return true;
+}
+
+bool
 RoboCompAGMExecutive::AGMExecutive::_iceD_setMission(::IceInternal::Incoming& inS, const ::Ice::Current& current)
 {
     _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
@@ -342,7 +375,7 @@ RoboCompAGMExecutive::AGMExecutive::_iceD_broadcastPlan(::IceInternal::Incoming&
 bool
 RoboCompAGMExecutive::AGMExecutive::_iceDispatch(::IceInternal::Incoming& in, const ::Ice::Current& current)
 {
-    ::std::pair<const ::std::string*, const ::std::string*> r = ::std::equal_range(iceC_RoboCompAGMExecutive_AGMExecutive_ops, iceC_RoboCompAGMExecutive_AGMExecutive_ops + 18, current.operation);
+    ::std::pair<const ::std::string*, const ::std::string*> r = ::std::equal_range(iceC_RoboCompAGMExecutive_AGMExecutive_ops, iceC_RoboCompAGMExecutive_AGMExecutive_ops + 20, current.operation);
     if(r.first == r.second)
     {
         throw ::Ice::OperationNotExistException(__FILE__, __LINE__, current.id, current.facet, current.operation);
@@ -356,69 +389,77 @@ RoboCompAGMExecutive::AGMExecutive::_iceDispatch(::IceInternal::Incoming& in, co
         }
         case 1:
         {
-            return _iceD_broadcastModel(in, current);
+            return _iceD_addSelfEdge(in, current);
         }
         case 2:
         {
-            return _iceD_broadcastPlan(in, current);
+            return _iceD_broadcastModel(in, current);
         }
         case 3:
         {
-            return _iceD_deactivate(in, current);
+            return _iceD_broadcastPlan(in, current);
         }
         case 4:
         {
-            return _iceD_edgeUpdate(in, current);
+            return _iceD_deactivate(in, current);
         }
         case 5:
         {
-            return _iceD_edgesUpdate(in, current);
+            return _iceD_delSelfEdge(in, current);
         }
         case 6:
         {
-            return _iceD_getData(in, current);
+            return _iceD_edgeUpdate(in, current);
         }
         case 7:
         {
-            return _iceD_getEdge(in, current);
+            return _iceD_edgesUpdate(in, current);
         }
         case 8:
         {
-            return _iceD_getModel(in, current);
+            return _iceD_getData(in, current);
         }
         case 9:
         {
-            return _iceD_getNode(in, current);
+            return _iceD_getEdge(in, current);
         }
         case 10:
         {
-            return _iceD_ice_id(in, current);
+            return _iceD_getModel(in, current);
         }
         case 11:
         {
-            return _iceD_ice_ids(in, current);
+            return _iceD_getNode(in, current);
         }
         case 12:
         {
-            return _iceD_ice_isA(in, current);
+            return _iceD_ice_id(in, current);
         }
         case 13:
         {
-            return _iceD_ice_ping(in, current);
+            return _iceD_ice_ids(in, current);
         }
         case 14:
         {
-            return _iceD_setMission(in, current);
+            return _iceD_ice_isA(in, current);
         }
         case 15:
         {
-            return _iceD_structuralChangeProposal(in, current);
+            return _iceD_ice_ping(in, current);
         }
         case 16:
         {
-            return _iceD_symbolUpdate(in, current);
+            return _iceD_setMission(in, current);
         }
         case 17:
+        {
+            return _iceD_structuralChangeProposal(in, current);
+        }
+        case 18:
+        {
+            return _iceD_symbolUpdate(in, current);
+        }
+        case 19:
         {
             return _iceD_symbolsUpdate(in, current);
         }
@@ -519,6 +560,28 @@ RoboCompAGMExecutive::AGMExecutivePrx::_iceI_edgesUpdate(const ::std::shared_ptr
         [&](::Ice::OutputStream* ostr)
         {
             ostr->writeAll(iceP_es);
+        },
+        nullptr);
+}
+
+void
+RoboCompAGMExecutive::AGMExecutivePrx::_iceI_addSelfEdge(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>& outAsync, int iceP_nodeid, const ::std::string& iceP_edgeType, const ::RoboCompAGMWorldModel::StringDictionary& iceP_attributes, const ::Ice::Context& context)
+{
+    outAsync->invoke(iceC_RoboCompAGMExecutive_AGMExecutive_addSelfEdge_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
+        [&](::Ice::OutputStream* ostr)
+        {
+            ostr->writeAll(iceP_nodeid, iceP_edgeType, iceP_attributes);
+        },
+        nullptr);
+}
+
+void
+RoboCompAGMExecutive::AGMExecutivePrx::_iceI_delSelfEdge(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>& outAsync, int iceP_nodeid, const ::std::string& iceP_edgeType, const ::Ice::Context& context)
+{
+    outAsync->invoke(iceC_RoboCompAGMExecutive_AGMExecutive_delSelfEdge_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
+        [&](::Ice::OutputStream* ostr)
+        {
+            ostr->writeAll(iceP_nodeid, iceP_edgeType);
         },
         nullptr);
 }
@@ -628,6 +691,10 @@ const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_symbolsUpdate_name = 
 const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_edgeUpdate_name = "edgeUpdate";
 
 const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_edgesUpdate_name = "edgesUpdate";
+
+const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_addSelfEdge_name = "addSelfEdge";
+
+const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_delSelfEdge_name = "delSelfEdge";
 
 const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_setMission_name = "setMission";
 
@@ -993,6 +1060,59 @@ void
 IceProxy::RoboCompAGMExecutive::AGMExecutive::end_edgesUpdate(const ::Ice::AsyncResultPtr& result)
 {
     _end(result, iceC_RoboCompAGMExecutive_AGMExecutive_edgesUpdate_name);
+}
+
+::Ice::AsyncResultPtr
+IceProxy::RoboCompAGMExecutive::AGMExecutive::_iceI_begin_addSelfEdge(::Ice::Int iceP_nodeid, const ::std::string& iceP_edgeType, const ::RoboCompAGMWorldModel::StringDictionary& iceP_attributes, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
+{
+    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompAGMExecutive_AGMExecutive_addSelfEdge_name, del, cookie, sync);
+    try
+    {
+        result->prepare(iceC_RoboCompAGMExecutive_AGMExecutive_addSelfEdge_name, ::Ice::Normal, context);
+        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
+        ostr->write(iceP_nodeid);
+        ostr->write(iceP_edgeType);
+        ostr->write(iceP_attributes);
+        result->endWriteParams();
+        result->invoke(iceC_RoboCompAGMExecutive_AGMExecutive_addSelfEdge_name);
+    }
+    catch(const ::Ice::Exception& ex)
+    {
+        result->abort(ex);
+    }
+    return result;
+}
+
+void
+IceProxy::RoboCompAGMExecutive::AGMExecutive::end_addSelfEdge(const ::Ice::AsyncResultPtr& result)
+{
+    _end(result, iceC_RoboCompAGMExecutive_AGMExecutive_addSelfEdge_name);
+}
+
+::Ice::AsyncResultPtr
+IceProxy::RoboCompAGMExecutive::AGMExecutive::_iceI_begin_delSelfEdge(::Ice::Int iceP_nodeid, const ::std::string& iceP_edgeType, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
+{
+    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompAGMExecutive_AGMExecutive_delSelfEdge_name, del, cookie, sync);
+    try
+    {
+        result->prepare(iceC_RoboCompAGMExecutive_AGMExecutive_delSelfEdge_name, ::Ice::Normal, context);
+        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
+        ostr->write(iceP_nodeid);
+        ostr->write(iceP_edgeType);
+        result->endWriteParams();
+        result->invoke(iceC_RoboCompAGMExecutive_AGMExecutive_delSelfEdge_name);
+    }
+    catch(const ::Ice::Exception& ex)
+    {
+        result->abort(ex);
+    }
+    return result;
+}
+
+void
+IceProxy::RoboCompAGMExecutive::AGMExecutive::end_delSelfEdge(const ::Ice::AsyncResultPtr& result)
+{
+    _end(result, iceC_RoboCompAGMExecutive_AGMExecutive_delSelfEdge_name);
 }
 
 ::Ice::AsyncResultPtr
@@ -1380,6 +1500,38 @@ RoboCompAGMExecutive::AGMExecutive::_iceD_edgesUpdate(::IceInternal::Incoming& i
 }
 
 bool
+RoboCompAGMExecutive::AGMExecutive::_iceD_addSelfEdge(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::Normal, current.mode);
+    ::Ice::InputStream* istr = inS.startReadParams();
+    ::Ice::Int iceP_nodeid;
+    ::std::string iceP_edgeType;
+    ::RoboCompAGMWorldModel::StringDictionary iceP_attributes;
+    istr->read(iceP_nodeid);
+    istr->read(iceP_edgeType);
+    istr->read(iceP_attributes);
+    inS.endReadParams();
+    this->addSelfEdge(iceP_nodeid, iceP_edgeType, iceP_attributes, current);
+    inS.writeEmptyParams();
+    return true;
+}
+
+bool
+RoboCompAGMExecutive::AGMExecutive::_iceD_delSelfEdge(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::Normal, current.mode);
+    ::Ice::InputStream* istr = inS.startReadParams();
+    ::Ice::Int iceP_nodeid;
+    ::std::string iceP_edgeType;
+    istr->read(iceP_nodeid);
+    istr->read(iceP_edgeType);
+    inS.endReadParams();
+    this->delSelfEdge(iceP_nodeid, iceP_edgeType, current);
+    inS.writeEmptyParams();
+    return true;
+}
+
+bool
 RoboCompAGMExecutive::AGMExecutive::_iceD_setMission(::IceInternal::Incoming& inS, const ::Ice::Current& current)
 {
     _iceCheckMode(::Ice::Normal, current.mode);
@@ -1480,9 +1632,11 @@ namespace
 const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_all[] =
 {
     "activate",
+    "addSelfEdge",
     "broadcastModel",
     "broadcastPlan",
     "deactivate",
+    "delSelfEdge",
     "edgeUpdate",
     "edgesUpdate",
     "getData",
@@ -1504,7 +1658,7 @@ const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_all[] =
 bool
 RoboCompAGMExecutive::AGMExecutive::_iceDispatch(::IceInternal::Incoming& in, const ::Ice::Current& current)
 {
-    ::std::pair<const ::std::string*, const ::std::string*> r = ::std::equal_range(iceC_RoboCompAGMExecutive_AGMExecutive_all, iceC_RoboCompAGMExecutive_AGMExecutive_all + 18, current.operation);
+    ::std::pair<const ::std::string*, const ::std::string*> r = ::std::equal_range(iceC_RoboCompAGMExecutive_AGMExecutive_all, iceC_RoboCompAGMExecutive_AGMExecutive_all + 20, current.operation);
     if(r.first == r.second)
     {
         throw ::Ice::OperationNotExistException(__FILE__, __LINE__, current.id, current.facet, current.operation);
@@ -1518,69 +1672,77 @@ RoboCompAGMExecutive::AGMExecutive::_iceDispatch(::IceInternal::Incoming& in, co
         }
         case 1:
         {
-            return _iceD_broadcastModel(in, current);
+            return _iceD_addSelfEdge(in, current);
         }
         case 2:
         {
-            return _iceD_broadcastPlan(in, current);
+            return _iceD_broadcastModel(in, current);
         }
         case 3:
         {
-            return _iceD_deactivate(in, current);
+            return _iceD_broadcastPlan(in, current);
         }
         case 4:
         {
-            return _iceD_edgeUpdate(in, current);
+            return _iceD_deactivate(in, current);
         }
         case 5:
         {
-            return _iceD_edgesUpdate(in, current);
+            return _iceD_delSelfEdge(in, current);
         }
         case 6:
         {
-            return _iceD_getData(in, current);
+            return _iceD_edgeUpdate(in, current);
         }
         case 7:
         {
-            return _iceD_getEdge(in, current);
+            return _iceD_edgesUpdate(in, current);
         }
         case 8:
         {
-            return _iceD_getModel(in, current);
+            return _iceD_getData(in, current);
         }
         case 9:
         {
-            return _iceD_getNode(in, current);
+            return _iceD_getEdge(in, current);
         }
         case 10:
         {
-            return _iceD_ice_id(in, current);
+            return _iceD_getModel(in, current);
         }
         case 11:
         {
-            return _iceD_ice_ids(in, current);
+            return _iceD_getNode(in, current);
         }
         case 12:
         {
-            return _iceD_ice_isA(in, current);
+            return _iceD_ice_id(in, current);
         }
         case 13:
         {
-            return _iceD_ice_ping(in, current);
+            return _iceD_ice_ids(in, current);
         }
         case 14:
         {
-            return _iceD_setMission(in, current);
+            return _iceD_ice_isA(in, current);
         }
         case 15:
         {
-            return _iceD_structuralChangeProposal(in, current);
+            return _iceD_ice_ping(in, current);
         }
         case 16:
         {
-            return _iceD_symbolUpdate(in, current);
+            return _iceD_setMission(in, current);
         }
         case 17:
+        {
+            return _iceD_structuralChangeProposal(in, current);
+        }
+        case 18:
+        {
+            return _iceD_symbolUpdate(in, current);
+        }
+        case 19:
         {
             return _iceD_symbolsUpdate(in, current);
         }

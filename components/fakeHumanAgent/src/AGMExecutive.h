@@ -161,6 +161,12 @@ public:
     virtual void edgesUpdate(::RoboCompAGMWorldModel::EdgeSequence, const ::Ice::Current&) = 0;
     bool _iceD_edgesUpdate(::IceInternal::Incoming&, const ::Ice::Current&);
 
+    virtual void addSelfEdge(int, ::std::string, ::RoboCompAGMWorldModel::StringDictionary, const ::Ice::Current&) = 0;
+    bool _iceD_addSelfEdge(::IceInternal::Incoming&, const ::Ice::Current&);
+
+    virtual void delSelfEdge(int, ::std::string, const ::Ice::Current&) = 0;
+    bool _iceD_delSelfEdge(::IceInternal::Incoming&, const ::Ice::Current&);
+
     virtual void setMission(::std::string, const ::Ice::Current&) = 0;
     bool _iceD_setMission(::IceInternal::Incoming&, const ::Ice::Current&);
 
@@ -366,6 +372,54 @@ public:
     }
 
     void _iceI_edgesUpdate(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>&, const ::RoboCompAGMWorldModel::EdgeSequence&, const ::Ice::Context&);
+
+    void addSelfEdge(int iceP_nodeid, const ::std::string& iceP_edgeType, const ::RoboCompAGMWorldModel::StringDictionary& iceP_attributes, const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        _makePromiseOutgoing<void>(true, this, &RoboCompAGMExecutive::AGMExecutivePrx::_iceI_addSelfEdge, iceP_nodeid, iceP_edgeType, iceP_attributes, context).get();
+    }
+
+    template<template<typename> class P = ::std::promise>
+    auto addSelfEdgeAsync(int iceP_nodeid, const ::std::string& iceP_edgeType, const ::RoboCompAGMWorldModel::StringDictionary& iceP_attributes, const ::Ice::Context& context = Ice::noExplicitContext)
+        -> decltype(::std::declval<P<void>>().get_future())
+    {
+        return _makePromiseOutgoing<void, P>(false, this, &RoboCompAGMExecutive::AGMExecutivePrx::_iceI_addSelfEdge, iceP_nodeid, iceP_edgeType, iceP_attributes, context);
+    }
+
+    ::std::function<void()>
+    addSelfEdgeAsync(int iceP_nodeid, const ::std::string& iceP_edgeType, const ::RoboCompAGMWorldModel::StringDictionary& iceP_attributes,
+                     ::std::function<void()> response,
+                     ::std::function<void(::std::exception_ptr)> ex = nullptr,
+                     ::std::function<void(bool)> sent = nullptr,
+                     const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        return _makeLamdaOutgoing<void>(response, ex, sent, this, &RoboCompAGMExecutive::AGMExecutivePrx::_iceI_addSelfEdge, iceP_nodeid, iceP_edgeType, iceP_attributes, context);
+    }
+
+    void _iceI_addSelfEdge(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>&, int, const ::std::string&, const ::RoboCompAGMWorldModel::StringDictionary&, const ::Ice::Context&);
+
+    void delSelfEdge(int iceP_nodeid, const ::std::string& iceP_edgeType, const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        _makePromiseOutgoing<void>(true, this, &RoboCompAGMExecutive::AGMExecutivePrx::_iceI_delSelfEdge, iceP_nodeid, iceP_edgeType, context).get();
+    }
+
+    template<template<typename> class P = ::std::promise>
+    auto delSelfEdgeAsync(int iceP_nodeid, const ::std::string& iceP_edgeType, const ::Ice::Context& context = Ice::noExplicitContext)
+        -> decltype(::std::declval<P<void>>().get_future())
+    {
+        return _makePromiseOutgoing<void, P>(false, this, &RoboCompAGMExecutive::AGMExecutivePrx::_iceI_delSelfEdge, iceP_nodeid, iceP_edgeType, context);
+    }
+
+    ::std::function<void()>
+    delSelfEdgeAsync(int iceP_nodeid, const ::std::string& iceP_edgeType,
+                     ::std::function<void()> response,
+                     ::std::function<void(::std::exception_ptr)> ex = nullptr,
+                     ::std::function<void(bool)> sent = nullptr,
+                     const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        return _makeLamdaOutgoing<void>(response, ex, sent, this, &RoboCompAGMExecutive::AGMExecutivePrx::_iceI_delSelfEdge, iceP_nodeid, iceP_edgeType, context);
+    }
+
+    void _iceI_delSelfEdge(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>&, int, const ::std::string&, const ::Ice::Context&);
 
     void setMission(const ::std::string& iceP_path, const ::Ice::Context& context = Ice::noExplicitContext)
     {
@@ -673,6 +727,12 @@ typedef ::IceUtil::Handle< Callback_AGMExecutive_edgeUpdate_Base> Callback_AGMEx
 class Callback_AGMExecutive_edgesUpdate_Base : public virtual ::IceInternal::CallbackBase { };
 typedef ::IceUtil::Handle< Callback_AGMExecutive_edgesUpdate_Base> Callback_AGMExecutive_edgesUpdatePtr;
 
+class Callback_AGMExecutive_addSelfEdge_Base : public virtual ::IceInternal::CallbackBase { };
+typedef ::IceUtil::Handle< Callback_AGMExecutive_addSelfEdge_Base> Callback_AGMExecutive_addSelfEdgePtr;
+
+class Callback_AGMExecutive_delSelfEdge_Base : public virtual ::IceInternal::CallbackBase { };
+typedef ::IceUtil::Handle< Callback_AGMExecutive_delSelfEdge_Base> Callback_AGMExecutive_delSelfEdgePtr;
+
 class Callback_AGMExecutive_setMission_Base : public virtual ::IceInternal::CallbackBase { };
 typedef ::IceUtil::Handle< Callback_AGMExecutive_setMission_Base> Callback_AGMExecutive_setMissionPtr;
 
@@ -969,6 +1029,82 @@ public:
 private:
 
     ::Ice::AsyncResultPtr _iceI_begin_edgesUpdate(const ::RoboCompAGMWorldModel::EdgeSequence&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
+
+public:
+
+    void addSelfEdge(::Ice::Int iceP_nodeid, const ::std::string& iceP_edgeType, const ::RoboCompAGMWorldModel::StringDictionary& iceP_attributes, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    {
+        end_addSelfEdge(_iceI_begin_addSelfEdge(iceP_nodeid, iceP_edgeType, iceP_attributes, context, ::IceInternal::dummyCallback, 0, true));
+    }
+
+    ::Ice::AsyncResultPtr begin_addSelfEdge(::Ice::Int iceP_nodeid, const ::std::string& iceP_edgeType, const ::RoboCompAGMWorldModel::StringDictionary& iceP_attributes, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    {
+        return _iceI_begin_addSelfEdge(iceP_nodeid, iceP_edgeType, iceP_attributes, context, ::IceInternal::dummyCallback, 0);
+    }
+
+    ::Ice::AsyncResultPtr begin_addSelfEdge(::Ice::Int iceP_nodeid, const ::std::string& iceP_edgeType, const ::RoboCompAGMWorldModel::StringDictionary& iceP_attributes, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_addSelfEdge(iceP_nodeid, iceP_edgeType, iceP_attributes, ::Ice::noExplicitContext, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_addSelfEdge(::Ice::Int iceP_nodeid, const ::std::string& iceP_edgeType, const ::RoboCompAGMWorldModel::StringDictionary& iceP_attributes, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_addSelfEdge(iceP_nodeid, iceP_edgeType, iceP_attributes, context, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_addSelfEdge(::Ice::Int iceP_nodeid, const ::std::string& iceP_edgeType, const ::RoboCompAGMWorldModel::StringDictionary& iceP_attributes, const ::RoboCompAGMExecutive::Callback_AGMExecutive_addSelfEdgePtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_addSelfEdge(iceP_nodeid, iceP_edgeType, iceP_attributes, ::Ice::noExplicitContext, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_addSelfEdge(::Ice::Int iceP_nodeid, const ::std::string& iceP_edgeType, const ::RoboCompAGMWorldModel::StringDictionary& iceP_attributes, const ::Ice::Context& context, const ::RoboCompAGMExecutive::Callback_AGMExecutive_addSelfEdgePtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_addSelfEdge(iceP_nodeid, iceP_edgeType, iceP_attributes, context, del, cookie);
+    }
+
+    void end_addSelfEdge(const ::Ice::AsyncResultPtr&);
+
+private:
+
+    ::Ice::AsyncResultPtr _iceI_begin_addSelfEdge(::Ice::Int, const ::std::string&, const ::RoboCompAGMWorldModel::StringDictionary&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
+
+public:
+
+    void delSelfEdge(::Ice::Int iceP_nodeid, const ::std::string& iceP_edgeType, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    {
+        end_delSelfEdge(_iceI_begin_delSelfEdge(iceP_nodeid, iceP_edgeType, context, ::IceInternal::dummyCallback, 0, true));
+    }
+
+    ::Ice::AsyncResultPtr begin_delSelfEdge(::Ice::Int iceP_nodeid, const ::std::string& iceP_edgeType, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    {
+        return _iceI_begin_delSelfEdge(iceP_nodeid, iceP_edgeType, context, ::IceInternal::dummyCallback, 0);
+    }
+
+    ::Ice::AsyncResultPtr begin_delSelfEdge(::Ice::Int iceP_nodeid, const ::std::string& iceP_edgeType, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_delSelfEdge(iceP_nodeid, iceP_edgeType, ::Ice::noExplicitContext, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_delSelfEdge(::Ice::Int iceP_nodeid, const ::std::string& iceP_edgeType, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_delSelfEdge(iceP_nodeid, iceP_edgeType, context, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_delSelfEdge(::Ice::Int iceP_nodeid, const ::std::string& iceP_edgeType, const ::RoboCompAGMExecutive::Callback_AGMExecutive_delSelfEdgePtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_delSelfEdge(iceP_nodeid, iceP_edgeType, ::Ice::noExplicitContext, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_delSelfEdge(::Ice::Int iceP_nodeid, const ::std::string& iceP_edgeType, const ::Ice::Context& context, const ::RoboCompAGMExecutive::Callback_AGMExecutive_delSelfEdgePtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_delSelfEdge(iceP_nodeid, iceP_edgeType, context, del, cookie);
+    }
+
+    void end_delSelfEdge(const ::Ice::AsyncResultPtr&);
+
+private:
+
+    ::Ice::AsyncResultPtr _iceI_begin_delSelfEdge(::Ice::Int, const ::std::string&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
 
 public:
 
@@ -1287,6 +1423,12 @@ public:
 
     virtual void edgesUpdate(const ::RoboCompAGMWorldModel::EdgeSequence&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
     bool _iceD_edgesUpdate(::IceInternal::Incoming&, const ::Ice::Current&);
+
+    virtual void addSelfEdge(::Ice::Int, const ::std::string&, const ::RoboCompAGMWorldModel::StringDictionary&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
+    bool _iceD_addSelfEdge(::IceInternal::Incoming&, const ::Ice::Current&);
+
+    virtual void delSelfEdge(::Ice::Int, const ::std::string&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
+    bool _iceD_delSelfEdge(::IceInternal::Incoming&, const ::Ice::Current&);
 
     virtual void setMission(const ::std::string&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
     bool _iceD_setMission(::IceInternal::Incoming&, const ::Ice::Current&);
@@ -1971,6 +2113,170 @@ template<class T, typename CT> Callback_AGMExecutive_edgesUpdatePtr
 newCallback_AGMExecutive_edgesUpdate(T* instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
 {
     return new Callback_AGMExecutive_edgesUpdate<T, CT>(instance, 0, excb, sentcb);
+}
+
+template<class T>
+class CallbackNC_AGMExecutive_addSelfEdge : public Callback_AGMExecutive_addSelfEdge_Base, public ::IceInternal::OnewayCallbackNC<T>
+{
+public:
+
+    typedef IceUtil::Handle<T> TPtr;
+
+    typedef void (T::*Exception)(const ::Ice::Exception&);
+    typedef void (T::*Sent)(bool);
+    typedef void (T::*Response)();
+
+    CallbackNC_AGMExecutive_addSelfEdge(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::OnewayCallbackNC<T>(obj, cb, excb, sentcb)
+    {
+    }
+};
+
+template<class T> Callback_AGMExecutive_addSelfEdgePtr
+newCallback_AGMExecutive_addSelfEdge(const IceUtil::Handle<T>& instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_AGMExecutive_addSelfEdge<T>(instance, cb, excb, sentcb);
+}
+
+template<class T> Callback_AGMExecutive_addSelfEdgePtr
+newCallback_AGMExecutive_addSelfEdge(const IceUtil::Handle<T>& instance, void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_AGMExecutive_addSelfEdge<T>(instance, 0, excb, sentcb);
+}
+
+template<class T> Callback_AGMExecutive_addSelfEdgePtr
+newCallback_AGMExecutive_addSelfEdge(T* instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_AGMExecutive_addSelfEdge<T>(instance, cb, excb, sentcb);
+}
+
+template<class T> Callback_AGMExecutive_addSelfEdgePtr
+newCallback_AGMExecutive_addSelfEdge(T* instance, void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_AGMExecutive_addSelfEdge<T>(instance, 0, excb, sentcb);
+}
+
+template<class T, typename CT>
+class Callback_AGMExecutive_addSelfEdge : public Callback_AGMExecutive_addSelfEdge_Base, public ::IceInternal::OnewayCallback<T, CT>
+{
+public:
+
+    typedef IceUtil::Handle<T> TPtr;
+
+    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
+    typedef void (T::*Sent)(bool , const CT&);
+    typedef void (T::*Response)(const CT&);
+
+    Callback_AGMExecutive_addSelfEdge(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::OnewayCallback<T, CT>(obj, cb, excb, sentcb)
+    {
+    }
+};
+
+template<class T, typename CT> Callback_AGMExecutive_addSelfEdgePtr
+newCallback_AGMExecutive_addSelfEdge(const IceUtil::Handle<T>& instance, void (T::*cb)(const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_AGMExecutive_addSelfEdge<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_AGMExecutive_addSelfEdgePtr
+newCallback_AGMExecutive_addSelfEdge(const IceUtil::Handle<T>& instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_AGMExecutive_addSelfEdge<T, CT>(instance, 0, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_AGMExecutive_addSelfEdgePtr
+newCallback_AGMExecutive_addSelfEdge(T* instance, void (T::*cb)(const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_AGMExecutive_addSelfEdge<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_AGMExecutive_addSelfEdgePtr
+newCallback_AGMExecutive_addSelfEdge(T* instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_AGMExecutive_addSelfEdge<T, CT>(instance, 0, excb, sentcb);
+}
+
+template<class T>
+class CallbackNC_AGMExecutive_delSelfEdge : public Callback_AGMExecutive_delSelfEdge_Base, public ::IceInternal::OnewayCallbackNC<T>
+{
+public:
+
+    typedef IceUtil::Handle<T> TPtr;
+
+    typedef void (T::*Exception)(const ::Ice::Exception&);
+    typedef void (T::*Sent)(bool);
+    typedef void (T::*Response)();
+
+    CallbackNC_AGMExecutive_delSelfEdge(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::OnewayCallbackNC<T>(obj, cb, excb, sentcb)
+    {
+    }
+};
+
+template<class T> Callback_AGMExecutive_delSelfEdgePtr
+newCallback_AGMExecutive_delSelfEdge(const IceUtil::Handle<T>& instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_AGMExecutive_delSelfEdge<T>(instance, cb, excb, sentcb);
+}
+
+template<class T> Callback_AGMExecutive_delSelfEdgePtr
+newCallback_AGMExecutive_delSelfEdge(const IceUtil::Handle<T>& instance, void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_AGMExecutive_delSelfEdge<T>(instance, 0, excb, sentcb);
+}
+
+template<class T> Callback_AGMExecutive_delSelfEdgePtr
+newCallback_AGMExecutive_delSelfEdge(T* instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_AGMExecutive_delSelfEdge<T>(instance, cb, excb, sentcb);
+}
+
+template<class T> Callback_AGMExecutive_delSelfEdgePtr
+newCallback_AGMExecutive_delSelfEdge(T* instance, void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_AGMExecutive_delSelfEdge<T>(instance, 0, excb, sentcb);
+}
+
+template<class T, typename CT>
+class Callback_AGMExecutive_delSelfEdge : public Callback_AGMExecutive_delSelfEdge_Base, public ::IceInternal::OnewayCallback<T, CT>
+{
+public:
+
+    typedef IceUtil::Handle<T> TPtr;
+
+    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
+    typedef void (T::*Sent)(bool , const CT&);
+    typedef void (T::*Response)(const CT&);
+
+    Callback_AGMExecutive_delSelfEdge(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::OnewayCallback<T, CT>(obj, cb, excb, sentcb)
+    {
+    }
+};
+
+template<class T, typename CT> Callback_AGMExecutive_delSelfEdgePtr
+newCallback_AGMExecutive_delSelfEdge(const IceUtil::Handle<T>& instance, void (T::*cb)(const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_AGMExecutive_delSelfEdge<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_AGMExecutive_delSelfEdgePtr
+newCallback_AGMExecutive_delSelfEdge(const IceUtil::Handle<T>& instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_AGMExecutive_delSelfEdge<T, CT>(instance, 0, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_AGMExecutive_delSelfEdgePtr
+newCallback_AGMExecutive_delSelfEdge(T* instance, void (T::*cb)(const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_AGMExecutive_delSelfEdge<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_AGMExecutive_delSelfEdgePtr
+newCallback_AGMExecutive_delSelfEdge(T* instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_AGMExecutive_delSelfEdge<T, CT>(instance, 0, excb, sentcb);
 }
 
 template<class T>

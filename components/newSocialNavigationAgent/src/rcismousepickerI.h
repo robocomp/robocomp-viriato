@@ -16,32 +16,25 @@
  *    You should have received a copy of the GNU General Public License
  *    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef AGMCOMMONBEHAVIOR_H
-#define AGMCOMMONBEHAVIOR_H
+#ifndef RCISMOUSEPICKER_H
+#define RCISMOUSEPICKER_H
 
 // Ice includes
 #include <Ice/Ice.h>
-#include <AGMCommonBehavior.h>
+#include <RCISMousePicker.h>
 
 #include <config.h>
 #include "genericworker.h"
 
-using namespace RoboCompAGMCommonBehavior;
+using namespace RoboCompRCISMousePicker;
 
-class AGMCommonBehaviorI : public virtual RoboCompAGMCommonBehavior::AGMCommonBehavior
+class RCISMousePickerI : public virtual RoboCompRCISMousePicker::RCISMousePicker
 {
 public:
-AGMCommonBehaviorI(GenericWorker *_worker);
-	~AGMCommonBehaviorI();
+RCISMousePickerI(GenericWorker *_worker);
+	~RCISMousePickerI();
 
-	bool activateAgent(const ParameterMap  &prs, const Ice::Current&);
-	bool deactivateAgent(const Ice::Current&);
-	ParameterMap getAgentParameters(const Ice::Current&);
-	StateStruct getAgentState(const Ice::Current&);
-	void killAgent(const Ice::Current&);
-	bool reloadConfigAgent(const Ice::Current&);
-	bool setAgentParameters(const ParameterMap  &prs, const Ice::Current&);
-	int uptimeAgent(const Ice::Current&);
+	void setPick(const Pick  &myPick, const Ice::Current&);
 
 private:
 

@@ -98,9 +98,9 @@
   <dependence alias="base" />
   <!--dependence alias="slam" /-->
   <workingDir path="/home/robocomp/" />
-  <upCommand command="rcremote localhost localizationAgnt /home/robocomp/robocomp/components/robocomp-shelly/components/localizationAgent ./bin/localizationAgent --Ice.Config=/home/robocomp/robocomp/components/robocomp-shelly/etcSim/localizationAgent.conf" />
+  <upCommand command="rcremote localhost localizationAgnt /home/robocomp/robocomp/components/robocomp-shelly/components/localizationAgent ./bin/localizationAgent /home/robocomp/robocomp/components/robocomp-shelly/components/localizationAgent/etc/config" />
   <downCommand command="killall -9 localizationAgent" />
-  <configFile path="/home/robocomp/robocomp/components/robocomp-shelly/etcSim/localizationAgent.conf" />
+  <configFile path="/home/robocomp/robocomp/components/robocomp-shelly/components/localizationAgent/etc/config" />
   <xpos value="-116.350970747" />
   <ypos value="-115.512538117" />
   <radius value="13.0" />
@@ -123,24 +123,24 @@
 
   <dependence alias="base" />
   <workingDir path="/home/robocomp/" />
-  <upCommand command="rcremote localhost socialnavAgnt /home/robocomp/robocomp/components/robocomp-viriato/components/newSocialNavigationAgent ./bin/socialNavigationAgent /home/robocomp/robocomp/components/robocomp-viriato/components/newSocialNavigationAgent/etc/config" />
+  <upCommand command="rcremote localhost socialnavAgnt /home/robocomp/robocomp/components/robocomp-viriato/components/newSocialNavigationAgent ./bin/socialNavigationAgent /home/robocomp/robocomp/components/robocomp-viriato/etcSim/socialNavigationAgent.conf" />
   <downCommand command="killall -9 socialNavigationAgent" />
-  <configFile path="/home/robocomp/robocomp/components/robocomp-viriato/components/newSocialNavigationAgent/etc/config" />
+  <configFile path="/home/robocomp/robocomp/components/robocomp-viriato/etcSim/socialNavigationAgent.conf" />
   <xpos value="-60.097569307" />
   <ypos value="-30.5106363282" />
   <radius value="10.0" />
   <color value="#33FF33" />
  </node>
 
- <node alias="socialRulesAgent" endpoint="agmcommonbehavior:tcp -h localhost -p 10331">
+ <node alias="socialRulesAgent" endpoint="agmcommonbehavior:tcp -h localhost -p 10341">
   <dependence alias="newSocialnavigA" />
   <dependence alias="socialnavigG" />
   <dependence alias="executive" />
 
   <workingDir path="/home/robocomp/" />
-  <upCommand command="rcremote localhost socialRulesAgent /home/robocomp/robocomp/components/robocomp-viriato/components/socialRulesAgent ./bin/socialRulesAgent /home/robocomp/robocomp/components/robocomp-viriato/components/socialRulesAgent/etc/config" />
+  <upCommand command="rcremote localhost socialRulesAgent /home/robocomp/robocomp/components/robocomp-viriato/components/socialRulesAgent ./bin/socialRulesAgent /home/robocomp/robocomp/components/robocomp-viriato/etcSim/socialRulesAgent.conf" />
   <downCommand command="killall -9 socialRulesAgent" />
-  <configFile path="/home/robocomp/robocomp/components/robocomp-viriato/components/socialRulesAgent/etc/config" />
+  <configFile path="/home/robocomp/robocomp/components/robocomp-viriato/etcSim/socialRulesAgent.conf" />
   <xpos value="-8.097569307" />
   <ypos value="50.5106363282" />
   <radius value="10.0" />

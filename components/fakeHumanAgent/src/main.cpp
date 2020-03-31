@@ -1,5 +1,5 @@
 /*
- *    Copyright (C) 2019 by YOUR NAME HERE
+ *    Copyright (C) 2020 by YOUR NAME HERE
  *
  *    This file is part of RoboComp
  *
@@ -272,6 +272,12 @@ int ::fakeHumanAgent::run(int argc, char* argv[])
 						cout << "[" << PROGRAM_NAME << "]: Topic doesn't exists and couldn't be created.\n";
 						//Error. Topic does not exist
 					}
+				}
+				catch(const IceUtil::NullHandleException&)
+				{
+					cout << "[" << PROGRAM_NAME << "]: ERROR TopicManager is Null. Check that your configuration file contains an entry like:\n"<<
+					"\t\tTopicManager.Proxy=IceStorm/TopicManager:default -p <port>\n";
+					return EXIT_FAILURE;
 				}
 				IceStorm::QoS qos;
 				agmexecutivetopic_topic->subscribeAndGetPublisher(qos, agmexecutivetopic);

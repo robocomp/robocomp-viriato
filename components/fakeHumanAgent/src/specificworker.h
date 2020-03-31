@@ -120,7 +120,8 @@ public:
 	void AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldModel::World &w);
 	void AGMExecutiveTopic_symbolUpdated(const RoboCompAGMWorldModel::Node &modification);
 	void AGMExecutiveTopic_symbolsUpdated(const RoboCompAGMWorldModel::NodeSequence &modifications);
-
+	void AGMExecutiveTopic_selfEdgeAdded(const int nodeid, const string &edgeType, const RoboCompAGMWorldModel::StringDictionary &attributes);
+	void AGMExecutiveTopic_selfEdgeDeleted(const int nodeid, const string &edgeType);
 public slots:
 	void compute();
     void initialize(int period);

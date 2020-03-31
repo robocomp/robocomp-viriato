@@ -251,6 +251,12 @@ int ::humanObserverAgent::run(int argc, char* argv[])
 						//Error. Topic does not exist
 					}
 				}
+				catch(const IceUtil::NullHandleException&)
+				{
+					cout << "[" << PROGRAM_NAME << "]: ERROR TopicManager is Null. Check that your configuration file contains an entry like:\n"<<
+					"\t\tTopicManager.Proxy=IceStorm/TopicManager:default -p <port>\n";
+					return EXIT_FAILURE;
+				}
 				IceStorm::QoS qos;
 				agmexecutivetopic_topic->subscribeAndGetPublisher(qos, agmexecutivetopic);
 			}

@@ -207,6 +207,12 @@ int ::socialRulesAgent::run(int argc, char* argv[])
 				cout << "[" << PROGRAM_NAME << "]: ERROR publishing the SocialRules topic. It's possible that other component have created\n";
 			}
 		}
+		catch(const IceUtil::NullHandleException&)
+		{
+			cout << "[" << PROGRAM_NAME << "]: ERROR TopicManager is Null. Check that your configuration file contains an entry like:\n"<<
+			"\t\tTopicManager.Proxy=IceStorm/TopicManager:default -p <port>\n";
+			return EXIT_FAILURE;
+		}
 	}
 
 	Ice::ObjectPrx socialrules_pub = socialrules_topic->getPublisher()->ice_oneway();
@@ -298,6 +304,12 @@ int ::socialRulesAgent::run(int argc, char* argv[])
 						cout << "[" << PROGRAM_NAME << "]: Topic doesn't exists and couldn't be created.\n";
 						//Error. Topic does not exist
 					}
+				}
+				catch(const IceUtil::NullHandleException&)
+				{
+					cout << "[" << PROGRAM_NAME << "]: ERROR TopicManager is Null. Check that your configuration file contains an entry like:\n"<<
+					"\t\tTopicManager.Proxy=IceStorm/TopicManager:default -p <port>\n";
+					return EXIT_FAILURE;
 				}
 				IceStorm::QoS qos;
 				agmexecutivetopic_topic->subscribeAndGetPublisher(qos, agmexecutivetopic);

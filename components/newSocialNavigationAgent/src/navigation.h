@@ -118,7 +118,6 @@ void update(const RoboCompLaser::TLaserData &laserData_, bool needsReplaning)
         gridChanged = false;
     }
 
-
     RoboCompLaser::TLaserData laserData;
     laserData = computeLaser(laserData_);
     currentRobotPose = innerModel->transformS6D("world","robot");
@@ -138,7 +137,7 @@ void update(const RoboCompLaser::TLaserData &laserData_, bool needsReplaning)
                 stopRobot();
 
                 this->current_target.lock();
-                current_target.blocked.store(true);
+                    current_target.blocked.store(true);
                 this->current_target.unlock();
 
                 break;
@@ -155,6 +154,7 @@ void update(const RoboCompLaser::TLaserData &laserData_, bool needsReplaning)
     addPoints();
 
     auto [blocked, active, xVel,zVel,rotVel] = controller.update(pathPoints, laserData, current_target.p, currentRobotPose);
+    qDebug()<< "xVel "<<xVel << "zVel "<<zVel << "rotVel" << rotVel;
 
     if (blocked)
     {
@@ -453,18 +453,18 @@ bool findNewPath()
     qDebug()<<"Navigation - "<< __FUNCTION__;
     pathPoints.clear();
 
+    blockPolygon.clear();
+    softBlockPolygonList.clear();
+
     // extract target from current_path
     this->current_target.lock();
         auto target = this->current_target.p;
     this->current_target.unlock();
 
-
     std::list<QPointF> path = grid.computePath(currentRobotNose, target);
 
     if (path.size() > 0)
     {
-        blockPolygon.clear();
-
         pathPoints.push_back(currentRobotNose);
 
         for (const QPointF &p : path)
@@ -481,7 +481,6 @@ bool findNewPath()
             return false;
         }
 
-
         return true;
     }
 
@@ -491,8 +490,6 @@ bool findNewPath()
 
         if(checkHumanBlock())
         {
-            softBlockPolygonList.clear();
-
             this->current_target.lock();
                 current_target.humanBlock.store(true);
             this->current_target.unlock();

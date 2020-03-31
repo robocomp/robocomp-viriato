@@ -150,7 +150,6 @@ bool SpecificWorker::checkHumanBlock()
     auto vectorPersons = worldModel->getSymbolsByType("person");
 
     if (vectorPersons.size() == 0) {
-        qDebug() << "No persons found";
         return false;
     }
 

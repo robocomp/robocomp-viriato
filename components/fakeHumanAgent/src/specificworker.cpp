@@ -18,7 +18,7 @@
  *    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "specificworker.h"
-#include <qt4/QtGui/qdial.h>
+//#include <qt4/QtGui/qdial.h>
 
 /**
 * \brief Default constructor
@@ -125,8 +125,7 @@ bool SpecificWorker::includeInRCIS(int id, const RoboCompInnerModelManager::Pose
 	
 	mesh.scaleX = mesh.scaleY = mesh.scaleZ = QString::fromStdString(scale).toFloat();
 	mesh.render = 0;
-	mesh.meshPath = "/home/robocomp/robocomp/components/robocomp-araceli/models/" + meshName;
-
+	mesh.meshPath = "/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/" + meshName;
 
     try
     {
@@ -224,7 +223,7 @@ int SpecificWorker::includeInAGM(int id,const RoboCompInnerModelManager::Pose3D 
 	personMesh->setAttribute("collidable", "false");
 	personMesh->setAttribute("imName", imName + "_Mesh");
 	personMesh->setAttribute("imType", "mesh");
-	std::string meshPath = "/home/robocomp/robocomp/components/robocomp-araceli/models/" + mesh ;
+	std::string meshPath = "/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/" + mesh ;
 	personMesh->setAttribute("path", meshPath);
 	personMesh->setAttribute("render", "NormalRendering");
 	personMesh->setAttribute("scalex", scale);
@@ -915,6 +914,25 @@ void SpecificWorker::AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldMo
 	mutex->unlock();
 }
 
+//SUBSCRIPTION to selfEdgeAdded method from AGMExecutiveTopic interface
+void SpecificWorker::AGMExecutiveTopic_selfEdgeAdded(const int nodeid, const string &edgeType, const RoboCompAGMWorldModel::StringDictionary &attributes)
+{
+//subscribesToCODE
+	QMutexLocker lockIM(mutex);
+ 	try { worldModel->addEdgeByIdentifiers(nodeid, nodeid, edgeType, attributes); } catch(...){ printf("Couldn't add an edge. Duplicate?\n"); }
+ 
+	try { innerModel = std::make_shared<InnerModel>(AGMInner::extractInnerModel(worldModel)); } catch(...) { printf("Can't extract an InnerModel from the current model.\n"); }
+}
+
+//SUBSCRIPTION to selfEdgeDeleted method from AGMExecutiveTopic interface
+void SpecificWorker::AGMExecutiveTopic_selfEdgeDeleted(const int nodeid, const string &edgeType)
+{
+//subscribesToCODE
+	QMutexLocker lockIM(mutex);
+ 	try { worldModel->removeEdgeByIdentifiers(nodeid, nodeid, edgeType); } catch(...) { printf("Couldn't remove an edge\n"); }
+ 
+	try { innerModel = std::make_shared<InnerModel>(AGMInner::extractInnerModel(worldModel)); } catch(...) { printf("Can't extract an InnerModel from the current model.\n"); }
+}
 void SpecificWorker::AGMExecutiveTopic_edgesUpdated(const RoboCompAGMWorldModel::EdgeSequence &modifications)
 {
 	QMutexLocker locker(mutex);

@@ -86,9 +86,9 @@
 #include <rcismousepickerI.h>
 #include <socialrulesI.h>
 
+#include <SocialNavigationGaussian.h>
 #include <GenericBase.h>
 #include <Planning.h>
-#include <SocialNavigationGaussian.h>
 
 
 // User includes here
@@ -295,6 +295,12 @@ int ::socialNavigationAgent::run(int argc, char* argv[])
 						//Error. Topic does not exist
 					}
 				}
+				catch(const IceUtil::NullHandleException&)
+				{
+					cout << "[" << PROGRAM_NAME << "]: ERROR TopicManager is Null. Check that your configuration file contains an entry like:\n"<<
+					"\t\tTopicManager.Proxy=IceStorm/TopicManager:default -p <port>\n";
+					return EXIT_FAILURE;
+				}
 				IceStorm::QoS qos;
 				agmexecutivetopic_topic->subscribeAndGetPublisher(qos, agmexecutivetopic);
 			}
@@ -335,6 +341,12 @@ int ::socialNavigationAgent::run(int argc, char* argv[])
 						//Error. Topic does not exist
 					}
 				}
+				catch(const IceUtil::NullHandleException&)
+				{
+					cout << "[" << PROGRAM_NAME << "]: ERROR TopicManager is Null. Check that your configuration file contains an entry like:\n"<<
+					"\t\tTopicManager.Proxy=IceStorm/TopicManager:default -p <port>\n";
+					return EXIT_FAILURE;
+				}
 				IceStorm::QoS qos;
 				rcismousepicker_topic->subscribeAndGetPublisher(qos, rcismousepicker);
 			}
@@ -374,6 +386,12 @@ int ::socialNavigationAgent::run(int argc, char* argv[])
 						cout << "[" << PROGRAM_NAME << "]: Topic doesn't exists and couldn't be created.\n";
 						//Error. Topic does not exist
 					}
+				}
+				catch(const IceUtil::NullHandleException&)
+				{
+					cout << "[" << PROGRAM_NAME << "]: ERROR TopicManager is Null. Check that your configuration file contains an entry like:\n"<<
+					"\t\tTopicManager.Proxy=IceStorm/TopicManager:default -p <port>\n";
+					return EXIT_FAILURE;
 				}
 				IceStorm::QoS qos;
 				socialrules_topic->subscribeAndGetPublisher(qos, socialrules);

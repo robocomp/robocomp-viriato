@@ -1,5 +1,5 @@
 /*
- *    Copyright (C) 2019 by YOUR NAME HERE
+ *    Copyright (C) 2020 by YOUR NAME HERE
  *
  *    This file is part of RoboComp
  *
@@ -36,6 +36,16 @@ void AGMExecutiveTopicI::edgeUpdated(const RoboCompAGMWorldModel::Edge  &modific
 void AGMExecutiveTopicI::edgesUpdated(const RoboCompAGMWorldModel::EdgeSequence  &modifications, const Ice::Current&)
 {
 	worker->AGMExecutiveTopic_edgesUpdated(modifications);
+}
+
+void AGMExecutiveTopicI::selfEdgeAdded(const int  nodeid, const string  &edgeType, const RoboCompAGMWorldModel::StringDictionary  &attributes, const Ice::Current&)
+{
+	worker->AGMExecutiveTopic_selfEdgeAdded(nodeid, edgeType, attributes);
+}
+
+void AGMExecutiveTopicI::selfEdgeDeleted(const int  nodeid, const string  &edgeType, const Ice::Current&)
+{
+	worker->AGMExecutiveTopic_selfEdgeDeleted(nodeid, edgeType);
 }
 
 void AGMExecutiveTopicI::structuralChange(const RoboCompAGMWorldModel::World  &w, const Ice::Current&)
