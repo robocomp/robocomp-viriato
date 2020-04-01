@@ -125,6 +125,7 @@ void update(const RoboCompLaser::TLaserData &laserData_, bool needsReplaning)
     currentRobotPolygon = getRobotPolygon();
     currentRobotNose = getRobotNose();
 
+
     if(needsReplaning)
     {
         for (auto p: pathPoints)
@@ -154,7 +155,7 @@ void update(const RoboCompLaser::TLaserData &laserData_, bool needsReplaning)
     addPoints();
 
     auto [blocked, active, xVel,zVel,rotVel] = controller.update(pathPoints, laserData, current_target.p, currentRobotPose);
-    qDebug()<< "xVel "<<xVel << "zVel "<<zVel << "rotVel" << rotVel;
+//    qDebug()<< "xVel "<<xVel << "zVel "<<zVel << "rotVel" << rotVel;
 
     if (blocked)
     {
@@ -203,7 +204,7 @@ bool checkPathState()
     {
         if (current_target.blocked.load()) {
 
-            if (findNewPath() == false) {
+            if (!findNewPath()) {
 
                 qDebug()<< "checkPathState - Path not found";
 
@@ -221,7 +222,6 @@ bool checkPathState()
                 pathPoints.clear();
 
                 if(robotAutoMov) newRandomTarget();
-
 
                 return false;
             }
@@ -331,6 +331,7 @@ private:
     const float ROBOT_LENGTH = 400;
     const float ROAD_STEP_SEPARATION = ROBOT_LENGTH * 0.9;
 
+    bool targetBehindRobot = false;
 
 //Integrating time
     QTime reloj = QTime::currentTime();
@@ -635,8 +636,9 @@ void computeForces(const std::vector<QPointF> &path, const RoboCompLaser::TLaser
         // move node only if they do not exit the laser polygon and do not get inside objects or underneath the robot.
         QPointF temp_p = p + total.toPointF();
         if(isVisible(temp_p)
-                and (currentRobotPolygon.containsPoint(temp_p, Qt::OddEvenFill) == false)
-                and (std::none_of(std::begin(intimateSpaces), std::end(intimateSpaces),[temp_p](const auto &poly) { return poly.containsPoint(temp_p, Qt::OddEvenFill);})))
+                and (!currentRobotPolygon.containsPoint(temp_p, Qt::OddEvenFill))
+                and (std::none_of(std::begin(intimateSpaces), std::end(intimateSpaces),[temp_p](const auto &poly) { return poly.containsPoint(temp_p, Qt::OddEvenFill);}))
+                and (std::none_of(std::begin(personalSpaces), std::end(personalSpaces),[temp_p](const auto &poly) { return poly.containsPoint(temp_p, Qt::OddEvenFill);})))
             p = temp_p;
     }
 
@@ -669,7 +671,7 @@ void addPoints()
     }
     for (const auto &[l, p] : iter::enumerate(points_to_insert))
     {
-        if(currentRobotPolygon.containsPoint(std::get<QPointF>(p), Qt::OddEvenFill) == false)
+        if(!currentRobotPolygon.containsPoint(std::get<QPointF>(p), Qt::OddEvenFill))
         {
 //                qDebug()<< "Add points  " << std::get<QPointF>(p);
 
@@ -690,7 +692,7 @@ void cleanPoints()
         const auto &p1 = group[0];
         const auto &p2 = group[1];
 
-        if ((isVisible(p1)== false) or (isVisible(p2) == false)) //not visible
+        if ((!isVisible(p1)) or (!isVisible(p2))) //not visible
             continue;
 
         if (p2 == lastPointInPath)
@@ -779,7 +781,6 @@ void updateLaserPolygon(const RoboCompLaser::TLaserData &lData)
 QPointF getRobotNose()
 {
 //        qDebug()<<"Navigation - "<< __FUNCTION__;
-
     auto robot = QPointF(currentRobotPose.x(),currentRobotPose.z());
 
     return (robot + QPointF( (robotZLong/2 + 200) * sin(currentRobotPose.ry()), (robotZLong/2 + 200) * cos(currentRobotPose.ry())));

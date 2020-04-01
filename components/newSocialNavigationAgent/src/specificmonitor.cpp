@@ -97,19 +97,15 @@ void SpecificMonitor::readConfig(RoboCompCommonBehavior::ParameterList &params )
 	params["NavigationAgent.RobotName"] = aux;
 
 	aux.editable = false;
-	configGetString( "NavigationAgent","ArrivalTolerance", aux.value,"20");
-	params["ArrivalTolerance"] = aux;
-
-	aux.editable = false;
-	configGetString( "NavigationAgent","MaxZSpeed", aux.value,"400");
+	configGetString( "NavigationAgent","MaxZSpeed", aux.value,"600");
 	params["MaxZSpeed"] = aux;
 
 	aux.editable = false;
-	configGetString( "NavigationAgent","MaxXSpeed", aux.value,"200");
+	configGetString( "NavigationAgent","MaxXSpeed", aux.value,"400");
 	params["MaxXSpeed"] = aux;
 
 	aux.editable = false;
-	configGetString( "NavigationAgent","MaxRotationSpeed", aux.value,"0.3");
+	configGetString( "NavigationAgent","MaxRotationSpeed", aux.value,"0.9");
 	params["MaxRotationSpeed"] = aux;
 
 	aux.editable = false;

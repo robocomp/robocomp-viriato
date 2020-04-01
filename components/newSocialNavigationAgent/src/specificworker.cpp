@@ -697,7 +697,7 @@ void SpecificWorker::AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldMo
 
 void SpecificWorker::AGMExecutiveTopic_symbolUpdated(const RoboCompAGMWorldModel::Node &modification)
 {
-    qDebug()<< __FUNCTION__;
+   // qDebug()<< __FUNCTION__;
 
 	QMutexLocker locker(mutex);
 	AGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);
@@ -712,7 +712,7 @@ void SpecificWorker::AGMExecutiveTopic_symbolUpdated(const RoboCompAGMWorldModel
 void SpecificWorker::AGMExecutiveTopic_symbolsUpdated(const RoboCompAGMWorldModel::NodeSequence &modifications)
 {
 
-    qDebug()<< __FUNCTION__;
+   // qDebug()<< __FUNCTION__;
 
 	QMutexLocker l(mutex);
 

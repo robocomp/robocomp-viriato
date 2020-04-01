@@ -59,6 +59,7 @@ public:
 
         auto firstPointInPath = points[0];
 
+
         // Compute euclidean distance to target
         float euc_dist_to_target = QVector2D(robot - target).length();
 //        qDebug()<< "DISTANCE TO TARGET " << euc_dist_to_target << "NUM POINTS "<< points.size();
@@ -88,7 +89,9 @@ public:
 
         for (auto &&i : iter::range(1, lim))
             angles.push_back(rewrapAngleRestricted(qDegreesToRadians(nose.angleTo(QLineF(firstPointInPath, points[i])))));
-        auto min_angle = std::min(angles.begin(), angles.end());
+
+//        auto min_angle = std::min(angles.begin(), angles.end()); //Solo devolvía el primer elemento del vector aunque no fuese el ultimo
+        auto min_angle = std::min_element(angles.begin(), angles.end());
 
 
         if (min_angle != angles.end())
@@ -103,9 +106,10 @@ public:
             qDebug() << __FUNCTION__ << "rotvel = 0";
         }
 
+
+
         // Compute advance speed
         std::min(advVelz = MAX_ADV_SPEED * exponentialFunction(rotVel, 0.3, 0.4, 0), euc_dist_to_target);
-        //std::cout <<  "In controller: active " << active << " adv: "<< advVelz << " rot: " << rotVel << std::endl;
 
         // Compute bumper-away speed
         QVector2D total{0, 0};
@@ -143,7 +147,7 @@ private:
     float MAX_LAG; //ms
     float ROBOT_RADIUS_MM; //mm
 
-    const float ROBOT_LENGTH = 400;
+    const float ROBOT_LENGTH = 500;
     const float FINAL_DISTANCE_TO_TARGET = 500; //mm
     float KB = 2.0;
 
