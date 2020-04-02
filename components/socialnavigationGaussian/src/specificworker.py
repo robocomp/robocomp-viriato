@@ -17,26 +17,18 @@
 #    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-import sys, os, traceback, time
-import pickle
-
-import matplotlib.patches as patches
-from PySide import *
-from genericworker import *
-import matplotlib.pyplot as plt
-import numpy as np
-from matplotlib import cm
+import math
 from math import *
-from mpl_toolkits.mplot3d import axes3d
-from scipy.spatial import ConvexHull
-from normal import Normal
+
 import GaussianMix as GM
 import checkboundaries as ck
-from PySide.QtCore import QRect, QRectF, Qt, QSize, QSizeF, QPointF, QLineF
-from PySide.QtGui import QTransform, QPainter, QPolygonF
-import ConcaveHull as CH
-
-import math
+import matplotlib.pyplot as plt
+import numpy as np
+from PySide2.QtCore import QRectF, Qt, QSizeF, QPointF
+from PySide2.QtGui import QTransform, QPolygonF
+from genericworker import *
+from normal import Normal
+from scipy.spatial import ConvexHull
 
 
 def getPolyline(grid, resolution, lx_inf, ly_inf):
@@ -81,12 +73,12 @@ class Person(object):
     """ Public Methods """
 
     def __init__(self, x=0, y=0, th=0, vel=0):
-        self.x = x/1000
-        self.y = y/1000
+        self.x = x / 1000
+        self.y = y / 1000
         self.th = th
         self.vel = vel
 
-    def draw(self, sigma_h, sigma_r, sigma_s, rot, drawPersonalSpace = False):
+    def draw(self, sigma_h, sigma_r, sigma_s, rot, drawPersonalSpace=False):
         # define grid.
         npts = 50
         x = np.linspace(self.x - 4, self.x + 4, npts)
@@ -167,16 +159,22 @@ class SpecificWorker(GenericWorker):
     #
     def SocialNavigationGaussian_getAllPersonalSpaces(self, persons, represent):
 
-        intimate = []
-        personal = []
-        social = []
-
         personal_spaces = ["intimate", "personal", "social"]
-        # sigma_h, sigma_r, sigma_s, h, polyline
-        dict_space_param = {"intimate": [1.3, 1., 1.3, 0.8],
-                            "personal": [1.3, 1., 1.3, 0.4],
-                            "social": [3., 1., 1.3, 0.1],
+                                        # sigma_h, sigma_r, sigma_s,  h
+        dict_space_param = {"intimate": [1.3,       1.,     1.3,    0.8],
+                            "personal": [1.3,       1.,     1.3,    0.4],
+                            "social":   [3.,        1.,     1.3,    0.1],
                             }
+
+        dict_space_polylines = {"intimate": [],
+                                "personal": [],
+                                "social": [],
+                                }
+
+        dict_spaces_to_plot = {"intimate": [],
+                               "personal": [],
+                               "social": [],
+                               }
 
         ##Limites de la representacion
         lx_inf = -6
@@ -207,47 +205,40 @@ class SpecificWorker(GenericWorker):
 
             for pol in totalpuntosorden:
                 polyline = []
+                polyline_to_plt = []
+
                 for pnt in pol:
                     punto = SNGPoint2D()
                     punto.x = pnt[0] * 1000
                     punto.z = pnt[1] * 1000
                     polyline.append(punto)
 
-                if space == "intimate":
-                    intimate.append(polyline)
-                if space == "personal":
-                    personal.append(polyline)
-                if space == "social":
-                    social.append(polyline)
+                    polyline_to_plt.append([pnt[0], pnt[1]])
+
+                dict_space_polylines[space].append(polyline)
+
+                if len(polyline_to_plt) != 0:
+                    dict_spaces_to_plot[space].append(polyline_to_plt)
 
         if represent:
-            for ps in social:
-                # plt.figure()
-                for p in ps:
-                    plt.plot(p.x/1000, p.z/1000, "oc-")
-                    plt.axis('equal')
-                    plt.xlabel('X')
-                    plt.ylabel('Y')
+            for soc in dict_spaces_to_plot["social"]:
+                x, y = zip(*soc)
+                plt.plot(x, y, color='c', marker='.')
 
-            for ps in personal:
-                # plt.figure()
-                for p in ps:
-                    plt.plot(p.x/1000, p.z/1000, "om-")
-                    plt.axis('equal')
-                    plt.xlabel('X')
-                    plt.ylabel('Y')
+            for per in dict_spaces_to_plot["personal"]:
+                x, y = zip(*per)
+                plt.plot(x, y, color='m', marker='.')
 
-            for ps in intimate:
-                # plt.figure()
-                for p in ps:
-                    plt.plot(p.x/1000, p.z/1000, "or-")
-                    plt.axis('equal')
-                    plt.xlabel('X')
-                    plt.ylabel('Y')
+            for inti in dict_spaces_to_plot["intimate"]:
+                x, y = zip(*inti)
+                plt.plot(x, y, color='r', marker='.')
 
+            plt.axis('equal')
+            plt.xlabel('X')
+            plt.ylabel('Y')
             plt.show()
 
-        return (intimate, personal, social)
+        return dict_space_polylines['intimate'], dict_space_polylines['personal'], dict_space_polylines['social']
 
     #
     # getPersonalSPace
