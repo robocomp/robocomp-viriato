@@ -35,7 +35,8 @@
 #include <controller.h>
 #include <navigation.h>
 #include <algorithm>
-
+#include <localPerson.h>
+#include <cppitertools/zip.hpp>
 
 using namespace std;
 
@@ -101,8 +102,10 @@ private:
     AGMModel::SPtr worldModel, newModel;
 	bool active;
 
-	vector <int32_t> prev_blockingIDs = {}, prev_softBlockingIDs = {};
+	vector <int32_t> prev_blockingIDs = {};
+	vector<vector<int32_t>> prev_softBlockingIDs = {};
 
+	localPersonsVec totalPersons;
 
     #ifdef USE_QTGUI
         InnerViewerPtr viewer;
@@ -122,6 +125,7 @@ private:
 	using retPersonalSpaces = std::tuple <vector<QPolygonF>,vector<QPolygonF>,vector<QPolygonF>>;
 	using retAffordanceSpaces = std::tuple <std::map<float, vector<QPolygonF>>,vector<QPolygonF>,vector<QPolygonF>>;
 
+	void getPersonsFromModel();
 	retPersonalSpaces getPolylinesFromModel();
 	retAffordanceSpaces getAffordancesFromModel();
 

@@ -24,7 +24,7 @@
 #include <cppitertools/enumerate.hpp>
 #include <cppitertools/slice.hpp>
 #include <algorithm>
-
+#include <localPerson.h>
 
 // Map
 struct TMapDefault
@@ -62,8 +62,10 @@ public:
     float KE;
     float KI;
 
-    QPolygonF blockPolygon;
-    vector<QPolygonF> softBlockPolygonList;
+    vector<int32_t> blockIDs;
+    vector<vector<int32_t>> softBlockIDs;
+
+	localPersonsVec totalPersons;
 
 
 void initialize(const std::shared_ptr<InnerModel> &innerModel_, const std::shared_ptr<InnerViewer> &viewer_,
@@ -108,7 +110,7 @@ void updateInnerModel(const std::shared_ptr<InnerModel> &innerModel_)
 
 };
 
-void update(const RoboCompLaser::TLaserData &laserData_, bool needsReplaning)
+void update(localPersonsVec totalPersons_, const RoboCompLaser::TLaserData &laserData_, bool needsReplaning)
 {
 //            qDebug()<<"Navigation - "<< __FUNCTION__;
 
@@ -118,6 +120,7 @@ void update(const RoboCompLaser::TLaserData &laserData_, bool needsReplaning)
         gridChanged = false;
     }
 
+    totalPersons = totalPersons_;
     RoboCompLaser::TLaserData laserData;
     laserData = computeLaser(laserData_);
     currentRobotPose = innerModel->transformS6D("world","robot");
@@ -454,8 +457,8 @@ bool findNewPath()
     qDebug()<<"Navigation - "<< __FUNCTION__;
     pathPoints.clear();
 
-    blockPolygon.clear();
-    softBlockPolygonList.clear();
+	blockIDs.clear();
+	softBlockIDs.clear();
 
     // extract target from current_path
     this->current_target.lock();
@@ -506,12 +509,11 @@ bool checkHumanBlock()
     qDebug()<<__FUNCTION__;
 
     grid.resetGrid();
-    blockPolygon.clear();
 
     bool blockFound = false;
 
     this->current_target.lock();
-    auto target = this->current_target.p;
+    	auto target = this->current_target.p;
     this->current_target.unlock();
 
     std::list<QPointF> path = grid.computePath(currentRobotNose, target);
@@ -526,7 +528,13 @@ bool checkHumanBlock()
             if (path.empty())
             {
                 blockFound = true;
-                blockPolygon = pol;
+
+				for (auto p: totalPersons)
+				{
+					if (pol.containsPoint(QPointF(p.x, p.z), Qt::OddEvenFill))
+						blockIDs.push_back(p.id);
+				}
+
                 break;
             }
         }
@@ -542,8 +550,7 @@ bool checkHumanSoftBlock()
 {
     qDebug()<<__FUNCTION__;
 
-    softBlockPolygonList.clear();
-
+    vector<QPolygonF> softBlockPolygonList;
     bool softBlockFound = false;
 
     for(auto pol : personalSpaces) //change to intimateSpaces
@@ -558,6 +565,22 @@ bool checkHumanSoftBlock()
             }
         }
     }
+
+    if(softBlockFound)
+	{
+    	for (auto polygon : softBlockPolygonList)
+		{
+    		vector<int32_t> groupID;
+
+			for (auto p: totalPersons)
+			{
+				if (polygon.containsPoint(QPointF(p.x, p.z), Qt::OddEvenFill))
+					groupID.push_back(p.id);
+			}
+
+			softBlockIDs.push_back(groupID);
+		}
+	}
 
     return softBlockFound;
 }

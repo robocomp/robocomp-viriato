@@ -103,6 +103,7 @@ void SpecificWorker::compute()
 
     if(personalSpacesChanged)
 	{
+    	getPersonsFromModel();
         auto [intimate,personal,social] = getPolylinesFromModel();
     	navigation.updatePersonalPolylines(intimate,personal,social);
 		personalSpacesChanged = false;
@@ -121,7 +122,7 @@ void SpecificWorker::compute()
     QMutexLocker lockIM(mutex);
 
     RoboCompLaser::TLaserData laserData = updateLaser();
-	navigation.update(laserData, needsReplaning);
+	navigation.update(totalPersons, laserData, needsReplaning);
 
     viewer->run();
 
@@ -153,34 +154,26 @@ bool SpecificWorker::checkHumanBlock()
         return false;
     }
 
-    vector <int32_t> blockingIDs;
-    vector <int32_t> softBlockingIDs;
+    auto blockingIDs = navigation.blockIDs;
+    auto softBlockingIDs = navigation.softBlockIDs;
 
-    QPolygonF blockingPolygon = navigation.blockPolygon;
-    vector<QPolygonF> softBlockingPolygonList = navigation.softBlockPolygonList;
+    bool prevSoftBlockChanged = false;
 
-
-    for (auto p: vectorPersons)
-    {
-        auto id = p->identifier;
-        AGMModelSymbol::SPtr personParent = worldModel->getParentByLink(id, "RT");
-        AGMModelEdge& edgeRT = worldModel->getEdgeByIdentifiers(personParent->identifier, id, "RT");
-
-        auto poseX = str2float(edgeRT.attributes["tx"]);
-        auto poseZ = str2float(edgeRT.attributes["tz"]);
-
-        if(blockingPolygon.containsPoint(QPointF(poseX,poseZ),Qt::OddEvenFill))
-            blockingIDs.push_back(id);
-
-        for(auto sbPol : softBlockingPolygonList)
-        {
-            if(sbPol.containsPoint(QPointF(poseX,poseZ),Qt::OddEvenFill))
-                softBlockingIDs.push_back(id);
-        }
-
-    }
-
-    if((prev_blockingIDs != blockingIDs) or (prev_softBlockingIDs != softBlockingIDs))
+    if(prev_softBlockingIDs.size()!= softBlockingIDs.size())
+    	prevSoftBlockChanged = true;
+    else
+	{
+		for(auto &&[curr,prev] : iter::zip(softBlockingIDs, prev_softBlockingIDs))
+		{
+			if(curr != prev)
+			{
+				prevSoftBlockChanged = true;
+				break;
+			}
+		}
+	}
+    
+    if((prev_blockingIDs != blockingIDs) or prevSoftBlockChanged)
     {
 
         auto robotID = newModel->getIdentifierByType("robot");
@@ -229,35 +222,42 @@ bool SpecificWorker::checkHumanBlock()
 
         edgeName = "softBlock";
 
-        for(auto id: prev_softBlockingIDs)
+        for(auto groupID: prev_softBlockingIDs)
         {
-            try
-            {
-                newModel->removeEdgeByIdentifiers(id, robotID, edgeName);
-                qDebug ()<<"Se elimina el enlace softBlock a la persona  " << id;
-            }
+        	for(auto id : groupID)
+			{
+				try
+				{
+					newModel->removeEdgeByIdentifiers(id, robotID, edgeName);
+					qDebug ()<<"Se elimina el enlace softBlock a la persona  " << id;
+				}
 
-            catch(...)
-            {
-                std::cout<<__FUNCTION__<<"No existe el enlace"<<std::endl;
+				catch(...)
+				{
+					std::cout<<__FUNCTION__<<"No existe el enlace"<<std::endl;
 
-            }
+				}
+			}
         }
 
 
-        for(auto id: softBlockingIDs)
+        for(auto groupID: softBlockingIDs)
         {
-            try
-            {
-                newModel->addEdgeByIdentifiers(id, robotID, edgeName);
-                qDebug ()<<"Se añade el enlace softBlock a la persona  " << id;
-            }
+        	for(auto id : groupID)
+			{
+				try
+				{
+					newModel->addEdgeByIdentifiers(id, robotID, edgeName);
+					qDebug ()<<"Se añade el enlace softBlock a la persona  " << id;
+				}
 
-            catch(...)
-            {
-                std::cout<<__FUNCTION__<<"No existe el enlace"<<std::endl;
+				catch(...)
+				{
+					std::cout<<__FUNCTION__<<"No existe el enlace"<<std::endl;
 
-            }
+				}
+			}
+
         }
 
         ///////////////////////////////////////////////////////////////////
@@ -290,6 +290,27 @@ RoboCompLaser::TLaserData  SpecificWorker::updateLaser()
     return laserData;
 }
 
+
+void SpecificWorker::getPersonsFromModel()
+{
+	totalPersons.clear();
+	auto vectorPersons = worldModel->getSymbolsByType("person");
+
+	for (auto p: vectorPersons) {
+		localPerson person;
+
+		auto id = p->identifier;
+		AGMModelSymbol::SPtr personParent = worldModel->getParentByLink(id, "RT");
+		AGMModelEdge& edgeRT = worldModel->getEdgeByIdentifiers(personParent->identifier, id, "RT");
+
+		person.id = id;
+		person.x = str2float(edgeRT.attributes["tx"]);
+		person.z = str2float(edgeRT.attributes["tz"]);
+		person.angle = str2float(edgeRT.attributes["ry"]);
+
+		totalPersons.push_back(person);
+	}
+}
 
 SpecificWorker::retPersonalSpaces SpecificWorker::getPolylinesFromModel()
 {
