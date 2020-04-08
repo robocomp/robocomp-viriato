@@ -99,7 +99,7 @@ private:
 	std::string action;
 	ParameterMap params;
 
-    AGMModel::SPtr worldModel, newModel;
+    AGMModel::SPtr worldModel;
 	bool active;
 
 	vector <int32_t> prev_blockingIDs = {};
@@ -129,7 +129,7 @@ private:
 	retPersonalSpaces getPolylinesFromModel();
 	retAffordanceSpaces getAffordancesFromModel();
 
-	bool checkHumanBlock();
+	void checkHumanBlock();
 
 	bool setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated);
 	void sendModificationProposal(AGMModel::SPtr &worldModel, AGMModel::SPtr &newModel);

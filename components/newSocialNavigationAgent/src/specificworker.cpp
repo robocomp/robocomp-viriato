@@ -112,7 +112,7 @@ void SpecificWorker::compute()
 
 	if(affordancesChanged)
 	{
-        auto [mapCostObjects,totalAffordances,blockedAffordances] = getAffordancesFromModel();
+        auto [mapCostObjects, totalAffordances, blockedAffordances] = getAffordancesFromModel();
 
         navigation.updateAffordancesPolylines(mapCostObjects,totalAffordances,blockedAffordances);
 		affordancesChanged = false;
@@ -126,55 +126,28 @@ void SpecificWorker::compute()
 
     viewer->run();
 
-//    qDebug()<< "Compute time " <<reloj.restart();
 
-
-    newModel = AGMModel::SPtr(new AGMModel(worldModel));
-
-    if(checkHumanBlock())
-    {
-        try
-        {
-            sendModificationProposal(worldModel, newModel);
-        }
-        catch(...)
-        {
-            std::cout<<"No se puede actualizar worldModel"<<std::endl;
-        }
-    }
-
+	if (navigation.isCurrentTargetActive())
+		checkHumanBlock();
 }
 
 
-bool SpecificWorker::checkHumanBlock()
+void SpecificWorker::checkHumanBlock()
 {
-    auto vectorPersons = worldModel->getSymbolsByType("person");
+	QMutexLocker lockIM(mutex);
 
-    if (vectorPersons.size() == 0) {
-        return false;
-    }
+	AGMModel::SPtr newModel = AGMModel::SPtr(new AGMModel(worldModel));
 
-    auto blockingIDs = navigation.blockIDs;
+	bool edgesChanged = false;
+
+	auto blockingIDs = navigation.blockIDs;
     auto softBlockingIDs = navigation.softBlockIDs;
 
-    bool prevSoftBlockChanged = false;
-
-    if(prev_softBlockingIDs.size()!= softBlockingIDs.size())
-    	prevSoftBlockChanged = true;
-    else
-	{
-		for(auto &&[curr,prev] : iter::zip(softBlockingIDs, prev_softBlockingIDs))
-		{
-			if(curr != prev)
-			{
-				prevSoftBlockChanged = true;
-				break;
-			}
-		}
-	}
-    
-    if((prev_blockingIDs != blockingIDs) or prevSoftBlockChanged)
+    if((prev_blockingIDs != blockingIDs) or (prev_softBlockingIDs != softBlockingIDs))
     {
+
+		qDebug()<< "blocking - prev: " << prev_blockingIDs << " current: " << blockingIDs;
+		qDebug()<< "SOFT blocking - prev: " << prev_softBlockingIDs << " current: " << softBlockingIDs;
 
         auto robotID = newModel->getIdentifierByType("robot");
 
@@ -182,23 +155,26 @@ bool SpecificWorker::checkHumanBlock()
 
         string edgeName;
 
-        if(prev_blockingIDs.size() == 1) edgeName = "block";
-        else edgeName = "strongInterBlock";
+		vector<string> edgeNames{"block" , "strongInterBlock"};
 
-        for(auto id: prev_blockingIDs)
-        {
-            try
-            {
-                newModel->removeEdgeByIdentifiers(id, robotID, edgeName);
-                qDebug ()<<"Se elimina el enlace block a la persona  " << id;
-            }
+		for (auto edgeName : edgeNames)
+		{
+			for(auto id: prev_blockingIDs)
+			{
+				try
+				{
+					newModel->removeEdgeByIdentifiers(id, robotID, edgeName);
+					qDebug ()<<" Se elimina el enlace " << QString::fromStdString(edgeName) << " de " << id;
+				}
 
-            catch(...)
-            {
-                std::cout<<__FUNCTION__<<"No existe el enlace"<<std::endl;
+				catch(...)
+				{
+					std::cout<<__FUNCTION__<<"No existe el enlace"<<std::endl;
 
-            }
-        }
+				}
+			}
+
+		}
 
         if(blockingIDs.size() == 1) edgeName = "block";
         else edgeName = "strongInterBlock";
@@ -208,7 +184,7 @@ bool SpecificWorker::checkHumanBlock()
             try
             {
                 newModel->addEdgeByIdentifiers(id, robotID, edgeName);
-                qDebug ()<<"Se añade el enlace block a la persona  " << id;
+				qDebug ()<<" Se añade el enlace " << QString::fromStdString(edgeName) << " de " << id;
             }
 
             catch(...)
@@ -220,40 +196,45 @@ bool SpecificWorker::checkHumanBlock()
 
         ////////////////////////// softBlock //////////////////////////////
 
-        edgeName = "softBlock";
-
         for(auto groupID: prev_softBlockingIDs)
         {
-        	for(auto id : groupID)
+			vector<string> edgeNames{"softBlock" , "softInterBlock"};
+
+			for (auto edgeName : edgeNames)
 			{
-				try
+				for(auto id : groupID)
 				{
-					newModel->removeEdgeByIdentifiers(id, robotID, edgeName);
-					qDebug ()<<"Se elimina el enlace softBlock a la persona  " << id;
-				}
+					try
+					{
+						newModel->removeEdgeByIdentifiers(id, robotID, edgeName);
+						qDebug ()<<" Se elimina el enlace " << QString::fromStdString(edgeName) << " de " << id;
+					}
 
-				catch(...)
-				{
-					std::cout<<__FUNCTION__<<"No existe el enlace"<<std::endl;
+					catch(...)
+					{
+						std::cout<<__FUNCTION__<<"No existe el enlace"<<std::endl;
 
+					}
 				}
 			}
         }
 
-
         for(auto groupID: softBlockingIDs)
         {
+			if(groupID.size() == 1) edgeName = "softBlock";
+			else edgeName = "softInterBlock";
+
         	for(auto id : groupID)
 			{
 				try
 				{
 					newModel->addEdgeByIdentifiers(id, robotID, edgeName);
-					qDebug ()<<"Se añade el enlace softBlock a la persona  " << id;
+					qDebug ()<<" Se añade el enlace " << QString::fromStdString(edgeName) << " de " << id;
 				}
 
 				catch(...)
 				{
-					std::cout<<__FUNCTION__<<"No existe el enlace"<<std::endl;
+					std::cout<<__FUNCTION__<<"Ya existe el enlace"<<std::endl;
 
 				}
 			}
@@ -265,12 +246,22 @@ bool SpecificWorker::checkHumanBlock()
         prev_blockingIDs = blockingIDs;
         prev_softBlockingIDs = softBlockingIDs;
 
-        return true;
+		edgesChanged = true;
     }
 
     else
-        return false;
+		edgesChanged = false;
 
+	if(edgesChanged){
+		try
+		{
+			sendModificationProposal(worldModel, newModel);
+		}
+		catch(...)
+		{
+			std::cout<<"No se puede actualizar worldModel"<<std::endl;
+		}
+	}
 
 }
 

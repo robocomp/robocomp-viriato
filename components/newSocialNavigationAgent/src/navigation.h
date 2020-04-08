@@ -199,6 +199,11 @@ void stopRobot()
     omnirobot_proxy->setSpeedBase(0,0,0);
 }
 
+bool isCurrentTargetActive()
+{
+	return current_target.active.load();
+}
+
 bool checkPathState()
 {
 //            qDebug()<<"Navigation - "<< __FUNCTION__;
