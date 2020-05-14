@@ -3,7 +3,7 @@
 <!--	<include path="/home/robocomp/robocomp/components/robocomp-viriato/etc/autonomyLab.xml"/>-->
 <!--	<include path="/home/robocomp/robocomp/components/robocomp-viriato/etc/corridors3.xml"/>   -->
 <!--	<include path="/home/robocomp/robocomp/components/robocomp-araceli/etc/autonomyLab_yohan.xml"/> -->
-    	<include path="/home/robocomp/robocomp/components/robocomp-viriato/etc/therapy_simple.xml"/> 
+    	<include path="/home/robocomp/robocomp/components/robocomp-viriato/etc/therapy_cam.xml"/> 
 <!--	<include path="/home/robocomp/robocomp/robocomp/components/robocomp-shelly/etc/gualzru.xml"/>  -->
 <!--	<include path="/home/robocomp/robocomp/components/robocomp-araceli/etc/ejemplo.xml"/>-->
 </innermodel>
