@@ -535,6 +535,8 @@ void SpecificWorker::addPerson()
 	pose.rz = 0.f;
 	int mesh = mesh_cb->currentText().toInt();
 
+	ty = "0";
+
 	switch(mesh)
 	{
 		case 1:
@@ -565,6 +567,14 @@ void SpecificWorker::addPerson()
 			scale = "23";
 			rotationz= "3.1415926535";
 			break;
+
+		case 7:
+			meshname = "human07.3ds";
+			scale ="10";
+			rotationz = "0";
+			ty="950";
+			break;
+
 		default:
 			qDebug()<< "Mesh error";
 			return;

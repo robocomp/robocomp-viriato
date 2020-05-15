@@ -1,5 +1,6 @@
 <innerModel>
 	<transform id="world">
+        
 
 		<!-- bedroom -->
 		<transform id="room_3">
@@ -19,10 +20,22 @@
 				<plane id="03rgbd_mesh" texture="#550000" size="50,50,200" repeat="1" nx="0" ny="0" nz="1" px="0" py="0" pz="-200" collide="0" />
 			</transform>
             
-            <transform id="cam04" tx="-5700" ty="1800" tz="300"  rx="-0.5" ry="2.5" rz="0.3">
+            <transform id="cam04" tx="-5900" ty="1800" tz="300"  rx="-0.5" ry="2.5" rz="0.3">
 				<rgbd id="cam04_room" width="320" height="240" focal="240" port="10196" ifconfig="44000,55000" noise="0" />
 				<plane id="04rgbd_mesh" texture="#550000" size="50,50,200" repeat="1" nx="0" ny="0" nz="1" px="0" py="0" pz="-200" collide="0" />
 			</transform>
+            
+             <transform id="cam05" tx="-1300" tz="-4200" ty="1900"   rx="0.75" ry="0" >
+				<rgbd id="cam05_corridor" width="320" height="240" focal="240" port="10196" ifconfig="44000,55000" noise="0" />
+				<plane id="05rgbd_mesh" texture="#550000" size="50,50,200" repeat="1" nx="0" ny="0" nz="1" px="0" py="0" pz="-200" collide="0" />
+			</transform>
+            
+             <transform id="cam06" tx="5700" tz="-1600" ty="1650" rx="-1.8" ry="-1.8" rz="-1.8">
+				<rgbd id="cam06_front_door" width="320" height="240" focal="240" port="10196" ifconfig="44000,55000" noise="0" />
+				<plane id="06rgbd_mesh" texture="#550000" size="50,50,200" repeat="1" nx="0" ny="0" nz="1" px="0" py="0" pz="-200" collide="0" />
+			</transform>
+            
+           
 
 			<!-- FLOOR -->
 			<transform id="floor" tx="-4000" tz="-2000" ty="0">
@@ -94,7 +107,7 @@
 
 			<transform id="shower" tx="-600" tz="4100" ty="0" ry="0">
 		        	<mesh id="shower_mesh" file="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/shower/shower.3DS" 					
-		             	 scale="0.85,0.85,0.85" tx="0" tz="0" ty="0"  rx="1.57" rz="-1.57" collide="1" />
+		             	 scale="0.95,0.95,0.95" tx="0" tz="0" ty="0"  rx="1.57" rz="-1.57" collide="1" />
 			</transform>
 
 
