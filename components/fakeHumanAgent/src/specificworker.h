@@ -74,7 +74,7 @@ Q_OBJECT
 	float valorgiro;
 	int robotID;
 
-	std::string meshname,scale,rotationz,ty;
+	std::string meshname,scale,rotationz,translationy;
 
 	 QRectF outerRegion;
     int hmin, hmax, vmin, vmax;

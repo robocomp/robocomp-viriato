@@ -117,7 +117,7 @@ bool SpecificWorker::includeInRCIS(int id, const RoboCompInnerModelManager::Pose
 		
 	RoboCompInnerModelManager::meshType mesh;
 	mesh.pose.x  = 0;
-	mesh.pose.y  = 0;
+	mesh.pose.y  = QString::fromStdString(translationy).toFloat();
 	mesh.pose.z  = 0;
 	mesh.pose.rx = 1.57079632679;
 	mesh.pose.ry = 0;
@@ -231,7 +231,7 @@ int SpecificWorker::includeInAGM(int id,const RoboCompInnerModelManager::Pose3D 
 	personMesh->setAttribute("scalez", scale);
 
 	edgeRTAtrs["tx"] = "0";
-	edgeRTAtrs["ty"] = "0";
+	edgeRTAtrs["ty"] = translationy;
 	edgeRTAtrs["tz"] = "0";
 	edgeRTAtrs["rx"] = "1.570796326794";
 	edgeRTAtrs["ry"] = "0";
@@ -535,7 +535,7 @@ void SpecificWorker::addPerson()
 	pose.rz = 0.f;
 	int mesh = mesh_cb->currentText().toInt();
 
-	ty = "0";
+	translationy = "0";
 
 	switch(mesh)
 	{
@@ -563,7 +563,8 @@ void SpecificWorker::addPerson()
 			scale = "800";
 			rotationz= "0";
 			break;
-		case 6:meshname = "human06.3ds";
+		case 6:
+			meshname = "human06.3ds";
 			scale = "23";
 			rotationz= "3.1415926535";
 			break;
@@ -572,8 +573,26 @@ void SpecificWorker::addPerson()
 			meshname = "human07.3ds";
 			scale ="10";
 			rotationz = "0";
-			ty="950";
+			translationy="950";
 			break;
+
+		case 8:
+			meshname = "human08.3DS";
+			scale = "25";
+			rotationz= "0";
+			break;
+		case 9:
+			meshname = "human09.3DS";
+			scale = "1000";
+			rotationz= "0";
+			break;
+
+		case 10:
+			meshname = "human10.3DS";
+			scale = "1000";
+			rotationz= "0";
+			break;
+
 
 		default:
 			qDebug()<< "Mesh error";
