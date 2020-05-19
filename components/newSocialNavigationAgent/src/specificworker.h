@@ -85,6 +85,7 @@ public slots:
     void initialize(int period);
     void checkRobotAutoMovState();
     void moveRobot();
+    void sendRobotTo();
 	void forcesSliderChanged(int value = 0);
 
     //Specification slot methods State Machine

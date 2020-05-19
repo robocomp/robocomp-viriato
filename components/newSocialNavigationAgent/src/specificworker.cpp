@@ -62,6 +62,9 @@ void SpecificWorker::initialize(int period)
     connect(ki_slider, SIGNAL (valueChanged(int)),this,SLOT(forcesSliderChanged(int)));
     connect(ke_slider, SIGNAL (valueChanged(int)),this,SLOT(forcesSliderChanged(int)));
 
+    connect(send_button, SIGNAL(clicked()),this, SLOT(sendRobotTo()));
+
+
     forcesSliderChanged();
     moveRobot();
 
@@ -485,6 +488,16 @@ void  SpecificWorker::checkRobotAutoMovState()
     {
         navigation.robotAutoMov = false;
     }
+
+}
+
+
+void SpecificWorker::sendRobotTo()
+{
+    auto x =  x_spinbox->value();
+    auto z =  z_spinbox->value();
+
+    navigation.newTarget(QPointF(x,z));
 
 }
 
