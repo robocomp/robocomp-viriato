@@ -373,19 +373,21 @@ void InnerViewer::createWindow(osgViewer::Viewer& viewer, const std::string &nam
 	unsigned int width, height;
 
     //If the display number is different to 1 that should be changed to
-	wsi->getScreenResolution(osg::GraphicsContext::ScreenIdentifier("",0, 0), width, height);
+//	wsi->getScreenResolution(osg::GraphicsContext::ScreenIdentifier("",0, 0), width, height);
+	wsi->getScreenResolution(osg::GraphicsContext::ScreenIdentifier("",1, 0), width, height);
     //and traits->displayNum = 1; should be removed
 
 	osg::ref_ptr<osg::GraphicsContext::Traits> traits = new osg::GraphicsContext::Traits;
 
 	traits->x = 0;
 	traits->y = 0;
-	traits->width = 1000;
-	traits->height = 1000;
+	traits->width = 800;
+	traits->height = 800;
 	traits->windowDecoration = true;
 	traits->doubleBuffer = true;
 	traits->sharedContext = 0;
 	traits->windowName = "InnerModelViewer " + name;
+	traits->displayNum = 1;
 
 	osg::ref_ptr<osg::GraphicsContext> gc = osg::GraphicsContext::createGraphicsContext(traits.get());
 
@@ -398,15 +400,13 @@ void InnerViewer::createWindow(osgViewer::Viewer& viewer, const std::string &nam
 		gc->setClearColor(osg::Vec4f(0.2f,0.2f,0.6f,1.0f));
 		gc->setClearMask(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
+
 	else
 	{
-		osg::notify(osg::NOTICE)<<"  GraphicsWindow has not been created successfully."<<std::endl;
-        wsi->getScreenResolution(osg::GraphicsContext::ScreenIdentifier("",1, 0), width, height);
-        traits->displayNum = 1;
-        osg::ref_ptr<osg::GraphicsContext> gc = osg::GraphicsContext::createGraphicsContext(traits.get());
+				qFatal("Can't open graphics window ");
 
-//		qFatal("Cambiar screenIdentifier en innerviewer.cpp ");
 	}
+
 
 	unsigned int numCameras = 1;
 	double aspectRatioScale = 1.0;///(double)numCameras;
