@@ -4,28 +4,31 @@
 
 		<!-- bedroom -->
 		<transform id="room_3">
-            <!-- CAMS -->
-            <transform id="cam01" tx="-5700" ty="1800" tz="-4200"  rx="0.5" ry="0.7" rz="-0.35">
+            <!-- CAMS-->
+           
+            
+           <!-- <transform id="cam01" tx="-5700" ty="1800" tz="-4200"  rx="0.5" ry="0.7" rz="-0.35">
 				<rgbd id="cam01_room" width="320" height="240" focal="240" port="10196" ifconfig="44000,55000" noise="0" />
 				<plane id="01rgbd_mesh" texture="#550000" size="50,50,200" repeat="1" nx="0" ny="0" nz="1" px="0" py="0" pz="-200" collide="0" />
 			</transform>
             
-            <transform id="cam02" tx="3000" tz="4200" ty="1900"   rx="-0.45" ry="3.14" >
+             <transform id="cam02" tx="3000" tz="4200" ty="1900"   rx="-0.45" ry="3.14" >
 				<rgbd id="cam02_tv" width="320" height="240" focal="240" port="10196" ifconfig="44000,55000" noise="0" />
 				<plane id="02rgbd_mesh" texture="#550000" size="50,50,200" repeat="1" nx="0" ny="0" nz="1" px="0" py="0" pz="-200" collide="0" />
-			</transform>
+			</transform> 
             
-            <transform id="cam03" tx="3000" tz="-4200" ty="1900"   rx="0.45" ry="0" >
+           <transform id="cam03" tx="3000" tz="-4200" ty="1900"   rx="0.45" ry="0" >
 				<rgbd id="cam03_in_front_of_tv" width="320" height="240" focal="240" port="10196" ifconfig="44000,55000" noise="0" />
 				<plane id="03rgbd_mesh" texture="#550000" size="50,50,200" repeat="1" nx="0" ny="0" nz="1" px="0" py="0" pz="-200" collide="0" />
 			</transform>
             
-            <transform id="cam04" tx="-5900" ty="1800" tz="300"  rx="-0.5" ry="2.5" rz="0.3">
+           <transform id="cam04" tx="-5900" ty="1800" tz="300"  rx="-0.5" ry="2.5" rz="0.3">
 				<rgbd id="cam04_room" width="320" height="240" focal="240" port="10196" ifconfig="44000,55000" noise="0" />
 				<plane id="04rgbd_mesh" texture="#550000" size="50,50,200" repeat="1" nx="0" ny="0" nz="1" px="0" py="0" pz="-200" collide="0" />
-			</transform>
-            
-             <transform id="cam05" tx="-1300" tz="-4200" ty="1900"   rx="0.75" ry="0" >
+			</transform>-->
+           
+             
+                 <transform id="cam05" tx="-1300" tz="-4300" ty="1900"   rx="0.75" ry="0" >
 				<rgbd id="cam05_corridor" width="320" height="240" focal="240" port="10196" ifconfig="44000,55000" noise="0" />
 				<plane id="05rgbd_mesh" texture="#550000" size="50,50,200" repeat="1" nx="0" ny="0" nz="1" px="0" py="0" pz="-200" collide="0" />
 			</transform>
@@ -33,9 +36,7 @@
              <transform id="cam06" tx="5700" tz="-1600" ty="1650" rx="-1.8" ry="-1.8" rz="-1.8">
 				<rgbd id="cam06_front_door" width="320" height="240" focal="240" port="10196" ifconfig="44000,55000" noise="0" />
 				<plane id="06rgbd_mesh" texture="#550000" size="50,50,200" repeat="1" nx="0" ny="0" nz="1" px="0" py="0" pz="-200" collide="0" />
-			</transform>
-            
-           
+			</transform> 
 
 			<!-- FLOOR -->
 			<transform id="floor" tx="-4000" tz="-2000" ty="0">
@@ -51,10 +52,10 @@
 				<plane id="muro1" nx="0" nz="5000" size="4000,1900,100"  texture="#74ADA1" />
 			</transform> 
 
-			<transform id="pared2" tx="-2000" tz="-1250" ty="950" >
-				<plane id="muro2" nx="5000" nz="0" size="3500,1900,100"  texture="#74ADA1" />
+			<transform id="pared2" tx="-2000" tz="-1125" ty="950" >
+				<plane id="muro2" nx="5000" nz="0" size="3250,1900,100"  texture="#74ADA1" collide="1" />
 			</transform>
-		
+
 			<transform id="pared3" tx="-4000" tz="-4500" ty="950" >
 				<plane id="muro3" nx="0" nz="-5000" size="4000,1900,100"  texture="#74ADA1" />
 			</transform>
@@ -107,7 +108,7 @@
 
 			<transform id="shower" tx="-600" tz="4100" ty="0" ry="0">
 		        	<mesh id="shower_mesh" file="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/shower/shower.3DS" 					
-		             	 scale="0.95,0.95,0.95" tx="0" tz="0" ty="0"  rx="1.57" rz="-1.57" collide="1" />
+		             	 scale="0.85,0.85,0.85" tx="0" tz="0" ty="0"  rx="1.57" rz="-1.57" collide="1" />
 			</transform>
 
 
@@ -180,19 +181,18 @@
         		</transform>
             
            		 <!-- TABLE D MESA REDONDA DEL COMEDOR> -->
-
-		<transform id="tableD" tx="3000" tz="-1600" ty="750" >
-				<mesh id="tableD_mesh" file="/home/robocomp/robocomp/files/osgModels/basics/cylinder.3ds" scale="1500,900,20" rx="1.570799947" collide="1"/>
+ <!-- TABLE D MESA REDONDA DEL COMEDOR> -->
+			<transform id="tableD" tx="3000" tz="-1600" ty="750" >
+				<mesh id="tableD_mesh" file="/home/robocomp/robocomp/files/osgModels/basics/cylinder.3ds" scale="1400,800,20" rx="1.570799947" collide="1"/>
 						
                 
                			 <transform id="rwreewreet" ty="-365" >
-					<mesh id="tableD_mesh2" file="/home/robocomp/robocomp/files/osgModels/basics/cylinder.3ds" scale="100,100,360" rx="1.570799947" collide="1"/>
+					<mesh id="tableD_mesh2" file="/home/robocomp/robocomp/files/osgModels/basics/cylinder.3ds" scale="200,200,360" rx="1.570799947" collide="1"/>
 				</transform>
 
 			 	<transform id="tablebase" ty="-700" >
-					<mesh id="tablebase_mesh" file="/home/robocomp/robocomp/files/osgModels/basics/cylinder.3ds" scale="900,600,10" rx="1.570799947" collide="1"/>
+					<mesh id="tablebase_mesh" file="/home/robocomp/robocomp/files/osgModels/basics/cylinder.3ds" scale="1200,600,10" rx="1.570799947" collide="1"/>
 				</transform>
-	
 
 	 			<!-- cosas encima de la mesa -->
 		  		<transform id="toy1" tx="900" tz = "200" >
