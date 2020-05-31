@@ -1,0 +1,1389 @@
+<AGMModel>
+
+<symbol id="100" type="world">
+	<attribute key="imName" value="world" />
+	<attribute key="imType" value="transform" />
+</symbol>
+<symbol id="1" type="robot">
+	<attribute key="imName" value="robot" />
+	<attribute key="imType" value="transform" />
+</symbol>
+<symbol id="3" type="room">
+	<attribute key="imName" value="room_3" />
+	<attribute key="imType" value="transform" />
+	<attribute key="tx" value="-6000" />
+	<attribute key="tz" value="-4500" />
+</symbol>
+<symbol id="3000" type="object">
+	<attribute key="depth" value="500" />
+	<attribute key="height" value="1500" />
+	<attribute key="imName" value="board" />
+	<attribute key="imType" value="transform" />
+	<attribute key="inter_angle" value="1,25" />
+	<attribute key="inter_space" value="3500" />
+	<attribute key="shape" value="trapezoid" />
+	<attribute key="width" value="2000" />
+</symbol>
+<symbol id="3100" type="object">
+	<attribute key="depth" value="2000" />
+	<attribute key="height" value="500" />
+	<attribute key="imName" value="bed" />
+	<attribute key="imType" value="transform" />
+	<attribute key="inter_angle" value="0" />
+	<attribute key="inter_space" value="500" />
+	<attribute key="shape" value="rectangle" />
+	<attribute key="width" value="900" />
+</symbol>
+<symbol id="3200" type="object">
+	<attribute key="depth" value="1800" />
+	<attribute key="height" value="800" />
+	<attribute key="imName" value="tableD" />
+	<attribute key="imType" value="transform" />
+	<attribute key="inter_angle" value="0" />
+	<attribute key="inter_space" value="500" />
+	<attribute key="shape" value="circle" />
+	<attribute key="width" value="3000" />
+</symbol>
+<symbol id="3201" type="transform">
+	<attribute key="engine" value="static" />
+	<attribute key="imName" value="floor" />
+	<attribute key="imType" value="transform" />
+	<attribute key="mass" value="0" />
+</symbol>
+<symbol id="3202" type="plane">
+	<attribute key="collidable" value="false" />
+	<attribute key="depth" value="10" />
+	<attribute key="height" value="5000" />
+	<attribute key="imName" value="floor_plane" />
+	<attribute key="imType" value="plane" />
+	<attribute key="nx" value="0" />
+	<attribute key="ny" value="1" />
+	<attribute key="nz" value="0" />
+	<attribute key="px" value="0" />
+	<attribute key="py" value="0" />
+	<attribute key="pz" value="0" />
+	<attribute key="repeat" value="1000" />
+	<attribute key="texture" value="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/wood1.jpg" />
+	<attribute key="width" value="4000" />
+</symbol>
+<symbol id="3203" type="transform">
+	<attribute key="engine" value="static" />
+	<attribute key="imName" value="pared0" />
+	<attribute key="imType" value="transform" />
+	<attribute key="mass" value="0" />
+</symbol>
+<symbol id="3204" type="plane">
+	<attribute key="collidable" value="false" />
+	<attribute key="depth" value="100" />
+	<attribute key="height" value="1900" />
+	<attribute key="imName" value="muro0" />
+	<attribute key="imType" value="plane" />
+	<attribute key="nx" value="-500" />
+	<attribute key="ny" value="0" />
+	<attribute key="nz" value="0" />
+	<attribute key="px" value="0" />
+	<attribute key="py" value="0" />
+	<attribute key="pz" value="0" />
+	<attribute key="repeat" value="1000" />
+	<attribute key="texture" value="#74ADA1" />
+	<attribute key="width" value="5000" />
+</symbol>
+<symbol id="3205" type="transform">
+	<attribute key="engine" value="static" />
+	<attribute key="imName" value="pared1" />
+	<attribute key="imType" value="transform" />
+	<attribute key="mass" value="0" />
+</symbol>
+<symbol id="3206" type="plane">
+	<attribute key="collidable" value="false" />
+	<attribute key="depth" value="100" />
+	<attribute key="height" value="1900" />
+	<attribute key="imName" value="muro1" />
+	<attribute key="imType" value="plane" />
+	<attribute key="nx" value="0" />
+	<attribute key="ny" value="0" />
+	<attribute key="nz" value="5000" />
+	<attribute key="px" value="0" />
+	<attribute key="py" value="0" />
+	<attribute key="pz" value="0" />
+	<attribute key="repeat" value="1000" />
+	<attribute key="texture" value="#74ADA1" />
+	<attribute key="width" value="4000" />
+</symbol>
+<symbol id="3207" type="transform">
+	<attribute key="engine" value="static" />
+	<attribute key="imName" value="pared2" />
+	<attribute key="imType" value="transform" />
+	<attribute key="mass" value="0" />
+</symbol>
+<symbol id="3208" type="plane">
+	<attribute key="collidable" value="false" />
+	<attribute key="depth" value="100" />
+	<attribute key="height" value="1900" />
+	<attribute key="imName" value="muro2" />
+	<attribute key="imType" value="plane" />
+	<attribute key="nx" value="5000" />
+	<attribute key="ny" value="0" />
+	<attribute key="nz" value="0" />
+	<attribute key="px" value="0" />
+	<attribute key="py" value="0" />
+	<attribute key="pz" value="0" />
+	<attribute key="repeat" value="1000" />
+	<attribute key="texture" value="#74ADA1" />
+	<attribute key="width" value="3500" />
+</symbol>
+<symbol id="3209" type="transform">
+	<attribute key="engine" value="static" />
+	<attribute key="imName" value="pared3" />
+	<attribute key="imType" value="transform" />
+	<attribute key="mass" value="0" />
+</symbol>
+<symbol id="3210" type="plane">
+	<attribute key="collidable" value="false" />
+	<attribute key="depth" value="100" />
+	<attribute key="height" value="1900" />
+	<attribute key="imName" value="muro3" />
+	<attribute key="imType" value="plane" />
+	<attribute key="nx" value="0" />
+	<attribute key="ny" value="0" />
+	<attribute key="nz" value="-5000" />
+	<attribute key="px" value="0" />
+	<attribute key="py" value="0" />
+	<attribute key="pz" value="0" />
+	<attribute key="repeat" value="1000" />
+	<attribute key="texture" value="#74ADA1" />
+	<attribute key="width" value="4000" />
+</symbol>
+<symbol id="3211" type="mesh">
+	<attribute key="collidable" value="true" />
+	<attribute key="imName" value="bed_mesh" />
+	<attribute key="imType" value="mesh" />
+	<attribute key="path" value="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/hospitalBed/hospbed.3DS" />
+	<attribute key="render" value="NormalRendering" />
+	<attribute key="scalex" value="1" />
+	<attribute key="scaley" value="1" />
+	<attribute key="scalez" value="1" />
+</symbol>
+<symbol id="3212" type="transform">
+	<attribute key="engine" value="static" />
+	<attribute key="imName" value="bedbase" />
+	<attribute key="imType" value="transform" />
+	<attribute key="mass" value="0" />
+</symbol>
+<symbol id="3213" type="mesh">
+	<attribute key="collidable" value="true" />
+	<attribute key="imName" value="bedbase_mesh" />
+	<attribute key="imType" value="mesh" />
+	<attribute key="path" value="/home/robocomp/robocomp/files/osgModels/basics/cube2.3ds" />
+	<attribute key="render" value="NormalRendering" />
+	<attribute key="scalex" value="1800" />
+	<attribute key="scaley" value="800" />
+	<attribute key="scalez" value="10" />
+</symbol>
+<symbol id="3214" type="transform">
+	<attribute key="engine" value="static" />
+	<attribute key="imName" value="floor4" />
+	<attribute key="imType" value="transform" />
+	<attribute key="mass" value="0" />
+</symbol>
+<symbol id="3215" type="plane">
+	<attribute key="collidable" value="false" />
+	<attribute key="depth" value="10" />
+	<attribute key="height" value="4000" />
+	<attribute key="imName" value="floor4_plane" />
+	<attribute key="imType" value="plane" />
+	<attribute key="nx" value="0" />
+	<attribute key="ny" value="1" />
+	<attribute key="nz" value="0" />
+	<attribute key="px" value="0" />
+	<attribute key="py" value="0" />
+	<attribute key="pz" value="0" />
+	<attribute key="repeat" value="1000" />
+	<attribute key="texture" value="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/bath.jpg" />
+	<attribute key="width" value="6000" />
+</symbol>
+<symbol id="3216" type="transform">
+	<attribute key="engine" value="static" />
+	<attribute key="imName" value="pared4" />
+	<attribute key="imType" value="transform" />
+	<attribute key="mass" value="0" />
+</symbol>
+<symbol id="3217" type="plane">
+	<attribute key="collidable" value="false" />
+	<attribute key="depth" value="100" />
+	<attribute key="height" value="1900" />
+	<attribute key="imName" value="muro4" />
+	<attribute key="imType" value="plane" />
+	<attribute key="nx" value="-500" />
+	<attribute key="ny" value="0" />
+	<attribute key="nz" value="0" />
+	<attribute key="px" value="0" />
+	<attribute key="py" value="0" />
+	<attribute key="pz" value="0" />
+	<attribute key="repeat" value="1000" />
+	<attribute key="texture" value="#74ADA1" />
+	<attribute key="width" value="4000" />
+</symbol>
+<symbol id="3218" type="transform">
+	<attribute key="engine" value="static" />
+	<attribute key="imName" value="pared5" />
+	<attribute key="imType" value="transform" />
+	<attribute key="mass" value="0" />
+</symbol>
+<symbol id="3219" type="plane">
+	<attribute key="collidable" value="false" />
+	<attribute key="depth" value="100" />
+	<attribute key="height" value="1900" />
+	<attribute key="imName" value="muro5" />
+	<attribute key="imType" value="plane" />
+	<attribute key="nx" value="-500" />
+	<attribute key="ny" value="0" />
+	<attribute key="nz" value="0" />
+	<attribute key="px" value="0" />
+	<attribute key="py" value="0" />
+	<attribute key="pz" value="0" />
+	<attribute key="repeat" value="1000" />
+	<attribute key="texture" value="#74ADA1" />
+	<attribute key="width" value="4000" />
+</symbol>
+<symbol id="3220" type="transform">
+	<attribute key="engine" value="static" />
+	<attribute key="imName" value="pared6" />
+	<attribute key="imType" value="transform" />
+	<attribute key="mass" value="0" />
+</symbol>
+<symbol id="3221" type="plane">
+	<attribute key="collidable" value="false" />
+	<attribute key="depth" value="100" />
+	<attribute key="height" value="1900" />
+	<attribute key="imName" value="muro6" />
+	<attribute key="imType" value="plane" />
+	<attribute key="nx" value="0" />
+	<attribute key="ny" value="0" />
+	<attribute key="nz" value="-5000" />
+	<attribute key="px" value="0" />
+	<attribute key="py" value="0" />
+	<attribute key="pz" value="0" />
+	<attribute key="repeat" value="1000" />
+	<attribute key="texture" value="#74ADA1" />
+	<attribute key="width" value="6000" />
+</symbol>
+<symbol id="3222" type="transform">
+	<attribute key="engine" value="static" />
+	<attribute key="imName" value="basin" />
+	<attribute key="imType" value="transform" />
+	<attribute key="mass" value="0" />
+</symbol>
+<symbol id="3223" type="mesh">
+	<attribute key="collidable" value="true" />
+	<attribute key="imName" value="basin_mesh" />
+	<attribute key="imType" value="mesh" />
+	<attribute key="path" value="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/basin/Washbasin.3DS" />
+	<attribute key="render" value="NormalRendering" />
+	<attribute key="scalex" value="30" />
+	<attribute key="scaley" value="30" />
+	<attribute key="scalez" value="30" />
+</symbol>
+<symbol id="3224" type="transform">
+	<attribute key="engine" value="static" />
+	<attribute key="imName" value="mirror" />
+	<attribute key="imType" value="transform" />
+	<attribute key="mass" value="0" />
+</symbol>
+<symbol id="3225" type="mesh">
+	<attribute key="collidable" value="true" />
+	<attribute key="imName" value="mirror_mesh" />
+	<attribute key="imType" value="mesh" />
+	<attribute key="path" value="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/mirror/mirror.3DS" />
+	<attribute key="render" value="NormalRendering" />
+	<attribute key="scalex" value="2" />
+	<attribute key="scaley" value="2" />
+	<attribute key="scalez" value="1" />
+</symbol>
+<symbol id="3226" type="transform">
+	<attribute key="engine" value="static" />
+	<attribute key="imName" value="lavatory" />
+	<attribute key="imType" value="transform" />
+	<attribute key="mass" value="0" />
+</symbol>
+<symbol id="3227" type="mesh">
+	<attribute key="collidable" value="true" />
+	<attribute key="imName" value="lavatory_mesh" />
+	<attribute key="imType" value="mesh" />
+	<attribute key="path" value="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/lavatory/lavatory.3DS" />
+	<attribute key="render" value="NormalRendering" />
+	<attribute key="scalex" value="3" />
+	<attribute key="scaley" value="3" />
+	<attribute key="scalez" value="3" />
+</symbol>
+<symbol id="3228" type="transform">
+	<attribute key="engine" value="static" />
+	<attribute key="imName" value="shower" />
+	<attribute key="imType" value="transform" />
+	<attribute key="mass" value="0" />
+</symbol>
+<symbol id="3229" type="mesh">
+	<attribute key="collidable" value="true" />
+	<attribute key="imName" value="shower_mesh" />
+	<attribute key="imType" value="mesh" />
+	<attribute key="path" value="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/shower/shower.3DS" />
+	<attribute key="render" value="NormalRendering" />
+	<attribute key="scalex" value="1" />
+	<attribute key="scaley" value="1" />
+	<attribute key="scalez" value="1" />
+</symbol>
+<symbol id="3230" type="transform">
+	<attribute key="engine" value="static" />
+	<attribute key="imName" value="floor5" />
+	<attribute key="imType" value="transform" />
+	<attribute key="mass" value="0" />
+</symbol>
+<symbol id="3231" type="plane">
+	<attribute key="collidable" value="false" />
+	<attribute key="depth" value="10" />
+	<attribute key="height" value="5000" />
+	<attribute key="imName" value="floor5_plane" />
+	<attribute key="imType" value="plane" />
+	<attribute key="nx" value="0" />
+	<attribute key="ny" value="1" />
+	<attribute key="nz" value="0" />
+	<attribute key="px" value="0" />
+	<attribute key="py" value="0" />
+	<attribute key="pz" value="0" />
+	<attribute key="repeat" value="1000" />
+	<attribute key="texture" value="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/wood1.jpg" />
+	<attribute key="width" value="2000" />
+</symbol>
+<symbol id="3232" type="transform">
+	<attribute key="engine" value="static" />
+	<attribute key="imName" value="pared7" />
+	<attribute key="imType" value="transform" />
+	<attribute key="mass" value="0" />
+</symbol>
+<symbol id="3233" type="plane">
+	<attribute key="collidable" value="false" />
+	<attribute key="depth" value="100" />
+	<attribute key="height" value="1900" />
+	<attribute key="imName" value="muro7" />
+	<attribute key="imType" value="plane" />
+	<attribute key="nx" value="-500" />
+	<attribute key="ny" value="0" />
+	<attribute key="nz" value="0" />
+	<attribute key="px" value="0" />
+	<attribute key="py" value="0" />
+	<attribute key="pz" value="0" />
+	<attribute key="repeat" value="1000" />
+	<attribute key="texture" value="#74ADA1" />
+	<attribute key="width" value="1500" />
+</symbol>
+<symbol id="3234" type="transform">
+	<attribute key="engine" value="static" />
+	<attribute key="imName" value="pared8" />
+	<attribute key="imType" value="transform" />
+	<attribute key="mass" value="0" />
+</symbol>
+<symbol id="3235" type="plane">
+	<attribute key="collidable" value="false" />
+	<attribute key="depth" value="100" />
+	<attribute key="height" value="1900" />
+	<attribute key="imName" value="muro8" />
+	<attribute key="imType" value="plane" />
+	<attribute key="nx" value="-500" />
+	<attribute key="ny" value="0" />
+	<attribute key="nz" value="0" />
+	<attribute key="px" value="0" />
+	<attribute key="py" value="0" />
+	<attribute key="pz" value="0" />
+	<attribute key="repeat" value="1000" />
+	<attribute key="texture" value="#74ADA1" />
+	<attribute key="width" value="1500" />
+</symbol>
+<symbol id="3236" type="transform">
+	<attribute key="engine" value="static" />
+	<attribute key="imName" value="pared9" />
+	<attribute key="imType" value="transform" />
+	<attribute key="mass" value="0" />
+</symbol>
+<symbol id="3237" type="plane">
+	<attribute key="collidable" value="false" />
+	<attribute key="depth" value="100" />
+	<attribute key="height" value="1900" />
+	<attribute key="imName" value="muro9" />
+	<attribute key="imType" value="plane" />
+	<attribute key="nx" value="0" />
+	<attribute key="ny" value="0" />
+	<attribute key="nz" value="-5000" />
+	<attribute key="px" value="0" />
+	<attribute key="py" value="0" />
+	<attribute key="pz" value="0" />
+	<attribute key="repeat" value="1000" />
+	<attribute key="texture" value="#74ADA1" />
+	<attribute key="width" value="2000" />
+</symbol>
+<symbol id="3238" type="transform">
+	<attribute key="engine" value="static" />
+	<attribute key="imName" value="floor6" />
+	<attribute key="imType" value="transform" />
+	<attribute key="mass" value="0" />
+</symbol>
+<symbol id="3239" type="plane">
+	<attribute key="collidable" value="false" />
+	<attribute key="depth" value="10" />
+	<attribute key="height" value="9000" />
+	<attribute key="imName" value="floor6_plane" />
+	<attribute key="imType" value="plane" />
+	<attribute key="nx" value="0" />
+	<attribute key="ny" value="1" />
+	<attribute key="nz" value="0" />
+	<attribute key="px" value="0" />
+	<attribute key="py" value="0" />
+	<attribute key="pz" value="0" />
+	<attribute key="repeat" value="1000" />
+	<attribute key="texture" value="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/wood1.jpg" />
+	<attribute key="width" value="6000" />
+</symbol>
+<symbol id="3240" type="transform">
+	<attribute key="engine" value="static" />
+	<attribute key="imName" value="pared10" />
+	<attribute key="imType" value="transform" />
+	<attribute key="mass" value="0" />
+</symbol>
+<symbol id="3241" type="plane">
+	<attribute key="collidable" value="false" />
+	<attribute key="depth" value="100" />
+	<attribute key="height" value="1900" />
+	<attribute key="imName" value="muro10" />
+	<attribute key="imType" value="plane" />
+	<attribute key="nx" value="-500" />
+	<attribute key="ny" value="0" />
+	<attribute key="nz" value="0" />
+	<attribute key="px" value="0" />
+	<attribute key="py" value="0" />
+	<attribute key="pz" value="0" />
+	<attribute key="repeat" value="1000" />
+	<attribute key="texture" value="#74ADA1" />
+	<attribute key="width" value="9000" />
+</symbol>
+<symbol id="3242" type="transform">
+	<attribute key="engine" value="static" />
+	<attribute key="imName" value="pared11" />
+	<attribute key="imType" value="transform" />
+	<attribute key="mass" value="0" />
+</symbol>
+<symbol id="3243" type="plane">
+	<attribute key="collidable" value="false" />
+	<attribute key="depth" value="100" />
+	<attribute key="height" value="1900" />
+	<attribute key="imName" value="muro11" />
+	<attribute key="imType" value="plane" />
+	<attribute key="nx" value="0" />
+	<attribute key="ny" value="0" />
+	<attribute key="nz" value="-5000" />
+	<attribute key="px" value="0" />
+	<attribute key="py" value="0" />
+	<attribute key="pz" value="0" />
+	<attribute key="repeat" value="1000" />
+	<attribute key="texture" value="#74ADA1" />
+	<attribute key="width" value="6000" />
+</symbol>
+<symbol id="3244" type="transform">
+	<attribute key="engine" value="static" />
+	<attribute key="imName" value="pared12" />
+	<attribute key="imType" value="transform" />
+	<attribute key="mass" value="0" />
+</symbol>
+<symbol id="3245" type="plane">
+	<attribute key="collidable" value="false" />
+	<attribute key="depth" value="100" />
+	<attribute key="height" value="1900" />
+	<attribute key="imName" value="muro12" />
+	<attribute key="imType" value="plane" />
+	<attribute key="nx" value="0" />
+	<attribute key="ny" value="0" />
+	<attribute key="nz" value="-5000" />
+	<attribute key="px" value="0" />
+	<attribute key="py" value="0" />
+	<attribute key="pz" value="0" />
+	<attribute key="repeat" value="1000" />
+	<attribute key="texture" value="#74ADA1" />
+	<attribute key="width" value="6000" />
+</symbol>
+<symbol id="3246" type="mesh">
+	<attribute key="collidable" value="true" />
+	<attribute key="imName" value="board_mesh" />
+	<attribute key="imType" value="mesh" />
+	<attribute key="path" value="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/tv/tv.3DS" />
+	<attribute key="render" value="NormalRendering" />
+	<attribute key="scalex" value="30" />
+	<attribute key="scaley" value="30" />
+	<attribute key="scalez" value="30" />
+</symbol>
+<symbol id="3247" type="transform">
+	<attribute key="engine" value="static" />
+	<attribute key="imName" value="ball" />
+	<attribute key="imType" value="transform" />
+	<attribute key="mass" value="0" />
+</symbol>
+<symbol id="3248" type="mesh">
+	<attribute key="collidable" value="true" />
+	<attribute key="imName" value="ball_mesh" />
+	<attribute key="imType" value="mesh" />
+	<attribute key="path" value="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/ball.3DS" />
+	<attribute key="render" value="NormalRendering" />
+	<attribute key="scalex" value="1.5" />
+	<attribute key="scaley" value="1.5" />
+	<attribute key="scalez" value="1.5" />
+</symbol>
+<symbol id="3249" type="transform">
+	<attribute key="engine" value="static" />
+	<attribute key="imName" value="rug" />
+	<attribute key="imType" value="transform" />
+	<attribute key="mass" value="0" />
+</symbol>
+<symbol id="3250" type="mesh">
+	<attribute key="collidable" value="true" />
+	<attribute key="imName" value="rug_mesh" />
+	<attribute key="imType" value="mesh" />
+	<attribute key="path" value="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/rug.3DS" />
+	<attribute key="render" value="NormalRendering" />
+	<attribute key="scalex" value="300" />
+	<attribute key="scaley" value="300" />
+	<attribute key="scalez" value="250" />
+</symbol>
+<symbol id="3251" type="transform">
+	<attribute key="engine" value="static" />
+	<attribute key="imName" value="dumbbells" />
+	<attribute key="imType" value="transform" />
+	<attribute key="mass" value="0" />
+</symbol>
+<symbol id="3252" type="mesh">
+	<attribute key="collidable" value="true" />
+	<attribute key="imName" value="dumbbells_mesh" />
+	<attribute key="imType" value="mesh" />
+	<attribute key="path" value="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/dumbbells.3DS" />
+	<attribute key="render" value="NormalRendering" />
+	<attribute key="scalex" value="7" />
+	<attribute key="scaley" value="7" />
+	<attribute key="scalez" value="7" />
+</symbol>
+<symbol id="3253" type="transform">
+	<attribute key="engine" value="static" />
+	<attribute key="imName" value="ladder" />
+	<attribute key="imType" value="transform" />
+	<attribute key="mass" value="0" />
+</symbol>
+<symbol id="3254" type="mesh">
+	<attribute key="collidable" value="true" />
+	<attribute key="imName" value="ladder_mesh" />
+	<attribute key="imType" value="mesh" />
+	<attribute key="path" value="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/ladder.3DS" />
+	<attribute key="render" value="NormalRendering" />
+	<attribute key="scalex" value="0.75" />
+	<attribute key="scaley" value="0.75" />
+	<attribute key="scalez" value="0.8" />
+</symbol>
+<symbol id="3255" type="mesh">
+	<attribute key="collidable" value="true" />
+	<attribute key="imName" value="tableD_mesh" />
+	<attribute key="imType" value="mesh" />
+	<attribute key="path" value="/home/robocomp/robocomp/files/osgModels/basics/cylinder.3ds" />
+	<attribute key="render" value="NormalRendering" />
+	<attribute key="scalex" value="1500" />
+	<attribute key="scaley" value="900" />
+	<attribute key="scalez" value="20" />
+</symbol>
+<symbol id="3256" type="transform">
+	<attribute key="engine" value="static" />
+	<attribute key="imName" value="rwreewreet" />
+	<attribute key="imType" value="transform" />
+	<attribute key="mass" value="0" />
+</symbol>
+<symbol id="3257" type="mesh">
+	<attribute key="collidable" value="true" />
+	<attribute key="imName" value="tableD_mesh2" />
+	<attribute key="imType" value="mesh" />
+	<attribute key="path" value="/home/robocomp/robocomp/files/osgModels/basics/cylinder.3ds" />
+	<attribute key="render" value="NormalRendering" />
+	<attribute key="scalex" value="100" />
+	<attribute key="scaley" value="100" />
+	<attribute key="scalez" value="360" />
+</symbol>
+<symbol id="3258" type="transform">
+	<attribute key="engine" value="static" />
+	<attribute key="imName" value="tablebase" />
+	<attribute key="imType" value="transform" />
+	<attribute key="mass" value="0" />
+</symbol>
+<symbol id="3259" type="mesh">
+	<attribute key="collidable" value="true" />
+	<attribute key="imName" value="tablebase_mesh" />
+	<attribute key="imType" value="mesh" />
+	<attribute key="path" value="/home/robocomp/robocomp/files/osgModels/basics/cylinder.3ds" />
+	<attribute key="render" value="NormalRendering" />
+	<attribute key="scalex" value="900" />
+	<attribute key="scaley" value="600" />
+	<attribute key="scalez" value="10" />
+</symbol>
+<symbol id="3260" type="transform">
+	<attribute key="engine" value="static" />
+	<attribute key="imName" value="toy1" />
+	<attribute key="imType" value="transform" />
+	<attribute key="mass" value="0" />
+</symbol>
+<symbol id="3261" type="mesh">
+	<attribute key="collidable" value="true" />
+	<attribute key="imName" value="toy_mesh" />
+	<attribute key="imType" value="mesh" />
+	<attribute key="path" value="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/toy.3DS" />
+	<attribute key="render" value="NormalRendering" />
+	<attribute key="scalex" value="4" />
+	<attribute key="scaley" value="4" />
+	<attribute key="scalez" value="5" />
+</symbol>
+<symbol id="3262" type="transform">
+	<attribute key="engine" value="static" />
+	<attribute key="imName" value="palette" />
+	<attribute key="imType" value="transform" />
+	<attribute key="mass" value="0" />
+</symbol>
+<symbol id="3263" type="mesh">
+	<attribute key="collidable" value="true" />
+	<attribute key="imName" value="palette_mesh" />
+	<attribute key="imType" value="mesh" />
+	<attribute key="path" value="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/palette.3DS" />
+	<attribute key="render" value="NormalRendering" />
+	<attribute key="scalex" value="30" />
+	<attribute key="scaley" value="30" />
+	<attribute key="scalez" value="30" />
+</symbol>
+<symbol id="3264" type="transform">
+	<attribute key="engine" value="static" />
+	<attribute key="imName" value="puzzle" />
+	<attribute key="imType" value="transform" />
+	<attribute key="mass" value="0" />
+</symbol>
+<symbol id="3265" type="mesh">
+	<attribute key="collidable" value="true" />
+	<attribute key="imName" value="puzzle_mesh" />
+	<attribute key="imType" value="mesh" />
+	<attribute key="path" value="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/puzzle/puzzle.3ds" />
+	<attribute key="render" value="NormalRendering" />
+	<attribute key="scalex" value="10" />
+	<attribute key="scaley" value="10" />
+	<attribute key="scalez" value="10" />
+</symbol>
+<symbol id="3266" type="plane">
+	<attribute key="collidable" value="true" />
+	<attribute key="depth" value="460" />
+	<attribute key="height" value="220" />
+	<attribute key="imName" value="base_mesh" />
+	<attribute key="imType" value="plane" />
+	<attribute key="nx" value="0" />
+	<attribute key="ny" value="0" />
+	<attribute key="nz" value="-1" />
+	<attribute key="px" value="0" />
+	<attribute key="py" value="137.5" />
+	<attribute key="pz" value="0" />
+	<attribute key="repeat" value="1000" />
+	<attribute key="texture" value="#666666" />
+	<attribute key="width" value="540" />
+</symbol>
+<symbol id="3267" type="transform">
+	<attribute key="engine" value="static" />
+	<attribute key="imName" value="laser1Pose" />
+	<attribute key="imType" value="transform" />
+	<attribute key="mass" value="0" />
+</symbol>
+<symbol id="3268" type="laser">
+	<attribute key="angle" value="4.2" />
+	<attribute key="ifconfig" value="" />
+	<attribute key="imName" value="laser" />
+	<attribute key="imType" value="laser" />
+	<attribute key="max" value="30000" />
+	<attribute key="measures" value="100" />
+	<attribute key="min" value="100" />
+	<attribute key="port" value="10003" />
+</symbol>
+<symbol id="3269" type="mesh">
+	<attribute key="collidable" value="true" />
+	<attribute key="imName" value="barracolumna" />
+	<attribute key="imType" value="mesh" />
+	<attribute key="path" value="/home/robocomp/robocomp/files/osgModels/basics/cube.3ds" />
+	<attribute key="render" value="NormalRendering" />
+	<attribute key="scalex" value="40" />
+	<attribute key="scaley" value="500" />
+	<attribute key="scalez" value="30" />
+</symbol>
+<symbol id="3270" type="mesh">
+	<attribute key="collidable" value="true" />
+	<attribute key="imName" value="barrahombro" />
+	<attribute key="imType" value="mesh" />
+	<attribute key="path" value="/home/robocomp/robocomp/files/osgModels/robexarm/barrahombro.3ds" />
+	<attribute key="render" value="NormalRendering" />
+	<attribute key="scalex" value="1000" />
+	<attribute key="scaley" value="1000" />
+	<attribute key="scalez" value="1000" />
+</symbol>
+<symbol id="3271" type="transform">
+	<attribute key="engine" value="static" />
+	<attribute key="imName" value="monitor_pose" />
+	<attribute key="imType" value="transform" />
+	<attribute key="mass" value="0" />
+</symbol>
+<symbol id="3272" type="plane">
+	<attribute key="collidable" value="true" />
+	<attribute key="depth" value="80" />
+	<attribute key="height" value="270" />
+	<attribute key="imName" value="monitor_mesh" />
+	<attribute key="imType" value="plane" />
+	<attribute key="nx" value="0" />
+	<attribute key="ny" value="0" />
+	<attribute key="nz" value="-1" />
+	<attribute key="px" value="0" />
+	<attribute key="py" value="0" />
+	<attribute key="pz" value="0" />
+	<attribute key="repeat" value="1000" />
+	<attribute key="texture" value="#222266" />
+	<attribute key="width" value="340" />
+</symbol>
+<symbol id="3273" type="transform">
+	<attribute key="engine" value="static" />
+	<attribute key="imName" value="base_bodypost" />
+	<attribute key="imType" value="transform" />
+	<attribute key="mass" value="0" />
+</symbol>
+
+
+<link src="3000" dst="3000" label="interactive"/>
+<link src="3000" dst="3" label="in"/>
+<link src="3100" dst="3100" label="interactive"/>
+<link src="3100" dst="3" label="in"/>
+<link src="3200" dst="3200" label="interactive"/>
+<link src="3200" dst="3" label="in"/>
+<link src="1" dst="3" label="in"/>
+<link src="3" dst="1" label="RT">
+	<linkAttribute key="rx" value="0" />
+	<linkAttribute key="ry" value="1.57" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="-5000" />
+	<linkAttribute key="ty" value="0" />
+	<linkAttribute key="tz" value="-3500" />
+</link>
+<link src="100" dst="3" label="RT">
+	<linkAttribute key="rx" value="0" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="0" />
+	<linkAttribute key="ty" value="0" />
+	<linkAttribute key="tz" value="0" />
+</link>
+<link src="3" dst="3201" label="RT">
+	<linkAttribute key="rx" value="0" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="-4000" />
+	<linkAttribute key="ty" value="0" />
+	<linkAttribute key="tz" value="-2000" />
+</link>
+<link src="3201" dst="3202" label="RT">
+	<linkAttribute key="rx" value="0" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="0" />
+	<linkAttribute key="ty" value="0" />
+	<linkAttribute key="tz" value="0" />
+</link>
+<link src="3" dst="3203" label="RT">
+	<linkAttribute key="rx" value="0" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="-6000" />
+	<linkAttribute key="ty" value="950" />
+	<linkAttribute key="tz" value="-2000" />
+</link>
+<link src="3203" dst="3204" label="RT">
+	<linkAttribute key="rx" value="0" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="0" />
+	<linkAttribute key="ty" value="0" />
+	<linkAttribute key="tz" value="0" />
+</link>
+<link src="3" dst="3205" label="RT">
+	<linkAttribute key="rx" value="0" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="-4000" />
+	<linkAttribute key="ty" value="950" />
+	<linkAttribute key="tz" value="500" />
+</link>
+<link src="3205" dst="3206" label="RT">
+	<linkAttribute key="rx" value="0" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="0" />
+	<linkAttribute key="ty" value="0" />
+	<linkAttribute key="tz" value="0" />
+</link>
+<link src="3" dst="3207" label="RT">
+	<linkAttribute key="rx" value="0" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="-2000" />
+	<linkAttribute key="ty" value="950" />
+	<linkAttribute key="tz" value="-1250" />
+</link>
+<link src="3207" dst="3208" label="RT">
+	<linkAttribute key="rx" value="0" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="0" />
+	<linkAttribute key="ty" value="0" />
+	<linkAttribute key="tz" value="0" />
+</link>
+<link src="3" dst="3209" label="RT">
+	<linkAttribute key="rx" value="0" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="-4000" />
+	<linkAttribute key="ty" value="950" />
+	<linkAttribute key="tz" value="-4500" />
+</link>
+<link src="3209" dst="3210" label="RT">
+	<linkAttribute key="rx" value="0" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="0" />
+	<linkAttribute key="ty" value="0" />
+	<linkAttribute key="tz" value="0" />
+</link>
+<link src="3" dst="3100" label="RT">
+	<linkAttribute key="rx" value="0" />
+	<linkAttribute key="ry" value="1.57" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="-3250" />
+	<linkAttribute key="ty" value="0" />
+	<linkAttribute key="tz" value="-1500" />
+</link>
+<link src="3100" dst="3211" label="RT">
+	<linkAttribute key="rx" value="1.57" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="1.57" />
+	<linkAttribute key="tx" value="150" />
+	<linkAttribute key="ty" value="0" />
+	<linkAttribute key="tz" value="-100" />
+</link>
+<link src="3100" dst="3212" label="RT">
+	<linkAttribute key="rx" value="0" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="200" />
+	<linkAttribute key="ty" value="50" />
+	<linkAttribute key="tz" value="-150" />
+</link>
+<link src="3212" dst="3213" label="RT">
+	<linkAttribute key="rx" value="1.5708" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="0" />
+	<linkAttribute key="ty" value="0" />
+	<linkAttribute key="tz" value="0" />
+</link>
+<link src="3" dst="3214" label="RT">
+	<linkAttribute key="rx" value="0" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="-3000" />
+	<linkAttribute key="ty" value="0" />
+	<linkAttribute key="tz" value="2500" />
+</link>
+<link src="3214" dst="3215" label="RT">
+	<linkAttribute key="rx" value="0" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="0" />
+	<linkAttribute key="ty" value="0" />
+	<linkAttribute key="tz" value="0" />
+</link>
+<link src="3" dst="3216" label="RT">
+	<linkAttribute key="rx" value="0" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="-6000" />
+	<linkAttribute key="ty" value="950" />
+	<linkAttribute key="tz" value="2500" />
+</link>
+<link src="3216" dst="3217" label="RT">
+	<linkAttribute key="rx" value="0" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="0" />
+	<linkAttribute key="ty" value="0" />
+	<linkAttribute key="tz" value="0" />
+</link>
+<link src="3" dst="3218" label="RT">
+	<linkAttribute key="rx" value="0" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="0" />
+	<linkAttribute key="ty" value="950" />
+	<linkAttribute key="tz" value="2500" />
+</link>
+<link src="3218" dst="3219" label="RT">
+	<linkAttribute key="rx" value="0" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="0" />
+	<linkAttribute key="ty" value="0" />
+	<linkAttribute key="tz" value="0" />
+</link>
+<link src="3" dst="3220" label="RT">
+	<linkAttribute key="rx" value="0" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="-3000" />
+	<linkAttribute key="ty" value="950" />
+	<linkAttribute key="tz" value="4500" />
+</link>
+<link src="3220" dst="3221" label="RT">
+	<linkAttribute key="rx" value="0" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="0" />
+	<linkAttribute key="ty" value="0" />
+	<linkAttribute key="tz" value="0" />
+</link>
+<link src="3" dst="3222" label="RT">
+	<linkAttribute key="rx" value="0" />
+	<linkAttribute key="ry" value="1.57" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="-5500" />
+	<linkAttribute key="ty" value="0" />
+	<linkAttribute key="tz" value="1500" />
+</link>
+<link src="3222" dst="3223" label="RT">
+	<linkAttribute key="rx" value="1.57" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="3.14" />
+	<linkAttribute key="tx" value="0" />
+	<linkAttribute key="ty" value="0" />
+	<linkAttribute key="tz" value="0" />
+</link>
+<link src="3" dst="3224" label="RT">
+	<linkAttribute key="rx" value="0" />
+	<linkAttribute key="ry" value="1.57" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="-6000" />
+	<linkAttribute key="ty" value="1200" />
+	<linkAttribute key="tz" value="1500" />
+</link>
+<link src="3224" dst="3225" label="RT">
+	<linkAttribute key="rx" value="1.57" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="1.57" />
+	<linkAttribute key="tx" value="0" />
+	<linkAttribute key="ty" value="0" />
+	<linkAttribute key="tz" value="0" />
+</link>
+<link src="3" dst="3226" label="RT">
+	<linkAttribute key="rx" value="0" />
+	<linkAttribute key="ry" value="1.57" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="-5500" />
+	<linkAttribute key="ty" value="0" />
+	<linkAttribute key="tz" value="3600" />
+</link>
+<link src="3226" dst="3227" label="RT">
+	<linkAttribute key="rx" value="1.57" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="3.14" />
+	<linkAttribute key="tx" value="0" />
+	<linkAttribute key="ty" value="0" />
+	<linkAttribute key="tz" value="0" />
+</link>
+<link src="3" dst="3228" label="RT">
+	<linkAttribute key="rx" value="0" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="-600" />
+	<linkAttribute key="ty" value="0" />
+	<linkAttribute key="tz" value="4100" />
+</link>
+<link src="3228" dst="3229" label="RT">
+	<linkAttribute key="rx" value="1.57" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="-1.57" />
+	<linkAttribute key="tx" value="0" />
+	<linkAttribute key="ty" value="0" />
+	<linkAttribute key="tz" value="0" />
+</link>
+<link src="3" dst="3230" label="RT">
+	<linkAttribute key="rx" value="0" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="-1000" />
+	<linkAttribute key="ty" value="0" />
+	<linkAttribute key="tz" value="-2000" />
+</link>
+<link src="3230" dst="3231" label="RT">
+	<linkAttribute key="rx" value="0" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="0" />
+	<linkAttribute key="ty" value="0" />
+	<linkAttribute key="tz" value="0" />
+</link>
+<link src="3" dst="3232" label="RT">
+	<linkAttribute key="rx" value="0" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="0" />
+	<linkAttribute key="ty" value="950" />
+	<linkAttribute key="tz" value="-250" />
+</link>
+<link src="3232" dst="3233" label="RT">
+	<linkAttribute key="rx" value="0" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="0" />
+	<linkAttribute key="ty" value="0" />
+	<linkAttribute key="tz" value="0" />
+</link>
+<link src="3" dst="3234" label="RT">
+	<linkAttribute key="rx" value="0" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="0" />
+	<linkAttribute key="ty" value="950" />
+	<linkAttribute key="tz" value="-3750" />
+</link>
+<link src="3234" dst="3235" label="RT">
+	<linkAttribute key="rx" value="0" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="0" />
+	<linkAttribute key="ty" value="0" />
+	<linkAttribute key="tz" value="0" />
+</link>
+<link src="3" dst="3236" label="RT">
+	<linkAttribute key="rx" value="0" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="-1000" />
+	<linkAttribute key="ty" value="950" />
+	<linkAttribute key="tz" value="-4500" />
+</link>
+<link src="3236" dst="3237" label="RT">
+	<linkAttribute key="rx" value="0" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="0" />
+	<linkAttribute key="ty" value="0" />
+	<linkAttribute key="tz" value="0" />
+</link>
+<link src="3" dst="3238" label="RT">
+	<linkAttribute key="rx" value="0" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="3000" />
+	<linkAttribute key="ty" value="0" />
+	<linkAttribute key="tz" value="0" />
+</link>
+<link src="3238" dst="3239" label="RT">
+	<linkAttribute key="rx" value="0" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="0" />
+	<linkAttribute key="ty" value="0" />
+	<linkAttribute key="tz" value="0" />
+</link>
+<link src="3" dst="3240" label="RT">
+	<linkAttribute key="rx" value="0" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="6000" />
+	<linkAttribute key="ty" value="950" />
+	<linkAttribute key="tz" value="0" />
+</link>
+<link src="3240" dst="3241" label="RT">
+	<linkAttribute key="rx" value="0" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="0" />
+	<linkAttribute key="ty" value="0" />
+	<linkAttribute key="tz" value="0" />
+</link>
+<link src="3" dst="3242" label="RT">
+	<linkAttribute key="rx" value="0" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="3000" />
+	<linkAttribute key="ty" value="950" />
+	<linkAttribute key="tz" value="-4500" />
+</link>
+<link src="3242" dst="3243" label="RT">
+	<linkAttribute key="rx" value="0" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="0" />
+	<linkAttribute key="ty" value="0" />
+	<linkAttribute key="tz" value="0" />
+</link>
+<link src="3" dst="3244" label="RT">
+	<linkAttribute key="rx" value="0" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="3000" />
+	<linkAttribute key="ty" value="950" />
+	<linkAttribute key="tz" value="4500" />
+</link>
+<link src="3244" dst="3245" label="RT">
+	<linkAttribute key="rx" value="0" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="0" />
+	<linkAttribute key="ty" value="0" />
+	<linkAttribute key="tz" value="0" />
+</link>
+<link src="3" dst="3000" label="RT">
+	<linkAttribute key="rx" value="0" />
+	<linkAttribute key="ry" value="3.14" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="3000" />
+	<linkAttribute key="ty" value="1350" />
+	<linkAttribute key="tz" value="4300" />
+</link>
+<link src="3000" dst="3246" label="RT">
+	<linkAttribute key="rx" value="1.57" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="3.14" />
+	<linkAttribute key="tx" value="-150" />
+	<linkAttribute key="ty" value="-300" />
+	<linkAttribute key="tz" value="-150" />
+</link>
+<link src="3" dst="3247" label="RT">
+	<linkAttribute key="rx" value="0" />
+	<linkAttribute key="ry" value="1.57" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="750" />
+	<linkAttribute key="ty" value="0" />
+	<linkAttribute key="tz" value="4200" />
+</link>
+<link src="3247" dst="3248" label="RT">
+	<linkAttribute key="rx" value="1.57" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="1.57" />
+	<linkAttribute key="tx" value="0" />
+	<linkAttribute key="ty" value="0" />
+	<linkAttribute key="tz" value="0" />
+</link>
+<link src="3" dst="3249" label="RT">
+	<linkAttribute key="rx" value="0" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="300" />
+	<linkAttribute key="ty" value="700" />
+	<linkAttribute key="tz" value="4200" />
+</link>
+<link src="3249" dst="3250" label="RT">
+	<linkAttribute key="rx" value="1.57" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="1.57" />
+	<linkAttribute key="tx" value="0" />
+	<linkAttribute key="ty" value="0" />
+	<linkAttribute key="tz" value="0" />
+</link>
+<link src="3" dst="3251" label="RT">
+	<linkAttribute key="rx" value="0" />
+	<linkAttribute key="ry" value="1.57" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="250" />
+	<linkAttribute key="ty" value="50" />
+	<linkAttribute key="tz" value="3900" />
+</link>
+<link src="3251" dst="3252" label="RT">
+	<linkAttribute key="rx" value="1.57" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="1.57" />
+	<linkAttribute key="tx" value="0" />
+	<linkAttribute key="ty" value="0" />
+	<linkAttribute key="tz" value="0" />
+</link>
+<link src="3" dst="3253" label="RT">
+	<linkAttribute key="rx" value="0" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="5750" />
+	<linkAttribute key="ty" value="0" />
+	<linkAttribute key="tz" value="2500" />
+</link>
+<link src="3253" dst="3254" label="RT">
+	<linkAttribute key="rx" value="1.57" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="1.57" />
+	<linkAttribute key="tx" value="0" />
+	<linkAttribute key="ty" value="0" />
+	<linkAttribute key="tz" value="0" />
+</link>
+<link src="3" dst="3200" label="RT">
+	<linkAttribute key="rx" value="0" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="3000" />
+	<linkAttribute key="ty" value="750" />
+	<linkAttribute key="tz" value="-1600" />
+</link>
+<link src="3200" dst="3255" label="RT">
+	<linkAttribute key="rx" value="1.5708" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="0" />
+	<linkAttribute key="ty" value="0" />
+	<linkAttribute key="tz" value="0" />
+</link>
+<link src="3200" dst="3256" label="RT">
+	<linkAttribute key="rx" value="0" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="0" />
+	<linkAttribute key="ty" value="-365" />
+	<linkAttribute key="tz" value="0" />
+</link>
+<link src="3256" dst="3257" label="RT">
+	<linkAttribute key="rx" value="1.5708" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="0" />
+	<linkAttribute key="ty" value="0" />
+	<linkAttribute key="tz" value="0" />
+</link>
+<link src="3200" dst="3258" label="RT">
+	<linkAttribute key="rx" value="0" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="0" />
+	<linkAttribute key="ty" value="-700" />
+	<linkAttribute key="tz" value="0" />
+</link>
+<link src="3258" dst="3259" label="RT">
+	<linkAttribute key="rx" value="1.5708" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="0" />
+	<linkAttribute key="ty" value="0" />
+	<linkAttribute key="tz" value="0" />
+</link>
+<link src="3200" dst="3260" label="RT">
+	<linkAttribute key="rx" value="0" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="900" />
+	<linkAttribute key="ty" value="0" />
+	<linkAttribute key="tz" value="200" />
+</link>
+<link src="3260" dst="3261" label="RT">
+	<linkAttribute key="rx" value="1.5708" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="0" />
+	<linkAttribute key="ty" value="0" />
+	<linkAttribute key="tz" value="0" />
+</link>
+<link src="3200" dst="3262" label="RT">
+	<linkAttribute key="rx" value="0" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="-400" />
+	<linkAttribute key="ty" value="0" />
+	<linkAttribute key="tz" value="-200" />
+</link>
+<link src="3262" dst="3263" label="RT">
+	<linkAttribute key="rx" value="1.5708" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="0" />
+	<linkAttribute key="ty" value="0" />
+	<linkAttribute key="tz" value="0" />
+</link>
+<link src="3200" dst="3264" label="RT">
+	<linkAttribute key="rx" value="0" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="-600" />
+	<linkAttribute key="ty" value="100" />
+	<linkAttribute key="tz" value="200" />
+</link>
+<link src="3264" dst="3265" label="RT">
+	<linkAttribute key="rx" value="-1.5708" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="0" />
+	<linkAttribute key="ty" value="0" />
+	<linkAttribute key="tz" value="0" />
+</link>
+<link src="1" dst="3266" label="RT">
+	<linkAttribute key="rx" value="0" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="0" />
+	<linkAttribute key="ty" value="0" />
+	<linkAttribute key="tz" value="0" />
+</link>
+<link src="1" dst="3267" label="RT">
+	<linkAttribute key="rx" value="0" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="11" />
+	<linkAttribute key="ty" value="300" />
+	<linkAttribute key="tz" value="200" />
+</link>
+<link src="3267" dst="3268" label="RT">
+	<linkAttribute key="rx" value="0" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="0" />
+	<linkAttribute key="ty" value="0" />
+	<linkAttribute key="tz" value="0" />
+</link>
+<link src="1" dst="3269" label="RT">
+	<linkAttribute key="rx" value="0" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="0" />
+	<linkAttribute key="ty" value="700" />
+	<linkAttribute key="tz" value="15" />
+</link>
+<link src="1" dst="3270" label="RT">
+	<linkAttribute key="rx" value="0" />
+	<linkAttribute key="ry" value="-1.5708" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="-150" />
+	<linkAttribute key="ty" value="1180" />
+	<linkAttribute key="tz" value="30" />
+</link>
+<link src="1" dst="3271" label="RT">
+	<linkAttribute key="rx" value="0" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="0" />
+	<linkAttribute key="ty" value="1155" />
+	<linkAttribute key="tz" value="70" />
+</link>
+<link src="3271" dst="3272" label="RT">
+	<linkAttribute key="rx" value="0" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="0" />
+	<linkAttribute key="ty" value="0" />
+	<linkAttribute key="tz" value="0" />
+</link>
+<link src="1" dst="3273" label="RT">
+	<linkAttribute key="rx" value="0" />
+	<linkAttribute key="ry" value="0" />
+	<linkAttribute key="rz" value="0" />
+	<linkAttribute key="tx" value="0" />
+	<linkAttribute key="ty" value="1388" />
+	<linkAttribute key="tz" value="0" />
+</link>
+
+</AGMModel>
