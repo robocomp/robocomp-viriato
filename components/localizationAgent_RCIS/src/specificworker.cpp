@@ -77,6 +77,7 @@ SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
 	aux.type = "float";
 	aux.value = "0";
 	worker_params["frameRate"] = aux;
+
 }
 
 /**
@@ -90,9 +91,12 @@ SpecificWorker::~SpecificWorker()
 bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 {
 	// Config params
+	qDebug()<< __FUNCTION__;
 	try
+
 	{
 		RoboCompAGMWorldModel::World w = agmexecutive_proxy->getModel();
+
 		AGMExecutiveTopic_structuralChange(w);
 	}
 	catch(...)
@@ -100,6 +104,7 @@ bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 		printf("The executive is probably not running, waiting for first AGM model publication...");
 	}
 
+	qDebug()<< "end setParams";
 	return true;
 }
 
@@ -114,6 +119,8 @@ void SpecificWorker::initialize(int period)
 
 void SpecificWorker::compute()
 {
+    qDebug()<< __FUNCTION__;
+
 	static QTime reloj = QTime::currentTime();
 	QMutexLocker l(mutex);
 
@@ -189,13 +196,16 @@ void SpecificWorker::setCorrectedPosition(const RoboCompGenericBase::TBaseState 
 bool SpecificWorker::odometryAndLocationIssues(bool force)
 {
 	static QTime lastSent = QTime::currentTime();
+	static bool first = true;
+
 	if (lastSent.elapsed() > 2000)
 	{
 		force = true;
 	}
 	// Get robot's odometry
 	RoboCompGenericBase::TBaseState bState;
-	try
+
+    try
 	{
 		omnirobot_proxy->getBaseState(bState);
 	}
@@ -247,25 +257,26 @@ bool SpecificWorker::odometryAndLocationIssues(bool force)
 	float schmittTriggerLikeThreshold = 80;
     robotIsActuallyInRoom = roomId;
 
-    if (bState.correctedZ < -schmittTriggerLikeThreshold)
-	{
-		robotIsActuallyInRoom = 5;
-	}
-	else if (bState.correctedZ > schmittTriggerLikeThreshold)
-	{
-		robotIsActuallyInRoom = 3;
-	}
-	else
-	{
-		robotIsActuallyInRoom = roomId;
-	}
+//    if (bState.correctedZ < -schmittTriggerLikeThreshold)
+//	{
+//		robotIsActuallyInRoom = 5;
+//	}
+//	else if (bState.correctedZ > schmittTriggerLikeThreshold)
+//	{
+//		robotIsActuallyInRoom = 3;
+//	}
+//	else
+//	{
+//		robotIsActuallyInRoom = roomId;
+//	}
+
+    AGMModel::SPtr newModel(new AGMModel(worldModel));
 
 
 	if (roomId != robotIsActuallyInRoom)
 	{
 		try
 		{
-			AGMModel::SPtr newModel(new AGMModel(worldModel));
 
 			// Modify IN edge
 			newModel->removeEdgeByIdentifiers(robotId, roomId, "in");
@@ -294,21 +305,41 @@ bool SpecificWorker::odometryAndLocationIssues(bool force)
 				float bStatez = str2float(edgeRT->getAttribute("tz"));
 				float bStatealpha = str2float(edgeRT->getAttribute("ry"));
 
-				// to reduce the publication frequency
-				if (fabs(bStatex - bState.correctedX)>5 or fabs(bStatez - bState.correctedZ)>5 or fabs(bStatealpha - bState.correctedAlpha)>0.02 or force)
-				{
-					//Publish update edge
-					printf("\nUpdate odometry...\n");
-					qDebug()<<"bState local --> "<<bStatex<<bStatez<<bStatealpha;
-					qDebug()<<"bState corrected --> "<<bState.correctedX<<bState.correctedZ<<bState.correctedAlpha;
+                if (first)
+                {
 
-					edgeRT->setAttribute("tx", float2str(bState.correctedX));
-					edgeRT->setAttribute("tz", float2str(bState.correctedZ));
-					edgeRT->setAttribute("ry", float2str(bState.correctedAlpha));
-				}
-				newModel->addEdgeByIdentifiers(robotIsActuallyInRoom, robotId, "RT", edgeRT->attributes);
-				AGMMisc::publishModification(newModel, agmexecutive_proxy, "navigationAgent");
-				rDebug2(("navigationAgent moved robot from room"));
+					try
+					{
+						qDebug()<<"first time setting odemeter pose - "<< bStatex << bStatez<< bStatealpha;
+						omnirobot_proxy->setOdometerPose(bStatex,bStatez,bStatealpha);
+						omnirobot_proxy->correctOdometer(bStatex,bStatez,bStatealpha);
+						first = false;
+					}
+
+					catch( const Ice::Exception& ex)
+					{
+						std::cout << "Exception:: " << ex << endl;
+					}
+                }
+
+                else {
+                    // to reduce the publication frequency
+                    if (fabs(bStatex - bState.correctedX)>5 or fabs(bStatez - bState.correctedZ)>5 or fabs(bStatealpha - bState.correctedAlpha)>0.02 or force)
+                    {
+                        //Publish update edge
+                        printf("\nUpdate odometry...\n");
+                        qDebug()<<"bState local --> "<<bStatex<<bStatez<<bStatealpha;
+                        qDebug()<<"bState corrected --> "<<bState.correctedX<<bState.correctedZ<<bState.correctedAlpha;
+
+                        edgeRT->setAttribute("tx", float2str(bState.correctedX));
+                        edgeRT->setAttribute("tz", float2str(bState.correctedZ));
+                        edgeRT->setAttribute("ry", float2str(bState.correctedAlpha));
+                    }
+                    newModel->addEdgeByIdentifiers(robotIsActuallyInRoom, robotId, "RT", edgeRT->attributes);
+                    AGMMisc::publishModification(newModel, agmexecutive_proxy, "navigationAgent");
+                    rDebug2(("navigationAgent moved robot from room"));
+                }
+
 			}
 			catch (...)
 			{
@@ -327,24 +358,48 @@ bool SpecificWorker::odometryAndLocationIssues(bool force)
 		try
 		{
 			AGMModelEdge edge  = worldModel->getEdgeByIdentifiers(roomId, robotId, "RT");
+
+
 			try
 			{
 				float bStatex = str2float(edge->getAttribute("tx"));
 				float bStatez = str2float(edge->getAttribute("tz"));
 				float bStatealpha = str2float(edge->getAttribute("ry"));
-				// to reduce the publication frequency
-				if (fabs(bStatex - bState.correctedX)>5 or fabs(bStatez - bState.correctedZ)>5 or fabs(bStatealpha - bState.correctedAlpha)>0.02 or force)
-				{
-					//Publish update edge
- 					printf("\nUpdate odometry...\n");
- 					qDebug()<<"bState local --> "<<bStatex<<bStatez<<bStatealpha;
- 					qDebug()<<"bState corrected --> "<<bState.correctedX<<bState.correctedZ<<bState.correctedAlpha;
-					edge->setAttribute("tx", float2str(bState.correctedX));
-					edge->setAttribute("tz", float2str(bState.correctedZ));
-					edge->setAttribute("ry", float2str(bState.correctedAlpha));
-					lastSent = QTime::currentTime();
-					AGMMisc::publishEdgeUpdate(edge, agmexecutive_proxy);
-				}
+
+                if (first)
+                {
+                    try
+                    {
+                        qDebug()<<"first time setting odemeter pose - "<< bStatex << bStatez<< bStatealpha;
+                        omnirobot_proxy->setOdometerPose(bStatex,bStatez,bStatealpha);
+                        omnirobot_proxy->correctOdometer(bStatex,bStatez,bStatealpha);
+                        first = false;
+                    }
+
+                    catch( const Ice::Exception& ex)
+                    {
+						std::cout << "Exception:: " << ex << endl;
+                    }
+
+                }
+                else
+                    {
+                        // to reduce the publication frequency
+                        if (fabs(bStatex - bState.correctedX)>5 or fabs(bStatez - bState.correctedZ)>5 or fabs(bStatealpha - bState.correctedAlpha)>0.02 or force)
+                        {
+                            //Publish update edge
+                            printf("\nUpdate odometry...\n");
+                            qDebug()<<"bState local --> "<<bStatex<<bStatez<<bStatealpha;
+                            qDebug()<<"bState corrected --> "<<bState.correctedX<<bState.correctedZ<<bState.correctedAlpha;
+                            edge->setAttribute("tx", float2str(bState.correctedX));
+                            edge->setAttribute("tz", float2str(bState.correctedZ));
+                            edge->setAttribute("ry", float2str(bState.correctedAlpha));
+                            lastSent = QTime::currentTime();
+                            AGMMisc::publishEdgeUpdate(edge, agmexecutive_proxy);
+                        }
+                    }
+
+
 			}
 			catch (...)
 			{
@@ -358,6 +413,7 @@ bool SpecificWorker::odometryAndLocationIssues(bool force)
 			return false;
 		}
 	}
+
 
 	return true;
 
@@ -500,12 +556,19 @@ void SpecificWorker::AGMExecutiveTopic_selfEdgeDeleted(const int nodeid, const s
 
 void SpecificWorker::AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldModel::World &w)
 {
+    qDebug()<< __FUNCTION__;
 	mutex->lock();
- 	AGMModelConverter::fromIceToInternal(w, worldModel);
+    try
+    {
+       qDebug()<< "trying fromIceToInternal";
+        AGMModelConverter::fromIceToInternal(w, worldModel);
+        qDebug()<< "trying extractInnerModel";
+        innerModel.reset(AGMInner::extractInnerModel(worldModel));
 
-//	if (innerModel) delete innerModel;
-	innerModel.reset(AGMInner::extractInnerModel(worldModel));
-	mutex->unlock();
+    } catch(...) { qDebug()<<__FUNCTION__<<"Can't extract an InnerModel from the current model."; }
+
+
+    mutex->unlock();
 }
 
 void SpecificWorker::AGMExecutiveTopic_edgesUpdated(const RoboCompAGMWorldModel::EdgeSequence &modification)
