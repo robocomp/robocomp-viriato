@@ -57,25 +57,25 @@
   <color value="#AAAAAA" />
  </node>
 
- <node alias="localizationA" endpoint="commonbehavior:tcp -p 14351">
+ <node alias="localization_GSoC" endpoint="commonbehavior:tcp -p 14351">
   <dependence alias="executive" />
   <dependence alias="RCIS" />
   <workingDir path="/home/robocomp/" />
-  <upCommand command="rcremote localhost localizationAgnt /home/robocomp/robocomp/components/robocomp-viriato/components/localizationAgent_RCIS ./bin/localizationAgent --Ice.Config=/home/robocomp/robocomp/components/robocomp-viriato/etcSim/localizationAgent.conf" />
+  <upCommand command="rcremote localhost localizationAgent /home/robocomp/robocomp/components/robocomp-viriato/components/localizationAgent_RCIS ./bin/localizationAgent --Ice.Config=/home/robocomp/robocomp/components/robocomp-viriato/etcSim/localizationAgent_GSoC.conf" />
   <downCommand command="killall -9 localizationAgent" />
-  <configFile path="/home/robocomp/robocomp/components/robocomp-viriato/etcSim/localizationAgent.conf" />
+  <configFile path="/home/robocomp/robocomp/components/robocomp-viriato/etcSim/localizationAgent_GSoC.conf" />
   <xpos value="-138.188181907" />
   <ypos value="-87.1073471072" />
   <radius value="13.0" />
   <color value="#FF3333" />
  </node>
  
- <node alias="humanObserverAgent_GUI" endpoint="commonbehavior:tcp -p 14329">
+ <node alias="humanObserverAgent_GUI" endpoint="commonbehavior:tcp -p 10310">
   <dependence alias="executive" />
   <workingDir path="/home/robocomp/" />
-  <upCommand command="rcremote localhost humanObserverAgent_GUI /home/robocomp/robocomp/components/robocomp-viriato/components/fakeHumanAgent ./bin/fakeHumanAgent --Ice.Config=/home/robocomp/robocomp/components/robocomp-viriato/etcSim/fakeHumanAgent.conf" />
+  <upCommand command="rcremote localhost humanObserverAgent_GUI /home/robocomp/robocomp/components/robocomp-viriato/components/fakeHumanAgent ./bin/fakeHumanAgent --Ice.Config=/home/robocomp/robocomp/components/robocomp-viriato/etcSim/humanObserverAgent_GSoC.conf" />
   <downCommand command="killall -9 fakeHumanAgent" />
-  <configFile path="/home/robocomp/robocomp/components/robocomp-viriato/etcSim/fakeHumanAgent.conf" />
+  <configFile path="/home/robocomp/robocomp/components/robocomp-viriato/etcSim/humanObserverAgent_GSoC.conf" />
   <xpos value="138.188181907" />
   <ypos value="-87.1073471072" />
   <radius value="13.0" />
