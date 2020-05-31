@@ -1,0 +1,13 @@
+import "OmniRobot.idsl";
+
+Component keyboardrobotcontrollerOmni
+{
+	Communications
+	{
+		requires OmniRobot;
+	};
+	language python;
+    statemachine "statemachine.smdsl";
+};
+
+

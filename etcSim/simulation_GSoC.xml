@@ -1,0 +1,6 @@
+<innermodel>
+	<include path="/home/robocomp/robocomp/components/robocomp-viriato/etcSim/viriato.xml"/>
+	<include path="/home/robocomp/robocomp/components/robocomp-viriato/etcSim/therapy.xml"/>
+
+</innermodel>
+
