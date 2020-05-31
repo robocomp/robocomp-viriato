@@ -70,7 +70,7 @@
   <color value="#FF3333" />
  </node>
  
- <node alias="humanObserverAgent_GUI" endpoint="commonbehavior:tcp -p 10310">
+ <node alias="humanObserverAgent_GUI" endpoint="commonbehavior:tcp -p 22222"> 
   <dependence alias="executive" />
   <workingDir path="/home/robocomp/" />
   <upCommand command="rcremote localhost humanObserverAgent_GUI /home/robocomp/robocomp/components/robocomp-viriato/components/fakeHumanAgent ./bin/fakeHumanAgent --Ice.Config=/home/robocomp/robocomp/components/robocomp-viriato/etcSim/humanObserverAgent_GSoC.conf" />
