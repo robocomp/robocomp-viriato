@@ -5,11 +5,13 @@
 		<attribute key="imType" value="transform" />
 		<attribute key="imName" value="world" />
 	</symbol>
+
 	<symbol id="1" type="robot">
 		<attribute key="imType" value="transform" />
 		<attribute key="imName" value="robot" />
 	</symbol>
 
+		<!-- bedroom -->
 	<symbol id="3" type="room">
 		<attribute key="imType" value="transform" />
 		<attribute key="imName" value="room_3" />
@@ -26,15 +28,48 @@
 		<linkAttribute key="ry" value="1.57" />
 		<linkAttribute key="rz" value="0" />
 	</link>
+	
+	<link src="3" dst="100" label="in"  > </link>
+
+		<!-- bathroom -->
+	<symbol id="4" type="room">
+		<attribute key="imType" value="transform" />
+		<attribute key="imName" value="room_4" />
+		<attribute key="tx" value="-6000" />
+		<attribute key="tz" value="2500" />
+	</symbol>
+
+		<link src="4" dst="100" label="in"  > </link>
+
+		<!-- corridor -->
+	<symbol id="5" type="room">
+		<attribute key="imType" value="transform" />
+		<attribute key="imName" value="room_5" />
+		<attribute key="tx" value="-1000" />
+		<attribute key="tz" value="-2000" />
+	</symbol>
+	
+	<link src="5" dst="100" label="in"  > </link>
+
+		<!-- therapy room -->
+	<symbol id="6" type="room">
+		<attribute key="imType" value="transform" />
+		<attribute key="imName" value="room_6" />
+		<attribute key="tx" value="3000" />
+		<attribute key="tz" value="0" />
+	</symbol>
+	<link src="6" dst="100" label="in"  > </link>
 
 
-	<!-- TRAPEZOID -->
+
+
+	<!-- TRAPEZOID 
 	<symbol id="3000" type="object">
 		<attribute key="imType" value="transform" />
 		<attribute key="imName" value="board" />
 		<attribute key="shape" value="trapezoid" />
-		<attribute key="inter_space" value="3500" />
-		<attribute key="inter_angle" value="1,27" />
+		<attribute key="inter_space" value="4000" />
+		<attribute key="inter_angle" value="1,00" />
 		<attribute key="width" value="2000" />
 		<attribute key="height" value="1500" />
 		<attribute key="depth" value="500" />
@@ -42,10 +77,10 @@
 	</symbol>
 	
 	<link src="3000" dst="3000" label="interactive"  > </link>
-	<link src="3000" dst="3" label="in"  > </link>
+	<link src="3000" dst="6" label="in"  > </link>-->
 
 
-	<!-- RECTANGLE -->
+	<!-- RECTANGLE
 
 	<symbol id="3100" type="object">
 		<attribute key="imType" value="transform" />
@@ -61,11 +96,10 @@
 	</symbol>
 	
 	<link src="3100" dst="3100" label="interactive"  > </link>
-	<link src="3100" dst="3" label="in"  > </link> 
+	<link src="3100" dst="3" label="in"  > </link>  -->
 
 
-	<!-- CIRCLE -->
-
+	<!-- CIRCLE 
 	<symbol id="3200" type="object">
 		<attribute key="imType" value="transform" />
 		<attribute key="imName" value="tableD" />
@@ -80,7 +114,8 @@
 	</symbol>
 	
 	<link src="3200" dst="3200" label="interactive"  > </link>
-	<link src="3200" dst="3" label="in"  > </link>
+	<link src="3200" dst="6" label="in"  > </link>-->
+
 	
 	
 </AGMModel>
