@@ -15,8 +15,7 @@
 	<symbol id="3" type="room">
 		<attribute key="imType" value="transform" />
 		<attribute key="imName" value="room_3" />
-		<attribute key="tx" value="-6000" />
-		<attribute key="tz" value="-4500" />
+		<attribute key="polyline" value="-6000 500;-2000 500;-2000 -4500;-6000 -4500" />
 	</symbol>
 
 	<link src="1" dst="3" label="in"  > </link>
@@ -35,8 +34,7 @@
 	<symbol id="4" type="room">
 		<attribute key="imType" value="transform" />
 		<attribute key="imName" value="room_4" />
-		<attribute key="tx" value="-6000" />
-		<attribute key="tz" value="2500" />
+		<attribute key="polyline" value="-6000 500;0 500;0 4500;-6000 4500" />
 	</symbol>
 
 		<link src="4" dst="100" label="in"  > </link>
@@ -45,8 +43,7 @@
 	<symbol id="5" type="room">
 		<attribute key="imType" value="transform" />
 		<attribute key="imName" value="room_5" />
-		<attribute key="tx" value="-1000" />
-		<attribute key="tz" value="-2000" />
+		<attribute key="polyline" value="-2000 500;0 500;0 -4500;-2000 -4500" />
 	</symbol>
 	
 	<link src="5" dst="100" label="in"  > </link>
@@ -55,8 +52,8 @@
 	<symbol id="6" type="room">
 		<attribute key="imType" value="transform" />
 		<attribute key="imName" value="room_6" />
-		<attribute key="tx" value="3000" />
-		<attribute key="tz" value="0" />
+		<attribute key="polyline" value="0 4500;6000 4500;6000 -4500;0 -4500" />
+
 	</symbol>
 	<link src="6" dst="100" label="in"  > </link>
 

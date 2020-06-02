@@ -107,6 +107,20 @@
 <!--   <color value="#FF3333" /> -->
  </node>
 
+ <node alias="roomLocalizationA" endpoint="commonbehavior:tcp -p 15555">
+  <dependence alias="executive" />
+  <dependence alias="base" />
+
+  <workingDir path="/home/robocomp/" />
+  <upCommand command="rcremote localhost roomlocalizationAgent /home/robocomp/robocomp/components/robocomp-viriato/components/roomLocalizationAgent ./bin/roomLocalizationAgent /home/robocomp/robocomp/components/robocomp-viriato/etcSim/roomLocalizationAgent.conf" />
+  <downCommand command="killall -9 localizationAgent" />
+  <configFile path="/home/robocomp/robocomp/components/robocomp-viriato/etcSim/roomLocalizationAgent.conf" />
+  <xpos value="-216.350970747" />
+  <ypos value="-45.512538117" />
+  <radius value="13.0" />
+<!--   <color value="#FF3333" /> -->
+ </node>
+
 <!--<node alias="testtrajectory2D" endpoint="RCISMousePickerTopic:tcp -h localhost -p 13204">
   <dependence alias="newSocialnavigA"/>
   <workingDir path="/home/robocomp/"/>

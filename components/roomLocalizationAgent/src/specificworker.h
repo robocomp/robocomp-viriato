@@ -69,10 +69,19 @@ private:
 	std::shared_ptr<InnerModel> innerModel;
 	std::string action;
 	ParameterMap params;
-	AGMModel::SPtr worldModel;
+	AGMModel::SPtr worldModel,newModel;
 	bool active;
+
+    std::map<int32_t, QPolygonF> mapRoomPolygon;
+    void readRoomPolylines();
+    bool updatePeopleRoom();
+    bool updateRobotRoom();
+
+
 	bool setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated);
 	void sendModificationProposal(AGMModel::SPtr &worldModel, AGMModel::SPtr &newModel);
+
+
 
 };
 

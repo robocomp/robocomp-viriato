@@ -16,6 +16,7 @@
  *    You should have received a copy of the GNU General Public License
  *    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <QtGui/QPolygonF>
 #include "specificworker.h"
 
 /**
@@ -40,28 +41,19 @@ SpecificWorker::~SpecificWorker()
 
 bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 {
-//	THE FOLLOWING IS JUST AN EXAMPLE
-//	To use innerModelPath parameter you should uncomment specificmonitor.cpp readConfig method content
-//	try
-//	{
-//		RoboCompCommonBehavior::Parameter par = params.at("InnerModelPath");
-//		std::string innermodel_path = par.value;
-//		innerModel = std::make_shared(innermodel_path);
-//	}
-//	catch(const std::exception &e) { qFatal("Error reading config params"); }
-
-
 
 	innerModel = std::make_shared<InnerModel>(new InnerModel());
 	try
 	{
 		RoboCompAGMWorldModel::World w = agmexecutive_proxy->getModel();
 		AGMExecutiveTopic_structuralChange(w);
+        readRoomPolylines();
 	}
 	catch(...)
 	{
 		printf("The executive is probably not running, waiting for first AGM model publication...");
 	}
+
 
 	defaultMachine.start();
 	
@@ -80,27 +72,244 @@ void SpecificWorker::initialize(int period)
 
 void SpecificWorker::compute()
 {
-	//computeCODE
-	//QMutexLocker locker(mutex);
-	//try
-	//{
-	//  camera_proxy->getYImage(0,img, cState, bState);
-	//  memcpy(image_gray.data, &img[0], m_width*m_height*sizeof(uchar));
-	//  searchTags(image_gray);
-	//}
-	//catch(const Ice::Exception &e)
-	//{
-	//  std::cout << "Error reading from Camera" << e << std::endl;
-	//}
-	
-	
+
+	newModel = AGMModel::SPtr(new AGMModel(worldModel));
+
+    if ( updatePeopleRoom() or  updateRobotRoom()) {
+		try {
+			sendModificationProposal(worldModel, newModel);
+		}
+		catch (...) {
+			std::cout << "No se puede actualizar worldModel" << std::endl;
+		}
+	}
+
 }
 
 
+////////////////////////////////////////////////////////////////////
+
+void SpecificWorker::readRoomPolylines()
+{
+	qDebug() << __FUNCTION__;
+
+	auto rooms = worldModel->getSymbolsByType("room");
+
+	for (auto r : rooms) {
+
+		auto id = r->identifier;
+		QPolygonF polygon;
+
+		try {
+			auto polyline = QString::fromStdString(worldModel->getSymbolByIdentifier(id)->getAttribute("polyline"));
+
+			for (auto pxz : polyline.split(";"))
+			{
+				auto p = pxz.split(" ");
+
+				if (p.size() != 2)
+					continue;
+
+				auto x = std::stof(p[0].toStdString());
+				auto z = std::stof(p[1].toStdString());
+
+				polygon << QPointF(x,z);
+			}
+			mapRoomPolygon[id] = polygon;
+		}
+
+		catch (std::exception& e) {
+			std::cout << "Exception reading room "<< id << " polyline: " << e.what() << std::endl;
+		}
+	}
+}
+
+bool SpecificWorker::updatePeopleRoom() {
+
+    bool changesInEdges = false;
+
+	auto vectorPersons = worldModel->getSymbolsByType("person");
+
+	if (vectorPersons.size() == 0) {
+		qDebug() << "No persons found";
+	}
+
+	for (auto personAGM: vectorPersons) {
+
+		auto id = personAGM->identifier;
+
+		AGMModelSymbol::SPtr personParent = worldModel->getParentByLink(id, "RT");
+		AGMModelEdge& edgeRT = worldModel->getEdgeByIdentifiers(personParent->identifier, id, "RT");
+
+		auto x = str2float(edgeRT.attributes["tx"]);
+		auto z = str2float(edgeRT.attributes["tz"]);
+
+        int actualRoomID = -1;
+
+        for (auto [roomID,roomPolyline] : mapRoomPolygon)
+        {
+		    if (roomPolyline.containsPoint(QPointF(x,z), Qt::FillRule::OddEvenFill))
+		    {
+                actualRoomID = roomID;
+                break;
+		    }
+        }
+
+        if (actualRoomID == -1)
+        {
+            qDebug()<< "can't locate person "<< id;
+            continue;
+        }
+
+        int prevRoomID = -1;
+        for (auto edge = personAGM->edgesBegin(worldModel); edge != personAGM->edgesEnd(worldModel); edge++)
+        {
+            const std::pair<int32_t, int32_t> symbolPair = edge->getSymbolPair();
+            if (edge->getLabel() == "in")
+            {
+                const string secondType = worldModel->getSymbol(symbolPair.second)->symbolType;
+                if (symbolPair.first == id and secondType == "room")
+                {
+                    prevRoomID = symbolPair.second;
+                    break;
+                }
+            }
+        }
+
+
+        if (actualRoomID == prevRoomID)
+            continue;
+
+        else
+        {
+
+            try
+            {
+                newModel->addEdgeByIdentifiers(id, actualRoomID, "in");
+
+                qDebug ()<<" Se añade el enlace entre " << id << " y "<< actualRoomID;
+            }
+
+            catch(...)
+            {
+                std::cout<<__FUNCTION__<<"Ya existe el enlace"<<std::endl;
+            }
+
+
+			try
+			{
+				newModel->removeEdgeByIdentifiers(id, prevRoomID, "in");
+				qDebug ()<<" Se elimina el enlace entre " << id << " y "<< actualRoomID;
+			}
+
+			catch(...)
+			{
+				std::cout<<__FUNCTION__<<"No existe el enlace"<<std::endl;
+
+			}
+
+            changesInEdges = true;
+        }
+
+
+	}
+
+	return changesInEdges;
+
+}
+
+bool SpecificWorker::updateRobotRoom() {
+
+    bool changesInEdges = false;
+
+    auto robotSymbolId = worldModel->getIdentifierByType("robot");
+    AGMModelSymbol::SPtr robotparent = worldModel->getParentByLink(robotSymbolId, "RT");
+    AGMModelEdge &edgeRTrobot  = worldModel->getEdgeByIdentifiers(robotparent->identifier, robotSymbolId, "RT");
+    auto x = str2float(edgeRTrobot.attributes["tx"]);
+    auto z = str2float(edgeRTrobot.attributes["tz"]);
+
+    qDebug()<< " x,z " << x << ","<< z ;
+
+    int actualRoomID = -1;
+
+    for (auto [roomID,roomPolyline] : mapRoomPolygon)
+    {
+        qDebug()<< roomID<< roomPolyline;
+        if (roomPolyline.containsPoint(QPointF(x,z), Qt::FillRule::OddEvenFill))
+        {
+            qDebug()<< "Contained";
+            actualRoomID = roomID;
+            break;
+        }
+    }
+
+    if (actualRoomID == -1)
+    {
+        qFatal( "can't locate robot");
+    }
+
+    int prevRoomID = -1;
+    AGMModelSymbol::SPtr robotSymbol = worldModel->getSymbol(robotSymbolId);
+
+    for (auto edge = robotSymbol->edgesBegin(worldModel); edge != robotSymbol->edgesEnd(worldModel); edge++)
+    {
+        const std::pair<int32_t, int32_t> symbolPair = edge->getSymbolPair();
+        if (edge->getLabel() == "in")
+        {
+            const string secondType = worldModel->getSymbol(symbolPair.second)->symbolType;
+            if (symbolPair.first == robotSymbolId and secondType == "room")
+            {
+                prevRoomID = symbolPair.second;
+                break;
+            }
+        }
+    }
+
+    if (actualRoomID == prevRoomID) {
+        changesInEdges = false;
+    }
+
+    else {
+
+        try
+        {
+            newModel->addEdgeByIdentifiers(robotSymbolId, actualRoomID, "in");
+
+            qDebug ()<<" Se añade el enlace entre " << robotSymbolId << " y "<< actualRoomID;
+        }
+
+        catch(...)
+        {
+            std::cout<<__FUNCTION__<<"Ya existe el enlace"<<std::endl;
+        }
+
+
+        try
+        {
+            newModel->removeEdgeByIdentifiers(robotSymbolId, prevRoomID, "in");
+            qDebug ()<<" Se elimina el enlace entre " << robotSymbolId << " y "<< actualRoomID;
+        }
+
+        catch(...)
+        {
+            std::cout<<__FUNCTION__<<"No existe el enlace"<<std::endl;
+
+        }
+
+        changesInEdges = true;
+    }
+
+
+    return changesInEdges;
+
+
+}
+
+////////////////////////////////////////////////////////////////////
 
 void SpecificWorker::sm_compute()
 {
-	std::cout<<"Entered state compute"<<std::endl;
+//	std::cout<<"Entered state compute"<<std::endl;
 	compute();
 }
 
