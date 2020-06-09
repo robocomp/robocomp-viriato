@@ -1,0 +1,127 @@
+
+<AGMModel>
+
+	<symbol id="100" type="world">
+		<attribute key="imType" value="transform" />
+		<attribute key="imName" value="world" />
+	</symbol>
+
+	<symbol id="1" type="robot">
+		<attribute key="imType" value="transform" />
+		<attribute key="imName" value="robot" />
+	</symbol>
+
+		<!-- therapy_room2 -->
+	<symbol id="3" type="room">
+		<attribute key="imType" value="transform" />
+		<attribute key="imName" value="therapy_room2" />
+		<attribute key="polyline" value="-5000 0;5000 0;5000 5000;-5000 -5000" />
+	</symbol>
+
+
+	
+	<link src="3" dst="100" label="in"  > </link>
+
+		<!-- psychologist_room -->
+	<symbol id="4" type="room">
+		<attribute key="imType" value="transform" />
+		<attribute key="imName" value="psychologist_room" />
+		<attribute key="polyline" value="-5000 0;0 0;0 -5000;-5000 -5000" />
+	</symbol>
+
+	<link src="4" dst="100" label="in"  > </link>
+
+		<!-- therapy_room1 -->
+	<symbol id="5" type="room">
+		<attribute key="imType" value="transform" />
+		<attribute key="imName" value="therapy_room1" />
+		<attribute key="polyline" value="0 0;5000 0;5000 -5000;0 -5000" />
+	</symbol>
+	
+	<link src="5" dst="100" label="in"  > </link>
+
+		<!-- corridor1 -->
+	<symbol id="6" type="room">
+		<attribute key="imType" value="transform" />
+		<attribute key="imName" value="corridor1" />
+		<attribute key="polyline" value="-5000 -5000;5000 -5000;5000 -7000;-5000 -7000" />
+
+	</symbol>
+	<link src="6" dst="100" label="in"  > </link>
+	<link src="1" dst="6" label="in"  > </link>
+	<link src="6" dst="1" label="RT" >
+		<linkAttribute key="tx" value="-4000" />
+		<linkAttribute key="ty" value="0" />
+		<linkAttribute key="tz" value="-6000" />
+		<linkAttribute key="rx" value="0" />
+		<linkAttribute key="ry" value="1.57" />
+		<linkAttribute key="rz" value="0" />
+	</link>
+	
+
+		<!-- corridor2 -->
+	<symbol id="7" type="room">
+		<attribute key="imType" value="transform" />
+		<attribute key="imName" value="corridor2" />
+		<attribute key="polyline" value="5000 5000;7000 5000;7000 -7000;5000 -7000" />
+
+	</symbol>
+	<link src="7" dst="100" label="in"  > </link>
+
+
+	<!-- TRAPEZOID 
+	<symbol id="3000" type="object">
+		<attribute key="imType" value="transform" />
+		<attribute key="imName" value="board" />
+		<attribute key="shape" value="trapezoid" />
+		<attribute key="inter_space" value="4000" />
+		<attribute key="inter_angle" value="1,00" />
+		<attribute key="width" value="2000" />
+		<attribute key="height" value="1500" />
+		<attribute key="depth" value="500" />
+
+	</symbol>
+	
+	<link src="3000" dst="3000" label="interactive"  > </link>
+	<link src="3000" dst="6" label="in"  > </link>-->
+
+
+	<!-- RECTANGLE
+
+	<symbol id="3100" type="object">
+		<attribute key="imType" value="transform" />
+		<attribute key="imName" value="bed" />
+		<attribute key="shape" value="rectangle" />
+
+		<attribute key="inter_space" value="700" /> 
+		<attribute key="inter_angle" value="0" />
+		<attribute key="width" value="900" />
+		<attribute key="height" value="500" />
+		<attribute key="depth" value="2000" />
+
+	</symbol>
+	
+	<link src="3100" dst="3100" label="interactive"  > </link>
+	<link src="3100" dst="3" label="in"  > </link>  -->
+
+
+	<!-- CIRCLE 
+	<symbol id="3200" type="object">
+		<attribute key="imType" value="transform" />
+		<attribute key="imName" value="tableD" />
+		<attribute key="shape" value="circle" />
+
+		<attribute key="inter_space" value="500" />
+		<attribute key="inter_angle" value="0" />
+		<attribute key="width" value="3200" />
+		<attribute key="height" value="800" />
+		<attribute key="depth" value="2000" />
+
+	</symbol>
+	
+	<link src="3200" dst="3200" label="interactive"  > </link>
+	<link src="3200" dst="6" label="in"  > </link>-->
+
+	
+	
+</AGMModel>
