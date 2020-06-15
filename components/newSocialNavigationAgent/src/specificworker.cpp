@@ -125,13 +125,16 @@ void SpecificWorker::compute()
     QMutexLocker lockIM(mutex);
 
     RoboCompLaser::TLaserData laserData = updateLaser();
+
 	navigation.update(totalPersons, laserData, needsReplaning);
+
 
     viewer->run();
 
 
 	if (navigation.isCurrentTargetActive())
 		checkHumanBlock();
+
 }
 
 
@@ -505,8 +508,10 @@ void SpecificWorker::sendRobotTo()
 void SpecificWorker::
 forcesSliderChanged(int value)
 {
+
     navigation.KI = (float) ki_slider -> sliderPosition();
     navigation.KE = (float) ke_slider -> sliderPosition();
+
 }
 
 

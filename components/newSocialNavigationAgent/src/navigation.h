@@ -113,6 +113,7 @@ void updateInnerModel(const std::shared_ptr<InnerModel> &innerModel_)
 void update(localPersonsVec totalPersons_, const RoboCompLaser::TLaserData &laserData_, bool needsReplaning)
 {
 //            qDebug()<<"Navigation - "<< __FUNCTION__;
+    static QTime reloj = QTime::currentTime();
 
     if (gridChanged)
     {
@@ -191,6 +192,7 @@ void update(localPersonsVec totalPersons_, const RoboCompLaser::TLaserData &lase
 
     drawRoad();
 
+
 };
 
 void stopRobot()
@@ -206,7 +208,7 @@ bool isCurrentTargetActive()
 
 bool checkPathState()
 {
-//            qDebug()<<"Navigation - "<< __FUNCTION__;
+//    qDebug()<<"Navigation - "<< __FUNCTION__;
 
     if (current_target.active.load())
     {
@@ -336,7 +338,7 @@ private:
     // ElasticBand
     std::vector<QPointF> pathPoints;
 
-    const float ROBOT_LENGTH = 400;
+    const float ROBOT_LENGTH = 500;
     const float ROAD_STEP_SEPARATION = ROBOT_LENGTH * 0.9;
 
     bool targetBehindRobot = false;
@@ -378,10 +380,10 @@ void updateFreeSpaceMap(bool drawGrid = true)
     }
 
     for (auto &&poly_soc : socialSpaces)
-        grid.modifyCostInGrid(poly_soc, 4.0);
+        grid.modifyCostInGrid(poly_soc, 8.0);
 
     for (auto &&poly_per : personalSpaces)
-        grid.modifyCostInGrid(poly_per, 6.0);
+        grid.modifyCostInGrid(poly_per, 10.0);
 
 
     if(drawGrid) grid.draw(viewer);
@@ -481,14 +483,14 @@ bool findNewPath()
 
         lastPointInPath = pathPoints[pathPoints.size()-1];
 
-        if(checkHumanSoftBlock())
-        {
-            this->current_target.lock();
-                current_target.humanBlock.store(true);
-            this->current_target.unlock();
-
-            return false;
-        }
+//        if(checkHumanSoftBlock())
+//        {
+//            this->current_target.lock();
+//                current_target.humanBlock.store(true);
+//            this->current_target.unlock();
+//
+//            return false;
+//        }
 
         return true;
     }
@@ -605,7 +607,7 @@ void computeForces(const std::vector<QPointF> &path, const RoboCompLaser::TLaser
     }
 
     // Go through points using a sliding windows of 3
-    for (auto group : iter::sliding_window(path, 3))
+    for (auto &group : iter::sliding_window(path, 3))
     {
         if (group.size() < 3)
             break; // break if too short
@@ -616,7 +618,10 @@ void computeForces(const std::vector<QPointF> &path, const RoboCompLaser::TLaser
         auto p = group[1];
 
         if (isVisible(p) == false) // if not visible (computed before) continue
+        {
             continue;
+        }
+
 
         // INTERNAL curvature forces on p2
         QVector2D iforce = ((p1 - p2) / (p1 - p2).length() + (p3 - p2) / (p3 - p2).length());
@@ -652,14 +657,18 @@ void computeForces(const std::vector<QPointF> &path, const RoboCompLaser::TLaser
         const QVector2D itangential = QVector2D::dotProduct(f_force, base_line) * base_line;
         f_force = f_force - itangential;
 
+//        qDebug()<< "[NAVIGATION]"<< __FUNCTION__<< " --- i force " << iforce << "f force "<< f_force;
         // update node pos
         auto total = (KI * iforce) + (KE * f_force);
 
+//
         // limiters CHECK!!!!!!!!!!!!!!!!!!!!!!
         if (total.length() > 30)
             total = 8 * total.normalized();
         if (total.length() < -30)
             total = -8 * total.normalized();
+
+//        qDebug()<< "[NAVIGATION]"<< __FUNCTION__<< "---total forces = " << total;
 
         // move node only if they do not exit the laser polygon and do not get inside objects or underneath the robot.
         QPointF temp_p = p + total.toPointF();
@@ -667,10 +676,28 @@ void computeForces(const std::vector<QPointF> &path, const RoboCompLaser::TLaser
                 and (!currentRobotPolygon.containsPoint(temp_p, Qt::OddEvenFill))
                 and (std::none_of(std::begin(intimateSpaces), std::end(intimateSpaces),[temp_p](const auto &poly) { return poly.containsPoint(temp_p, Qt::OddEvenFill);}))
                 and (std::none_of(std::begin(personalSpaces), std::end(personalSpaces),[temp_p](const auto &poly) { return poly.containsPoint(temp_p, Qt::OddEvenFill);})))
-            p = temp_p;
+        {
+
+            auto it = find_if(pathPoints.begin(), pathPoints.end(), [p] (auto & s) {
+                return (s.x() == p.x() and s.y() == p.y() );
+            } );
+
+            if (it != pathPoints.end())
+            {
+               int index = std::distance(pathPoints.begin(), it);
+               pathPoints[index] = temp_p;
+
+            }
+
+        }
+
     }
 
+
     pathPoints[0] = currentRobotNose;
+    drawRoad();
+
+
 }
 
 
@@ -804,6 +831,7 @@ void updateLaserPolygon(const RoboCompLaser::TLaserData &lData)
     }
     fclose(fd);
 
+
 }
 
 QPointF getRobotNose()
@@ -811,7 +839,8 @@ QPointF getRobotNose()
 //        qDebug()<<"Navigation - "<< __FUNCTION__;
     auto robot = QPointF(currentRobotPose.x(),currentRobotPose.z());
 
-    return (robot + QPointF( (robotZLong/2 + 200) * sin(currentRobotPose.ry()), (robotZLong/2 + 200) * cos(currentRobotPose.ry())));
+//    return (robot + QPointF( (robotZLong/2 + 200) * sin(currentRobotPose.ry()), (robotZLong/2 + 200) * cos(currentRobotPose.ry())));
+    return (robot + QPointF(50*sin(currentRobotPose.ry()),50*cos(currentRobotPose.ry())));
 
 }
 

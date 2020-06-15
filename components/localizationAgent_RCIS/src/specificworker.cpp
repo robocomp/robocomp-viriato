@@ -112,8 +112,8 @@ void SpecificWorker::initialize(int period)
 {
 	std::cout << "Initialize worker" << std::endl;
 	this->Period = period;
-//	timer.start(Period);
-	timer.start(1000);
+	timer.start(Period);
+//	timer.start(100);
 
 }
 

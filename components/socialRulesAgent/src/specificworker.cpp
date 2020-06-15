@@ -540,10 +540,11 @@ SNGPolyline SpecificWorker::affordanceCircular(ObjectType obj)
 
 void SpecificWorker::affordanceSliderChanged(int value)
 {
-    float newCost;
-    if (value == 1) newCost = 1.5;
-    else newCost = 1.5 + (0.5*(value - 1));
-
+//    float newCost;
+//    if (value == 1) newCost = 1.5;
+//    else newCost = 1.5 + (0.5*(value - 1));
+    qDebug()<< "New cost "<< value;
+    float newCost = value;
     qDebug()<< __FUNCTION__;
     auto imName = idobject_combobox->currentText();
     if (imName != "") {
@@ -579,15 +580,15 @@ void SpecificWorker::affordanceTimeSliderChanged(int step)
 
                 if(th.startT <= currentTime and currentTime <= th.endT)
                 {
-                    mapIdObjects[key].cost = 3.0;
+                    mapIdObjects[key].cost = 5.0;
                 }
                 else if ((before15 <= currentTime and currentTime <= th.startT) or (th.endT <= currentTime and currentTime <= after15))
                 {
-                    mapIdObjects[key].cost = 2.5;
+                    mapIdObjects[key].cost = 4.0;
                 }
                 else if ((before30 <= currentTime and currentTime <= before15) or (after15 <= currentTime and currentTime <= after30))
                 {
-                    mapIdObjects[key].cost = 2.0;
+                    mapIdObjects[key].cost = 3.0;
                 }
 
                 if (currentTime > after30)
@@ -611,13 +612,9 @@ void SpecificWorker::affordanceTimeSliderChanged(int step)
                     if (mapIdObjects[key].therapies.size() == 0)
                         mapIdObjects[key].therapiesProgrammed = false;
 
-                    mapIdObjects[key].cost = 1.5;
+                    mapIdObjects[key].cost = 2.0;
 
                 }
-//                else
-//                {
-//                    mapIdObjects[key].cost = 1.5;
-//                }
 
                 if(mapIdObjects[key].cost != mapIdObjects[key].prevCost)
                     costChanged = true;
@@ -629,7 +626,7 @@ void SpecificWorker::affordanceTimeSliderChanged(int step)
 
         else
         {
-            mapIdObjects[key].cost = 1.5;
+            mapIdObjects[key].cost = 2.0;
 
         }
     }
@@ -787,28 +784,28 @@ void SpecificWorker::recordData()
 
         file11 << o.shape.toStdString() << " " << o.x << " " << o.z << " " << o.rot<< " " << o.width << " " << o.depth << endl;
 
-        if(o.cost == 1.5)
+        if(o.cost == 2.0)
         {
             for (auto p: o.affordance)
                 file7 << p.x << " " << p.z << " " << endl;
             file7 <<" "<<endl;
         }
 
-        else if(o.cost == 2.0)
+        else if(o.cost == 3.0)
         {
             for (auto p: o.affordance)
                 file8 << p.x << " " << p.z << " "<< endl;
             file8 <<" "<<endl;
         }
 
-        else if(o.cost == 2.5)
+        else if(o.cost == 4.0)
         {
             for (auto p: o.affordance)
                 file9 << p.x << " " << p.z << " " << endl;
             file9 <<" "<<endl;
         }
 
-        else if(o.cost == 3.0)
+        else if(o.cost == 5.0)
         {
             for (auto p: o.affordance)
                 file10 << p.x << " " << p.z << " " << endl;

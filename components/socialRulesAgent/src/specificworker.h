@@ -111,8 +111,9 @@ private:
         float rot;
         string imName;
 
-        float cost = 1.5;
-        float prevCost = 1.5;
+        float cost = 2.0;
+        float prevCost = 2.0;
+
 
         SNGPolyline affordance;
         bool interacting = false;
