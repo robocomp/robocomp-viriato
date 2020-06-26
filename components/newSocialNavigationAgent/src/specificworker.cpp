@@ -128,8 +128,10 @@ void SpecificWorker::compute()
 
 	navigation.update(totalPersons, laserData, needsReplaning);
 
+//    static QTime reloj = QTime::currentTime();
 
     viewer->run();
+//    qDebug()<< "viewer " << reloj.restart();
 
 
 	if (navigation.isCurrentTargetActive())

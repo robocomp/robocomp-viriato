@@ -1,5 +1,5 @@
 /*
- *    Copyright (C)2020 by YOUR NAME HERE
+ *    Copyright (C) 2020 by YOUR NAME HERE
  *
  *    This file is part of RoboComp
  *
@@ -31,7 +31,7 @@ using namespace RoboCompAGMExecutiveTopic;
 class AGMExecutiveTopicI : public virtual RoboCompAGMExecutiveTopic::AGMExecutiveTopic
 {
 public:
-AGMExecutiveTopicI(GenericWorker *_worker);
+	AGMExecutiveTopicI(GenericWorker *_worker);
 	~AGMExecutiveTopicI();
 
 	void edgeUpdated(const RoboCompAGMWorldModel::Edge  &modification, const Ice::Current&);

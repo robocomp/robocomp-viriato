@@ -1,5 +1,5 @@
 /*
- *    Copyright (C)2020 by YOUR NAME HERE
+ *    Copyright (C) 2020 by YOUR NAME HERE
  *
  *    This file is part of RoboComp
  *
@@ -31,7 +31,7 @@ using namespace RoboCompRCISMousePicker;
 class RCISMousePickerI : public virtual RoboCompRCISMousePicker::RCISMousePicker
 {
 public:
-RCISMousePickerI(GenericWorker *_worker);
+	RCISMousePickerI(GenericWorker *_worker);
 	~RCISMousePickerI();
 
 	void setPick(const Pick  &myPick, const Ice::Current&);

@@ -1,5 +1,5 @@
 /*
- *    Copyright (C)2020 by YOUR NAME HERE
+ *    Copyright (C) 2020 by YOUR NAME HERE
  *
  *    This file is part of RoboComp
  *
@@ -20,20 +20,14 @@
 /**
 * \brief Default constructor
 */
-GenericWorker::GenericWorker(MapPrx& mprx) :
-#ifdef USE_QTGUI
-Ui_guiDlg()
-#else
-QObject()
-#endif
-
+GenericWorker::GenericWorker(MapPrx& mprx) : Ui_guiDlg()
 {
 
-//Initialization State machine
-	computeState = new QState(QState::ExclusiveStates);
-	defaultMachine.addState(computeState);
+	//Initialization State machine
 	initializeState = new QState(QState::ExclusiveStates);
 	defaultMachine.addState(initializeState);
+	computeState = new QState(QState::ExclusiveStates);
+	defaultMachine.addState(computeState);
 	finalizeState = new QFinalState();
 	defaultMachine.addState(finalizeState);
 
@@ -43,17 +37,18 @@ QObject()
 	computeState->addTransition(this, SIGNAL(t_compute_to_compute()), computeState);
 	computeState->addTransition(this, SIGNAL(t_compute_to_finalize()), finalizeState);
 
-	QObject::connect(computeState, SIGNAL(entered()), this, SLOT(sm_compute()));
 	QObject::connect(initializeState, SIGNAL(entered()), this, SLOT(sm_initialize()));
+	QObject::connect(computeState, SIGNAL(entered()), this, SLOT(sm_compute()));
 	QObject::connect(finalizeState, SIGNAL(entered()), this, SLOT(sm_finalize()));
 	QObject::connect(&timer, SIGNAL(timeout()), this, SIGNAL(t_compute_to_compute()));
 
-//------------------
+	//------------------
 	agmexecutive_proxy = (*(AGMExecutivePrx*)mprx["AGMExecutiveProxy"]);
 	laser_proxy = (*(LaserPrx*)mprx["LaserProxy"]);
 	omnirobot_proxy = (*(OmniRobotPrx*)mprx["OmniRobotProxy"]);
 
 	mutex = new QMutex(QMutex::Recursive);
+
 
 	#ifdef USE_QTGUI
 		setupUi(this);
@@ -119,7 +114,6 @@ RoboCompPlanning::Action GenericWorker::createAction(std::string s)
 
 	return ret;
 }
-
 
 bool GenericWorker::activate(const BehaviorParameters &prs)
 {

@@ -25,6 +25,7 @@
 #include <cppitertools/slice.hpp>
 #include <algorithm>
 #include <localPerson.h>
+#include <typeinfo>
 
 // Map
 struct TMapDefault
@@ -112,7 +113,8 @@ void updateInnerModel(const std::shared_ptr<InnerModel> &innerModel_)
 
 void update(localPersonsVec totalPersons_, const RoboCompLaser::TLaserData &laserData_, bool needsReplaning)
 {
-//            qDebug()<<"Navigation - "<< __FUNCTION__;
+
+    qDebug()<<"Navigation - "<< __FUNCTION__;
 //    static QTime reloj = QTime::currentTime();
 
     if (gridChanged)
@@ -125,8 +127,12 @@ void update(localPersonsVec totalPersons_, const RoboCompLaser::TLaserData &lase
     RoboCompLaser::TLaserData laserData;
     laserData = computeLaser(laserData_);
     currentRobotPose = innerModel->transformS6D("world","robot");
+//    qDebug()<< "Updated Robot pose " << reloj.restart();
+
     updateLaserPolygon(laserData);
     currentRobotPolygon = getRobotPolygon();
+
+
     currentRobotNose = getRobotNose();
 
 
@@ -617,28 +623,82 @@ void computeForces(const std::vector<QPointF> &path, const RoboCompLaser::TLaser
         return;
     }
 
-    qDebug()<< endl;
-    qDebug()<< endl;
-    qDebug()<< endl;
-
     int pointIndex = 0;
+    int nonVisiblePointsComputed = 0;
+
     // Go through points using a sliding windows of 3
     for (auto &group : iter::sliding_window(path, 3))
     {
         if (group.size() < 3)
             break; // break if too short
 
-        if (group[0] == pathPoints[0])
-            continue;
+
+//        if (group[0] == pathPoints[0])
+//            continue;
 
         auto p1 = QVector2D(group[0]);
         auto p2 = QVector2D(group[1]);
         auto p3 = QVector2D(group[2]);
         auto p = group[1];
 
-        if (isVisible(p) == false) // if not visible (computed before) continue
+
+
+        float min_dist;
+        QVector2D force;
+
+        qDebug()<< nonVisiblePointsComputed;
+        if ((isVisible(p) == false))// if not visible (computed before) continue
         {
-            continue;
+
+            auto [obstacleFound, vectorForce] = grid.vectorToClosestObstacle(p);
+
+            if ((!obstacleFound) or (nonVisiblePointsComputed > 10))
+            {
+                qDebug () << "No obstacles found ";
+                nonVisiblePointsComputed++;
+
+                continue;
+            }
+            else
+            {
+                qDebug()<< "--- Obstacle found in grid ---";
+                min_dist = vectorForce.length() - (ROBOT_LENGTH / 2);
+                if (min_dist <= 0)
+                    min_dist = 0.01;
+                force = vectorForce;
+
+            }
+
+            nonVisiblePointsComputed++;
+        }
+
+        else
+        {
+
+            std::vector<std::tuple<float, QVector2D, QPointF>> distances;
+            // Apply to all laser points a functor to compute the distances to point p2
+            std::transform(std::begin(laser_cart), std::end(laser_cart), std::back_inserter(distances), [p, this](QPointF &t) { //lasercart is updated in UpdateLaserPolygon
+                // compute distante from laser tip to point minus RLENGTH/2 or 0 and keep it positive
+                float dist = (QVector2D(p) - QVector2D(t)).length() - (ROBOT_LENGTH / 2);
+                if (dist <= 0)
+                    dist = 0.01;
+                return std::make_tuple(dist,  QVector2D(p)-QVector2D(t), t);
+            });
+
+
+
+            // compute min distance
+            auto min = std::min_element(std::begin(distances), std::end(distances), [](auto &a, auto &b) {
+                return std::get<float>(a) < std::get<float>(b);
+            });
+
+            min_dist = std::get<float>(*min);
+            QPointF min_angle = std::get<QPointF>(*min);
+
+//            qDebug()<< "Point "<< p << " --  min dist " << min_dist << "--- min angle "<< min_angle;
+
+            force = std::get<QVector2D>(*min);
+
         }
 
 
@@ -648,29 +708,6 @@ void computeForces(const std::vector<QPointF> &path, const RoboCompLaser::TLaser
         // EXTERNAL forces. We need the minimun distance from each point to the obstacle(s). we compute the shortest laser ray to each point in the path
         // compute minimun distances to each point within the laser field
 
-        std::vector<std::tuple<float, QVector2D, QPointF>> distances;
-        // Apply to all laser points a functor to compute the distances to point p2
-        std::transform(std::begin(laser_cart), std::end(laser_cart), std::back_inserter(distances), [p, this](QPointF &t) { //lasercart is updated in UpdateLaserPolygon
-            // compute distante from laser tip to point minus RLENGTH/2 or 0 and keep it positive
-            float dist = (QVector2D(p) - QVector2D(t)).length() - (ROBOT_LENGTH / 2);
-            if (dist <= 0)
-                dist = 0.01;
-            return std::make_tuple(dist,  QVector2D(p)-QVector2D(t), t);
-        });
-
-
-
-        // compute min distance
-        auto min = std::min_element(std::begin(distances), std::end(distances), [](auto &a, auto &b) {
-            return std::get<float>(a) < std::get<float>(b);
-        });
-
-        float min_dist = std::get<float>(*min);
-        QPointF min_angle = std::get<QPointF>(*min);
-
-//        qDebug()<< "Point "<< p << " --  min dist " << min_dist << "--- min angle "<< min_angle;
-
-        QVector2D force = std::get<QVector2D>(*min);
         // rescale min_dist so 1 is ROBOT_LENGTH
         float magnitude = (1.f / ROBOT_LENGTH) * min_dist;
         // compute inverse square law
@@ -701,8 +738,11 @@ void computeForces(const std::vector<QPointF> &path, const RoboCompLaser::TLaser
 
         // move node only if they do not exit the laser polygon and do not get inside objects or underneath the robot.
         QPointF temp_p = p + total.toPointF();
-        if(isVisible(temp_p)
-                and isPointVisitable(temp_p)
+
+        qDebug() << "Total force "<< total.toPointF()<< " New Point "<< temp_p;
+
+//        if (isVisible(temp_p)
+        if (isPointVisitable(temp_p)
                 and (!currentRobotPolygon.containsPoint(temp_p, Qt::OddEvenFill))
                 and (std::none_of(std::begin(intimateSpaces), std::end(intimateSpaces),[temp_p](const auto &poly) { return poly.containsPoint(temp_p, Qt::OddEvenFill);}))
                 and (std::none_of(std::begin(personalSpaces), std::end(personalSpaces),[temp_p](const auto &poly) { return poly.containsPoint(temp_p, Qt::OddEvenFill);}))
@@ -749,6 +789,9 @@ void computeForces(const std::vector<QPointF> &path, const RoboCompLaser::TLaser
     }
 
     fclose(fd1);
+
+    qDebug()<< endl;
+    qDebug()<< endl;
 
     return;
 

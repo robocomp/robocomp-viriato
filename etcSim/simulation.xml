@@ -1,6 +1,6 @@
 <innermodel>
 	<include path="/home/robocomp/robocomp/components/robocomp-viriato/etcSim/viriato.xml"/>
-    	<include path="/home/robocomp/robocomp/components/robocomp-viriato/etc/aztide_simple.xml"/> 
+    	<include path="/home/robocomp/robocomp/components/robocomp-viriato/etc/ejemplo.xml"/> 
 
 </innermodel>
 

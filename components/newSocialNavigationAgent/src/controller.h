@@ -55,7 +55,7 @@ public:
         bool blocked = false;
 
         QPointF robot = QPointF(robotPose.x(),robotPose.z());
-        QPointF robotNose = robot + QPointF(50*sin(robotPose.ry()),50*cos(robotPose.ry()));
+        QPointF robotNose = robot + QPointF(250*sin(robotPose.ry()),250*cos(robotPose.ry()));
 
         auto firstPointInPath = points[0];
 
@@ -90,8 +90,8 @@ public:
         for (auto &&i : iter::range(1, lim))
             angles.push_back(rewrapAngleRestricted(qDegreesToRadians(nose.angleTo(QLineF(firstPointInPath, points[i])))));
 
-//        auto min_angle = std::min(angles.begin(), angles.end()); //Solo devolvía el primer elemento del vector aunque no fuese el ultimo
-        auto min_angle = std::min_element(angles.begin(), angles.end());
+        auto min_angle = std::min(angles.begin(), angles.end());
+//        auto min_angle = std::min_element(angles.begin(), angles.end());
 
 
         if (min_angle != angles.end())
@@ -106,7 +106,9 @@ public:
             qDebug() << __FUNCTION__ << "rotvel = 0";
         }
 
-
+//
+//        qDebug()<< "[CONTROLLER]"<<__FUNCTION__<< "Angles "<<angles << "min_angle " << *min_angle;
+//        qDebug()<<"rotVel" <<rotVel;
 
         // Compute advance speed
         std::min(advVelz = MAX_ADV_SPEED * exponentialFunction(rotVel, 0.3, 0.4, 0), euc_dist_to_target);

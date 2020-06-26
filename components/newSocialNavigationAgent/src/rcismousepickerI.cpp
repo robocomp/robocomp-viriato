@@ -28,6 +28,7 @@ RCISMousePickerI::~RCISMousePickerI()
 {
 }
 
+
 void RCISMousePickerI::setPick(const Pick  &myPick, const Ice::Current&)
 {
 	worker->RCISMousePicker_setPick(myPick);

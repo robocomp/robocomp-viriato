@@ -86,9 +86,9 @@
 #include <rcismousepickerI.h>
 #include <socialrulesI.h>
 
-#include <SocialNavigationGaussian.h>
 #include <GenericBase.h>
 #include <Planning.h>
+#include <SocialNavigationGaussian.h>
 
 
 // User includes here
@@ -147,7 +147,6 @@ int ::socialNavigationAgent::run(int argc, char* argv[])
 	string proxy, tmp;
 	initialize();
 
-
 	try
 	{
 		if (not GenericMonitor::configGetString(communicator(), prefix, "AGMExecutiveProxy", proxy, ""))
@@ -198,6 +197,7 @@ int ::socialNavigationAgent::run(int argc, char* argv[])
 	rInfo("OmniRobotProxy initialized Ok!");
 
 	mprx["OmniRobotProxy"] = (::IceProxy::Ice::Object*)(&omnirobot_proxy);//Remote server proxy creation example
+
 	IceStorm::TopicManagerPrx topicManager;
 	try
 	{
@@ -205,7 +205,7 @@ int ::socialNavigationAgent::run(int argc, char* argv[])
 	}
 	catch (const Ice::Exception &ex)
 	{
-		cout << "[" << PROGRAM_NAME << "]: Exception: STORM not running: " << ex << endl;
+		cout << "[" << PROGRAM_NAME << "]: Exception: 'rcnode' not running: " << ex << endl;
 		return EXIT_FAILURE;
 	}
 
@@ -259,11 +259,10 @@ int ::socialNavigationAgent::run(int argc, char* argv[])
 			adapterAGMCommonBehavior->add(agmcommonbehavior, Ice::stringToIdentity("agmcommonbehavior"));
 			adapterAGMCommonBehavior->activate();
 			cout << "[" << PROGRAM_NAME << "]: AGMCommonBehavior adapter created in port " << tmp << endl;
-			}
-			catch (const IceStorm::TopicExists&){
-				cout << "[" << PROGRAM_NAME << "]: ERROR creating or activating adapter for AGMCommonBehavior\n";
-			}
-
+		}
+		catch (const IceStorm::TopicExists&){
+			cout << "[" << PROGRAM_NAME << "]: ERROR creating or activating adapter for AGMCommonBehavior\n";
+		}
 
 
 		// Server adapter creation and publication
@@ -312,6 +311,7 @@ int ::socialNavigationAgent::run(int argc, char* argv[])
 			//Error. Topic does not exist
 		}
 
+
 		// Server adapter creation and publication
 		IceStorm::TopicPrx rcismousepicker_topic;
 		Ice::ObjectPrx rcismousepicker;
@@ -357,6 +357,7 @@ int ::socialNavigationAgent::run(int argc, char* argv[])
 			cout << "[" << PROGRAM_NAME << "]: Error creating RCISMousePicker topic.\n";
 			//Error. Topic does not exist
 		}
+
 
 		// Server adapter creation and publication
 		IceStorm::TopicPrx socialrules_topic;
@@ -404,6 +405,7 @@ int ::socialNavigationAgent::run(int argc, char* argv[])
 			//Error. Topic does not exist
 		}
 
+
 		// Server adapter creation and publication
 		cout << SERVER_FULL_NAME " started" << endl;
 
@@ -418,24 +420,6 @@ int ::socialNavigationAgent::run(int argc, char* argv[])
 
 		try
 		{
-			std::cout << "Unsubscribing topic: agmexecutivetopic " <<std::endl;
-			agmexecutivetopic_topic->unsubscribe( agmexecutivetopic );
-		}
-		catch(const Ice::Exception& ex)
-		{
-			std::cout << "ERROR Unsubscribing topic: agmexecutivetopic " <<std::endl;
-		}
-		try
-		{
-			std::cout << "Unsubscribing topic: rcismousepicker " <<std::endl;
-			rcismousepicker_topic->unsubscribe( rcismousepicker );
-		}
-		catch(const Ice::Exception& ex)
-		{
-			std::cout << "ERROR Unsubscribing topic: rcismousepicker " <<std::endl;
-		}
-		try
-		{
 			std::cout << "Unsubscribing topic: socialrules " <<std::endl;
 			socialrules_topic->unsubscribe( socialrules );
 		}
@@ -443,6 +427,7 @@ int ::socialNavigationAgent::run(int argc, char* argv[])
 		{
 			std::cout << "ERROR Unsubscribing topic: socialrules " <<std::endl;
 		}
+
 
 		status = EXIT_SUCCESS;
 	}
@@ -471,7 +456,7 @@ int main(int argc, char* argv[])
 	string arg;
 
 	// Set config file
-	std::string configFile = "config";
+	std::string configFile = "etc/config";
 	if (argc > 1)
 	{
 		std::string initIC("--Ice.Config=");

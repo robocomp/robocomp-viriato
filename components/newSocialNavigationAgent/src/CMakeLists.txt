@@ -28,7 +28,8 @@ SET ( SOURCES
   agmexecutivetopicI.cpp
   rcismousepickerI.cpp
   socialrulesI.cpp
-  localPerson.h)
+)
+
 
 
 
@@ -36,18 +37,18 @@ SET ( SOURCES
 find_package(LibXml2 REQUIRED)
 include_directories(LIBXML2_INCLUDE_DIRS)
 include_directories(/usr/include/libxml2/)
-SET (LIBS ${LIBS} -lagm )
+SET(LIBS ${LIBS} -lagm)
+ADD_DEFINITIONS( -I/usr/include/libxml2/)
 
 #ROBOCOMP
 ROBOCOMP_INITIALIZE( $ENV{ROBOCOMP}/ )
-ROBOCOMP_WRAP_ICE( CommonBehavior SocialNavigationGaussian GenericBase Planning Laser OmniRobot RCISMousePicker SocialRules AGMCommonBehavior AGMExecutive AGMExecutiveTopic AGMWorldModel AGMExecutive AGMExecutiveTopic )
+ROBOCOMP_IDSL_TO_ICE( CommonBehavior AGMCommonBehavior AGMExecutive AGMExecutiveTopic AGMWorldModel GenericBase Laser OmniRobot Planning RCISMousePicker SocialNavigationGaussian SocialRules)
+ROBOCOMP_ICE_TO_SRC( CommonBehavior AGMCommonBehavior AGMExecutive AGMExecutiveTopic AGMWorldModel GenericBase Laser OmniRobot Planning RCISMousePicker SocialNavigationGaussian SocialRules)
 SET (EXECUTABLE_OUTPUT_PATH ${RC_COMPONENT_DEVEL_PATH}/bin)
 
 QT_WRAP_UI( UI_HEADERS mainUI.ui )
 
 # Specify construction and link process
-SET(LIBS ${LIBS} -lagm)
-ADD_DEFINITIONS( -I/usr/include/libxml2/ )
 ADD_EXECUTABLE( socialNavigationAgent ${SOURCES} ${MOC_SOURCES} ${RC_SOURCES} ${UI_HEADERS} )
 TARGET_LINK_LIBRARIES( socialNavigationAgent ${LIBS} ${STATIC_LIBS} ${SPECIFIC_LIBS} ${QT_LIBRARIES} ${Ice_LIBRARIES})
 INSTALL(FILES ${EXECUTABLE_OUTPUT_PATH}/socialNavigationAgent DESTINATION ${RC_COMPONENT_INSTALL_PATH}/bin/ PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )

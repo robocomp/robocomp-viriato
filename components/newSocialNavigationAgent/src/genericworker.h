@@ -1,5 +1,5 @@
 /*
- *    Copyright (C)2020 by YOUR NAME HERE
+ *    Copyright (C) 2020 by YOUR NAME HERE
  *
  *    This file is part of RoboComp
  *
@@ -33,36 +33,35 @@
 #include <QState>
 #include <CommonBehavior.h>
 
-#include <SocialNavigationGaussian.h>
-#include <GenericBase.h>
-#include <Planning.h>
-#include <Laser.h>
-#include <OmniRobot.h>
-#include <RCISMousePicker.h>
-#include <SocialRules.h>
 #include <AGMCommonBehavior.h>
 #include <AGMExecutive.h>
 #include <AGMExecutiveTopic.h>
 #include <AGMWorldModel.h>
+#include <GenericBase.h>
+#include <Laser.h>
+#include <OmniRobot.h>
+#include <Planning.h>
+#include <RCISMousePicker.h>
+#include <SocialNavigationGaussian.h>
+#include <SocialRules.h>
 #include <agm.h>
 
-#include <agm.h>
 
 #define CHECK_PERIOD 5000
 #define BASIC_PERIOD 100
 
 using namespace std;
-using namespace RoboCompSocialNavigationGaussian;
-using namespace RoboCompGenericBase;
-using namespace RoboCompPlanning;
-using namespace RoboCompLaser;
-using namespace RoboCompOmniRobot;
-using namespace RoboCompRCISMousePicker;
-using namespace RoboCompSocialRules;
 using namespace RoboCompAGMCommonBehavior;
 using namespace RoboCompAGMExecutive;
 using namespace RoboCompAGMExecutiveTopic;
 using namespace RoboCompAGMWorldModel;
+using namespace RoboCompGenericBase;
+using namespace RoboCompLaser;
+using namespace RoboCompOmniRobot;
+using namespace RoboCompPlanning;
+using namespace RoboCompRCISMousePicker;
+using namespace RoboCompSocialNavigationGaussian;
+using namespace RoboCompSocialRules;
 
 typedef map <string,::IceProxy::Ice::Object*> MapPrx;
 
@@ -73,12 +72,7 @@ struct BehaviorParameters
 	std::vector< std::vector <std::string> > plan;
 };
 
-class GenericWorker :
-#ifdef USE_QTGUI
-	public QWidget, public Ui_guiDlg
-#else
-	public QObject
- #endif
+class GenericWorker : public QWidget, public Ui_guiDlg
 {
 Q_OBJECT
 public:
@@ -118,17 +112,18 @@ public:
 	virtual void SocialRules_personalSpacesChanged(const RoboCompSocialNavigationGaussian::SNGPolylineSeq &intimateSpaces, const RoboCompSocialNavigationGaussian::SNGPolylineSeq &personalSpaces, const RoboCompSocialNavigationGaussian::SNGPolylineSeq &socialSpaces) = 0;
 
 protected:
-//State Machine
+	//State Machine
 	QStateMachine defaultMachine;
 
 	QState *computeState;
 	QState *initializeState;
 	QFinalState *finalizeState;
 
-//-------------------------
+	//-------------------------
 
 	QTimer timer;
 	int Period;
+
 	bool active;
 	AGMModel::SPtr worldModel;
 	BehaviorParameters p;
@@ -141,23 +136,23 @@ private:
 
 
 public slots:
-//Slots funtion State Machine
+	//Slots funtion State Machine
 	virtual void sm_compute() = 0;
 	virtual void sm_initialize() = 0;
 	virtual void sm_finalize() = 0;
 
-//-------------------------
+	//-------------------------
 	virtual void compute() = 0;
-    virtual void initialize(int period) = 0;
+	virtual void initialize(int period) = 0;
 	
 signals:
 	void kill();
-//Signals for State Machine
+	//Signals for State Machine
 	void t_initialize_to_compute();
 	void t_compute_to_compute();
 	void t_compute_to_finalize();
 
-//-------------------------
+	//-------------------------
 };
 
 #endif

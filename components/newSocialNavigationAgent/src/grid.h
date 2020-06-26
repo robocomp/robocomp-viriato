@@ -26,8 +26,9 @@
 #include "innerviewer.h"
 #include <limits>
 #include <collisions.h>
+using namespace std;
 
-#define TILE_SIZE_ 200
+#define TILE_SIZE_ 250
 
 template <class T>
 auto operator<<(std::ostream &os, const T &t) -> decltype(t.save(os), os)
@@ -267,7 +268,12 @@ public:
 					return std::list<QPointF>();
 			}
 			active_vertices.erase(active_vertices.begin());
-			for (auto ed : neighboors(where))
+
+            const int &I = dim.TILE_SIZE;
+            static const std::vector<int> xincs = {I, I, I, 0, -I, -I, -I, 0};
+            static const std::vector<int> zincs = {I, 0, -I, -I, -I, 0, I, I};
+
+			for (auto ed : neighboors(where,xincs,zincs))
 			{
 //				qDebug() << __FILE__ << __FUNCTION__ << "antes del if" << ed.first.x << ed.first.z << ed.second.id << fmap[where].id << min_distance[ed.second.id] << min_distance[fmap[where].id];
 				if (min_distance[ed.second.id] > min_distance[fmap[where].id] + ed.second.cost)
@@ -339,15 +345,85 @@ public:
             }
     }
 
-	std::vector<std::pair<Key, T>> neighboors(const Key &k, bool all = false)
+
+	std::tuple<bool, QVector2D> vectorToClosestObstacle(QPointF center)
+    {
+        QTime reloj = QTime::currentTime();
+        qDebug()<<" reloj "<< reloj.restart();
+
+        qDebug()<< "Computing neighboors of " << center;
+
+	    auto k = pointToGrid(center.x(),center.y());
+
+//	    qDebug() << "point in grid "<< k.x << k.z;
+
+	    QVector2D closestVector;
+		bool obstacleFound = false;
+
+        const int &I = dim.TILE_SIZE;
+        static const std::vector<int> xincs = {I, I, I, 0, -I, -I, -I, 0};
+        static const std::vector<int> zincs = {I, 0, -I, -I, -I, 0, I, I};
+	    auto neigh = neighboors(k,xincs,zincs, true);
+
+        float dist = std::numeric_limits<float>::max();
+
+	    for (auto n : neigh)
+	    {
+            if (n.second.free == false)
+            {
+//                qDebug() << "Neigh "<< QPointF(n.first.x,n.first.z);
+				QVector2D vec = QVector2D(QPointF(k.x, k.z)) - QVector2D(QPointF(n.first.x,n.first.z)) ;
+                if (vec.length() < dist)
+				{
+					dist = vec.length();
+					closestVector = vec;
+				}
+
+				qDebug()<< "Obstacle found";
+				obstacleFound = true;
+            }
+        }
+
+        if (!obstacleFound)
+        {
+            const int &I = dim.TILE_SIZE;
+            static const std::vector<int> xincs = {0,   I,   2*I,  2*I, 2*I, 2*I, 2*I, I, 0, -I, -2*I, -2*I,-2*I,-2*I,-2*I, -I};
+            static const std::vector<int> zincs = {2*I, 2*I, 2*I,  I,   0 , -I , -2*I, -2*I,-2*I,-2*I,-2*I, -I, 0,I, 2*I, 2*I};
+
+
+            auto DistNeigh = neighboors(k,xincs,zincs, true);
+            for (auto n : DistNeigh)
+            {
+                if (n.second.free == false)
+                {
+//                qDebug() << "Neigh "<< QPointF(n.first.x,n.first.z);
+                    QVector2D vec = QVector2D(QPointF(k.x, k.z)) - QVector2D(QPointF(n.first.x,n.first.z)) ;
+                    if (vec.length() < dist)
+                    {
+                        dist = vec.length();
+                        closestVector = vec;
+                    }
+
+                    qDebug()<< "Obstacle found";
+                    obstacleFound = true;
+                }
+            }
+
+        }
+
+        qDebug()<<" reloj "<< reloj.restart();
+
+        return std::make_tuple(obstacleFound,closestVector);
+    }
+
+
+	std::vector<std::pair<Key, T>> neighboors(const Key &k, const std::vector<int> xincs,const std::vector<int> zincs, bool all = false)
 	{
 		std::vector<std::pair<Key, T>> neigh;
 		// list of increments to access the neighboors of a given position
-		const int &I = dim.TILE_SIZE;
-		static const std::vector<int> xincs = {I, I, I, 0, -I, -I, -I, 0};
-		static const std::vector<int> zincs = {I, 0, -I, -I, -I, 0, I, I};
 
-		for (auto &&[itx, itz] : iter::zip(xincs, zincs))
+
+        for (auto &&[itx, itz] : iter::zip(xincs, zincs))
 		{
 			Key lk{k.x + itx, k.z + itz};
 			try
@@ -398,19 +474,23 @@ public:
                 QString item = "IMV_fmap_point_" + QString::number(i);
                 if(value.free)
                 {
-                    if (value.cost == 1.5) //affordance spaces
+                    if (value.cost == 2.0) //affordance spaces
                         viewer->addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), normal, "#FFFF00", size);
-                    else if (value.cost == 2) //lowvisited spaces
+//                        viewer->addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), normal, "#FFFF00", size);
+                    else if (value.cost == 3.0) //lowvisited spaces
                         viewer->addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), normal, "#FFBF00", size);
-                    else if (value.cost == 2.5) //mediumvisited spaces
+//                        viewer->addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), normal, "#FFFF00", size);
+                    else if (value.cost == 4.0) //mediumvisited spaces
                         viewer->addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), normal, "#FF8000", size);
-                    else if (value.cost == 3) //highVisited spaces
+//                        viewer->addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), normal, "#FFFF00", size);
+                    else if (value.cost == 5.0) //highVisited spaces
                             viewer->addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), normal, "#FF4000", size);
+//                        viewer->addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), normal, "#FFFF00", size);
 
-                    else if (value.cost == 4.0) //zona social
+					else if (value.cost == 8.0) //zona social
                         viewer->addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), normal, "#00BFFF", size);
 
-                    else if (value.cost == 6.0) //zona personal
+                    else if (value.cost == 10.0) //zona personal
                         viewer->addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), normal, "#BF00FF", size);
 
                     else

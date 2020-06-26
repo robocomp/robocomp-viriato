@@ -1,5 +1,40 @@
 <innerModel>
 	<transform id="world">
+     <!-- CAMS-->
+           
+            
+           <transform id="cam01_top_tr" tx="6600" ty="2000" tz="4750"  rx="-0.45" ry="3.6" rz="-0.2">
+				<rgbd id="cam01_top" width="320" height="240" focal="240" port="10196" ifconfig="44000,55000" noise="0" />
+				<plane id="01rgbd_mesh" texture="#550000" size="50,50,200" repeat="1" nx="0" ny="0" nz="1" px="0" py="0" pz="-200" collide="0" />
+			</transform>
+            
+
+            <transform id="cam02_down_tr" tx="2700" tz="-6750" ty="2000"   rx="0.45" ry="0" rz ="0" >
+				<rgbd id="cam02_down" width="320" height="240" focal="240" port="10196" ifconfig="44000,55000" noise="0" />
+				<plane id="02rgbd_mesh" texture="#550000" size="50,50,200" repeat="1" nx="0" ny="0" nz="1" px="0" py="0" pz="-200" collide="0" />
+			</transform> 
+            
+      <!--  <transform id="cam03" tx="3000" tz="-4200" ty="2000"   rx="0.45" ry="0" >
+				<rgbd id="cam03_in_front_of_tv" width="320" height="240" focal="240" port="10196" ifconfig="44000,55000" noise="0" />
+				<plane id="03rgbd_mesh" texture="#550000" size="50,50,200" repeat="1" nx="0" ny="0" nz="1" px="0" py="0" pz="-200" collide="0" />
+			</transform>
+            
+             <transform id="cam04" tx="-5900" ty="1800" tz="300"  rx="-0.5" ry="2.5" rz="0.3">
+				<rgbd id="cam04_room" width="320" height="240" focal="240" port="10196" ifconfig="44000,55000" noise="0" />
+				<plane id="04rgbd_mesh" texture="#550000" size="50,50,200" repeat="1" nx="0" ny="0" nz="1" px="0" py="0" pz="-200" collide="0" />
+			</transform>
+           
+             
+                 <transform id="cam05" tx="-1300" tz="-4300" ty="2000"   rx="0.75" ry="0" >
+				<rgbd id="cam05_corridor" width="320" height="240" focal="240" port="10196" ifconfig="44000,55000" noise="0" />
+				<plane id="05rgbd_mesh" texture="#550000" size="50,50,200" repeat="1" nx="0" ny="0" nz="1" px="0" py="0" pz="-200" collide="0" />
+			</transform>
+            
+             <transform id="cam06" tx="5700" tz="-1600" ty="1650" rx="-1.8" ry="-1.8" rz="-1.8">
+				<rgbd id="cam06_front_door" width="320" height="240" focal="240" port="10196" ifconfig="44000,55000" noise="0" />
+				<plane id="06rgbd_mesh" texture="#550000" size="50,50,200" repeat="1" nx="0" ny="0" nz="1" px="0" py="0" pz="-200" collide="0" />
+			</transform>  -->
+
 
 		<transform id="room_3">
 
@@ -9,29 +44,29 @@
 				<plane id="floor_plane" ny="1" size="5000,5000,10" texture="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/wood1.jpg" />
 			</transform>
 		
-			<transform id="pared0" tx="-5000" tz="-2500" ty="950" >
-				<plane id="muro0" nx="-500" nz="0" size="5000,1900,100"  texture="#74ADA1" />
+			<transform id="pared0" tx="-5000" tz="-2500" ty="1000" >
+				<plane id="muro0" nx="-500" nz="0" size="5000,2000,100"  texture="#74ADA1" />
 			</transform>
 
-			<transform id="pared1" tx="-4150" tz="0" ty="950" >
-				<plane id="muro1" nx="0" nz="5000" size="1750,1900,100"  texture="#74ADA1" />
+			<transform id="pared1" tx="-4150" tz="0" ty="1000" >
+				<plane id="muro1" nx="0" nz="5000" size="1750,2000,100"  texture="#74ADA1" />
 			</transform> 
 
-			<transform id="pared1_2" tx="-850" tz="0" ty="950" >
-				<plane id="muro1_2" nx="0" nz="5000" size="1750,1900,100"  texture="#74ADA1" />
+			<transform id="pared1_2" tx="-850" tz="0" ty="1000" >
+				<plane id="muro1_2" nx="0" nz="5000" size="1750,2000,100"  texture="#74ADA1" />
 			</transform> 
 
-			<transform id="pared2" tx="0" tz="-2500" ty="950" >
-				<plane id="muro2" nx="500" nz="0" size="5000,1900,100"  texture="#74ADA1" />
+			<transform id="pared2" tx="0" tz="-2500" ty="1000" >
+				<plane id="muro2" nx="500" nz="0" size="5000,2000,100"  texture="#74ADA1" />
 			</transform>
 		
-			<transform id="pared3"  tx="-4150" tz="-5000" ty="950" >
-				<plane id="muro3" nx="0" nz="-500" size="1750,1900,100"  texture="#74ADA1" />
+			<transform id="pared3"  tx="-4150" tz="-5000" ty="1000" >
+				<plane id="muro3" nx="0" nz="-500" size="1750,2000,100"  texture="#74ADA1" />
 			</transform>
 		
 
-			<transform id="pared3_2" tx="-850" tz="-5000" ty="950" >
-				<plane id="muro3_2" nx="0" nz="-500" size="1750,1900,100"  texture="#74ADA1" />
+			<transform id="pared3_2" tx="-850" tz="-5000" ty="1000" >
+				<plane id="muro3_2" nx="0" nz="-500" size="1750,2000,100"  texture="#74ADA1" />
 			</transform>
 		</transform>		
 			
@@ -44,29 +79,29 @@
 				<plane id="floor_plane1" ny="1" size="5000,5000,10" texture="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/wood1.jpg" />
 			</transform>
 		
-			<transform id="pared4" tx="0" tz="-2500" ty="950" >
-				<plane id="muro4" nx="-500" nz="0" size="5000,1900,100"  texture="#74ADA1" />
+			<transform id="pared4" tx="0" tz="-2500" ty="1000" >
+				<plane id="muro4" nx="-500" nz="0" size="5000,2000,100"  texture="#74ADA1" />
 			</transform>
 
-			<transform id="pared5" tx="850" tz="-0" ty="950" >
-				<plane id="muro5" nx="0" nz="5000" size="1750,1900,100"  texture="#74ADA1" />
+			<transform id="pared5" tx="850" tz="-0" ty="1000" >
+				<plane id="muro5" nx="0" nz="5000" size="1750,2000,100"  texture="#74ADA1" />
 			</transform> 
 
-			<transform id="pared5_2" tx="4150" tz="-0" ty="950" >
-				<plane id="muro5_2" nx="0" nz="5000" size="1750,1900,100"  texture="#74ADA1" />
+			<transform id="pared5_2" tx="4150" tz="-0" ty="1000" >
+				<plane id="muro5_2" nx="0" nz="5000" size="1750,2000,100"  texture="#74ADA1" />
 			</transform> 
 
-			<transform id="pared6" tx="5000" tz="-2500" ty="950" >
-				<plane id="muro6" nx="500" nz="0" size="5000,1900,100"  texture="#74ADA1" />
+			<transform id="pared6" tx="5000" tz="-2500" ty="1000" >
+				<plane id="muro6" nx="500" nz="0" size="5000,2000,100"  texture="#74ADA1" />
 			</transform>
 		
-			<transform id="pared7"  tx="850" tz="-5000" ty="950" >
-				<plane id="muro7" nx="0" nz="-500" size="1750,1900,100"  texture="#74ADA1" />
+			<transform id="pared7"  tx="850" tz="-5000" ty="1000" >
+				<plane id="muro7" nx="0" nz="-500" size="1750,2000,100"  texture="#74ADA1" />
 			</transform>
 		
 
-			<transform id="pared7_2" tx="4150" tz="-5000" ty="950" >
-				<plane id="muro7_2" nx="0" nz="-500" size="1750,1900,100"  texture="#74ADA1" />
+			<transform id="pared7_2" tx="4150" tz="-5000" ty="1000" >
+				<plane id="muro7_2" nx="0" nz="-500" size="1750,2000,100"  texture="#74ADA1" />
 			</transform>
 		</transform>	
 
@@ -77,17 +112,17 @@
 
 				<plane id="floor_plane3" ny="1" size="10000,5000,10" texture="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/wood1.jpg" />
 			</transform>
-			<transform id="pared8" tx="-5000" tz="2500" ty="950" >
-				<plane id="muro8" nx="-500" nz="0" size="5000,1900,100"  texture="#74ADA1" />
+			<transform id="pared8" tx="-5000" tz="2500" ty="1000" >
+				<plane id="muro8" nx="-500" nz="0" size="5000,2000,100"  texture="#74ADA1" />
 			</transform>
-			<transform id="pared9" tx="0" tz="5000" ty="950" >
-				<plane id="muro9" nx="0" nz="5000" size="10000,1900,100"  texture="#74ADA1" />
+			<transform id="pared9" tx="0" tz="5000" ty="1000" >
+				<plane id="muro9" nx="0" nz="5000" size="10000,2000,100"  texture="#74ADA1" />
 			</transform> 
-			<transform id="pared10" tx="5000" tz="4150" ty="950" >
-				<plane id="muro10" nx="500" nz="0" size="1750,1900,100"  texture="#74ADA1" />
+			<transform id="pared10" tx="5000" tz="4150" ty="1000" >
+				<plane id="muro10" nx="500" nz="0" size="1750,2000,100"  texture="#74ADA1" />
 			</transform>
-			<transform id="pared10_2" tx="5000" tz="850" ty="950" >
-				<plane id="muro10_2" nx="500" nz="0" size="1750,1900,100"  texture="#74ADA1" />
+			<transform id="pared10_2" tx="5000" tz="850" ty="1000" >
+				<plane id="muro10_2" nx="500" nz="0" size="1750,2000,100"  texture="#74ADA1" />
 			</transform>
 
 		</transform>	
@@ -98,11 +133,11 @@
 				<plane id="floor4_plane" ny="1" size="10000,2000,10" texture="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/wood1.jpg" />
 			</transform>
 
-			<transform id="pared11" tx="-5000" tz="-6000" ty="950" >
-				<plane id="muro11" nx="-500" nz="0" size="2000,1900,100"  texture="#74ADA1" />
+			<transform id="pared11" tx="-5000" tz="-6000" ty="1000" >
+				<plane id="muro11" nx="-500" nz="0" size="2000,2000,100"  texture="#74ADA1" />
 			</transform>
-			<transform id="pared12" tx="1000" tz="-7000" ty="950" >
-				<plane id="muro12" nx="0" nz="500" size="12000,1900,100"  texture="#74ADA1" />
+			<transform id="pared12" tx="1000" tz="-7000" ty="1000" >
+				<plane id="muro12" nx="0" nz="500" size="12000,2000,100"  texture="#74ADA1" />
 			</transform>
 		
 
@@ -113,19 +148,19 @@
 			<transform id="floor5" tx="6000" tz="-1000" ty="0">
 				<plane id="floor5_plane" ny="1" size="2000,12000,10" texture="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/wood1.jpg" />
 			</transform>
-			<transform id="pared13" tx="7000" tz="-1000" ty="950" >
-				<plane id="muro13" nx="-500" nz="0" size="12000,1900,100"  texture="#74ADA1" />
+			<transform id="pared13" tx="7000" tz="-1000" ty="1000" >
+				<plane id="muro13" nx="-500" nz="0" size="12000,2000,100"  texture="#74ADA1" />
 			</transform>
-			<transform id="pared14" tx="6000" tz="5000" ty="950" >
-				<plane id="muro14" nx="0" nz="5000" size="2000,1900,100"  texture="#74ADA1" />
+			<transform id="pared14" tx="6000" tz="5000" ty="1000" >
+				<plane id="muro14" nx="0" nz="5000" size="2000,2000,100"  texture="#74ADA1" />
 			</transform> 
 
 		</transform>
 
 		<!-- TELE -->	
-            		<transform id="board" tx="0" tz="5000" ty="1350" ry="3.14">
+            		<transform id="board" tx="0" tz="4850" ty="1350" ry="3.14">
 		        	<mesh id="board_mesh" file="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/tv/tv.3DS" 					
-		              	scale="30,30,30" tx="-150" tz="20" ty="-300" rx="1.57" rz="3.14" collide="1" />
+		              	scale="30,30,30" tx="-150" tz="-150" ty="-300" rx="1.57" rz="3.14" collide="1" />
 			</transform>	
 		<!-- MESA -->
 			<transform id="tableD" tx="2600" tz="-2500" ty="750" >
@@ -137,11 +172,11 @@
 				</transform>
 
 			 	<transform id="tablebase" ty="-700" >
-					<mesh id="tablebase_mesh" file="/home/robocomp/robocomp/files/osgModels/basics/cylinder.3ds" scale="1500,900,10" rx="1.570799947" collide="1"/>
+					<mesh id="tablebase_mesh" file="/home/robocomp/robocomp/files/osgModels/basics/cylinder.3ds" scale="1500,900,20" rx="1.570799947" collide="1"/>
 				</transform>
 			
 
-	 			<!-- cosas encima de la mesa -->
+	 			<!-- cosas encima de la mesa 
 		  		<transform id="toy1" tx="900" tz = "200" >
 					<mesh id="toy_mesh" file="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/toy.3DS" scale="4,4,5" rx="1.570799947" collide="1"/>
 				</transform>
@@ -152,7 +187,7 @@
 		        
 				<transform id="puzzle" tx="-600" tz = "200" ty="100" >
 					<mesh id="puzzle_mesh" file="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/puzzle/puzzle.3ds" scale="10,10,10" rx="-1.570799947" rz="0" collide="1"/>
-				</transform>
+				</transform>-->
 		   
 	 		</transform>	
 
@@ -165,7 +200,7 @@
 				</transform>
 			</transform>
 
-			<!--Decorado -->
+			<!--Decorado
 		
 			<transform id="ball" tx="4300" tz="4500" ty="0" ry="1.57">
 		        	<mesh id="ball_mesh" file="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/ball.3DS" 					
@@ -185,7 +220,7 @@
 			<transform id="ladder" tx="-4800" tz="2500" ty="0" ry="0">
 		        	<mesh id="ladder_mesh" file="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/ladder.3DS" 					
 		              	scale="0.75,0.75,0.8" tx="0" tz="0" ty="0" rx="1.57" rz="1.57" collide="1" />
-        		</transform>
+        		</transform> -->
 
 
 
