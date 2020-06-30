@@ -106,6 +106,9 @@ void SpecificWorker::browseButtonClicked()
 	QString folderName = QFileDialog::getExistingDirectory(this, "Open Image", "/home",
 														   QFileDialog::ShowDirsOnly |
 															   QFileDialog::DontResolveSymlinks);
+	// exit the function if user cancel the filedialog
+	if (folderName == "")
+		return;
 	folderLoc->setText(folderName);
 	QDir dir(folderName);
 	dir.setSorting(QDir::Name);
@@ -123,9 +126,6 @@ void SpecificWorker::browseButtonClicked()
 	personCount->setNum(per);
 	// std::cout << total_files << std::endl;
 
-	// tableWidget->setRowCount(total_files);
-	// tableWidget->setColumnCount(3);
-	// int number_of_person = 0;
 	for (auto person_iter : myFiles)
 	{
 		int genId = initPersons(number_of_person);
@@ -145,7 +145,12 @@ void SpecificWorker::browseButtonClicked()
 // adding individual person's CSV
 void SpecificWorker::browseButton2Clicked()
 {
-	QString filename = QFileDialog::getOpenFileName(this, "Open CSV", "/home");
+	// select only csv file
+	QString filename = QFileDialog::getOpenFileName(this, "Open CSV", "/home", "csv(*.csv)");
+
+	// exit the function if user cancel the filedialog
+	if (filename == "")
+		return;
 	// std::cout << filename.toStdString() << std::endl;
 	myFiles.push_back(make_shared<ifstream>(filename.toStdString()));
 	tableWidget->setRowCount(myFiles.size());
@@ -159,7 +164,7 @@ void SpecificWorker::browseButton2Clicked()
 	{
 		printf("unable to create persons\n");
 	}
-	// extractCSV(filename);
+
 	// printf("over\n");
 }
 void SpecificWorker::nextFrameButton()
@@ -187,16 +192,13 @@ void SpecificWorker::nextFrameButton()
 void SpecificWorker::movePersons(int person_ID, vector<double> personPoseData)
 {
 	RoboCompInnerModelManager::Pose3D pose;
-	// multiply by 100 for metre to mm convertion
+	// multiply by 1000 for metre to mm convertion
 	pose.x = personPoseData[1] * 1000;
 	pose.y = 0;
 	pose.z = personPoseData[2] * 1000;
 	pose.rx = 0;
 	pose.ry = personPoseData[3];
 	pose.rz = 0;
-	//store new position
-	// person->pose = pose;
-	//move in RCIS
 
 	try
 	{
@@ -223,62 +225,6 @@ void SpecificWorker::movePersons(int person_ID, vector<double> personPoseData)
 	catch (std::exception &e)
 	{
 		std::cout << "Exception moving in AGM: " << e.what() << std::endl;
-	}
-}
-void SpecificWorker::extractCSV(QString path)
-{
-	// std::cout << "path: " << std::endl;
-	// std::cout << path.toStdString() << std::endl;
-	// // QString temp_path = folderLoc->text();
-	// // std::string path = temp_path.toStdString();
-	// int per;
-	// try
-	// {
-	// 	per = std::stoi(personCount->text().toStdString());
-	// 	std::cout << per << std::endl;
-	// }
-	// catch (...)
-	// {
-	// 	printf("unable to retrieve person count\n");
-	// }
-
-	// // openning first file
-	// std::string filename = "01.csv";
-
-	try
-	{
-		std::ifstream tempFile(path.toStdString());
-		myFiles.push_back(make_shared<ifstream>(path.toStdString()));
-
-		std::shared_ptr<std::ifstream> f = myFiles[0];
-		// std::ifstream file = f;
-		// if (!myFile.is_open())
-		// 	throw std::runtime_error("Could not open file");
-		std::string line, colData;
-		vector<double> rowData;
-		if (f->good())
-		{
-			// Extract the first line in the file
-			std::getline(*f, line);
-
-			// Create a stringstream from line
-			std::stringstream ss(line);
-
-			// Extract each column name
-			while (std::getline(ss, colData, ','))
-			{
-				rowData.push_back(std::stod(colData));
-			}
-		}
-		for (auto a : rowData)
-		{
-			std::cout << a << std::endl;
-		}
-		printf("inside file\n");
-	}
-	catch (...)
-	{
-		printf("Can't open the file.\n");
 	}
 }
 
@@ -353,7 +299,6 @@ void SpecificWorker::playButton()
 	std::cout << "play button clicked" << std::endl;
 	// QString temp_path = folderLoc->text();
 	// std::string path = temp_path.toStdString();
-	// extractCSV(folderLoc->text());
 }
 int SpecificWorker::initPersons(int personId)
 {

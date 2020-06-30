@@ -58,7 +58,6 @@ public:
 
 	void initializeUI();
 	int initPersons(int personId);
-	void extractCSV(QString path);
 	vector<double> getNextValue(std::shared_ptr<std::ifstream> fileD);
 
 	int includeInAGM(int id, const RoboCompInnerModelManager::Pose3D &pose, std::string mesh);
