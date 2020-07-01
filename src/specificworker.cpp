@@ -81,6 +81,7 @@ void SpecificWorker::initialize(int period)
 	this->Period = period;
 	timer.start(Period);
 	number_of_person = 0;
+	frameNumber = 0;
 	initializeUI();
 }
 
@@ -90,15 +91,26 @@ void SpecificWorker::initializeUI()
 	connect(browseButton, SIGNAL(pressed()), this, SLOT(browseButtonClicked()));
 	connect(browseButton_2, SIGNAL(pressed()), this, SLOT(browseButton2Clicked()));
 	connect(play_button, SIGNAL(pressed()), this, SLOT(playButton()));
-	connect(nf_button, SIGNAL(pressed()), this, SLOT(nextFrameButton()));
+
 	connect(&playTimer, SIGNAL(timeout()), this, SLOT(play_timer()));
+	connect(pause_button, SIGNAL(pressed()), this, SLOT(pauseButton()));
+	connect(stop_button, SIGNAL(pressed()), this, SLOT(stopButton()));
+	connect(prev_button, SIGNAL(pressed()), this, SLOT(prevButton()));
+	connect(next_button, SIGNAL(pressed()), this, SLOT(nextButton()));
+	connect(first_button, SIGNAL(pressed()), this, SLOT(firstButton()));
+	connect(last_button, SIGNAL(pressed()), this, SLOT(lastButton()));
+	connect(horizontalSlider, SIGNAL(sliderMoved(int)), this, SLOT(horizontalSliderMoved(int)));
 }
 
 void SpecificWorker::play_timer()
 {
 	// printf("play timepout\n");
-	nextFrameButton();
+	frameUpdate();
+	frameNumber++;
+	if (frameNumber > frameMax)
+		playTimer.stop();
 }
+
 // adding multiple persons simultaneously
 void SpecificWorker::browseButtonClicked()
 {
@@ -120,26 +132,27 @@ void SpecificWorker::browseButtonClicked()
 		QFileInfo fileInfo = list.at(i);
 		string fileN = folderName.toStdString() + "/" + fileInfo.fileName().toStdString();
 		myFiles.push_back(make_shared<ifstream>(fileN));
+		extractCSV(fileN);
 	}
 	int per = myFiles.size();
 	tableWidget->setRowCount(per);
 	personCount->setNum(per);
-	// std::cout << total_files << std::endl;
+	// // std::cout << total_files << std::endl;
 
-	for (auto person_iter : myFiles)
-	{
-		int genId = initPersons(number_of_person);
-		if (genId != -1)
-		{
-			personGenId.push_back(genId);
-			number_of_person++;
-		}
-		else
-		{
-			printf("unable to create persons\n");
-			break;
-		}
-	}
+	// for (auto person_iter : myFiles)
+	// {
+	// 	int genId = initPersons(number_of_person);
+	// 	if (genId != -1)
+	// 	{
+	// 		personGenId.push_back(genId);
+	// 		number_of_person++;
+	// 	}
+	// 	else
+	// 	{
+	// 		printf("unable to create persons\n");
+	// 		break;
+	// 	}
+	// }
 }
 
 // adding individual person's CSV
@@ -151,53 +164,179 @@ void SpecificWorker::browseButton2Clicked()
 	// exit the function if user cancel the filedialog
 	if (filename == "")
 		return;
-	// std::cout << filename.toStdString() << std::endl;
+
+	printf("Entered\n");
 	myFiles.push_back(make_shared<ifstream>(filename.toStdString()));
 	tableWidget->setRowCount(myFiles.size());
+
+	extractCSV(filename.toStdString());
+}
+void SpecificWorker::extractCSV(string filename)
+{
+	vector<PersonCsvData> personCsv;
+	std::string line, colData;
+	ifstream fileD(filename);
+	printf("Entered2\n");
+	PersonCsvData pp;
+	// while (!fileD.eof())
+	while (std::getline(fileD, line))
+	{
+		vector<double> rowData;
+
+		// Create a stringstream from line
+		std::stringstream ss(line);
+
+		// printf("st2  ");
+		// Extract each column name
+		while (std::getline(ss, colData, ','))
+		{
+			rowData.push_back(std::stod(colData));
+		}
+		// printf("st3  ");
+		try
+		{
+			pp.posX = rowData[1];
+			pp.posZ = rowData[2];
+			pp.rotRY = rowData[4];
+
+			// PersonCsvData pp(rowData[1], rowData[2], rowData[4]);
+			// personCsv.push_back(PersonCsvData(rowData[1], rowData[2], rowData[4]));
+			personCsv.push_back(pp);
+		}
+		catch (...)
+		{
+		}
+	}
+
+	// }
+
+	// printf("Exit 1\n");
+	frameMax = personCsv.size();
+	horizontalSlider->setMaximum(frameMax);
+
 	int genId = initPersons(number_of_person);
 	if (genId != -1)
 	{
 		personGenId.push_back(genId);
+		PersonAvailable[genId] = personCsv;
 		number_of_person++;
 	}
 	else
 	{
 		printf("unable to create persons\n");
 	}
-
-	// printf("over\n");
 }
-void SpecificWorker::nextFrameButton()
+// void SpecificWorker::browseButton2Clicked()
+// {
+// 	// select only csv file
+// 	QString filename = QFileDialog::getOpenFileName(this, "Open CSV", "/home", "csv(*.csv)");
+
+// 	// exit the function if user cancel the filedialog
+// 	if (filename == "")
+// 		return;
+// 	// std::cout << filename.toStdString() << std::endl;
+// 	myFiles.push_back(make_shared<ifstream>(filename.toStdString()));
+// 	tableWidget->setRowCount(myFiles.size());
+// 	int genId = initPersons(number_of_person);
+// 	if (genId != -1)
+// 	{
+// 		personGenId.push_back(genId);
+// 		number_of_person++;
+// 	}
+// 	else
+// 	{
+// 		printf("unable to create persons\n");
+// 	}
+
+// 	// printf("over\n");
+// }
+
+void SpecificWorker::frameUpdate()
 {
-	printf("next frame clicked\n");
+	// printf("next frame clicked\n");
 	int rcount = 0;
-	for (auto personData : myFiles)
+
+	horizontalSlider->setValue(frameNumber);
+
+	for (auto personData : personGenId)
 	{
-		vector<double> personPoseData;
-		personPoseData = getNextValue(personData);
-		string s = std::to_string(personPoseData[0]);
-		tableWidget->setItem(rcount, 0, new QTableWidgetItem(tr("%1").arg(personPoseData[0])));
-		tableWidget->setItem(rcount, 1, new QTableWidgetItem(tr("%1").arg(personPoseData[1])));
-		tableWidget->setItem(rcount, 2, new QTableWidgetItem(tr("%1").arg(personPoseData[2])));
-		tableWidget->setItem(rcount, 3, new QTableWidgetItem(tr("%1").arg(personPoseData[3])));
+		// vector<double> personPoseData;
+		// personPoseData
+		// personPoseData = getNextValue(personData);
+		// string s = std::to_string(personPoseData[0]);
+		vector<PersonCsvData> personCsv = PersonAvailable[personData];
+		tableWidget->setItem(rcount, 0, new QTableWidgetItem(tr("%1").arg(frameNumber)));
+		tableWidget->setItem(rcount, 1, new QTableWidgetItem(tr("%1").arg(personCsv[frameNumber].posX)));
+		tableWidget->setItem(rcount, 2, new QTableWidgetItem(tr("%1").arg(personCsv[frameNumber].posZ)));
+		tableWidget->setItem(rcount, 3, new QTableWidgetItem(tr("%1").arg(personCsv[frameNumber].rotRY)));
 		// for (auto a : personPoseData)
 		// {
 		// 	std::cout << a << " | ";
 		// }
 		// std::cout << std::endl;
-		movePersons(rcount, personPoseData);
+		movePersons(rcount, personCsv[frameNumber]);
 		rcount++;
 	}
 }
-void SpecificWorker::movePersons(int person_ID, vector<double> personPoseData)
+void SpecificWorker::nextButton()
+{
+
+	frameNumber++;
+	if (frameNumber > frameMax)
+		frameNumber = frameMax;
+	frameUpdate();
+}
+void SpecificWorker::prevButton()
+{
+
+	frameNumber--;
+	if (frameNumber < 0)
+		frameNumber = 0;
+	frameUpdate();
+}
+void SpecificWorker::firstButton()
+{
+
+	frameNumber = 0;
+	frameUpdate();
+}
+void SpecificWorker::lastButton()
+{
+
+	frameNumber = frameMax - 1;
+	frameUpdate();
+}
+// void SpecificWorker::nextFrameButton()
+// {
+// 	printf("next frame clicked\n");
+// 	int rcount = 0;
+// 	for (auto personData : myFiles)
+// 	{
+// 		vector<double> personPoseData;
+// 		personPoseData = getNextValue(personData);
+// 		string s = std::to_string(personPoseData[0]);
+// 		tableWidget->setItem(rcount, 0, new QTableWidgetItem(tr("%1").arg(personPoseData[0])));
+// 		tableWidget->setItem(rcount, 1, new QTableWidgetItem(tr("%1").arg(personPoseData[1])));
+// 		tableWidget->setItem(rcount, 2, new QTableWidgetItem(tr("%1").arg(personPoseData[2])));
+// 		tableWidget->setItem(rcount, 3, new QTableWidgetItem(tr("%1").arg(personPoseData[3])));
+// 		// for (auto a : personPoseData)
+// 		// {
+// 		// 	std::cout << a << " | ";
+// 		// }
+// 		// std::cout << std::endl;
+// 		movePersons(rcount, personPoseData);
+// 		rcount++;
+// 	}
+// }
+void SpecificWorker::movePersons(int person_ID, PersonCsvData personPoseData)
 {
 	RoboCompInnerModelManager::Pose3D pose;
 	// multiply by 1000 for metre to mm convertion
-	pose.x = personPoseData[1] * 1000;
+	pose.x = personPoseData.posX * 1000;
 	pose.y = 0;
-	pose.z = personPoseData[2] * 1000;
+	pose.z = personPoseData.posZ * 1000;
 	pose.rx = 0;
-	pose.ry = personPoseData[3];
+	pose.ry = personPoseData.rotRY;
 	pose.rz = 0;
 
 	try
@@ -285,21 +424,40 @@ vector<double> SpecificWorker::getNextValue(std::shared_ptr<std::ifstream> fileD
 
 void SpecificWorker::playButton()
 {
-	if (play_button->text() == "PLAY")
-	{
-		play_button->setText("PAUSE");
-		playTimer.start(playPeriod->value());
-	}
-	else
-	{
-		play_button->setText("PLAY");
-		playTimer.stop();
-	}
+	int playtimerPeriod = floor(1000 / fps_SB->value());
+	playTimer.start(playtimerPeriod);
+	// if (play_button->text() == "PLAY")
+	// {
+	// 	play_button->setText("PAUSE");
+	// 	playTimer.start(playPeriod->value());
+	// }
+	// else
+	// {
+	// 	play_button->setText("PLAY");
+	// 	playTimer.stop();
+	// }
 
 	std::cout << "play button clicked" << std::endl;
 	// QString temp_path = folderLoc->text();
 	// std::string path = temp_path.toStdString();
 }
+void SpecificWorker::pauseButton()
+{
+	playTimer.stop();
+}
+void SpecificWorker::stopButton()
+{
+	playTimer.stop();
+	frameNumber = 0;
+	frameUpdate();
+}
+void SpecificWorker::horizontalSliderMoved(int val)
+{
+	// printf("%d\n", val);
+	frameNumber = val;
+	frameUpdate();
+}
+
 int SpecificWorker::initPersons(int personId)
 {
 	RoboCompInnerModelManager::Pose3D pose;
@@ -402,10 +560,10 @@ int SpecificWorker::includeInAGM(int id, const RoboCompInnerModelManager::Pose3D
 	int idx = 0;
 	while ((personSymbolId = worldModel->getIdentifierByType(name, idx++)) != -1)
 	{
-		printf("%d %d\n", idx, personSymbolId);
+		// printf("%d %d\n", idx, personSymbolId);
 		if (worldModel->getSymbolByIdentifier(personSymbolId)->getAttribute("imName") == imName)
 		{
-			printf("found %d!!\n", personSymbolId);
+			// printf("found %d!!\n", personSymbolId);
 			break;
 		}
 	}
@@ -420,7 +578,7 @@ int SpecificWorker::includeInAGM(int id, const RoboCompInnerModelManager::Pose3D
 	// Symbolic part
 	AGMModelSymbol::SPtr person = newModel->newSymbol("person");
 	personSymbolId = person->identifier;
-	printf("Got personSymbolId: %d\n", personSymbolId);
+	// printf("Got personSymbolId: %d\n", personSymbolId);
 	person->setAttribute("imName", imName);
 	person->setAttribute("imType", "transform");
 	newModel->addEdgeByIdentifiers(person->identifier, 3, "in");
@@ -436,7 +594,7 @@ int SpecificWorker::includeInAGM(int id, const RoboCompInnerModelManager::Pose3D
 	newModel->addEdgeByIdentifiers(100, person->identifier, "RT", edgeRTAtrs);
 
 	AGMModelSymbol::SPtr personMesh = newModel->newSymbol("mesh_" + name);
-	printf("personMesh %d\n", personMesh->identifier);
+	// printf("personMesh %d\n", personMesh->identifier);
 	personMesh->setAttribute("collidable", "false");
 	personMesh->setAttribute("imName", imName + "_Mesh");
 	personMesh->setAttribute("imType", "mesh");

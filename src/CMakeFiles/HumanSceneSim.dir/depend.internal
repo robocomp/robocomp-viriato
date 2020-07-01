@@ -383,6 +383,7 @@ src/CMakeFiles/HumanSceneSim.dir/HumanSceneSim_autogen/mocs_compilation.cpp.o
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QApplication
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QButtonGroup
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QCommonStyle
+ /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QDoubleSpinBox
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QFrame
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QGridLayout
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QGroupBox
@@ -393,8 +394,8 @@ src/CMakeFiles/HumanSceneSim.dir/HumanSceneSim_autogen/mocs_compilation.cpp.o
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QLineEdit
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QPushButton
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QScrollerProperties
+ /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QSlider
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QSpacerItem
- /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QSpinBox
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QTableWidget
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QVBoxLayout
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QWidget
@@ -865,6 +866,7 @@ src/CMakeFiles/HumanSceneSim.dir/agmcommonbehaviorI.cpp.o
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QApplication
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QButtonGroup
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QCommonStyle
+ /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QDoubleSpinBox
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QFrame
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QGridLayout
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QGroupBox
@@ -875,8 +877,8 @@ src/CMakeFiles/HumanSceneSim.dir/agmcommonbehaviorI.cpp.o
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QLineEdit
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QPushButton
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QScrollerProperties
+ /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QSlider
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QSpacerItem
- /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QSpinBox
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QTableWidget
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QVBoxLayout
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QWidget
@@ -1342,6 +1344,7 @@ src/CMakeFiles/HumanSceneSim.dir/agmexecutivetopicI.cpp.o
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QApplication
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QButtonGroup
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QCommonStyle
+ /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QDoubleSpinBox
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QFrame
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QGridLayout
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QGroupBox
@@ -1352,8 +1355,8 @@ src/CMakeFiles/HumanSceneSim.dir/agmexecutivetopicI.cpp.o
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QLineEdit
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QPushButton
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QScrollerProperties
+ /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QSlider
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QSpacerItem
- /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QSpinBox
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QTableWidget
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QVBoxLayout
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QWidget
@@ -1820,6 +1823,7 @@ src/CMakeFiles/HumanSceneSim.dir/commonbehaviorI.cpp.o
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QApplication
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QButtonGroup
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QCommonStyle
+ /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QDoubleSpinBox
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QFrame
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QGridLayout
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QGroupBox
@@ -1830,8 +1834,8 @@ src/CMakeFiles/HumanSceneSim.dir/commonbehaviorI.cpp.o
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QLineEdit
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QPushButton
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QScrollerProperties
+ /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QSlider
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QSpacerItem
- /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QSpinBox
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QTableWidget
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QVBoxLayout
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QWidget
@@ -2298,6 +2302,7 @@ src/CMakeFiles/HumanSceneSim.dir/genericmonitor.cpp.o
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QApplication
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QButtonGroup
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QCommonStyle
+ /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QDoubleSpinBox
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QFrame
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QGridLayout
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QGroupBox
@@ -2308,8 +2313,8 @@ src/CMakeFiles/HumanSceneSim.dir/genericmonitor.cpp.o
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QLineEdit
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QPushButton
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QScrollerProperties
+ /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QSlider
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QSpacerItem
- /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QSpinBox
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QTableWidget
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QVBoxLayout
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QWidget
@@ -2774,6 +2779,7 @@ src/CMakeFiles/HumanSceneSim.dir/genericworker.cpp.o
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QApplication
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QButtonGroup
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QCommonStyle
+ /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QDoubleSpinBox
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QFrame
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QGridLayout
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QGroupBox
@@ -2784,8 +2790,8 @@ src/CMakeFiles/HumanSceneSim.dir/genericworker.cpp.o
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QLineEdit
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QPushButton
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QScrollerProperties
+ /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QSlider
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QSpacerItem
- /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QSpinBox
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QTableWidget
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QVBoxLayout
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QWidget
@@ -3732,6 +3738,7 @@ src/CMakeFiles/HumanSceneSim.dir/main.cpp.o
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QApplication
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QButtonGroup
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QCommonStyle
+ /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QDoubleSpinBox
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QFrame
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QGridLayout
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QGroupBox
@@ -3742,8 +3749,8 @@ src/CMakeFiles/HumanSceneSim.dir/main.cpp.o
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QLineEdit
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QPushButton
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QScrollerProperties
+ /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QSlider
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QSpacerItem
- /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QSpinBox
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QTableWidget
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QVBoxLayout
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QWidget
@@ -4212,6 +4219,7 @@ src/CMakeFiles/HumanSceneSim.dir/specificmonitor.cpp.o
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QApplication
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QButtonGroup
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QCommonStyle
+ /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QDoubleSpinBox
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QFrame
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QGridLayout
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QGroupBox
@@ -4222,8 +4230,8 @@ src/CMakeFiles/HumanSceneSim.dir/specificmonitor.cpp.o
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QLineEdit
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QPushButton
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QScrollerProperties
+ /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QSlider
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QSpacerItem
- /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QSpinBox
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QTableWidget
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QVBoxLayout
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QWidget
@@ -4720,6 +4728,7 @@ src/CMakeFiles/HumanSceneSim.dir/specificworker.cpp.o
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QApplication
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QButtonGroup
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QCommonStyle
+ /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QDoubleSpinBox
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QFileDialog
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QFrame
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QGridLayout
@@ -4731,8 +4740,8 @@ src/CMakeFiles/HumanSceneSim.dir/specificworker.cpp.o
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QLineEdit
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QPushButton
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QScrollerProperties
+ /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QSlider
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QSpacerItem
- /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QSpinBox
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QTableWidget
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QVBoxLayout
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QWidget

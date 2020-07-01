@@ -30,6 +30,28 @@
 #include <genericworker.h>
 #include <innermodel/innermodel.h>
 
+class PersonCsvData
+{
+private:
+public:
+	double posX;
+	double posZ;
+	double rotRY;
+	PersonCsvData(double posX1 = 0, double posZ1 = 0, double rotRY1 = 0)
+	{
+		posX = posX1;
+		posZ = posZ1;
+		rotRY = rotRY1;
+	}
+	~PersonCsvData()
+	{
+	}
+	void getValues()
+	{
+		printf("%f -- %f -- %f\n", posX, posZ, rotRY);
+	}
+};
+
 class SpecificWorker : public GenericWorker
 {
 	Q_OBJECT
@@ -62,21 +84,27 @@ public:
 
 	int includeInAGM(int id, const RoboCompInnerModelManager::Pose3D &pose, std::string mesh);
 	bool includeInRCIS(int id, const RoboCompInnerModelManager::Pose3D &pose, std::string mesh);
-	void movePersons(int person_ID, vector<double> personPoseData);
+	void movePersons(int person_ID, PersonCsvData personPoseData);
+	void extractCSV(string filename);
 
 public slots:
-	void
-	compute();
+	void compute();
 	void initialize(int period);
 	void browseButtonClicked();
 	void browseButton2Clicked();
 	void playButton();
-	void nextFrameButton();
+	void pauseButton();
+	void stopButton();
 	void play_timer();
+	void frameUpdate();
+	void prevButton();
+	void nextButton();
+	void firstButton();
+	void lastButton();
+	void horizontalSliderMoved(int val);
 
 private:
-	std::shared_ptr<InnerModel>
-		innerModel;
+	std::shared_ptr<InnerModel> innerModel;
 	std::string action;
 	ParameterMap params;
 	AGMModel::SPtr worldModel;
@@ -87,6 +115,8 @@ private:
 	vector<int> personGenId;
 	QTimer playTimer;
 	int number_of_person;
+	int frameNumber, frameMax;
+	map<int, vector<PersonCsvData>> PersonAvailable;
 };
 
 #endif

@@ -21,8 +21,8 @@ QT_BEGIN_MOC_NAMESPACE
 QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_SpecificWorker_t {
-    QByteArrayData data[10];
-    char stringdata0[121];
+    QByteArrayData data[18];
+    char stringdata0[211];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -39,14 +39,25 @@ QT_MOC_LITERAL(4, 35, 6), // "period"
 QT_MOC_LITERAL(5, 42, 19), // "browseButtonClicked"
 QT_MOC_LITERAL(6, 62, 20), // "browseButton2Clicked"
 QT_MOC_LITERAL(7, 83, 10), // "playButton"
-QT_MOC_LITERAL(8, 94, 15), // "nextFrameButton"
-QT_MOC_LITERAL(9, 110, 10) // "play_timer"
+QT_MOC_LITERAL(8, 94, 11), // "pauseButton"
+QT_MOC_LITERAL(9, 106, 10), // "stopButton"
+QT_MOC_LITERAL(10, 117, 10), // "play_timer"
+QT_MOC_LITERAL(11, 128, 11), // "frameUpdate"
+QT_MOC_LITERAL(12, 140, 10), // "prevButton"
+QT_MOC_LITERAL(13, 151, 10), // "nextButton"
+QT_MOC_LITERAL(14, 162, 11), // "firstButton"
+QT_MOC_LITERAL(15, 174, 10), // "lastButton"
+QT_MOC_LITERAL(16, 185, 21), // "horizontalSliderMoved"
+QT_MOC_LITERAL(17, 207, 3) // "val"
 
     },
     "SpecificWorker\0compute\0\0initialize\0"
     "period\0browseButtonClicked\0"
     "browseButton2Clicked\0playButton\0"
-    "nextFrameButton\0play_timer"
+    "pauseButton\0stopButton\0play_timer\0"
+    "frameUpdate\0prevButton\0nextButton\0"
+    "firstButton\0lastButton\0horizontalSliderMoved\0"
+    "val"
 };
 #undef QT_MOC_LITERAL
 
@@ -56,7 +67,7 @@ static const uint qt_meta_data_SpecificWorker[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-       7,   14, // methods
+      14,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -64,13 +75,20 @@ static const uint qt_meta_data_SpecificWorker[] = {
        0,       // signalCount
 
  // slots: name, argc, parameters, tag, flags
-       1,    0,   49,    2, 0x0a /* Public */,
-       3,    1,   50,    2, 0x0a /* Public */,
-       5,    0,   53,    2, 0x0a /* Public */,
-       6,    0,   54,    2, 0x0a /* Public */,
-       7,    0,   55,    2, 0x0a /* Public */,
-       8,    0,   56,    2, 0x0a /* Public */,
-       9,    0,   57,    2, 0x0a /* Public */,
+       1,    0,   84,    2, 0x0a /* Public */,
+       3,    1,   85,    2, 0x0a /* Public */,
+       5,    0,   88,    2, 0x0a /* Public */,
+       6,    0,   89,    2, 0x0a /* Public */,
+       7,    0,   90,    2, 0x0a /* Public */,
+       8,    0,   91,    2, 0x0a /* Public */,
+       9,    0,   92,    2, 0x0a /* Public */,
+      10,    0,   93,    2, 0x0a /* Public */,
+      11,    0,   94,    2, 0x0a /* Public */,
+      12,    0,   95,    2, 0x0a /* Public */,
+      13,    0,   96,    2, 0x0a /* Public */,
+      14,    0,   97,    2, 0x0a /* Public */,
+      15,    0,   98,    2, 0x0a /* Public */,
+      16,    1,   99,    2, 0x0a /* Public */,
 
  // slots: parameters
     QMetaType::Void,
@@ -80,6 +98,13 @@ static const uint qt_meta_data_SpecificWorker[] = {
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void, QMetaType::Int,   17,
 
        0        // eod
 };
@@ -95,8 +120,15 @@ void SpecificWorker::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _
         case 2: _t->browseButtonClicked(); break;
         case 3: _t->browseButton2Clicked(); break;
         case 4: _t->playButton(); break;
-        case 5: _t->nextFrameButton(); break;
-        case 6: _t->play_timer(); break;
+        case 5: _t->pauseButton(); break;
+        case 6: _t->stopButton(); break;
+        case 7: _t->play_timer(); break;
+        case 8: _t->frameUpdate(); break;
+        case 9: _t->prevButton(); break;
+        case 10: _t->nextButton(); break;
+        case 11: _t->firstButton(); break;
+        case 12: _t->lastButton(); break;
+        case 13: _t->horizontalSliderMoved((*reinterpret_cast< int(*)>(_a[1]))); break;
         default: ;
         }
     }
@@ -127,13 +159,13 @@ int SpecificWorker::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 7)
+        if (_id < 14)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 7;
+        _id -= 14;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 7)
+        if (_id < 14)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 7;
+        _id -= 14;
     }
     return _id;
 }

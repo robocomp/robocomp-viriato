@@ -3986,6 +3986,10 @@ qbuttongroup.h
 qcommonstyle.h
 /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qcommonstyle.h
 
+/usr/include/x86_64-linux-gnu/qt5/QtWidgets/QDoubleSpinBox
+qspinbox.h
+/usr/include/x86_64-linux-gnu/qt5/QtWidgets/qspinbox.h
+
 /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QFileDialog
 qfiledialog.h
 /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qfiledialog.h
@@ -4030,13 +4034,13 @@ qpushbutton.h
 qscrollerproperties.h
 /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qscrollerproperties.h
 
+/usr/include/x86_64-linux-gnu/qt5/QtWidgets/QSlider
+qslider.h
+/usr/include/x86_64-linux-gnu/qt5/QtWidgets/qslider.h
+
 /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QSpacerItem
 qlayoutitem.h
 /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qlayoutitem.h
-
-/usr/include/x86_64-linux-gnu/qt5/QtWidgets/QSpinBox
-qspinbox.h
-/usr/include/x86_64-linux-gnu/qt5/QtWidgets/qspinbox.h
 
 /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QTableWidget
 qtablewidget.h
@@ -5679,6 +5683,8 @@ QtWidgets/QApplication
 -
 QtWidgets/QButtonGroup
 -
+QtWidgets/QDoubleSpinBox
+-
 QtWidgets/QFrame
 -
 QtWidgets/QGridLayout
@@ -5695,9 +5701,9 @@ QtWidgets/QLineEdit
 -
 QtWidgets/QPushButton
 -
-QtWidgets/QSpacerItem
+QtWidgets/QSlider
 -
-QtWidgets/QSpinBox
+QtWidgets/QSpacerItem
 -
 QtWidgets/QTableWidget
 -
