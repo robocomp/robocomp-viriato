@@ -104,6 +104,7 @@ private:
 	bool active;
 
 	vector <int32_t> prev_blockingIDs = {};
+	vector <int32_t> prev_affBlockingIDs = {};
 	vector<vector<int32_t>> prev_softBlockingIDs = {};
 
 	localPersonsVec totalPersons;

@@ -150,17 +150,21 @@ void SpecificWorker::checkHumanBlock()
 
 	auto blockingIDs = navigation.blockIDs;
     auto softBlockingIDs = navigation.softBlockIDs;
+    auto affBlockingIDs = navigation.affBlockIDs;
 
-    if((prev_blockingIDs != blockingIDs) or (prev_softBlockingIDs != softBlockingIDs))
+    if((prev_blockingIDs != blockingIDs) or (prev_softBlockingIDs != softBlockingIDs) or (prev_affBlockingIDs != affBlockingIDs))
     {
 
 		qDebug()<< "blocking - prev: " << prev_blockingIDs << " current: " << blockingIDs;
+		qDebug()<< "aff blocking - prev: " << prev_affBlockingIDs << " current: " << affBlockingIDs;
 		qDebug()<< "SOFT blocking - prev: " << prev_softBlockingIDs << " current: " << softBlockingIDs;
 
         auto robotID = newModel->getIdentifierByType("robot");
 
-        //////////////////////// block /////////////////////////////
-
+           ////////////////////// block /////////////////////////////////
+          //  Si solo hay una persona bloqueando el camino --block   ///
+         // Si son dos -- estan interaccionando -- strongInterBlock ///
+        //////////////////////////////////////////////////////////////
         string edgeName;
 
 		vector<string> edgeNames{"block" , "strongInterBlock"};
@@ -201,6 +205,43 @@ void SpecificWorker::checkHumanBlock()
 
             }
         }
+
+
+
+        ////////////////////////// affordanceBlock ////////////////////////
+
+        string newEdgeName = "affordanceBlock";
+
+        for(auto id: prev_affBlockingIDs)
+        {
+            try
+            {
+                newModel->removeEdgeByIdentifiers(id, robotID, newEdgeName);
+                qDebug ()<<" Se elimina el enlace " << QString::fromStdString(newEdgeName) << " de " << id;
+            }
+
+            catch(...)
+            {
+                std::cout<<__FUNCTION__<<"No existe el enlace"<<std::endl;
+
+            }
+        }
+
+        for(auto id: affBlockingIDs)
+        {
+            try
+            {
+                newModel->addEdgeByIdentifiers(id, robotID, newEdgeName);
+                qDebug ()<<" Se añade el enlace " << QString::fromStdString(newEdgeName) << " de " << id;
+            }
+
+            catch(...)
+            {
+                std::cout<<__FUNCTION__<<"No existe el enlace"<<std::endl;
+
+            }
+        }
+
 
         ////////////////////////// softBlock //////////////////////////////
 
@@ -252,6 +293,7 @@ void SpecificWorker::checkHumanBlock()
         ///////////////////////////////////////////////////////////////////
 
         prev_blockingIDs = blockingIDs;
+        prev_affBlockingIDs = affBlockingIDs;
         prev_softBlockingIDs = softBlockingIDs;
 
 		edgesChanged = true;

@@ -63,7 +63,7 @@ public:
     float KE;
     float KI;
 
-    vector<int32_t> blockIDs;
+    vector<int32_t> blockIDs, affBlockIDs;
     vector<vector<int32_t>> softBlockIDs;
 
 	localPersonsVec totalPersons;
@@ -471,6 +471,7 @@ bool findNewPath()
     pathPoints.clear();
 
 	blockIDs.clear();
+    affBlockIDs.clear();
 	softBlockIDs.clear();
 
     // extract target from current_path
@@ -516,7 +517,7 @@ bool findNewPath()
     {
         qDebug() << __FUNCTION__ << "Path not found";
 
-        if(checkHumanBlock())
+        if(checkHumanBlock() or checkAffordancesBlock())
         {
             this->current_target.lock();
                 current_target.humanBlock.store(true);
@@ -544,7 +545,7 @@ bool checkHumanBlock()
 
     if(!path.empty()) //hay alguna persona bloqueando el camino
     {
-        for(auto pol : intimateSpaces) //change to intimateSpaces
+        for(auto pol : intimateSpaces)
         {
             grid.markAreaInGridAs(pol, false);
             path = grid.computePath(currentRobotNose, target);
@@ -558,6 +559,48 @@ bool checkHumanBlock()
 					if (pol.containsPoint(QPointF(p.x, p.z), Qt::OddEvenFill))
 						blockIDs.push_back(p.id);
 				}
+
+                break;
+            }
+        }
+    }
+
+    //he eliminado todas las polilíneas, con esto las vuelvo a dibujar
+    updateFreeSpaceMap(false);
+
+    return blockFound;
+}
+
+bool checkAffordancesBlock()
+{
+    qDebug()<<__FUNCTION__;
+
+    grid.resetGrid();
+
+    bool blockFound = false;
+
+    this->current_target.lock();
+    auto target = this->current_target.p;
+    this->current_target.unlock();
+
+    std::list<QPointF> path = grid.computePath(currentRobotNose, target);
+
+    if(!path.empty()) //hay alguna persona bloqueando el camino
+    {
+        for(auto pol : affordancesBlocked)
+        {
+            grid.markAreaInGridAs(pol, false);
+            path = grid.computePath(currentRobotNose, target);
+
+            if (path.empty())
+            {
+                blockFound = true;
+
+                for (auto p: totalPersons)
+                {
+                    if (pol.containsPoint(QPointF(p.x, p.z), Qt::OddEvenFill))
+                        affBlockIDs.push_back(p.id);
+                }
 
                 break;
             }
