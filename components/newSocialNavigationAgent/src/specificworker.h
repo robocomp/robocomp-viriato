@@ -37,6 +37,7 @@
 #include <algorithm>
 #include <localPerson.h>
 #include <cppitertools/zip.hpp>
+#include <actionExecution.h>
 
 using namespace std;
 
@@ -116,6 +117,8 @@ private:
     std::shared_ptr<RoboCompCommonBehavior::ParameterList> confParams;
     Navigation<Grid<>,Controller> navigation;
 
+
+
     SNGPolylineSeq intimate_seq, personal_seq, social_seq;
     SRObjectSeq objects_seq;
 
@@ -132,6 +135,10 @@ private:
 	retAffordanceSpaces getAffordancesFromModel();
 
 	void checkHumanBlock();
+
+	void runActions();
+	void action_ChangeRoom(bool newAction);
+	QPolygonF getRoomPolyline(AGMModelSymbol::SPtr roomSymbol);
 
 	bool setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated);
 	void sendModificationProposal(AGMModel::SPtr &worldModel, AGMModel::SPtr &newModel);

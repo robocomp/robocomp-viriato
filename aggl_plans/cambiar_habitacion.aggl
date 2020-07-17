@@ -1,0 +1,35 @@
+fontName=Arial
+fontSize=14
+lineThickness=2.0
+longPattern=3
+name=cambiar_habitacion
+nodeThickness=2.0
+shortPattern=1
+spacePattern=3
+vertexDiameter=40.0
+===
+types
+{
+(robot)
+(room)
+}
+===
+changeRoom : active(1)
+{
+	{
+		r:robot(-165,-105)
+		r1:room(-280,-230)
+		r2:room(-5,-205)
+		r->r1(in)
+		r1->r2(accessible)
+	}
+	=>
+	{
+		r:robot(-70,10)
+		r1:room(-230,-80)
+		r2:room(65,-75)
+		r->r2(in)
+		r1->r2(accessible)
+	}
+}
+

@@ -137,6 +137,7 @@ void SpecificWorker::compute()
 	if (navigation.isCurrentTargetActive())
 		checkHumanBlock();
 
+	if (active) runActions();
 }
 
 
@@ -575,6 +576,143 @@ void SpecificWorker::sm_finalize()
 	std::cout<<"Entered final state finalize"<<std::endl;
 }
 
+//////////////////////////////////missions//////////////////////////////////////////
+
+void SpecificWorker::runActions()
+{
+    qDebug() << "---------------------------------------------------";
+    qDebug() <<__FUNCTION__ <<"Checking ACTION: " << QString::fromStdString(action);
+
+    static std::string previousAction = "";
+    bool newAction = (previousAction != action);
+
+    if (newAction)
+    {
+        printf("prev:%s  new:%s\n", previousAction.c_str(), action.c_str());
+        rDebug2(("action %s") % action.c_str() );
+    }
+
+    if (action == "changeroom")
+    {
+        action_ChangeRoom(newAction);
+    }
+
+    if (newAction)
+    {
+        previousAction = action;
+        printf("New action: %s\n", action.c_str());
+    }
+
+}
+
+
+void SpecificWorker::action_ChangeRoom(bool newAction)
+{
+
+    qDebug()<<__FUNCTION__<< "-------------------------------";
+    AGMModelSymbol::SPtr roomSymbol;
+    AGMModelSymbol::SPtr robotSymbol;
+
+
+    try {
+        roomSymbol = worldModel->getSymbolByIdentifier(std::stoi(params["r2"].value));
+        robotSymbol = worldModel->getSymbolByIdentifier(std::stoi(params["r"].value));
+    }
+    catch( const Ice::Exception& ex)
+    {
+        std::cout << "Exception:: Error reading room and robot symbols" << ex << endl;
+    }
+
+    qDebug()<<"-----------1-----------";
+
+    int32_t roomId = roomSymbol->identifier;
+    printf("room symbol: %d\n",  roomId);
+    std::string imName =roomSymbol->getAttribute("imName");
+    printf("imName: <%s>\n", imName.c_str());
+    qDebug()<<"-----------2-----------";
+
+
+    if(!navigation.isCurrentTargetActive())
+    {
+        try
+        {
+            int32_t currentRoom = -1;
+
+            for (AGMModelSymbol::iterator edge = robotSymbol->edgesBegin(worldModel);
+                 edge!=robotSymbol->edgesEnd(worldModel);
+                 edge++) {
+                if (edge->getLabel()=="in") {
+                    const std::pair<int32_t, int32_t> symbolPair = edge->getSymbolPair();
+                    auto second = worldModel->getSymbol(symbolPair.second);
+                    if (second->typeString() == "room")
+                    {
+                        qDebug() << "El robot está en " << second->identifier;
+                        currentRoom = second->identifier;
+                    }
+                }
+            }
+
+
+            if (currentRoom == roomId)
+            {
+//                active = false;
+                return;
+
+            }
+        }
+
+        catch( const Ice::Exception& ex)
+        {
+            std::cout << "Exception:: Cant get edge between robot and room:" << ex << endl;
+        }
+
+        auto roomPolygon = getRoomPolyline(roomSymbol);
+        auto center = roomPolygon.boundingRect().center();
+
+        navigation.newTarget(center);
+    }
+
+
+
+
+
+
+};
+
+
+QPolygonF SpecificWorker::getRoomPolyline(AGMModelSymbol::SPtr roomSymbol)
+{
+    qDebug() << __FUNCTION__;
+
+
+    QPolygonF polygon;
+
+    try {
+        auto polyline = QString::fromStdString(roomSymbol->getAttribute("polyline"));
+
+        for (auto pxz : polyline.split(";"))
+        {
+            auto p = pxz.split(" ");
+
+            if (p.size() != 2)
+                continue;
+
+            auto x = std::stof(p[0].toStdString());
+            auto z = std::stof(p[1].toStdString());
+
+            polygon << QPointF(x,z);
+        }
+
+        return polygon;
+
+    }
+
+    catch (std::exception& e) {
+        std::cout << "Exception reading room "<< roomSymbol->identifier << " polyline: " << e.what() << std::endl;
+    }
+
+}
+
 ////////////////////////// SUBSCRIPTIONS /////////////////////////////////////////////
 
 void SpecificWorker::RCISMousePicker_setPick(const Pick &myPick)
@@ -608,7 +746,8 @@ void SpecificWorker::SocialRules_personalSpacesChanged(const RoboCompSocialNavig
 
 bool SpecificWorker::AGMCommonBehavior_activateAgent(const ParameterMap &prs)
 {
-//implementCODE
+    qDebug()<<__FUNCTION__;
+
 	bool activated = false;
 	if (setParametersAndPossibleActivation(prs, activated))
 	{
@@ -809,9 +948,8 @@ void SpecificWorker::AGMExecutiveTopic_symbolsUpdated(const RoboCompAGMWorldMode
 
 bool SpecificWorker::setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated)
 {
-//	qDebug() << __FUNCTION__;
 
-	printf("<<< setParametersAndPossibleActivation\n");
+	printf("<<< ------------------------- setParametersAndPossibleActivation -------------------------\n");
 	// We didn't reactivate the component
 	reactivated = false;
 
@@ -820,6 +958,7 @@ bool SpecificWorker::setParametersAndPossibleActivation(const ParameterMap &prs,
 	for (ParameterMap::const_iterator it=prs.begin(); it!=prs.end(); it++)
 	{
 		params[it->first] = it->second;
+		qDebug()<< QString::fromStdString(it->first) << " " << QString::fromStdString(it->second.value);
 	}
 
 	try
@@ -827,14 +966,20 @@ bool SpecificWorker::setParametersAndPossibleActivation(const ParameterMap &prs,
 		action = params["action"].value;
 		std::transform(action.begin(), action.end(), action.begin(), ::tolower);
 		//TYPE YOUR ACTION NAME
-		if (action == "actionname")
+		if (action == "changeroom")
 		{
 			active = true;
 		}
 		else
 		{
-			active = true;
+			active = false;
 		}
+
+		if (action != "changeroom")
+        {
+		    qDebug()<< " End mission .....";
+		    navigation.stopRobot();
+        }
 	}
 	catch (...)
 	{
@@ -849,7 +994,8 @@ bool SpecificWorker::setParametersAndPossibleActivation(const ParameterMap &prs,
 		reactivated = true;
 	}
 
-	printf("setParametersAndPossibleActivation >>>\n");
+    printf("<<< ------------------------- setParametersAndPossibleActivation -------------------------\n");
+    runActions();
 
 	return true;
 }

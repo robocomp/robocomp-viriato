@@ -114,7 +114,7 @@ void updateInnerModel(const std::shared_ptr<InnerModel> &innerModel_)
 void update(localPersonsVec totalPersons_, const RoboCompLaser::TLaserData &laserData_, bool needsReplaning)
 {
 
-    qDebug()<<"Navigation - "<< __FUNCTION__;
+//    qDebug()<<"Navigation - "<< __FUNCTION__;
 //    static QTime reloj = QTime::currentTime();
 
     if (gridChanged)
