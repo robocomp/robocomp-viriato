@@ -609,14 +609,14 @@ void SpecificWorker::runActions()
 void SpecificWorker::action_ChangeRoom(bool newAction)
 {
 
-    qDebug()<<__FUNCTION__<< "-------------------------------";
+    qDebug()<<"-------------------------------"<< __FUNCTION__<< "-------------------------------";
     AGMModelSymbol::SPtr roomSymbol;
     AGMModelSymbol::SPtr robotSymbol;
 
 
     try {
-        roomSymbol = worldModel->getSymbolByIdentifier(std::stoi(params["r2"].value));
-        robotSymbol = worldModel->getSymbolByIdentifier(std::stoi(params["r"].value));
+        roomSymbol = worldModel->getSymbolByIdentifier(std::stoi(params["room2"].value));
+        robotSymbol = worldModel->getSymbolByIdentifier(std::stoi(params["robot"].value));
     }
     catch( const Ice::Exception& ex)
     {
