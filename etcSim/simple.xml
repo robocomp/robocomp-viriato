@@ -113,7 +113,7 @@
 
   <workingDir path="/home/robocomp/" />
   <upCommand command="rcremote localhost roomlocalizationAgent /home/robocomp/robocomp/components/robocomp-viriato/components/roomLocalizationAgent ./bin/roomLocalizationAgent /home/robocomp/robocomp/components/robocomp-viriato/etcSim/roomLocalizationAgent.conf" />
-  <downCommand command="killall -9 localizationAgent" />
+  <downCommand command="killall -9 roomLocalizationA" />
   <configFile path="/home/robocomp/robocomp/components/robocomp-viriato/etcSim/roomLocalizationAgent.conf" />
   <xpos value="-216.350970747" />
   <ypos value="-45.512538117" />
