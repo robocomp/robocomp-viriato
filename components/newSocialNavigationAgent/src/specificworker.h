@@ -38,6 +38,8 @@
 #include <localPerson.h>
 #include <cppitertools/zip.hpp>
 
+#include <actionExecution.h>
+
 using namespace std;
 
 #define USE_QTGUI
@@ -116,6 +118,7 @@ private:
     std::shared_ptr<RoboCompCommonBehavior::ParameterList> confParams;
     Navigation<Grid<>,Controller> navigation;
 
+    ActionExecution actionExecution;
 
 
     SNGPolylineSeq intimate_seq, personal_seq, social_seq;
@@ -135,9 +138,7 @@ private:
 
 	void checkHumanBlock();
 
-	void runActions();
-	void action_ChangeRoom(bool newAction);
-	QPolygonF getRoomPolyline(AGMModelSymbol::SPtr roomSymbol);
+
 
 	bool setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated);
 	void sendModificationProposal(AGMModel::SPtr &worldModel, AGMModel::SPtr &newModel);

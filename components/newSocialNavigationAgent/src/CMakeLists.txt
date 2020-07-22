@@ -27,7 +27,7 @@ SET ( SOURCES
   agmcommonbehaviorI.cpp
   agmexecutivetopicI.cpp
   rcismousepickerI.cpp
-  socialrulesI.cpp)
+  socialrulesI.cpp actionExecution.cpp actionExecution.h)
 
 
 
