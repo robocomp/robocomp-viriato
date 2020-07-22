@@ -29,6 +29,8 @@
 	</link>
 	
 	<link src="3" dst="100" label="in"  > </link>
+	<link src="3" dst="5" label="accessible"  > </link>
+	<link src="5" dst="3" label="accessible"  > </link>
 
 		<!-- bathroom -->
 	<symbol id="4" type="room">
@@ -38,6 +40,8 @@
 	</symbol>
 
 		<link src="4" dst="100" label="in"  > </link>
+	<link src="4" dst="5" label="accessible"  > </link>
+	<link src="5" dst="4" label="accessible"  > </link>
 
 		<!-- corridor -->
 	<symbol id="5" type="room">
@@ -56,8 +60,8 @@
 
 	</symbol>
 	<link src="6" dst="100" label="in"  > </link>
-
-
+	<link src="6" dst="5" label="accessible"  > </link>
+	<link src="5" dst="6" label="accessible"  > </link>
 
 
 	<!-- TRAPEZOID 

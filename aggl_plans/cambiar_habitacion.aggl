@@ -17,19 +17,19 @@ types
 changeRoom : active(1)
 {
 	{
-		r:robot(-165,-105)
-		r1:room(-280,-230)
-		r2:room(-5,-205)
-		r->r1(in)
-		r1->r2(accessible)
+		robot:robot(-165,-105)
+		room1:room(-280,-230)
+		room2:room(-5,-205)
+		robot->room1(in)
+		room1->room2(accessible)
 	}
 	=>
 	{
-		r:robot(-70,10)
-		r1:room(-230,-80)
-		r2:room(65,-75)
-		r->r2(in)
-		r1->r2(accessible)
+		robot:robot(-70,10)
+		room1:room(-230,-80)
+		room2:room(65,-75)
+		robot->room2(in)
+		room1->room2(accessible)
 	}
 }
 
