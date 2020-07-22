@@ -142,7 +142,11 @@ void SpecificWorker::compute()
     if (active){
 
         auto [newTarget, target] = actionExecution.runActions();
-        if (newTarget) navigation.newTarget(target);
+        if (newTarget)
+        {
+            qDebug()<< "new target "<< target;
+            navigation.newTarget(target);
+        }
 
     }
 
@@ -867,6 +871,7 @@ bool SpecificWorker::setParametersAndPossibleActivation(const ParameterMap &prs,
 		active = true;
 		reactivated = true;
 	}
+
 
 	actionExecution.update(action,params);
 

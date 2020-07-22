@@ -20,6 +20,7 @@ void ActionExecution::update(std::string action_,  ParameterMap params_)
 {
     action = action_;
     params = params_;
+    newActionReceived = true;
 }
 
 
@@ -65,7 +66,6 @@ ActionExecution::retActions ActionExecution::action_ChangeRoom()
     qDebug()<<"-------------------------------"<< __FUNCTION__<< "-------------------------------";
     AGMModelSymbol::SPtr roomSymbol;
     AGMModelSymbol::SPtr robotSymbol;
-    static int32_t prevRoom = -1;
 
     bool needsReplanning = false;
     QPointF newTarget = QPointF();
@@ -81,10 +81,10 @@ ActionExecution::retActions ActionExecution::action_ChangeRoom()
     }
 
 
-    int32_t roomId = roomSymbol->identifier;
-    printf("room symbol: %d\n",  roomId);
+    int32_t destRoomID = roomSymbol->identifier;
+    printf("Quiero llegar a : %d\n",  destRoomID);
     std::string imName =roomSymbol->getAttribute("imName");
-    printf("imName: <%s>\n", imName.c_str());
+//    printf("imName: <%s>\n", imName.c_str());
 
     int32_t currentRoom = -1;
 
@@ -99,7 +99,7 @@ ActionExecution::retActions ActionExecution::action_ChangeRoom()
                 auto second = worldModel->getSymbol(symbolPair.second);
                 if (second->typeString() == "room")
                 {
-                    qDebug() << "El robot está en " << second->identifier;
+                    qDebug() << "El robot está en : " << second->identifier;
                     currentRoom = second->identifier;
                 }
             }
@@ -112,24 +112,28 @@ ActionExecution::retActions ActionExecution::action_ChangeRoom()
         std::cout << "Exception:: Cant get edge between robot and room:" << ex << endl;
     }
 
-
-
-    if (currentRoom == roomId)
+    if (currentRoom == -1)
     {
-        needsReplanning =false;
+        qDebug()<< "shit";
+        exit(-1);
     }
 
-    else if (prevRoom != currentRoom)
+    if (currentRoom == destRoomID)
+    {
+        needsReplanning = false;
+    }
+
+    else if (newActionReceived)
     {
         auto roomPolygon = getRoomPolyline(roomSymbol);
         newTarget = roomPolygon.boundingRect().center();
 
+        newActionReceived = false;
         needsReplanning = true;
-//        navigation.newTarget(center);
+
     }
 
-    prevRoom = currentRoom;
-
+    qDebug()<<  __FUNCTION__ << "Returning "<< needsReplanning << newTarget;
     return std::make_tuple(needsReplanning, newTarget);
 };
 

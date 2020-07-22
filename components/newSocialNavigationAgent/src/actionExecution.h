@@ -21,7 +21,7 @@ private:
     AGMModel::SPtr worldModel;
     std::string action;
     ParameterMap params;
-
+    bool newActionReceived = false;
 
     ActionExecution::retActions action_ChangeRoom();
     QPolygonF getRoomPolyline(AGMModelSymbol::SPtr roomSymbol);
