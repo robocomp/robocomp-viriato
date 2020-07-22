@@ -689,7 +689,6 @@ void computeForces(const std::vector<QPointF> &path, const RoboCompLaser::TLaser
         float min_dist;
         QVector2D force;
 
-        qDebug()<< nonVisiblePointsComputed;
         if ((isVisible(p) == false))// if not visible (computed before) continue
         {
 
@@ -782,7 +781,7 @@ void computeForces(const std::vector<QPointF> &path, const RoboCompLaser::TLaser
         // move node only if they do not exit the laser polygon and do not get inside objects or underneath the robot.
         QPointF temp_p = p + total.toPointF();
 
-        qDebug() << "Total force "<< total.toPointF()<< " New Point "<< temp_p;
+//        qDebug() << "Total force "<< total.toPointF()<< " New Point "<< temp_p;
 
 //        if (isVisible(temp_p)
         if (isPointVisitable(temp_p)
@@ -846,7 +845,7 @@ bool isPointVisitable(QPointF point)
     std::list<QPointF> path = grid.computePath(currentRobotNose, point);
     if (path.size() == 0)
     {
-        qDebug()<< "Point not visitable -----";
+//        qDebug()<< "Point not visitable -----";
         return false;
     }
     else

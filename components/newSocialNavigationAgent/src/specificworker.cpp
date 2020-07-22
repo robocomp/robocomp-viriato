@@ -612,9 +612,10 @@ void SpecificWorker::action_ChangeRoom(bool newAction)
     qDebug()<<"-------------------------------"<< __FUNCTION__<< "-------------------------------";
     AGMModelSymbol::SPtr roomSymbol;
     AGMModelSymbol::SPtr robotSymbol;
+    static int32_t prevRoom = -1;
 
-
-    try {
+    try
+    {
         roomSymbol = worldModel->getSymbolByIdentifier(std::stoi(params["room2"].value));
         robotSymbol = worldModel->getSymbolByIdentifier(std::stoi(params["robot"].value));
     }
@@ -623,58 +624,53 @@ void SpecificWorker::action_ChangeRoom(bool newAction)
         std::cout << "Exception:: Error reading room and robot symbols" << ex << endl;
     }
 
-    qDebug()<<"-----------1-----------";
 
     int32_t roomId = roomSymbol->identifier;
     printf("room symbol: %d\n",  roomId);
     std::string imName =roomSymbol->getAttribute("imName");
     printf("imName: <%s>\n", imName.c_str());
-    qDebug()<<"-----------2-----------";
 
+    int32_t currentRoom = -1;
 
-    if(!navigation.isCurrentTargetActive())
+    try
     {
-        try
-        {
-            int32_t currentRoom = -1;
 
-            for (AGMModelSymbol::iterator edge = robotSymbol->edgesBegin(worldModel);
-                 edge!=robotSymbol->edgesEnd(worldModel);
-                 edge++) {
-                if (edge->getLabel()=="in") {
-                    const std::pair<int32_t, int32_t> symbolPair = edge->getSymbolPair();
-                    auto second = worldModel->getSymbol(symbolPair.second);
-                    if (second->typeString() == "room")
-                    {
-                        qDebug() << "El robot está en " << second->identifier;
-                        currentRoom = second->identifier;
-                    }
+        for (AGMModelSymbol::iterator edge = robotSymbol->edgesBegin(worldModel);
+             edge!=robotSymbol->edgesEnd(worldModel);
+             edge++) {
+            if (edge->getLabel()=="in") {
+                const std::pair<int32_t, int32_t> symbolPair = edge->getSymbolPair();
+                auto second = worldModel->getSymbol(symbolPair.second);
+                if (second->typeString() == "room")
+                {
+                    qDebug() << "El robot está en " << second->identifier;
+                    currentRoom = second->identifier;
                 }
             }
-
-
-            if (currentRoom == roomId)
-            {
-//                active = false;
-                return;
-
-            }
         }
 
-        catch( const Ice::Exception& ex)
-        {
-            std::cout << "Exception:: Cant get edge between robot and room:" << ex << endl;
-        }
+    }
 
+    catch( const Ice::Exception& ex)
+    {
+        std::cout << "Exception:: Cant get edge between robot and room:" << ex << endl;
+    }
+
+
+    if (currentRoom == roomId)
+    {
+        return;
+    }
+
+    else if (prevRoom != currentRoom)
+    {
         auto roomPolygon = getRoomPolyline(roomSymbol);
         auto center = roomPolygon.boundingRect().center();
 
         navigation.newTarget(center);
     }
 
-
-
-
+    prevRoom = currentRoom;
 
 
 };
