@@ -95,6 +95,7 @@ public:
     };
     vector<ObjectType> totalObjects;
 
+    vector <int32_t> prevPersonsNear;
 
     float thr_angle_humans = (45*M_PI)/180; //buscar angulo adecuado
     float threshold_dist = 3000; //reducir
@@ -103,6 +104,7 @@ public:
     void loadInfoFromAGM();
     bool checkHumanInteraction();
     bool checkObjectInteraction();
+    bool checkHumansNear();
     QPolygonF getAffordance(int objectID);
 
 

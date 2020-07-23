@@ -82,6 +82,18 @@ void SpecificWorker::compute()
     }
     worldModelChanged = false;
 
+
+    if(checkHumansNear()){
+        try
+        {
+            sendModificationProposal(worldModel, newModel);
+        }
+        catch(...)
+        {
+            std::cout<<"No se puede actualizar worldModel"<<std::endl;
+        }
+    }
+
 }
 
 
@@ -340,6 +352,67 @@ QPolygonF SpecificWorker::getAffordance(int objectID)
     return objectPolygon;
 }
 
+bool SpecificWorker::checkHumansNear()
+{
+	auto currentRobotPose = innerModel->transformS6D("world","robot");
+	auto robotID = worldModel->getIdentifierByType("robot");
+
+	bool changesInEdges = false;
+	vector <int32_t> currentPersonsNear;
+
+	for (auto p:totalPersons)
+	{
+		auto dist = sqrt((currentRobotPose.x() - p.x) * (currentRobotPose.x() - p.x) + (currentRobotPose.z() - p.z) * (currentRobotPose.z() - p.z));
+		if (dist < 1500)
+		{
+			currentPersonsNear.push_back(p.id);
+		}
+	}
+
+	auto edgeName = "is_near";
+
+	if (prevPersonsNear != currentPersonsNear)
+	{
+		for(auto id: prevPersonsNear)
+		{
+			try
+			{
+				newModel->removeEdgeByIdentifiers(id, robotID, edgeName);
+				qDebug ()<<" Se elimina el enlace " << QString::fromStdString(edgeName) << " de " << id;
+			}
+
+			catch(...)
+			{
+				std::cout<<__FUNCTION__<<"No existe el enlace"<<std::endl;
+
+			}
+		}
+
+		for(auto id: currentPersonsNear)
+		{
+			try
+			{
+				newModel->addEdgeByIdentifiers(id, robotID, edgeName);
+				qDebug ()<<" Se añade el enlace " << QString::fromStdString(edgeName) << " de " << id;
+			}
+
+			catch(...)
+			{
+				std::cout<<__FUNCTION__<<"No existe el enlace"<<std::endl;
+
+			}
+		}
+
+		prevPersonsNear = currentPersonsNear;
+
+		return true;
+	}
+	else
+		return false;
+
+
+
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////
 
