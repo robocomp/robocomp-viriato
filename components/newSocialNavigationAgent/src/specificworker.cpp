@@ -145,7 +145,11 @@ void SpecificWorker::compute()
         if (newTarget)
         {
             qDebug()<< "new target "<< target;
-            navigation.newTarget(target);
+            bool reachable = navigation.newTarget(target);
+
+            if (!reachable)
+                qDebug()<< "Can't reach new target ";
+
         }
 
     }

@@ -287,7 +287,7 @@ void newRandomTarget()
 
 }
 
-void newTarget(QPointF newT)
+bool newTarget(QPointF newT)
 {
 
     qDebug()<<"Navigation - "<< __FUNCTION__
@@ -298,6 +298,9 @@ void newTarget(QPointF newT)
         moveRobot = false;
     }
 
+    auto pointVisitable = isPointVisitable(newT);
+
+
     this->current_target.lock();
         current_target.active.store(true);
         current_target.blocked.store(true);
@@ -305,6 +308,9 @@ void newTarget(QPointF newT)
         current_target.p = newT;
 
     this->current_target.unlock();
+
+    return isPointVisitable(newT);
+
 }
 
 void updatePersonalPolylines(vector<QPolygonF> intimateSpaces_, vector<QPolygonF> personalSpaces_, vector<QPolygonF> socialSpaces_){
@@ -832,8 +838,6 @@ void computeForces(const std::vector<QPointF> &path, const RoboCompLaser::TLaser
 
     fclose(fd1);
 
-    qDebug()<< endl;
-    qDebug()<< endl;
 
     return;
 

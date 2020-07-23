@@ -286,7 +286,7 @@ public:
 				}
 			}
 		}
-		qDebug() << __FUNCTION__ << "Path from (" << source.x << "," << source.z << ") not  found. Returning empty path";
+//		qDebug() << __FUNCTION__ << "Path from (" << source.x << "," << source.z << ") not  found. Returning empty path";
 		return std::list<QPointF>();
 	};
 
