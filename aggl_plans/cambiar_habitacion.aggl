@@ -10,6 +10,7 @@ vertexDiameter=40.0
 ===
 types
 {
+(person)
 (robot)
 (room)
 }
@@ -17,19 +18,40 @@ types
 changeRoom : active(1)
 {
 	{
-		robot:robot(-165,-105)
-		room1:room(-280,-230)
+		robot:robot(-300,-190)
+		room1:room(-210,-365)
 		room2:room(-5,-205)
+		robot->robot(blocked)*
 		robot->room1(in)
 		room1->room2(accessible)
+		room2->room1(accessible)
 	}
 	=>
 	{
-		robot:robot(-70,10)
-		room1:room(-230,-80)
-		room2:room(65,-75)
+		robot:robot(-155,-25)
+		room1:room(-140,-205)
+		room2:room(105,-30)
+		robot->robot(blocked)*
 		robot->room2(in)
 		room1->room2(accessible)
+		room2->room1(accessible)
+	}
+}
+
+goToPerson : active(1)
+{
+	{
+		p:person(-235,-35)
+		robot:robot(-35,-180)
+		p->robot(is_blocking)
+		robot->p(is_near)*
+	}
+	=>
+	{
+		p:person(-225,-80)
+		robot:robot(0,-205)
+		p->robot(is_blocking)
+		robot->p(is_near)
 	}
 }
 

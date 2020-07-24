@@ -165,6 +165,8 @@ void SpecificWorker::checkHumanBlock()
 
 	bool edgesChanged = false;
 
+    auto robotID = newModel->getIdentifierByType("robot");
+
 	auto blockingIDs = navigation.blockIDs;
     auto softBlockingIDs = navigation.softBlockIDs;
     auto affBlockingIDs = navigation.affBlockIDs;
@@ -176,7 +178,6 @@ void SpecificWorker::checkHumanBlock()
 		qDebug()<< "aff blocking - prev: " << prev_affBlockingIDs << " current: " << affBlockingIDs;
 		qDebug()<< "SOFT blocking - prev: " << prev_softBlockingIDs << " current: " << softBlockingIDs;
 
-        auto robotID = newModel->getIdentifierByType("robot");
 
            ////////////////////// block /////////////////////////////////
           //  Si solo hay una persona bloqueando el camino --block   ///
@@ -184,7 +185,7 @@ void SpecificWorker::checkHumanBlock()
         //////////////////////////////////////////////////////////////
         string edgeName;
 
-		vector<string> edgeNames{"block" , "strongInterBlock"};
+		vector<string> edgeNames{"is_blocking" , "strongInterBlock"};
 
 		for (auto edgeName : edgeNames)
 		{
@@ -205,7 +206,7 @@ void SpecificWorker::checkHumanBlock()
 
 		}
 
-        if(blockingIDs.size() == 1) edgeName = "block";
+        if(blockingIDs.size() == 1) edgeName = "is_blocking";
         else edgeName = "strongInterBlock";
 
         for(auto id: blockingIDs)
@@ -318,6 +319,40 @@ void SpecificWorker::checkHumanBlock()
 
     else
 		edgesChanged = false;
+
+
+    if(blockingIDs.size() != 0 or affBlockingIDs.size() != 0)
+    {
+        try
+        {
+            newModel->addEdgeByIdentifiers(robotID, robotID, "blocked");
+            qDebug ()<<" Se añade el enlace " << QString::fromStdString("blocked") << " de " << robotID;
+        }
+
+        catch(...)
+        {
+            std::cout<<__FUNCTION__<<"Ya existe el enlace"<<std::endl;
+
+        }
+    }
+
+    else
+    {
+        try
+        {
+            newModel->removeEdgeByIdentifiers(robotID, robotID, "blocked");
+            qDebug ()<<" Se elimina el enlace " << QString::fromStdString("blocked") << " de " << robotID;
+        }
+
+        catch(...)
+        {
+            std::cout<<__FUNCTION__<<"Ya existe el enlace"<<std::endl;
+
+        }
+    }
+
+
+
 
 	if(edgesChanged){
 		try
@@ -848,7 +883,7 @@ bool SpecificWorker::setParametersAndPossibleActivation(const ParameterMap &prs,
 		action = params["action"].value;
 		std::transform(action.begin(), action.end(), action.begin(), ::tolower);
 		//TYPE YOUR ACTION NAME
-		if (action == "changeroom")
+		if (action == "changeroom" or action == "gotoperson")
 		{
 			active = true;
 		}
@@ -857,10 +892,13 @@ bool SpecificWorker::setParametersAndPossibleActivation(const ParameterMap &prs,
 			active = false;
 		}
 
-		if (action != "changeroom")
+		if (action != "changeroom" or action != "gotoperson" )
         {
 		    qDebug()<< " End mission .....";
 		    navigation.stopRobot();
+		    if (navigation.current_target.blocked.load() )
+		        navigation.deactivateTarget();
+
         }
 	}
 	catch (...)

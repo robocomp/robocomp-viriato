@@ -49,6 +49,11 @@ ActionExecution::retActions ActionExecution::runActions()
         ret = action_ChangeRoom();
     }
 
+    if (action == "gotoperson")
+    {
+        ret = action_GoToPerson();
+    }
+
     if (newAction)
     {
         previousAction = action;
@@ -136,6 +141,36 @@ ActionExecution::retActions ActionExecution::action_ChangeRoom()
     qDebug()<<  __FUNCTION__ << "Returning "<< needsReplanning << newTarget;
     return std::make_tuple(needsReplanning, newTarget);
 };
+
+
+
+ActionExecution::retActions ActionExecution::action_GoToPerson()
+{
+    qDebug()<<"-------------------------------"<< __FUNCTION__<< "-------------------------------";
+    AGMModelSymbol::SPtr personSymbol;
+    AGMModelSymbol::SPtr robotSymbol;
+
+    bool needsReplanning = false;
+    QPointF newTarget = QPointF();
+
+    try
+    {
+        personSymbol = worldModel->getSymbolByIdentifier(std::stoi(params["p"].value));
+        robotSymbol = worldModel->getSymbolByIdentifier(std::stoi(params["robot"].value));
+    }
+    catch( const Ice::Exception& ex)
+    {
+        std::cout << "Exception:: Error reading room and robot symbols" << ex << endl;
+    }
+
+
+
+    return std::make_tuple(needsReplanning, newTarget);
+
+
+}
+
+
 
 
 QPolygonF ActionExecution::getRoomPolyline(AGMModelSymbol::SPtr roomSymbol)

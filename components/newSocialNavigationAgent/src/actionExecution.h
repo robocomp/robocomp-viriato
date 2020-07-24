@@ -24,6 +24,7 @@ private:
     bool newActionReceived = false;
 
     ActionExecution::retActions action_ChangeRoom();
+    ActionExecution::retActions action_GoToPerson();
     QPolygonF getRoomPolyline(AGMModelSymbol::SPtr roomSymbol);
 
 

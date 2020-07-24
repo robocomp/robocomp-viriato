@@ -206,6 +206,12 @@ void stopRobot()
     qDebug()<<"Navigation - "<< __FUNCTION__;
     omnirobot_proxy->setSpeedBase(0,0,0);
 }
+void deactivateTarget()
+{
+    this->current_target.lock();
+        current_target.active.store(false);
+    this->current_target.unlock();
+}
 
 bool isCurrentTargetActive()
 {
