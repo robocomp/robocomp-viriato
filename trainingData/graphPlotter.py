@@ -1,55 +1,22 @@
-import matplotlib.pyplot as plt
 import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.transforms import Bbox
 import os
 
-pathLengthList = dict()
-angleCummulative = dict()
 
-def pathLengthSorted():
-    print("\n\n####  pathLengthSorted ####")
-    sort_orders = sorted(pathLengthList.items(), key=lambda x: x[1])
-    for pl in sort_orders:
-        print(pl[0],pl[1])
+fig, ax = plt.subplots()
+ax.set_title('Click on legend line to toggle line on/off')
+lines = []
 
-def pathSmoothnessSorted():
-    print("\n\n####  pathSmoothnessSorted ####")
-    sort_orders = sorted(angleCummulative.items(), key=lambda x: x[1])
-    for pl in sort_orders:
-        print(pl[0],pl[1])
-
-def dist(x1,y1,x2,y2):
-    if x1==None:
-        return 0
-    return ((x2-x1)**2 + (y2-y1)**2)**0.5
-
-def getPathLength(x,y):
-    distSum=0
-    for index in range(1,len(x)-1):
-        distSum += dist(x[index],y[index],x[index+1],y[index+1])
-    return distSum
-
-def getCummalativeAngle(angle):
-    cumm_angle=0
-    # converting the range into -pi <-> +pi  that is -3.14 <-> +3.14
-    for index in range(1,len(angle)-1):
-        temp_angle1 = angle[index] - 1.57
-        temp_angle2 = angle[index+1] - 1.57
-        diff_angle = abs(temp_angle1 - temp_angle2)
-        if (diff_angle > 3.14):
-            diff_angle = 6.28 - diff_angle
-
-        cumm_angle += diff_angle
-    return cumm_angle
 
 def open_file(fileName):
     data = np.genfromtxt(fileName,delimiter=",", names=["initialPosX","initialPosZ","finalPosX","finalPosZ","RobotPoseX","RobotPoseZ","RobotPoseRot","MinObstacleAngle","MinObstacleDistance"])
-    plt.plot(data['RobotPoseX'], data['RobotPoseZ'])
-    plt.axis('equal')
-    # pl= getPathLength(data['RobotPoseX'], data['RobotPoseZ'])
-    # pathLengthList[fileName]=pl
-    # an = getCummalativeAngle(data['RobotPoseRot'])
-    # angleCummulative[fileName] = an
-    # print(fileName,pl)
+    dataPlot, = ax.plot(data['RobotPoseX'], data['RobotPoseZ'],lw=2, label=fileName)
+    lines.append(dataPlot)
+
+def clearLines():
+    for dataLine in lines:
+        dataLine.set_visible(False)
 
 def createMenu():
     menu = {}
@@ -69,19 +36,58 @@ def createMenu():
             print("unknown entry")
 
 
+def onpick(event):
+    # on the pick event, find the orig line corresponding to the
+    # legend proxy line, and toggle the visibility
+    legline = event.artist
+    origline = lined[legline]
+    vis = not origline.get_visible()
+    origline.set_visible(vis)
+    # Change the alpha on the line in the legend so we can see what lines
+    # have been toggled
+    if vis:
+        legline.set_alpha(1.0)
+    else:
+        legline.set_alpha(0.2)
+    fig.canvas.draw()
+
+def func(evt):
+    if leg.contains(evt):
+        bbox = leg.get_bbox_to_anchor()
+        bbox = Bbox.from_bounds(bbox.x0, bbox.y0+d[evt.button], bbox.width, bbox.height)
+        tr = leg.axes.transAxes.inverted()
+        leg.set_bbox_to_anchor(bbox.transformed(tr))
+        fig.canvas.draw_idle()
+
+
 selected = createMenu()
 
 open_file('reference.csv')
 
-open_file('internal_Force130.csv')
-open_file('External_Force490.csv')
+# iterate over all file that are present in the directory
+for file in os.listdir():
+    if file[:10] == selected[:10]:
+        open_file(file)
 
-# for file in os.listdir():
-#     if file[:10] == selected[:10]:
-#         open_file(file)
+
+leg = ax.legend(loc='upper left',fancybox=True, shadow=True,bbox_to_anchor=(-0.15,0, 1, 1))
+leg.get_frame().set_alpha(0.01)
+lined = dict()
+for legline, origline in zip(leg.get_lines(), lines):
+    legline.set_picker(5)  # 5 pts tolerance
+    lined[legline] = origline
+
+# this will hide all the lines, and user can later click on the legend to view specific dataplots
+# based on their intrest.
+clearLines()
+
+# pixels to scroll per mousewheel event
+d = {"down" : 30, "up" : -30}
+
+
+fig.canvas.mpl_connect('pick_event', onpick)
+fig.canvas.mpl_connect("scroll_event", func)
 
 plt.show()
-# print(pathLengthList)
-# pathLengthSorted()
-# pathSmoothnessSorted()
-print("over")
+
+

@@ -56,6 +56,8 @@ def createMenu():
     menu[1]="internal_Force"
     menu[2]="External_Force"
     menu[3]="Robot_Speed"
+    menu[4]="IF_Graph"
+    menu[5]="EF_Graph"
     while True:
         options=list(menu.keys())
         options.sort()
