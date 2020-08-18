@@ -22,6 +22,9 @@
 from PySide2.QtCore import QTimer
 from PySide2.QtWidgets import QApplication
 from genericworker import *
+# AGM related imports
+import AGMModelConversion
+from AGGL import *
 
 
 # If RoboComp was compiled with Python bindings you can use InnerModel in Python
@@ -41,39 +44,52 @@ class SpecificWorker(GenericWorker):
             self.defaultMachine.start()
             self.destroyed.connect(self.t_compute_to_finalize)
 
+        # Agm related initialization
+        self.initAGM()
+
+    def initAGM(self):
+        self.worldModel = AGMGraph()
+        try:
+            w = self.agmexecutive_proxy.getModel()
+            self.AGMExecutiveTopic_structuralChange(w)
+            # get all the list of persons
+
+        except:
+            print("The executive is probably not running, waiting for first AGM model publication...")
+        return True
+
     def __del__(self):
         print('SpecificWorker destructor')
 
     def setParams(self, params):
-        #try:
-        #	self.innermodel = InnerModel(params["InnerModelPath"])
-        #except:
-        #	traceback.print_exc()
-        #	print("Error reading config params")
         return True
+
+
 
 
     @QtCore.Slot()
     def compute(self):
         print('SpecificWorker.compute...')
-        # computeCODE
-        # try:
-        #   self.differentialrobot_proxy.setSpeedBase(100, 0)
-        # except Ice.Exception as e:
-        #   traceback.print_exc()
-        #   print(e)
-
-        # The API of python-innermodel is not exactly the same as the C++ version
-        # self.innermodel.updateTransformValues('head_rot_tilt_pose', 0, 0, 0, 1.3, 0, 0)
-        # z = librobocomp_qmat.QVec(3,0)
-        # r = self.innermodel.transform('rgbd', z, 'laser')
-        # r.printvector('d')
-        # print(r[0], r[1], r[2])
+        if self.searchPeopleNearRobot():
+            print('Buscar en la camara si estan de espaldas o no')
+            pass
 
         return True
 
     def startup_check(self):
         QTimer.singleShot(200, QApplication.instance().quit)
+
+    def searchPeopleNearRobot(self):
+        for link in list(self.worldModel.links):
+            if link.linkType == 'is_near':
+                type_a = self.worldModel.getNode(link.a).sType
+                type_b = self.worldModel.getNode(link.b).sType
+
+                if type_a == 'robot' and type_b == 'person' or type_a == 'person' and type_b == 'robot':
+                    print('robot is near person')
+                    return True
+        return False
+
 
     # =============== Slots methods for State Machine ===================
     # ===================================================================
@@ -160,11 +176,10 @@ class SpecificWorker(GenericWorker):
     # SUBSCRIPTION to structuralChange method from AGMExecutiveTopic interface
     #
     def AGMExecutiveTopic_structuralChange(self, w):
-    
-        #
-        # write your CODE here
-        #
-        pass
+        self.mutex.lock()
+        self.worldModel = AGMModelConversion.fromIceToInternal_model(w)
+        self.mutex.unlock()
+
 
 
     #
