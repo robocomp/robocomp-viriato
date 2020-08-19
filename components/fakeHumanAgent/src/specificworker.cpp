@@ -1232,7 +1232,12 @@ void SpecificWorker::addInteraction()
 							edgeName = "interacting";
 							listEntry = int1_cb->currentText() + QString(" => interacting => ") + int2_cb->currentText();
 							break;
-		case unknown:	std::cout <<"Unknown interaction selected, please check TInteraction valid values" <<std::endl;
+	    case isNear:	id2 = robotID;
+	    				edgeName = "is_near";
+						listEntry = int1_cb->currentText() + QString(" => is_near => ") + QString::number(robotID);
+                        break;
+
+	case unknown:	std::cout <<"Unknown interaction selected, please check TInteraction valid values" <<std::endl;
 						return;
 	}
 	QList<QListWidgetItem*> list = interaction_lw->findItems(listEntry, Qt::MatchExactly);
@@ -1302,6 +1307,8 @@ SpecificWorker::TInteraction SpecificWorker::string2Interaction(std::string inte
 	if (interaction == "interacting") 	return interacting;
 	if (interaction == "block") 		return block;
 	if (interaction == "softBlock") 	return softBlock;
+	if (interaction == "isNear") 	    return isNear;
+
 	return unknown;
 }
 
@@ -1321,6 +1328,12 @@ void SpecificWorker::interactionChanged(int index)
 						break;
 		case interacting:	int2_cb->setEnabled(true);
 							break;
+
+	    case isNear:
+            int2_cb->setCurrentIndex(int2_cb->findText(QString::number(robotID),Qt::MatchExactly));
+            int2_cb->setEnabled(false);
+						break;
+
 		case unknown:	std::cout <<"Unknown interaction selected, please check TInteraction valid values" <<std::endl;
 						break;
 	}

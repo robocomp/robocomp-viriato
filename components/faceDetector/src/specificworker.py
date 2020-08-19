@@ -46,6 +46,7 @@ class SpecificWorker(GenericWorker):
 
         # Agm related initialization
         self.initAGM()
+        self.prev_person_near = []
 
     def initAGM(self):
         self.worldModel = AGMGraph()
@@ -64,15 +65,50 @@ class SpecificWorker(GenericWorker):
     def setParams(self, params):
         return True
 
-
-
-
     @QtCore.Slot()
     def compute(self):
         print('SpecificWorker.compute...')
-        if self.searchPeopleNearRobot():
-            print('Buscar en la camara si estan de espaldas o no')
-            pass
+        id_robot = '1'
+        (people_near, people_id) = self.searchPeopleNearRobot()
+
+        print('prev ', self.prev_person_near)
+        print('curr ', people_id)
+
+        self.newModel = AGMGraph()
+        self.newModel = AGMModelConversion.fromIceToInternal_model(self.agmexecutive_proxy.getModel())
+
+        edges_changed = False
+
+        if self.prev_person_near != people_id:
+
+            for id_to_remove in self.prev_person_near:
+                if id_to_remove in people_id:
+                    continue
+                if self.worldModel.getEdge(id_to_remove, id_robot, 'front') is not None:
+                    print('The edge exists -- edgesChanged = True')
+                    self.newModel.removeEdge(id_to_remove, id_robot, 'front')
+                    edges_changed = True
+                else:
+                    print(id_to_remove, 'the edge doesnt exists')
+
+            for id_to_add in people_id:
+                if self.worldModel.getEdge(id_to_add, id_robot, 'front') is None:
+                    print('The edge doesnt exist --- edgesChanged = True')
+                    self.newModel.addEdge(id_to_add, id_robot, 'front')
+                    edges_changed = True
+                else:
+                    print(id_to_add,'the edge already exists')
+
+            self.prev_person_near = people_id
+
+        if edges_changed:
+            try:
+                print('Updating world')
+                newModel_ice = AGMModelConversion.fromInternalToIce(self.newModel)
+                self.agmexecutive_proxy.structuralChangeProposal(newModel_ice, 'faceDetector', '')
+
+            except Exception as e:
+                print('Exception updating AGM -> ', e)
 
         return True
 
@@ -80,16 +116,18 @@ class SpecificWorker(GenericWorker):
         QTimer.singleShot(200, QApplication.instance().quit)
 
     def searchPeopleNearRobot(self):
+        people_id = []
+        person_near = False
         for link in list(self.worldModel.links):
             if link.linkType == 'is_near':
                 type_a = self.worldModel.getNode(link.a).sType
                 type_b = self.worldModel.getNode(link.b).sType
 
                 if type_a == 'robot' and type_b == 'person' or type_a == 'person' and type_b == 'robot':
-                    print('robot is near person')
-                    return True
-        return False
+                    people_id.append(link.a if type_a == 'person' else link.b)
+                    person_near = True
 
+        return person_near, people_id
 
     # =============== Slots methods for State Machine ===================
     # ===================================================================
@@ -102,7 +140,6 @@ class SpecificWorker(GenericWorker):
         print("Entered state initialize")
         self.t_initialize_to_compute.emit()
         pass
-    
 
     #
     # sm_compute
@@ -112,7 +149,6 @@ class SpecificWorker(GenericWorker):
         print("Entered state compute")
         self.compute()
         pass
-
 
     #
     # sm_finalize
@@ -132,81 +168,74 @@ class SpecificWorker(GenericWorker):
     # SUBSCRIPTION to edgeUpdated method from AGMExecutiveTopic interface
     #
     def AGMExecutiveTopic_edgeUpdated(self, modification):
-    
+
         #
         # write your CODE here
         #
         pass
-
 
     #
     # SUBSCRIPTION to edgesUpdated method from AGMExecutiveTopic interface
     #
     def AGMExecutiveTopic_edgesUpdated(self, modifications):
-    
+
         #
         # write your CODE here
         #
         pass
-
 
     #
     # SUBSCRIPTION to selfEdgeAdded method from AGMExecutiveTopic interface
     #
     def AGMExecutiveTopic_selfEdgeAdded(self, nodeid, edgeType, attributes):
-    
+
         #
         # write your CODE here
         #
         pass
-
 
     #
     # SUBSCRIPTION to selfEdgeDeleted method from AGMExecutiveTopic interface
     #
     def AGMExecutiveTopic_selfEdgeDeleted(self, nodeid, edgeType):
-    
+
         #
         # write your CODE here
         #
         pass
-
 
     #
     # SUBSCRIPTION to structuralChange method from AGMExecutiveTopic interface
     #
     def AGMExecutiveTopic_structuralChange(self, w):
+        print('AGMExecutiveTopic_structuralChange')
+
         self.mutex.lock()
         self.worldModel = AGMModelConversion.fromIceToInternal_model(w)
         self.mutex.unlock()
-
-
 
     #
     # SUBSCRIPTION to symbolUpdated method from AGMExecutiveTopic interface
     #
     def AGMExecutiveTopic_symbolUpdated(self, modification):
-    
+
         #
         # write your CODE here
         #
         pass
-
 
     #
     # SUBSCRIPTION to symbolsUpdated method from AGMExecutiveTopic interface
     #
     def AGMExecutiveTopic_symbolsUpdated(self, modifications):
-    
+
         #
         # write your CODE here
         #
         pass
 
-
     # ===================================================================
     # ===================================================================
-
 
     # =============== Methods for Component Implements ==================
     # ===================================================================
@@ -220,6 +249,7 @@ class SpecificWorker(GenericWorker):
         # write your CODE here
         #
         return ret
+
     #
     # IMPLEMENTATION of deactivateAgent method from AGMCommonBehavior interface
     #
@@ -229,6 +259,7 @@ class SpecificWorker(GenericWorker):
         # write your CODE here
         #
         return ret
+
     #
     # IMPLEMENTATION of getAgentParameters method from AGMCommonBehavior interface
     #
@@ -238,6 +269,7 @@ class SpecificWorker(GenericWorker):
         # write your CODE here
         #
         return ret
+
     #
     # IMPLEMENTATION of getAgentState method from AGMCommonBehavior interface
     #
@@ -247,16 +279,16 @@ class SpecificWorker(GenericWorker):
         # write your CODE here
         #
         return ret
+
     #
     # IMPLEMENTATION of killAgent method from AGMCommonBehavior interface
     #
     def AGMCommonBehavior_killAgent(self):
-    
+
         #
         # write your CODE here
         #
         pass
-
 
     #
     # IMPLEMENTATION of reloadConfigAgent method from AGMCommonBehavior interface
@@ -267,6 +299,7 @@ class SpecificWorker(GenericWorker):
         # write your CODE here
         #
         return ret
+
     #
     # IMPLEMENTATION of setAgentParameters method from AGMCommonBehavior interface
     #
@@ -276,6 +309,7 @@ class SpecificWorker(GenericWorker):
         # write your CODE here
         #
         return ret
+
     #
     # IMPLEMENTATION of uptimeAgent method from AGMCommonBehavior interface
     #
@@ -287,7 +321,6 @@ class SpecificWorker(GenericWorker):
         return ret
     # ===================================================================
     # ===================================================================
-
 
     ######################
     # From the RoboCompAGMExecutive you can call this methods:
@@ -312,4 +345,3 @@ class SpecificWorker(GenericWorker):
     # From the RoboCompAGMCommonBehavior you can use this types:
     # RoboCompAGMCommonBehavior.StateStruct
     # RoboCompAGMCommonBehavior.Parameter
-

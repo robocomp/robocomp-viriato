@@ -55,6 +55,7 @@ Q_OBJECT
 		interacting,
 		block,
 		softBlock,
+        isNear,
 		unknown
 	};
 

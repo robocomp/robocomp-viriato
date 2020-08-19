@@ -136,8 +136,10 @@ void SpecificWorker::compute()
 //    qDebug()<< "viewer " << reloj.restart();
 
 
-	if (navigation.isCurrentTargetActive())
-		checkHumanBlock();
+	if (navigation.isCurrentTargetActive() and !totalPersons.empty())
+    {
+        checkHumanBlock();
+    }
 
     if (active){
 
@@ -301,7 +303,7 @@ void SpecificWorker::checkHumanBlock()
 
 				catch(...)
 				{
-					std::cout<<__FUNCTION__<<"Ya existe el enlace"<<std::endl;
+					std::cout<<__FUNCTION__<<" Ya existe el enlace"<<std::endl;
 
 				}
 			}
@@ -895,9 +897,12 @@ bool SpecificWorker::setParametersAndPossibleActivation(const ParameterMap &prs,
 		if (action != "changeroom" or action != "gotoperson" )
         {
 		    qDebug()<< " End mission .....";
-		    navigation.stopRobot();
 		    if (navigation.current_target.blocked.load() )
-		        navigation.deactivateTarget();
+		    {
+                navigation.stopRobot();
+                navigation.deactivateTarget();
+
+            }
 
         }
 	}
