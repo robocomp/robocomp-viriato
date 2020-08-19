@@ -3,7 +3,12 @@ This component simulate the position of several persons and change their pose in
 
 ## Dataset
 The SALSA dateset is used here.\
-You can find the dataset [here..](http://tev.fbk.eu/salsa)
+You can find the dataset [here..](http://tev.fbk.eu/salsa)\
+PosterSession: [DataLog](https://drive.google.com/open?id=0Bzf1l8WmTwu0QlpnX0Q5TDdsM0E)\
+CocktailParty: [DataLog](https://drive.google.com/open?id=0Bzf1l8WmTwu0QmJjM1NJNC04Z2M)
+
+In the dataset we are intrested in the folder "***geometryGT***"
+
 ## Configuration parameters
 As any other component, *HumanSceneSim* needs a configuration file to start. In
 ```
