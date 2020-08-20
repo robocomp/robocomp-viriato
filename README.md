@@ -1,6 +1,8 @@
 # HumanSceneSim
 This component simulate the position of several persons and change their pose in the RCIS as well as in AGM.
 
+![MainUI](asset/mainUI.png)
+
 ## Dataset
 The SALSA dateset is used here.\
 You can find the dataset [here..](http://tev.fbk.eu/salsa)\
