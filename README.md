@@ -3,6 +3,8 @@ This component simulate the position of several persons and change their pose in
 
 ![MainUI](asset/mainUI.png)
 
+> For a video demo go to this [https://youtu.be/5jh9AY0zq0o](https://youtu.be/5jh9AY0zq0o)
+
 ## Dataset
 The SALSA dateset is used here.\
 You can find the dataset [here..](http://tev.fbk.eu/salsa)\
