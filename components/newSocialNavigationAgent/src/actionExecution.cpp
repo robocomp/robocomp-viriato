@@ -5,7 +5,6 @@
 
 #include "actionExecution.h"
 
-
 void ActionExecution::initialize(AGMModel::SPtr worldModel_)
 {
     worldModel = worldModel_;
@@ -68,7 +67,7 @@ ActionExecution::retActions ActionExecution::runActions()
 ActionExecution::retActions ActionExecution::action_ChangeRoom()
 {
 
-    qDebug()<<"-------------------------------"<< __FUNCTION__<< "-------------------------------";
+//    qDebug()<<"-------------------------------"<< __FUNCTION__<< "-------------------------------";
     AGMModelSymbol::SPtr roomSymbol;
     AGMModelSymbol::SPtr robotSymbol;
 
@@ -87,7 +86,6 @@ ActionExecution::retActions ActionExecution::action_ChangeRoom()
 
 
     int32_t destRoomID = roomSymbol->identifier;
-    printf("Quiero llegar a : %d\n",  destRoomID);
     std::string imName =roomSymbol->getAttribute("imName");
 //    printf("imName: <%s>\n", imName.c_str());
 
@@ -104,7 +102,6 @@ ActionExecution::retActions ActionExecution::action_ChangeRoom()
                 auto second = worldModel->getSymbol(symbolPair.second);
                 if (second->typeString() == "room")
                 {
-                    qDebug() << "El robot está en : " << second->identifier;
                     currentRoom = second->identifier;
                 }
             }
@@ -146,7 +143,7 @@ ActionExecution::retActions ActionExecution::action_ChangeRoom()
 
 ActionExecution::retActions ActionExecution::action_GoToPerson()
 {
-    qDebug()<<"-------------------------------"<< __FUNCTION__<< "-------------------------------";
+//    qDebug()<<"-------------------------------"<< __FUNCTION__<< "-------------------------------";
     AGMModelSymbol::SPtr personSymbol;
     AGMModelSymbol::SPtr robotSymbol;
 
@@ -164,14 +161,106 @@ ActionExecution::retActions ActionExecution::action_GoToPerson()
     }
 
 
+    if (newActionReceived)
+    {
+
+        newTarget = getPointInSocialSpace(personSymbol,robotSymbol);
+        newActionReceived = false;
+        needsReplanning = true;
+
+    }
 
     return std::make_tuple(needsReplanning, newTarget);
 
 
 }
 
+QPointF ActionExecution::getPointInSocialSpace(AGMModelSymbol::SPtr personSymbol,AGMModelSymbol::SPtr robotSymbol)
+{
+    localPerson person;
+
+    auto id = personSymbol->identifier;
+    AGMModelSymbol::SPtr personParent = worldModel->getParentByLink(id, "RT");
+    AGMModelEdge& edgeRT = worldModel->getEdgeByIdentifiers(personParent->identifier, id, "RT");
+
+    person.id = id;
+    person.x = str2float(edgeRT.attributes["tx"]);
+    person.z = str2float(edgeRT.attributes["tz"]);
+
+    localPerson robot;
+
+    auto id_r = robotSymbol->identifier;
+    AGMModelSymbol::SPtr robotParent = worldModel->getParentByLink(id_r, "RT");
+    AGMModelEdge& edgeRT_r = worldModel->getEdgeByIdentifiers(robotParent->identifier, id_r, "RT");
+
+    robot.id = id_r;
+    robot.x = str2float(edgeRT_r.attributes["tx"]);
+    robot.z = str2float(edgeRT_r.attributes["tz"]);
 
 
+    AGMModelSymbol::SPtr personalSpace;
+
+    for (AGMModelSymbol::iterator edge = personSymbol->edgesBegin(worldModel);
+         edge!=personSymbol->edgesEnd(worldModel);
+         edge++) {
+        if (edge->getLabel()=="has") {
+            const std::pair<int32_t, int32_t> symbolPair = edge->getSymbolPair();
+            personalSpace = worldModel->getSymbolByIdentifier(symbolPair.second);
+            break;
+        }
+    }
+
+
+    QString personal = QString::fromStdString(personalSpace->getAttribute("personal"));
+
+    vector<QPolygonF> polygonSeq;
+
+    QPolygonF personalPolygon;
+
+    for(auto pol: personal.split(";;"))
+    {
+        if(pol.size() == 0)
+            continue;
+
+        personalPolygon = QPolygonF();
+
+        for (auto pxz : pol.split(";"))
+        {
+            auto p = pxz.split(" ");
+
+            if (p.size() != 2)
+                continue;
+
+            auto x = std::stof(p[0].toStdString());
+            auto z = std::stof(p[1].toStdString());
+
+            personalPolygon << QPointF(x,z);
+        }
+
+        //Puede haber varios espacios sociales, se comprueba que la persona esta contenida en el espacio social
+        if (personalPolygon.containsPoint(QPointF(person.x,person.z),Qt::OddEvenFill))
+            break;
+    }
+
+    QLineF line(QPointF(person.x,person.z),QPointF(robot.x,robot.z));
+    qDebug()<<line;
+
+    for (int i = 0; i < 10; i++)
+    {
+        float step = i/10.0f;
+
+        QPointF point = line.pointAt(step);
+        qDebug()<< line.pointAt(step);
+
+        //El punto más cercano a la persona dentro del espacio social será el primer punto no contenido en el personal
+        if (!personalPolygon.containsPoint(point,Qt::OddEvenFill)){
+            return point;
+        }
+    }
+
+
+
+}
 
 QPolygonF ActionExecution::getRoomPolyline(AGMModelSymbol::SPtr roomSymbol)
 {

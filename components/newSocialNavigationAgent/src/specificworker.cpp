@@ -161,6 +161,8 @@ void SpecificWorker::compute()
 
 void SpecificWorker::checkHumanBlock()
 {
+    qDebug()<< "--------"<<__FUNCTION__<<"--------";
+    
 	QMutexLocker lockIM(mutex);
 
 	AGMModel::SPtr newModel = AGMModel::SPtr(new AGMModel(worldModel));
@@ -348,7 +350,7 @@ void SpecificWorker::checkHumanBlock()
 
         catch(...)
         {
-            std::cout<<__FUNCTION__<<"Ya existe el enlace"<<std::endl;
+            std::cout<<__FUNCTION__<<"No existe el enlace"<<std::endl;
 
         }
     }

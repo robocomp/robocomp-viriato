@@ -5,6 +5,7 @@
 #ifndef ACTIONEXECUTION_H
 #define ACTIONEXECUTION_H
 #include <genericworker.h>
+#include <localPerson.h>
 
 class ActionExecution {
 
@@ -26,7 +27,7 @@ private:
     ActionExecution::retActions action_ChangeRoom();
     ActionExecution::retActions action_GoToPerson();
     QPolygonF getRoomPolyline(AGMModelSymbol::SPtr roomSymbol);
-
+    QPointF getPointInSocialSpace(AGMModelSymbol::SPtr personSymbol,AGMModelSymbol::SPtr robotSymbol);
 
 };
 

@@ -363,7 +363,7 @@ bool SpecificWorker::checkHumansNear()
 	for (auto p:totalPersons)
 	{
 		auto dist = sqrt((currentRobotPose.x() - p.x) * (currentRobotPose.x() - p.x) + (currentRobotPose.z() - p.z) * (currentRobotPose.z() - p.z));
-		if (dist < 1500)
+		if (dist < 2000)
 		{
 			currentPersonsNear.push_back(p.id);
 		}
@@ -377,7 +377,7 @@ bool SpecificWorker::checkHumansNear()
 		{
 			try
 			{
-				newModel->removeEdgeByIdentifiers(id, robotID, edgeName);
+				newModel->removeEdgeByIdentifiers(robotID, id, edgeName);
 				qDebug ()<<" Se elimina el enlace " << QString::fromStdString(edgeName) << " de " << id;
 			}
 
@@ -392,7 +392,7 @@ bool SpecificWorker::checkHumansNear()
 		{
 			try
 			{
-				newModel->addEdgeByIdentifiers(id, robotID, edgeName);
+				newModel->addEdgeByIdentifiers(robotID, id, edgeName);
 				qDebug ()<<" Se añade el enlace " << QString::fromStdString(edgeName) << " de " << id;
 			}
 

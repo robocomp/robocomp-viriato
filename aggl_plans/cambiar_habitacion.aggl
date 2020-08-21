@@ -15,6 +15,22 @@ types
 (room)
 }
 ===
+askForPermission : active(1)
+{
+	{
+		p:person(-40,-50)
+		robot:robot(-195,55)
+		robot->p(is_near)
+		robot->robot(blocked)
+	}
+	=>
+	{
+		p:person(10,-115)
+		robot:robot(-140,10)
+		robot->p(is_near)
+	}
+}
+
 changeRoom : active(1)
 {
 	{
@@ -43,14 +59,11 @@ goToPerson : active(1)
 	{
 		p:person(-235,-35)
 		robot:robot(-35,-180)
-		p->robot(is_blocking)
-		robot->p(is_near)*
 	}
 	=>
 	{
 		p:person(-225,-80)
 		robot:robot(0,-205)
-		p->robot(is_blocking)
 		robot->p(is_near)
 	}
 }
