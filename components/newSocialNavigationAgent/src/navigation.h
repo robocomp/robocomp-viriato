@@ -708,14 +708,14 @@ void computeForces(const std::vector<QPointF> &path, const RoboCompLaser::TLaser
 
             if ((!obstacleFound) or (nonVisiblePointsComputed > 10))
             {
-                qDebug () << "No obstacles found ";
+//                qDebug () << "No obstacles found ";
                 nonVisiblePointsComputed++;
 
                 continue;
             }
             else
             {
-                qDebug()<< "--- Obstacle found in grid ---";
+//                qDebug()<< "--- Obstacle found in grid ---";
                 min_dist = vectorForce.length() - (ROBOT_LENGTH / 2);
                 if (min_dist <= 0)
                     min_dist = 0.01;
@@ -924,7 +924,7 @@ void cleanPoints()
 
         else if(currentRobotPolygon.containsPoint(p2, Qt::OddEvenFill))
         {
-            qDebug()<<"-------------" << __FUNCTION__ << "------------- Removing point inside robot ";
+//            qDebug()<<"-------------" << __FUNCTION__ << "------------- Removing point inside robot ";
             points_to_remove.push_back(p2);
         }
 

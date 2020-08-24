@@ -1214,9 +1214,9 @@ void SpecificWorker::addInteraction()
 						id2 = int1_cb->currentText().toInt();
 						listEntry = int1_cb->currentText() + QString(" => isBusy");
 						break;
-		case block:		id2 = robotID;
-						edgeName = "block";
-						listEntry = int1_cb->currentText() + QString(" => block => ") + QString::number(robotID);
+		case isBlocking:id2 = robotID;
+						edgeName = "is_blocking";
+						listEntry = int1_cb->currentText() + QString(" => is_blocking => ") + QString::number(robotID);
 						break;
 		case softBlock:	id2 = robotID;
 						edgeName = "softBlock";
@@ -1236,6 +1236,8 @@ void SpecificWorker::addInteraction()
 	    				edgeName = "is_near";
 						listEntry = int1_cb->currentText() + QString(" => is_near => ") + QString::number(robotID);
                         break;
+
+
 
 	case unknown:	std::cout <<"Unknown interaction selected, please check TInteraction valid values" <<std::endl;
 						return;
@@ -1305,7 +1307,7 @@ SpecificWorker::TInteraction SpecificWorker::string2Interaction(std::string inte
 {
 	if (interaction == "isBusy") 		return isBusy;
 	if (interaction == "interacting") 	return interacting;
-	if (interaction == "block") 		return block;
+	if (interaction == "isBlocking") 	return isBlocking;
 	if (interaction == "softBlock") 	return softBlock;
 	if (interaction == "isNear") 	    return isNear;
 
@@ -1318,21 +1320,22 @@ void SpecificWorker::interactionChanged(int index)
 	TInteraction option = string2Interaction(interaction_cb->currentText().toStdString());
 	switch(option)
 	{
-		case isBusy:	int2_cb->setEnabled(false);
-						break;
-		case block:		int2_cb->setCurrentIndex(int2_cb->findText(QString::number(robotID),Qt::MatchExactly));
-						int2_cb->setEnabled(false);
-						break;
-		case softBlock:	int2_cb->setCurrentIndex(int2_cb->findText(QString::number(robotID),Qt::MatchExactly));
-						int2_cb->setEnabled(false);
-						break;
+		case isBusy:	    int2_cb->setEnabled(false);
+						    break;
+		case isBlocking:    int2_cb->setCurrentIndex(int2_cb->findText(QString::number(robotID),Qt::MatchExactly));
+						    int2_cb->setEnabled(false);
+						    break;
+		case softBlock:	    int2_cb->setCurrentIndex(int2_cb->findText(QString::number(robotID),Qt::MatchExactly));
+						    int2_cb->setEnabled(false);
+						    break;
 		case interacting:	int2_cb->setEnabled(true);
 							break;
 
 	    case isNear:
-            int2_cb->setCurrentIndex(int2_cb->findText(QString::number(robotID),Qt::MatchExactly));
-            int2_cb->setEnabled(false);
-						break;
+                            int2_cb->setCurrentIndex(int2_cb->findText(QString::number(robotID),Qt::MatchExactly));
+                            int2_cb->setEnabled(false);
+                            break;
+
 
 		case unknown:	std::cout <<"Unknown interaction selected, please check TInteraction valid values" <<std::endl;
 						break;

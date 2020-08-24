@@ -139,6 +139,13 @@
           </property>
          </widget>
         </item>
+        <item>
+         <widget class="QCheckBox" name="permission_checkbox">
+          <property name="text">
+           <string>Permission to pass</string>
+          </property>
+         </widget>
+        </item>
        </layout>
       </item>
       <item>

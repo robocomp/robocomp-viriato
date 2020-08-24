@@ -53,7 +53,7 @@ Q_OBJECT
 	enum TInteraction {
 		isBusy, 
 		interacting,
-		block,
+		isBlocking,
 		softBlock,
         isNear,
 		unknown

@@ -348,10 +348,8 @@ public:
 
 	std::tuple<bool, QVector2D> vectorToClosestObstacle(QPointF center)
     {
-        QTime reloj = QTime::currentTime();
-        qDebug()<<" reloj "<< reloj.restart();
 
-        qDebug()<< "Computing neighboors of " << center;
+//        qDebug()<< "Computing neighboors of " << center;
 
 	    auto k = pointToGrid(center.x(),center.y());
 
@@ -410,8 +408,6 @@ public:
             }
 
         }
-
-        qDebug()<<" reloj "<< reloj.restart();
 
         return std::make_tuple(obstacleFound,closestVector);
     }

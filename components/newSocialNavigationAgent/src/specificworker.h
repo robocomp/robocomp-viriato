@@ -86,6 +86,7 @@ public slots:
     void compute();
     void initialize(int period);
     void checkRobotAutoMovState();
+    void checkRobotPermission();
     void moveRobot();
     void sendRobotTo();
 	void forcesSliderChanged(int value = 0);
@@ -102,8 +103,11 @@ private:
 	std::string action;
 	ParameterMap params;
 
-    AGMModel::SPtr worldModel;
+    AGMModel::SPtr worldModel, newModel;
 	bool active;
+
+	int32_t robotID;
+	bool permissionToPass = false;
 
 	vector <int32_t> prev_blockingIDs = {};
 	vector <int32_t> prev_affBlockingIDs = {};
@@ -143,6 +147,8 @@ private:
 	bool setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated);
 	void sendModificationProposal(AGMModel::SPtr &worldModel, AGMModel::SPtr &newModel);
 
+	bool removeEdgeModel(int32_t id1, int32_t id2, string edgeName);
+	bool addEdgeModel(int32_t id1, int32_t id2, string edgeName);
 
 
 };
