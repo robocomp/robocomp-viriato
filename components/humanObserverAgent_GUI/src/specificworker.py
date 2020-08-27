@@ -256,7 +256,8 @@ class Human():
     def __init__(self,id = None,name = ""):
         self.id = id
         self.name = ""
-        self.age = "Age<30"
+        self.gender = "Male"
+        self.age = "Age_less_than_30"
         self.userType = "Clinician"
         self.PhysicalDep = 0
         self.CognitiveDep = 0
@@ -876,6 +877,7 @@ class SpecificWorker(GenericWorker):
         for p in self.persons:
             if p.id==temp_id:
                 p.name = self.ui.H_name.text()
+                p.gender = self.ui.H_gender.currentText()
                 p.age = self.ui.H_age.currentText()
                 p.userType = self.ui.H_userType.currentText()
                 p.PhysicalDep = self.ui.H_phyDep.value()
@@ -889,6 +891,7 @@ class SpecificWorker(GenericWorker):
                 return
         temp_human.id = temp_id
         temp_human.name = self.ui.H_name.text()
+        temp_human.gender = self.ui.H_gender.currentText()
         temp_human.age = self.ui.H_age.currentText()
         temp_human.userType = self.ui.H_userType.currentText()
         temp_human.PhysicalDep = self.ui.H_phyDep.value()
@@ -908,6 +911,7 @@ class SpecificWorker(GenericWorker):
         for human in list(self.persons):
             if human.id == currID:
                 self.ui.H_name.setText(human.name)
+                self.ui.H_gender.setCurrentText(human.gender)
                 self.ui.H_age.setCurrentText(human.age)
                 self.ui.H_userType.setCurrentText(human.userType)
                 self.ui.H_phyDep.setValue(human.PhysicalDep)
@@ -958,6 +962,7 @@ class SpecificWorker(GenericWorker):
     def setHumanB(self):
         print("set human")
         self.updatePersons()
+        self.toDSR()
 
 
     def addPhoto(self):
@@ -1002,6 +1007,31 @@ class SpecificWorker(GenericWorker):
 
     def toDSR(self):
         print("todsr")
+        personID = str(self.ui.id_list.currentText())
+        print(personID)
+        print(type(personID))
+        tempNode = self.worldModel.getNode(personID)
+
+        # adding person information into attributes
+        tempNode.attributes["name"] = str(self.ui.H_name.text())
+        tempNode.attributes["imGender"] = str(self.ui.H_gender.currentText())
+        tempNode.attributes["imAge"] = str(self.ui.H_age.currentText())
+        tempNode.attributes["userType"] = str(self.ui.H_userType.currentText())
+        tempNode.attributes["PhysicalDep"] = str(self.ui.H_phyDep.value())
+        tempNode.attributes["CognitiveDep"] = str(self.ui.H_cogDep.value())
+        tempNode.attributes["emotionalState"] = str(self.ui.H_emoSate.currentText())
+        tempNode.attributes["activity"] = str(self.ui.H_activity.currentText())
+        tempNode.attributes["pose.x"] = str(self.ui.x_sb.value())
+        tempNode.attributes["pose.z"] = str(self.ui.z_sb.value())
+        tempNode.attributes["pose.rx"] = str(self.ui.rot_sb.value())
+        tempNode.attributes["photo"] = str(self.currentImagePath)
+
+        self.newModel = AGMModelConversion.fromInternalToIce(self.worldModel)
+        self.nodeUpdate(personID,tempNode.attributes)
+        try:
+            self.agmexecutive_proxy.structuralChangeProposal(self.newModel, "gui1", "logger")
+        except:
+            print("Exception moving in AGM")
         print(self.persons)
         # print(self.worldModel)
 
@@ -1048,6 +1078,13 @@ class SpecificWorker(GenericWorker):
                     srcEdge.attributes = attr
                     break
 
+    def nodeUpdate(self,Id,attr=None):
+        src = self.newModel
+        for srcNode in src.nodes:
+            if srcNode.nodeIdentifier == Id:
+                srcNode.attributes = attr
+                break
+
 
     def interactionChanged(self,index):
         # print("inter",index)
@@ -1058,6 +1095,9 @@ class SpecificWorker(GenericWorker):
             self.ui.int2_cb.setEnabled(False)
             self.ui.interaction_cb_2.hide()
         elif index=="softBlock":
+            self.ui.int2_cb.setEnabled(False)
+            self.ui.interaction_cb_2.hide()
+        elif index=="affordanceBlock":
             self.ui.int2_cb.setEnabled(False)
             self.ui.interaction_cb_2.hide()
         elif index=="interacting":
@@ -1081,6 +1121,10 @@ class SpecificWorker(GenericWorker):
             id2 = robotID
             listEntry = id1 + " => " + curr_text + " " + id2
         elif curr_text == "softBlock":
+            self.ui.int2_cb.setEnabled(False)
+            id2 = robotID
+            listEntry = id1 + " => " + curr_text + " " + id2
+        elif curr_text == "affordanceBlock":
             self.ui.int2_cb.setEnabled(False)
             id2 = robotID
             listEntry = id1 + " => " + curr_text + " " + id2
