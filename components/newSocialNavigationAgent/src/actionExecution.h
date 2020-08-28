@@ -15,7 +15,7 @@ public:
     void initialize(AGMModel::SPtr worldModel_);
     void updateWordModel(AGMModel::SPtr worldModel_);
     void update(std::string action_,  ParameterMap params_);
-    ActionExecution::retActions runActions();
+    ActionExecution::retActions runActions(std::string action_,  ParameterMap params_);
 
 
 private:
@@ -24,8 +24,8 @@ private:
     ParameterMap params;
     bool newActionReceived = false;
 
-    ActionExecution::retActions action_ChangeRoom();
-    ActionExecution::retActions action_GoToPerson();
+    ActionExecution::retActions action_ChangeRoom(ParameterMap params_);
+    ActionExecution::retActions action_GoToPerson(ParameterMap params_);
     QPolygonF getRoomPolyline(AGMModelSymbol::SPtr roomSymbol);
     QPointF getPointInSocialSpace(AGMModelSymbol::SPtr personSymbol,AGMModelSymbol::SPtr robotSymbol);
 

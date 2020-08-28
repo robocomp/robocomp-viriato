@@ -377,7 +377,7 @@ public:
 					closestVector = vec;
 				}
 
-				qDebug()<< "Obstacle found";
+//				qDebug()<< "Obstacle found";
 				obstacleFound = true;
             }
         }
@@ -402,7 +402,7 @@ public:
                         closestVector = vec;
                     }
 
-                    qDebug()<< "Obstacle found";
+//                    qDebug()<< "Obstacle found";
                     obstacleFound = true;
                 }
             }

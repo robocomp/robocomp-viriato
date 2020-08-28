@@ -91,7 +91,10 @@ void SpecificWorker::initialize(int period)
     actionExecution.initialize(worldModel);
 
 
+
     qDebug()<<"Classes initialized correctly";
+
+    getPeopleBlocking();
 
     this->Period = period;
     timer.start(period);
@@ -100,6 +103,8 @@ void SpecificWorker::initialize(int period)
     emit this->t_initialize_to_compute();
 
 }
+
+
 
 void SpecificWorker::compute()
 {
@@ -139,14 +144,13 @@ void SpecificWorker::compute()
 //    qDebug()<< "viewer " << reloj.restart();
 
 
-	if (active and !totalPersons.empty())
-    {
+	if (!totalPersons.empty())
         checkHumanBlock();
-    }
 
-    if (active){
 
-        auto [newTarget, target] = actionExecution.runActions();
+    if (active)
+    {
+        auto [newTarget, target] = actionExecution.runActions(action,params);
         if (newTarget)
         {
             qDebug()<< "new target "<< target;
@@ -157,15 +161,31 @@ void SpecificWorker::compute()
 
         }
 
+        if(robotBlocked)
+            checkRobotBlock();
+
     }
 
 }
 
+//Check if the robot is still blocked
+void SpecificWorker::checkRobotBlock()
+{
+    qDebug()<<__FUNCTION__;
+    auto [_, target] = actionExecution.runActions(actionBlocked,paramsBlocked);
+    if(navigation.isPointVisitable(target))
+    {
+        qDebug()<< "---- ROBOT NOT BLOCKED ----";
+        robotBlocked = false;
+        actionBlocked = "";
+        planBlocked = "";
+        paramsBlocked.clear();
+    }
+
+}
 
 void SpecificWorker::checkHumanBlock()
 {
-    qDebug()<< "--------"<<__FUNCTION__<<"--------";
-
 	QMutexLocker lockIM(mutex);
 
 	newModel = AGMModel::SPtr(new AGMModel(worldModel));
@@ -177,13 +197,12 @@ void SpecificWorker::checkHumanBlock()
     auto softBlockingIDs = navigation.softBlockIDs;
     auto affBlockingIDs = navigation.affBlockIDs;
 
+
     if((prev_blockingIDs != blockingIDs) or (prev_softBlockingIDs != softBlockingIDs) or (prev_affBlockingIDs != affBlockingIDs))
     {
-
-		qDebug()<< "blocking - prev: " << prev_blockingIDs << " current: " << blockingIDs;
-//		qDebug()<< "aff blocking - prev: " << prev_affBlockingIDs << " current: " << affBlockingIDs;
-//		qDebug()<< "SOFT blocking - prev: " << prev_softBlockingIDs << " current: " << softBlockingIDs;
-
+        qDebug()<< "blocking - prev: " << prev_blockingIDs << " current: " << blockingIDs;
+		qDebug()<< "aff blocking - prev: " << prev_affBlockingIDs << " current: " << affBlockingIDs;
+		qDebug()<< "SOFT blocking - prev: " << prev_softBlockingIDs << " current: " << softBlockingIDs;
 
            ////////////////////// block /////////////////////////////////
           //  Si solo hay una persona bloqueando el camino --block   ///
@@ -243,32 +262,43 @@ void SpecificWorker::checkHumanBlock()
 
         }
 
-        ///////////////////////////////////////////////////////////////////
 
-        prev_blockingIDs = blockingIDs;
-        prev_affBlockingIDs = affBlockingIDs;
-        prev_softBlockingIDs = softBlockingIDs;
-
-		edgesChanged = true;
+        edgesChanged = true;
     }
 
     else
 		edgesChanged = false;
 
 
-    if(blockingIDs.size() != 0 or affBlockingIDs.size() != 0)
+    if  (active and
+            (blockingIDs.size() != 0 or affBlockingIDs.size() != 0) and
+                ((prev_blockingIDs != blockingIDs) or  (prev_affBlockingIDs != affBlockingIDs)))
     {
         if(addEdgeModel(robotID,robotID,"blocked"))
             edgesChanged = true;
+
+
+        robotBlocked = true;
+
+        if (planBlocked == "")
+        {
+            planBlocked = currentPlan;
+            paramsBlocked = params;
+            actionBlocked = action;
+        }
     }
 
-    if (permissionToPass == true)
+    if (!robotBlocked)
     {
-        qDebug()<< "PERMISSION TO PASS";
         if(removeEdgeModel(robotID,robotID,"blocked"))
             edgesChanged = true;
-    }
 
+
+        actionBlocked = "";
+        planBlocked = "";
+        paramsBlocked.clear();
+
+    }
 
 
 
@@ -284,11 +314,17 @@ void SpecificWorker::checkHumanBlock()
 		}
 	}
 
+
+
+    prev_blockingIDs = blockingIDs;
+    prev_affBlockingIDs = affBlockingIDs;
+    prev_softBlockingIDs = softBlockingIDs;
+
 }
 
 bool SpecificWorker::removeEdgeModel(int32_t id1, int32_t id2, string edgeName)
 {
-    qDebug()<< __FUNCTION__ << id1 << id2 <<  QString::fromStdString(edgeName);
+//    qDebug()<< __FUNCTION__ << id1 << id2 <<  QString::fromStdString(edgeName);
 
     try
     {
@@ -299,7 +335,7 @@ bool SpecificWorker::removeEdgeModel(int32_t id1, int32_t id2, string edgeName)
 
     catch(...)
     {
-        std::cout<<__FUNCTION__<<" No existe el enlace " << edgeName  <<std::endl;
+//        std::cout<<__FUNCTION__<<" No existe el enlace " << edgeName  <<std::endl;
         return false;
     }
 
@@ -358,6 +394,25 @@ void SpecificWorker::getPersonsFromModel()
 		totalPersons.push_back(person);
 	}
 }
+
+void SpecificWorker::getPeopleBlocking()
+{
+    auto vectorPersons = worldModel->getSymbolsByType("person");
+    for (auto person : vectorPersons)
+    {
+
+        for (AGMModelSymbol::iterator edge = person->edgesBegin(worldModel);
+             edge!=person->edgesEnd(worldModel);
+             edge++) {
+            if (edge->getLabel()=="is_blocking") {
+                const std::pair<int32_t, int32_t> symbolPair = edge->getSymbolPair();
+                prev_blockingIDs.push_back(symbolPair.first);
+            }
+        }
+    }
+
+}
+
 
 SpecificWorker::retPersonalSpaces SpecificWorker::getPolylinesFromModel()
 {
@@ -558,10 +613,7 @@ void SpecificWorker::checkRobotPermission()
 {
     qDebug()<< __FUNCTION__;
     if(permission_checkbox->checkState() == Qt::CheckState(2)) {
-        permissionToPass = true;
-    }
-    else {
-        permissionToPass = false;
+        robotBlocked = false;
     }
 }
 
@@ -842,6 +894,29 @@ bool SpecificWorker::setParametersAndPossibleActivation(const ParameterMap &prs,
 		qDebug()<< QString::fromStdString(it->first) << " " << QString::fromStdString(it->second.value);
 	}
 
+	vector<QString> plans;
+	bool blockedPlanInPlans = false;
+
+    QString planList = QString::fromStdString(params["plan"].value);
+    qDebug()<< "Blocked plan "<< planBlocked;
+
+	for (auto plan : planList.split("\n"))
+    {
+        if(plan == "")
+            continue;
+
+        if(planBlocked == plan)
+            blockedPlanInPlans = true;
+
+	    plans.push_back(plan);
+
+    }
+
+    robotBlocked = blockedPlanInPlans;
+
+    if (plans.size()!= 0)
+        currentPlan = plans[0];
+
 	try
 	{
 		action = params["action"].value;
@@ -862,9 +937,11 @@ bool SpecificWorker::setParametersAndPossibleActivation(const ParameterMap &prs,
                 navigation.deactivateTarget();
             }
 
-//            qDebug()<<"eeeeeeo" << robotID;
-//            removeEdgeModel(robotID,robotID,"blocked");
-//            qDebug()<<"bieeen";
+            robotBlocked = false;
+            actionBlocked = action;
+            currentPlan = "none";
+            planBlocked = "";
+            paramsBlocked.clear();
         }
 	}
 	catch (...)
@@ -878,10 +955,13 @@ bool SpecificWorker::setParametersAndPossibleActivation(const ParameterMap &prs,
 	{
 		active = true;
 		reactivated = true;
-	}
+
+        actionExecution.update(action,params);
+
+    }
 
 
-	actionExecution.update(action,params);
+
 
     printf("<<< ------------------------- setParametersAndPossibleActivation -------------------------\n");
 

@@ -100,14 +100,21 @@ public slots:
 //--------------------
 private:
 	InnerPtr innerModel;
-	std::string action;
+	std::string action,actionBlocked;
 	ParameterMap params;
+
+    bool robotBlocked = false;
+
+    QString currentPlan = "none";
+    QString planBlocked = "";
+    ParameterMap paramsBlocked;
+
 
     AGMModel::SPtr worldModel, newModel;
 	bool active;
 
 	int32_t robotID;
-	bool permissionToPass = false;
+
 
 	vector <int32_t> prev_blockingIDs = {};
 	vector <int32_t> prev_affBlockingIDs = {};
@@ -140,7 +147,10 @@ private:
 	retPersonalSpaces getPolylinesFromModel();
 	retAffordanceSpaces getAffordancesFromModel();
 
+	void getPeopleBlocking();
+
 	void checkHumanBlock();
+	void checkRobotBlock();
 
 
 

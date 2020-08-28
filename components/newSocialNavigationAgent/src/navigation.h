@@ -69,276 +69,288 @@ public:
 	localPersonsVec totalPersons;
 
 
-void initialize(const std::shared_ptr<InnerModel> &innerModel_, const std::shared_ptr<InnerViewer> &viewer_,
-        std::shared_ptr< RoboCompCommonBehavior::ParameterList > configparams_, OmniRobotPrx omnirobot_proxy_)
-{
-    qDebug()<<"Navigation - "<< __FUNCTION__;
-
-    innerModel = innerModel_;
-
-    configparams = configparams_;
-    viewer = viewer_;
-
-    omnirobot_proxy = omnirobot_proxy_;
-    stopRobot();
-     //grid can't be initialized if the robot is moving
-
-    collisions =  std::make_shared<Collisions>();
-
-    collisions->initialize(innerModel, configparams);
-    grid.initialize(collisions);
-    grid.draw(viewer);
-    controller.initialize(innerModel,configparams);
-
-
-    robotXWidth = std::stof(configparams->at("RobotXWidth").value);
-    robotZLong = std::stof(configparams->at("RobotZLong").value);
-    robotBottomLeft     = QVec::vec3( - robotXWidth / 2 - 100, 0, - robotZLong / 2 - 100);
-    robotBottomRight    = QVec::vec3( + robotXWidth / 2 + 100, 0, - robotZLong / 2 - 100);
-    robotTopRight       = QVec::vec3( + robotXWidth / 2 + 100, 0, + robotZLong / 2 + 100);
-    robotTopLeft        = QVec::vec3( - robotXWidth / 2 - 100, 0, + robotZLong / 2 + 100);
-
-//    reloj.restart();
-
-};
-
-void updateInnerModel(const std::shared_ptr<InnerModel> &innerModel_)
-{
-    qDebug()<<"Navigation - "<< __FUNCTION__;
-
-    innerModel = innerModel_;
-    controller.updateInnerModel(innerModel);
-
-};
-
-void update(localPersonsVec totalPersons_, const RoboCompLaser::TLaserData &laserData_, bool needsReplaning)
-{
-
-//    qDebug()<<"Navigation - "<< __FUNCTION__;
-//    static QTime reloj = QTime::currentTime();
-
-    if (gridChanged)
+    void initialize(const std::shared_ptr<InnerModel> &innerModel_, const std::shared_ptr<InnerViewer> &viewer_,
+            std::shared_ptr< RoboCompCommonBehavior::ParameterList > configparams_, OmniRobotPrx omnirobot_proxy_)
     {
-        updateFreeSpaceMap();
-        gridChanged = false;
-    }
+        qDebug()<<"Navigation - "<< __FUNCTION__;
 
-    totalPersons = totalPersons_;
-    RoboCompLaser::TLaserData laserData;
-    laserData = computeLaser(laserData_);
-    currentRobotPose = innerModel->transformS6D("world","robot");
-//    qDebug()<< "Updated Robot pose " << reloj.restart();
+        innerModel = innerModel_;
 
-    updateLaserPolygon(laserData);
-    currentRobotPolygon = getRobotPolygon();
+        configparams = configparams_;
+        viewer = viewer_;
+
+        omnirobot_proxy = omnirobot_proxy_;
+        stopRobot();
+         //grid can't be initialized if the robot is moving
+
+        collisions =  std::make_shared<Collisions>();
+
+        collisions->initialize(innerModel, configparams);
+        grid.initialize(collisions);
+        grid.draw(viewer);
+        controller.initialize(innerModel,configparams);
 
 
-    currentRobotNose = getRobotNose();
+        robotXWidth = std::stof(configparams->at("RobotXWidth").value);
+        robotZLong = std::stof(configparams->at("RobotZLong").value);
+        robotBottomLeft     = QVec::vec3( - robotXWidth / 2 - 100, 0, - robotZLong / 2 - 100);
+        robotBottomRight    = QVec::vec3( + robotXWidth / 2 + 100, 0, - robotZLong / 2 - 100);
+        robotTopRight       = QVec::vec3( + robotXWidth / 2 + 100, 0, + robotZLong / 2 + 100);
+        robotTopLeft        = QVec::vec3( - robotXWidth / 2 - 100, 0, + robotZLong / 2 + 100);
 
+    //    reloj.restart();
 
-    if(needsReplaning)
+    };
+
+    void updateInnerModel(const std::shared_ptr<InnerModel> &innerModel_)
     {
-        for (auto p: pathPoints)
+        qDebug()<<"Navigation - "<< __FUNCTION__;
+
+        innerModel = innerModel_;
+        controller.updateInnerModel(innerModel);
+
+    };
+
+    void update(localPersonsVec totalPersons_, const RoboCompLaser::TLaserData &laserData_, bool needsReplaning)
+    {
+
+    //    qDebug()<<"Navigation - "<< __FUNCTION__;
+    //    static QTime reloj = QTime::currentTime();
+
+        if (gridChanged)
         {
-            if(std::any_of(std::begin(socialSpaces), std::end(socialSpaces),[p](const auto &poly) { return poly.containsPoint(p, Qt::OddEvenFill);})
-            or std::any_of(std::begin(personalSpaces), std::end(personalSpaces),[p](const auto &poly) { return poly.containsPoint(p, Qt::OddEvenFill);})
-            or std::any_of(std::begin(totalAffordances), std::end(totalAffordances),[p](const auto &poly) { return poly.containsPoint(p, Qt::OddEvenFill);})
-           )
+            updateFreeSpaceMap();
+            gridChanged = false;
+        }
+
+        totalPersons = totalPersons_;
+        RoboCompLaser::TLaserData laserData;
+        laserData = computeLaser(laserData_);
+        currentRobotPose = innerModel->transformS6D("world","robot");
+    //    qDebug()<< "Updated Robot pose " << reloj.restart();
+
+        updateLaserPolygon(laserData);
+        currentRobotPolygon = getRobotPolygon();
+
+
+        currentRobotNose = getRobotNose();
+
+
+        if(needsReplaning)
+        {
+            for (auto p: pathPoints)
             {
-                stopRobot();
+                if(std::any_of(std::begin(socialSpaces), std::end(socialSpaces),[p](const auto &poly) { return poly.containsPoint(p, Qt::OddEvenFill);})
+                or std::any_of(std::begin(personalSpaces), std::end(personalSpaces),[p](const auto &poly) { return poly.containsPoint(p, Qt::OddEvenFill);})
+                or std::any_of(std::begin(totalAffordances), std::end(totalAffordances),[p](const auto &poly) { return poly.containsPoint(p, Qt::OddEvenFill);})
+               )
+                {
+                    stopRobot();
 
-                this->current_target.lock();
-                    current_target.blocked.store(true);
-                this->current_target.unlock();
+                    this->current_target.lock();
+                        current_target.blocked.store(true);
+                    this->current_target.unlock();
 
-                break;
+                    break;
+                }
             }
         }
-    }
 
-    if (checkPathState() == false)
-        return;
+        if (checkPathState() == false)
+            return;
 
 
-    computeForces(pathPoints, laserData);
-    cleanPoints();
-    addPoints();
+        computeForces(pathPoints, laserData);
+        cleanPoints();
+        addPoints();
 
-    auto [blocked, active, xVel,zVel,rotVel] = controller.update(pathPoints, laserData, current_target.p, currentRobotPose);
-//    qDebug()<< "xVel "<<xVel << "zVel "<<zVel << "rotVel" << rotVel;
+        auto [blocked, active, xVel,zVel,rotVel] = controller.update(pathPoints, laserData, current_target.p, currentRobotPose);
+    //    qDebug()<< "xVel "<<xVel << "zVel "<<zVel << "rotVel" << rotVel;
 
-    if (blocked)
+        if (blocked)
+        {
+            stopRobot();
+
+            this->current_target.lock();
+                current_target.blocked.store(true);
+            this->current_target.unlock();
+        }
+
+        if (!active)
+        {
+            stopRobot();
+
+            this->current_target.lock();
+                current_target.active.store(false);
+            this->current_target.unlock();
+
+            pathPoints.clear();
+
+            if(stopMovingRobot) moveRobot = false;
+
+            if(robotAutoMov) newRandomTarget();
+        }
+
+        if (!blocked and active)
+        {
+            if(moveRobot) omnirobot_proxy->setSpeedBase(xVel,zVel,rotVel);
+        }
+
+        drawRoad();
+
+
+    };
+
+    void stopRobot()
     {
-        stopRobot();
-
-        this->current_target.lock();
-            current_target.blocked.store(true);
-        this->current_target.unlock();
+        qDebug()<<"Navigation - "<< __FUNCTION__;
+        omnirobot_proxy->setSpeedBase(0,0,0);
     }
-
-    if (!active)
+    void deactivateTarget()
     {
-        stopRobot();
-
         this->current_target.lock();
             current_target.active.store(false);
         this->current_target.unlock();
-
-        pathPoints.clear();
-
-        if(stopMovingRobot) moveRobot = false;
-
-        if(robotAutoMov) newRandomTarget();
     }
 
-    if (!blocked and active)
+    bool isCurrentTargetActive()
     {
-        if(moveRobot) omnirobot_proxy->setSpeedBase(xVel,zVel,rotVel);
+        return current_target.active.load();
     }
 
-    drawRoad();
-
-
-};
-
-void stopRobot()
-{
-    qDebug()<<"Navigation - "<< __FUNCTION__;
-    omnirobot_proxy->setSpeedBase(0,0,0);
-}
-void deactivateTarget()
-{
-    this->current_target.lock();
-        current_target.active.store(false);
-    this->current_target.unlock();
-}
-
-bool isCurrentTargetActive()
-{
-	return current_target.active.load();
-}
-
-bool checkPathState()
-{
-//    qDebug()<<"Navigation - "<< __FUNCTION__;
-
-    if (current_target.active.load())
+    bool checkPathState()
     {
-        if (current_target.blocked.load()) {
+    //    qDebug()<<"Navigation - "<< __FUNCTION__;
 
-            if (!findNewPath()) {
+        if (current_target.active.load())
+        {
+            if (current_target.blocked.load()) {
 
-                qDebug()<< "checkPathState - Path not found";
+                if (!findNewPath()) {
 
-                if(current_target.humanBlock.load()) //if the path is blocked by human the target is not deactivated
+                    qDebug()<< "checkPathState - Path not found";
+
+                    if(current_target.humanBlock.load()) //if the path is blocked by human the target is not deactivated
+                        return false;
+
+                    qDebug()<< "checkPathState - Deactivating current target";
+
+                    stopRobot();
+
+                    this->current_target.lock();
+                    current_target.active.store(false);
+                    this->current_target.unlock();
+
+                    pathPoints.clear();
+
+                    if(robotAutoMov) newRandomTarget();
+
                     return false;
+                }
 
-                qDebug()<< "checkPathState - Deactivating current target";
+                else{
 
-                stopRobot();
+                    qDebug()<< "checkPathState - Path found";
+                    this->current_target.lock();
+                        this->current_target.blocked.store(false);
+                    this->current_target.unlock();
 
-                this->current_target.lock();
-                current_target.active.store(false);
-                this->current_target.unlock();
-
-                pathPoints.clear();
-
-                if(robotAutoMov) newRandomTarget();
-
-                return false;
+                    drawRoad();
+    //                reloj.restart();
+                }
             }
 
-            else{
-
-                qDebug()<< "checkPathState - Path found";
-                this->current_target.lock();
-                    this->current_target.blocked.store(false);
-                this->current_target.unlock();
-
-                drawRoad();
-//                reloj.restart();
-            }
+            return true;
         }
 
-        return true;
-    }
-
-    else
-        return false;
-
-}
-
-
-void newRandomTarget()
-{
-    qDebug()<<"Navigation - "<< __FUNCTION__;
-
-    auto hmin = std::min(collisions->outerRegion.left(), collisions->outerRegion.right());
-    auto width = std::max(collisions->outerRegion.left(), collisions->outerRegion.right()) - hmin;
-    auto vmin = std::min(collisions->outerRegion.top(), collisions->outerRegion.bottom());
-    auto height = std::max(collisions->outerRegion.top(), collisions->outerRegion.bottom()) - vmin;
-
-    auto x = hmin + (double)rand() * width / (double)RAND_MAX;
-    auto z = vmin + (double)rand() * height/ (double)RAND_MAX;
-
-
-    this->current_target.lock();
-        current_target.active.store(true);
-        current_target.blocked.store(true);
-    current_target.p = QPointF(x,z);
-
-    this->current_target.unlock();
-
-    qDebug()<<"New Random Target" << current_target.p;
-
-}
-
-bool newTarget(QPointF newT)
-{
-
-    qDebug()<<"Navigation - "<< __FUNCTION__
-    <<"New Target arrived "<< newT;
-
-    if(stopMovingRobot){
-        stopRobot();
-        moveRobot = false;
-    }
-
-    auto pointVisitable = isPointVisitable(newT);
-
-
-    this->current_target.lock();
-        current_target.active.store(true);
-        current_target.blocked.store(true);
-        current_target.humanBlock.store(false);
-        current_target.p = newT;
-
-    this->current_target.unlock();
-
-    return isPointVisitable(newT);
-
-}
-
-void updatePersonalPolylines(vector<QPolygonF> intimateSpaces_, vector<QPolygonF> personalSpaces_, vector<QPolygonF> socialSpaces_){
-    intimateSpaces = intimateSpaces_;
-    personalSpaces = personalSpaces_;
-    socialSpaces = socialSpaces_;
-
-    gridChanged = true;
-}
-
-void updateAffordancesPolylines(std::map<float, vector<QPolygonF>> mapCostObjects_,
-        vector<QPolygonF>totalAffordances_, vector<QPolygonF>affordancesBlocked_)
-{
-    totalAffordances = totalAffordances_;
-    mapCostObjects = mapCostObjects_;
-    affordancesBlocked = affordancesBlocked_;
-
-    gridChanged = true;
+        else
+            return false;
 
     }
 
 
+    void newRandomTarget()
+    {
+        qDebug()<<"Navigation - "<< __FUNCTION__;
+
+        auto hmin = std::min(collisions->outerRegion.left(), collisions->outerRegion.right());
+        auto width = std::max(collisions->outerRegion.left(), collisions->outerRegion.right()) - hmin;
+        auto vmin = std::min(collisions->outerRegion.top(), collisions->outerRegion.bottom());
+        auto height = std::max(collisions->outerRegion.top(), collisions->outerRegion.bottom()) - vmin;
+
+        auto x = hmin + (double)rand() * width / (double)RAND_MAX;
+        auto z = vmin + (double)rand() * height/ (double)RAND_MAX;
+
+
+        this->current_target.lock();
+            current_target.active.store(true);
+            current_target.blocked.store(true);
+        current_target.p = QPointF(x,z);
+
+        this->current_target.unlock();
+
+        qDebug()<<"New Random Target" << current_target.p;
+
+    }
+
+    bool newTarget(QPointF newT)
+    {
+
+        qDebug()<<"Navigation - "<< __FUNCTION__
+        <<"New Target arrived "<< newT;
+
+        if(stopMovingRobot){
+            stopRobot();
+            moveRobot = false;
+        }
+
+        auto pointVisitable = isPointVisitable(newT);
+
+
+        this->current_target.lock();
+            current_target.active.store(true);
+            current_target.blocked.store(true);
+            current_target.humanBlock.store(false);
+            current_target.p = newT;
+
+        this->current_target.unlock();
+
+        return isPointVisitable(newT);
+
+    }
+
+    void updatePersonalPolylines(vector<QPolygonF> intimateSpaces_, vector<QPolygonF> personalSpaces_, vector<QPolygonF> socialSpaces_){
+        intimateSpaces = intimateSpaces_;
+        personalSpaces = personalSpaces_;
+        socialSpaces = socialSpaces_;
+
+        gridChanged = true;
+    }
+
+    void updateAffordancesPolylines(std::map<float, vector<QPolygonF>> mapCostObjects_,
+            vector<QPolygonF>totalAffordances_, vector<QPolygonF>affordancesBlocked_)
+    {
+        totalAffordances = totalAffordances_;
+        mapCostObjects = mapCostObjects_;
+        affordancesBlocked = affordancesBlocked_;
+
+        gridChanged = true;
+
+        }
+
+
+    bool isPointVisitable(QPointF point)
+    {
+        std::list<QPointF> path = grid.computePath(currentRobotNose, point);
+        if (path.size() == 0)
+        {
+    //        qDebug()<< "Point not visitable -----";
+            return false;
+        }
+        else
+            return true;
+
+    }
 
 private:
     std::shared_ptr<Collisions> collisions;
@@ -850,18 +862,6 @@ void computeForces(const std::vector<QPointF> &path, const RoboCompLaser::TLaser
 }
 
 
-bool isPointVisitable(QPointF point)
-{
-    std::list<QPointF> path = grid.computePath(currentRobotNose, point);
-    if (path.size() == 0)
-    {
-//        qDebug()<< "Point not visitable -----";
-        return false;
-    }
-    else
-        return true;
-
-}
 
 void addPoints()
 {

@@ -17,6 +17,7 @@ void ActionExecution::updateWordModel(AGMModel::SPtr worldModel_)
 }
 void ActionExecution::update(std::string action_,  ParameterMap params_)
 {
+    qDebug()<< "ActionExecution" << __FUNCTION__;
     action = action_;
     params = params_;
     newActionReceived = true;
@@ -26,37 +27,22 @@ void ActionExecution::update(std::string action_,  ParameterMap params_)
 
 //////////////////////////////////missions//////////////////////////////////////////
 
-ActionExecution::retActions ActionExecution::runActions()
+ActionExecution::retActions ActionExecution::runActions(std::string action_,  ParameterMap params_)
 {
     qDebug() << "---------------------------------------------------";
-    qDebug() <<__FUNCTION__ <<"Checking ACTION: " << QString::fromStdString(action);
-
-    static std::string previousAction = "";
+    qDebug() <<__FUNCTION__ <<"Checking ACTION: " << QString::fromStdString(action_);
 
     retActions ret;
-    bool newAction = (previousAction != action);
 
-    if (newAction)
+
+    if (action_ == "changeroom")
     {
-        printf("prev:%s  new:%s\n", previousAction.c_str(), action.c_str());
-        rDebug2(("action %s") % action.c_str() );
+        ret = action_ChangeRoom(params_);
     }
 
-
-    if (action == "changeroom")
+    if (action_ == "gotoperson")
     {
-        ret = action_ChangeRoom();
-    }
-
-    if (action == "gotoperson")
-    {
-        ret = action_GoToPerson();
-    }
-
-    if (newAction)
-    {
-        previousAction = action;
-        printf("New action: %s\n", action.c_str());
+        ret = action_GoToPerson(params_);
     }
 
     return ret;
@@ -64,20 +50,18 @@ ActionExecution::retActions ActionExecution::runActions()
 }
 
 
-ActionExecution::retActions ActionExecution::action_ChangeRoom()
+ActionExecution::retActions ActionExecution::action_ChangeRoom(ParameterMap params_)
 {
 
-//    qDebug()<<"-------------------------------"<< __FUNCTION__<< "-------------------------------";
+    qDebug()<<"-------------------------------"<< __FUNCTION__<< "-------------------------------";
     AGMModelSymbol::SPtr roomSymbol;
     AGMModelSymbol::SPtr robotSymbol;
 
-    bool needsReplanning = false;
-    QPointF newTarget = QPointF();
 
     try
     {
-        roomSymbol = worldModel->getSymbolByIdentifier(std::stoi(params["room2"].value));
-        robotSymbol = worldModel->getSymbolByIdentifier(std::stoi(params["robot"].value));
+        roomSymbol = worldModel->getSymbolByIdentifier(std::stoi(params_["room2"].value));
+        robotSymbol = worldModel->getSymbolByIdentifier(std::stoi(params_["robot"].value));
     }
     catch( const Ice::Exception& ex)
     {
@@ -120,6 +104,12 @@ ActionExecution::retActions ActionExecution::action_ChangeRoom()
         exit(-1);
     }
 
+    bool needsReplanning = false;
+
+    auto roomPolygon = getRoomPolyline(roomSymbol);
+    QPointF newTarget = roomPolygon.boundingRect().center();
+
+
     if (currentRoom == destRoomID)
     {
         needsReplanning = false;
@@ -127,8 +117,6 @@ ActionExecution::retActions ActionExecution::action_ChangeRoom()
 
     else if (newActionReceived)
     {
-        auto roomPolygon = getRoomPolyline(roomSymbol);
-        newTarget = roomPolygon.boundingRect().center();
 
         newActionReceived = false;
         needsReplanning = true;
@@ -141,19 +129,17 @@ ActionExecution::retActions ActionExecution::action_ChangeRoom()
 
 
 
-ActionExecution::retActions ActionExecution::action_GoToPerson()
+ActionExecution::retActions ActionExecution::action_GoToPerson(ParameterMap params_)
 {
-//    qDebug()<<"-------------------------------"<< __FUNCTION__<< "-------------------------------";
+    qDebug()<<"-------------------------------"<< __FUNCTION__<< "-------------------------------";
     AGMModelSymbol::SPtr personSymbol;
     AGMModelSymbol::SPtr robotSymbol;
 
-    bool needsReplanning = false;
-    QPointF newTarget = QPointF();
 
     try
     {
-        personSymbol = worldModel->getSymbolByIdentifier(std::stoi(params["p"].value));
-        robotSymbol = worldModel->getSymbolByIdentifier(std::stoi(params["robot"].value));
+        personSymbol = worldModel->getSymbolByIdentifier(std::stoi(params_["p"].value));
+        robotSymbol = worldModel->getSymbolByIdentifier(std::stoi(params_["robot"].value));
     }
     catch( const Ice::Exception& ex)
     {
@@ -161,14 +147,18 @@ ActionExecution::retActions ActionExecution::action_GoToPerson()
     }
 
 
+    bool needsReplanning = false;
+    QPointF newTarget = getPointInSocialSpace(personSymbol,robotSymbol);
+
     if (newActionReceived)
     {
 
-        newTarget = getPointInSocialSpace(personSymbol,robotSymbol);
         newActionReceived = false;
         needsReplanning = true;
 
     }
+
+    qDebug()<<  __FUNCTION__ << "Returning "<< needsReplanning << newTarget;
 
     return std::make_tuple(needsReplanning, newTarget);
 
@@ -243,14 +233,12 @@ QPointF ActionExecution::getPointInSocialSpace(AGMModelSymbol::SPtr personSymbol
     }
 
     QLineF line(QPointF(person.x,person.z),QPointF(robot.x,robot.z));
-    qDebug()<<line;
 
     for (int i = 0; i < 10; i++)
     {
         float step = i/10.0f;
 
         QPointF point = line.pointAt(step);
-        qDebug()<< line.pointAt(step);
 
         //El punto más cercano a la persona dentro del espacio social será el primer punto no contenido en el personal
         if (!personalPolygon.containsPoint(point,Qt::OddEvenFill)){
@@ -264,8 +252,6 @@ QPointF ActionExecution::getPointInSocialSpace(AGMModelSymbol::SPtr personSymbol
 
 QPolygonF ActionExecution::getRoomPolyline(AGMModelSymbol::SPtr roomSymbol)
 {
-    qDebug() << __FUNCTION__;
-
 
     QPolygonF polygon;
 
