@@ -240,3 +240,15 @@ components/humanObserverAgent/CMakeFiles/
 components/humanObserverAgent/src/CMakeFiles/
 
 components/humanObserverAgent/src/humanObserverAgent_autogen/
+
+components/conversationalAgent/CMakeFiles/
+
+components/conversationalAgent/Makefile
+
+components/conversationalAgent/src/CMakeFiles/
+
+components/conversationalAgent/src/Makefile
+
+components/conversationalAgent/src/__pycache__/
+
+
