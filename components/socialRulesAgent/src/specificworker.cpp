@@ -22,7 +22,7 @@
 /**
 * \brief Default constructor
 */
-SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
+SpecificWorker::SpecificWorker(MapPrx& mprx, bool startup_check) : GenericWorker(mprx)
 {
 
 	active = false;
@@ -136,7 +136,7 @@ void SpecificWorker::updatePeopleInModel()
 	}
 
 	for (auto p: vectorPersons) {
-		SNGPerson person;
+        RoboCompSocialNavigationGaussian::SNGPerson person;
 
 		auto id = p->identifier;
 		AGMModelSymbol::SPtr personParent = worldModel->getParentByLink(id, "RT");
@@ -188,7 +188,7 @@ void SpecificWorker::checkInteractions()
 
 	for (auto id_vect: interactingId)
 	{
-		SNGPersonSeq persons;
+        RoboCompSocialNavigationGaussian::SNGPersonSeq persons;
 		for (auto id : id_vect) {
 			persons.push_back(mapIdPersons[id]);
 		}
@@ -265,14 +265,14 @@ void SpecificWorker::applySocialRules()
     intimateSpace_seq.clear();
     mapIdSpaces.clear();
 
-    SNGPolylineSeq seq;
+    RoboCompSocialNavigationGaussian::SNGPolylineSeq seq;
 
     if(!interactingPersonsVec.empty())
     {
         try
         {
             for (auto const &personGroup: interactingPersonsVec) {
-                SNGPolylineSeq intimateResult, personalResult, socialResult;
+                RoboCompSocialNavigationGaussian::SNGPolylineSeq intimateResult, personalResult, socialResult;
 
                 vector<QPolygonF> intimatePolygon, personalPolygon, socialPolygon;
 
@@ -297,8 +297,8 @@ void SpecificWorker::applySocialRules()
 
 }
 
-void SpecificWorker::arrangePersonalSpaces(SNGPersonSeq personGroup,SNGPolylineSeq intimate,
-        SNGPolylineSeq personal, SNGPolylineSeq social)
+void SpecificWorker::arrangePersonalSpaces(RoboCompSocialNavigationGaussian::SNGPersonSeq personGroup,RoboCompSocialNavigationGaussian::SNGPolylineSeq intimate,
+                                           RoboCompSocialNavigationGaussian::SNGPolylineSeq personal, RoboCompSocialNavigationGaussian::SNGPolylineSeq social)
 {
     vector<int> groupIDs;
 
@@ -337,7 +337,7 @@ void SpecificWorker::drawPersonalSpace()
     {
         for (auto per: interactingPersonsVec)
         {
-            SNGPolylineSeq initmate_result, personal_result, social_result;
+            RoboCompSocialNavigationGaussian::SNGPolylineSeq initmate_result, personal_result, social_result;
             socialnavigationgaussian_proxy-> getAllPersonalSpaces(per, true, initmate_result, personal_result, social_result);
         }
 
@@ -442,7 +442,7 @@ void SpecificWorker::checkObjectAffordance()
 }
 
 
-SNGPolyline SpecificWorker::affordanceTrapezoidal(ObjectType obj)
+RoboCompSocialNavigationGaussian::SNGPolyline SpecificWorker::affordanceTrapezoidal(ObjectType obj)
 {
     qDebug()<< __FUNCTION__;
 
@@ -450,24 +450,24 @@ SNGPolyline SpecificWorker::affordanceTrapezoidal(ObjectType obj)
     auto right_angle = obj.rot - obj.inter_angle/2;
 
 
-    SNGPolyline polyline;
+    RoboCompSocialNavigationGaussian::SNGPolyline polyline;
 
-    SNGPoint2D point1;
+    RoboCompSocialNavigationGaussian::SNGPoint2D point1;
     point1.x  = obj.x + obj.width/2;
     point1.z = obj.z;
     polyline.push_back(point1);
 
-    SNGPoint2D point2;
+    RoboCompSocialNavigationGaussian::SNGPoint2D point2;
     point2.x  = obj.x - obj.width/2;
     point2.z = obj.z;
     polyline.push_back(point2);
 
-    SNGPoint2D point3;
+    RoboCompSocialNavigationGaussian::SNGPoint2D point3;
     point3.x  = obj.x + obj.inter_space*(cos(M_PI_2 - left_angle));
     point3.z = obj.z + obj.inter_space*(sin(M_PI_2 - left_angle));
     polyline.push_back(point3);
 
-    SNGPoint2D point4;
+    RoboCompSocialNavigationGaussian::SNGPoint2D point4;
     point4.x  = obj.x + obj.inter_space*(cos(M_PI_2 - right_angle));
     point4.z = obj.z + obj.inter_space*(sin(M_PI_2 - right_angle));
     polyline.push_back(point4);
@@ -477,28 +477,28 @@ SNGPolyline SpecificWorker::affordanceTrapezoidal(ObjectType obj)
 
 }
 
-SNGPolyline SpecificWorker::affordanceRectangular(ObjectType obj)
+RoboCompSocialNavigationGaussian::SNGPolyline SpecificWorker::affordanceRectangular(ObjectType obj)
 {
     qDebug()<< __FUNCTION__;
 
-    SNGPolyline polyline;
+    RoboCompSocialNavigationGaussian::SNGPolyline polyline;
 
-    SNGPoint2D point1;
+    RoboCompSocialNavigationGaussian::SNGPoint2D point1;
     point1.x  = obj.x - obj.width/2 - obj.inter_space;
     point1.z = obj.z - obj.depth/2 -obj.inter_space;
     polyline.push_back(point1);
 
-    SNGPoint2D point2;
+    RoboCompSocialNavigationGaussian::SNGPoint2D point2;
     point2.x  = obj.x + obj.width/2 + obj.inter_space;
     point2.z = obj.z - obj.depth/2 -obj.inter_space;
     polyline.push_back(point2);
 
-    SNGPoint2D point3;
+    RoboCompSocialNavigationGaussian::SNGPoint2D point3;
     point3.x  = obj.x + obj.width/2 + obj.inter_space;
     point3.z = obj.z + obj.depth/2 +obj.inter_space;
     polyline.push_back(point3);
 
-    SNGPoint2D point4;
+    RoboCompSocialNavigationGaussian::SNGPoint2D point4;
     point4.x  = obj.x - obj.width/2 - obj.inter_space;
     point4.z = obj.z + obj.depth/2 +obj.inter_space;
     polyline.push_back(point4);
@@ -507,11 +507,11 @@ SNGPolyline SpecificWorker::affordanceRectangular(ObjectType obj)
 
 }
 
-SNGPolyline SpecificWorker::affordanceCircular(ObjectType obj)
+RoboCompSocialNavigationGaussian::SNGPolyline SpecificWorker::affordanceCircular(ObjectType obj)
 {
     qDebug()<< __FUNCTION__;
 
-    SNGPolyline polyline;
+    RoboCompSocialNavigationGaussian::SNGPolyline polyline;
     int points = 50;
 
     float angle_shift = M_PI*2 / points, phi = 0;
@@ -519,7 +519,7 @@ SNGPolyline SpecificWorker::affordanceCircular(ObjectType obj)
     for (int i = 0; i < points; ++i) {
         phi += angle_shift;
 
-        SNGPoint2D point;
+        RoboCompSocialNavigationGaussian::SNGPoint2D point;
         point.x = obj.x + ((obj.width/2 + obj.inter_space)*sin(phi));
         point.z = obj.z +  ((obj.depth/2 + obj.inter_space)*cos(phi));
         polyline.push_back(point);
@@ -882,11 +882,11 @@ void SpecificWorker::publishAffordances()
 {
     qDebug() <<__FUNCTION__;
 
-    SRObjectSeq objectsToSend;
+    RoboCompSocialRules::SRObjectSeq objectsToSend;
 
     for (auto const &map : mapIdObjects)
     {
-        SRObject object;
+        RoboCompSocialRules::SRObject object;
         object.name = map.second.imName;
         object.x = map.second.x;
         object.z = map.second.z;
@@ -955,7 +955,7 @@ void SpecificWorker::updatePersonalSpacesInGraph()
         }
 
         vector<string> polylinesStr = {"","",""};
-        vector <SNGPolylineSeq> polylinesSeq {spaces.intimatePolylines, spaces.personalPolylines, spaces.socialPolylines};
+        vector <RoboCompSocialNavigationGaussian::SNGPolylineSeq> polylinesSeq {spaces.intimatePolylines, spaces.personalPolylines, spaces.socialPolylines};
 
         for (auto&&[str, polyline] : iter::zip(polylinesStr, polylinesSeq))
         {
@@ -1186,7 +1186,7 @@ void SpecificWorker::sm_finalize()
 //	std::cout<<"Entered final state finalize"<<std::endl;
 }
 
-bool SpecificWorker::AGMCommonBehavior_activateAgent(const ParameterMap &prs)
+bool SpecificWorker::AGMCommonBehavior_activateAgent(const RoboCompAGMCommonBehavior::ParameterMap &prs)
 {
 //implementCODE
 	bool activated = false;
@@ -1210,16 +1210,16 @@ bool SpecificWorker::AGMCommonBehavior_deactivateAgent()
 	return deactivate();
 }
 
-ParameterMap SpecificWorker::AGMCommonBehavior_getAgentParameters()
+RoboCompAGMCommonBehavior::ParameterMap SpecificWorker::AGMCommonBehavior_getAgentParameters()
 {
 //implementCODE
 	return params;
 }
 
-StateStruct SpecificWorker::AGMCommonBehavior_getAgentState()
+RoboCompAGMCommonBehavior::StateStruct SpecificWorker::AGMCommonBehavior_getAgentState()
 {
 //implementCODE
-	StateStruct s;
+    RoboCompAGMCommonBehavior::StateStruct s;
 	if (isActive())
 	{
 		s.state = RoboCompAGMCommonBehavior::StateEnum::Running;
@@ -1244,7 +1244,7 @@ bool SpecificWorker::AGMCommonBehavior_reloadConfigAgent()
 	return true;
 }
 
-bool SpecificWorker::AGMCommonBehavior_setAgentParameters(const ParameterMap &prs)
+bool SpecificWorker::AGMCommonBehavior_setAgentParameters(const RoboCompAGMCommonBehavior::ParameterMap &prs)
 {
 //implementCODE
 	bool activated = false;
@@ -1339,7 +1339,7 @@ void SpecificWorker::AGMExecutiveTopic_symbolsUpdated(const RoboCompAGMWorldMode
 
 }
 
-bool SpecificWorker::setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated)
+bool SpecificWorker::setParametersAndPossibleActivation(const RoboCompAGMCommonBehavior::ParameterMap &prs, bool &reactivated)
 {
 	printf("<<< setParametersAndPossibleActivation\n");
 	// We didn't reactivate the component
@@ -1347,7 +1347,7 @@ bool SpecificWorker::setParametersAndPossibleActivation(const ParameterMap &prs,
 
 	// Update parameters
 	params.clear();
-	for (ParameterMap::const_iterator it=prs.begin(); it!=prs.end(); it++)
+	for (RoboCompAGMCommonBehavior::ParameterMap::const_iterator it=prs.begin(); it!=prs.end(); it++)
 	{
 		params[it->first] = it->second;
 	}

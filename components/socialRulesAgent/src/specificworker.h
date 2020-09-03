@@ -37,22 +37,22 @@ class SpecificWorker : public GenericWorker
 Q_OBJECT
 public:
 
-	SpecificWorker(MapPrx& mprx);
+	SpecificWorker(MapPrx& mprx, bool startup_check);
 	~SpecificWorker();
 	bool setParams(RoboCompCommonBehavior::ParameterList params);
 
-	bool AGMCommonBehavior_activateAgent(const ParameterMap &prs);
+	bool AGMCommonBehavior_activateAgent(const RoboCompAGMCommonBehavior::ParameterMap &prs);
 	bool AGMCommonBehavior_deactivateAgent();
-	ParameterMap AGMCommonBehavior_getAgentParameters();
-	StateStruct AGMCommonBehavior_getAgentState();
+	RoboCompAGMCommonBehavior::ParameterMap AGMCommonBehavior_getAgentParameters();
+	RoboCompAGMCommonBehavior::StateStruct AGMCommonBehavior_getAgentState();
 	void AGMCommonBehavior_killAgent();
 	bool AGMCommonBehavior_reloadConfigAgent();
-	bool AGMCommonBehavior_setAgentParameters(const ParameterMap &prs);
+	bool AGMCommonBehavior_setAgentParameters(const RoboCompAGMCommonBehavior::ParameterMap &prs);
 	int AGMCommonBehavior_uptimeAgent();
 	void AGMExecutiveTopic_edgeUpdated(const RoboCompAGMWorldModel::Edge &modification);
 	void AGMExecutiveTopic_edgesUpdated(const RoboCompAGMWorldModel::EdgeSequence &modifications);
-	void AGMExecutiveTopic_selfEdgeAdded(const int nodeid, const string &edgeType, const RoboCompAGMWorldModel::StringDictionary &attributes);
-	void AGMExecutiveTopic_selfEdgeDeleted(const int nodeid, const string &edgeType);
+	void AGMExecutiveTopic_selfEdgeAdded(const int nodeid, const std::string &edgeType, const RoboCompAGMWorldModel::StringDictionary &attributes);
+	void AGMExecutiveTopic_selfEdgeDeleted(const int nodeid, const std::string &edgeType);
 	void AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldModel::World &w);
 	void AGMExecutiveTopic_symbolUpdated(const RoboCompAGMWorldModel::Node &modification);
 	void AGMExecutiveTopic_symbolsUpdated(const RoboCompAGMWorldModel::NodeSequence &modifications);
@@ -76,22 +76,22 @@ public slots:
 
 private:
 
-    SNGPersonSeq sngPersonSeq;
-    std::map<int32_t, SNGPerson> mapIdPersons;
-    vector <SNGPersonSeq> interactingPersonsVec; //vector de grupos que interactuan entre ellos
+    RoboCompSocialNavigationGaussian::SNGPersonSeq sngPersonSeq;
+    std::map<int32_t, RoboCompSocialNavigationGaussian::SNGPerson> mapIdPersons;
+    vector <RoboCompSocialNavigationGaussian::SNGPersonSeq> interactingPersonsVec; //vector de grupos que interactuan entre ellos
 
     struct PersonalSpaceType
     {
-		SNGPolylineSeq intimatePolylines;
-		SNGPolylineSeq personalPolylines;
-		SNGPolylineSeq socialPolylines;
+        RoboCompSocialNavigationGaussian::SNGPolylineSeq intimatePolylines;
+        RoboCompSocialNavigationGaussian::SNGPolylineSeq personalPolylines;
+        RoboCompSocialNavigationGaussian::SNGPolylineSeq socialPolylines;
 
         vector<int> spacesSharedWith;
     };
 
     std::map<int32_t, PersonalSpaceType> mapIdSpaces;
 
-	SNGPolylineSeq intimateSpace_seq, personalSpace_seq, socialSpace_seq;
+    RoboCompSocialNavigationGaussian::SNGPolylineSeq intimateSpace_seq, personalSpace_seq, socialSpace_seq;
 
 
 	bool worldModelChanged = false;
@@ -115,7 +115,7 @@ private:
         float prevCost = 2.0;
 
 
-        SNGPolyline affordance;
+        RoboCompSocialNavigationGaussian::SNGPolyline affordance;
         bool interacting = false;
 
         QString shape;
@@ -137,7 +137,7 @@ private:
 
     //To save data to file
     int32_t robotSymbolId;
-    SNGPerson robot;
+    RoboCompSocialNavigationGaussian::SNGPerson robot;
 
     struct Point {float x;float z;};
     Point point;
@@ -150,21 +150,22 @@ private:
     //------------------------------------------//
     std::shared_ptr<InnerModel> innerModel;
 	std::string action;
-	ParameterMap params;
+	RoboCompAGMCommonBehavior::ParameterMap params;
 	AGMModel::SPtr worldModel;
 
 	bool active;
-	bool setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated);
+	bool setParametersAndPossibleActivation(const RoboCompAGMCommonBehavior::ParameterMap &prs, bool &reactivated);
 	void sendModificationProposal(AGMModel::SPtr &worldModel, AGMModel::SPtr &newModel);
+	bool startup_check_flag;
 
     void updatePeopleInModel();
     void checkInteractions();
     vector <vector<int32_t>> groupInteractingPeople(int32_t id, int32_t pairId,vector<vector<int32_t>> &interactingId);
     void checkObjectAffordance();
 
-    SNGPolyline affordanceTrapezoidal(ObjectType obj);
-    SNGPolyline affordanceRectangular(ObjectType obj);
-    SNGPolyline affordanceCircular(ObjectType obj);
+    RoboCompSocialNavigationGaussian::SNGPolyline affordanceTrapezoidal(ObjectType obj);
+    RoboCompSocialNavigationGaussian::SNGPolyline affordanceRectangular(ObjectType obj);
+    RoboCompSocialNavigationGaussian::SNGPolyline affordanceCircular(ObjectType obj);
 
 	void applySocialRules();
 	void publishPersonalSpaces();
@@ -172,8 +173,8 @@ private:
 
 	void updatePersonalSpacesInGraph();
 	void updateAffordancesInGraph();
-	void arrangePersonalSpaces(SNGPersonSeq personGroup,SNGPolylineSeq intimate,
-			SNGPolylineSeq personal, SNGPolylineSeq social);
+	void arrangePersonalSpaces(RoboCompSocialNavigationGaussian::SNGPersonSeq personGroup,RoboCompSocialNavigationGaussian::SNGPolylineSeq intimate,
+                               RoboCompSocialNavigationGaussian::SNGPolylineSeq personal, RoboCompSocialNavigationGaussian::SNGPolylineSeq social);
 
     void checkRobotmov();
 
