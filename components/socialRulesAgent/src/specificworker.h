@@ -59,6 +59,8 @@ public:
 
 public slots:
 	void compute();
+    int startup_check();
+
 	void initialize(int period);
 //Specification slot methods State Machine
 	void sm_compute();

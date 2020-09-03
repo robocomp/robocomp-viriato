@@ -28,6 +28,8 @@ SpecificWorker::SpecificWorker(MapPrx& mprx, bool startup_check) : GenericWorker
 	active = false;
 	worldModel = AGMModel::SPtr(new AGMModel());
 	worldModel->name = "worldModel";
+    this->startup_check_flag = startup_check;
+
 }
 
 /**
@@ -84,10 +86,17 @@ void SpecificWorker::initialize(int period)
         mapCostsPerHour[hour].push_back(map.second.cost);
     }
 
+    this->Period = period;
 
-	this->Period = period;
-	timer.start(Period);
-	emit this->t_initialize_to_compute();
+    if(this->startup_check_flag)
+    {
+        this->startup_check();
+    }
+    else
+    {
+        timer.start(Period);
+        emit this->t_initialize_to_compute();
+    }
 
 }
 
@@ -121,6 +130,14 @@ void SpecificWorker::compute()
 
     checkRobotmov();
 }
+
+int SpecificWorker::startup_check()
+{
+    std::cout << "Startup check" << std::endl;
+    QTimer::singleShot(200, qApp, SLOT(quit()));
+    return 0;
+}
+
 
 void SpecificWorker::updatePeopleInModel()
 {

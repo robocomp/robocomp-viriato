@@ -30,21 +30,22 @@ SET ( SOURCES
 
 
 
+
 # AGM Agent's requirements
 find_package(LibXml2 REQUIRED)
 include_directories(LIBXML2_INCLUDE_DIRS)
 include_directories(/usr/include/libxml2/)
-SET (LIBS ${LIBS} -lagm )
+SET(LIBS ${LIBS} -lagm)
+ADD_DEFINITIONS( -I/usr/include/libxml2/)
 
 #ROBOCOMP
 ROBOCOMP_INITIALIZE( $ENV{ROBOCOMP}/ )
-ROBOCOMP_WRAP_ICE( CommonBehavior Planning AGMCommonBehavior AGMExecutive AGMExecutiveTopic AGMWorldModel AGMExecutive AGMExecutiveTopic )
+ROBOCOMP_IDSL_TO_ICE( CommonBehavior AGMCommonBehavior AGMExecutive AGMExecutiveTopic AGMWorldModel Planning)
+ROBOCOMP_ICE_TO_SRC( CommonBehavior AGMCommonBehavior AGMExecutive AGMExecutiveTopic AGMWorldModel Planning)
 SET (EXECUTABLE_OUTPUT_PATH ${RC_COMPONENT_DEVEL_PATH}/bin)
 
 
 # Specify construction and link process
-SET(LIBS ${LIBS} -lagm)
-ADD_DEFINITIONS( -I/usr/include/libxml2/ )
 ADD_EXECUTABLE( humanObserverAgent ${SOURCES} ${MOC_SOURCES} ${RC_SOURCES} ${UI_HEADERS} )
 TARGET_LINK_LIBRARIES( humanObserverAgent ${LIBS} ${STATIC_LIBS} ${SPECIFIC_LIBS} ${QT_LIBRARIES} ${Ice_LIBRARIES})
 INSTALL(FILES ${EXECUTABLE_OUTPUT_PATH}/humanObserverAgent DESTINATION ${RC_COMPONENT_INSTALL_PATH}/bin/ PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )

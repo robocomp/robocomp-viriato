@@ -1,5 +1,5 @@
 /*
- *    Copyright (C)2020 by YOUR NAME HERE
+ *    Copyright (C) 2020 by YOUR NAME HERE
  *
  *    This file is part of RoboComp
  *
@@ -26,21 +26,20 @@
 #include <config.h>
 #include "genericworker.h"
 
-using namespace RoboCompAGMCommonBehavior;
 
 class AGMCommonBehaviorI : public virtual RoboCompAGMCommonBehavior::AGMCommonBehavior
 {
 public:
-AGMCommonBehaviorI(GenericWorker *_worker);
+	AGMCommonBehaviorI(GenericWorker *_worker);
 	~AGMCommonBehaviorI();
 
-	bool activateAgent(const ParameterMap  &prs, const Ice::Current&);
+	bool activateAgent(const RoboCompAGMCommonBehavior::ParameterMap &prs, const Ice::Current&);
 	bool deactivateAgent(const Ice::Current&);
-	ParameterMap getAgentParameters(const Ice::Current&);
-	StateStruct getAgentState(const Ice::Current&);
+	RoboCompAGMCommonBehavior::ParameterMap getAgentParameters(const Ice::Current&);
+	RoboCompAGMCommonBehavior::StateStruct getAgentState(const Ice::Current&);
 	void killAgent(const Ice::Current&);
 	bool reloadConfigAgent(const Ice::Current&);
-	bool setAgentParameters(const ParameterMap  &prs, const Ice::Current&);
+	bool setAgentParameters(const RoboCompAGMCommonBehavior::ParameterMap &prs, const Ice::Current&);
 	int uptimeAgent(const Ice::Current&);
 
 private:

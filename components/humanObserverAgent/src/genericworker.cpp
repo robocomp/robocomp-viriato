@@ -1,5 +1,5 @@
 /*
- *    Copyright (C)2020 by YOUR NAME HERE
+ *    Copyright (C) 2020 by YOUR NAME HERE
  *
  *    This file is part of RoboComp
  *
@@ -20,15 +20,14 @@
 /**
 * \brief Default constructor
 */
-GenericWorker::GenericWorker(MapPrx& mprx) :
-QObject()
+GenericWorker::GenericWorker(MapPrx& mprx) : QObject()
 {
 
-//Initialization State machine
-	computeState = new QState(QState::ExclusiveStates);
-	defaultMachine.addState(computeState);
+	//Initialization State machine
 	initializeState = new QState(QState::ExclusiveStates);
 	defaultMachine.addState(initializeState);
+	computeState = new QState(QState::ExclusiveStates);
+	defaultMachine.addState(computeState);
 	finalizeState = new QFinalState();
 	defaultMachine.addState(finalizeState);
 
@@ -38,13 +37,13 @@ QObject()
 	computeState->addTransition(this, SIGNAL(t_compute_to_compute()), computeState);
 	computeState->addTransition(this, SIGNAL(t_compute_to_finalize()), finalizeState);
 
-	QObject::connect(computeState, SIGNAL(entered()), this, SLOT(sm_compute()));
 	QObject::connect(initializeState, SIGNAL(entered()), this, SLOT(sm_initialize()));
+	QObject::connect(computeState, SIGNAL(entered()), this, SLOT(sm_compute()));
 	QObject::connect(finalizeState, SIGNAL(entered()), this, SLOT(sm_finalize()));
 	QObject::connect(&timer, SIGNAL(timeout()), this, SIGNAL(t_compute_to_compute()));
 
-//------------------
-	agmexecutive_proxy = (*(AGMExecutivePrx*)mprx["AGMExecutiveProxy"]);
+	//------------------
+	agmexecutive_proxy = (*(RoboCompAGMExecutive::AGMExecutivePrx*)mprx["AGMExecutiveProxy"]);
 
 	mutex = new QMutex(QMutex::Recursive);
 
@@ -109,7 +108,6 @@ RoboCompPlanning::Action GenericWorker::createAction(std::string s)
 	return ret;
 }
 
-
 bool GenericWorker::activate(const BehaviorParameters &prs)
 {
 	printf("Worker::activate\n");
@@ -131,13 +129,13 @@ bool GenericWorker::deactivate()
 	return active;
 }
 
-bool GenericWorker::setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated)
+bool GenericWorker::setParametersAndPossibleActivation(const RoboCompAGMCommonBehavior::ParameterMap &prs, bool &reactivated)
 {
 	// We didn't reactivate the component
 	reactivated = false;
 
 	// Update parameters
-	for (ParameterMap::const_iterator it=prs.begin(); it!=prs.end(); it++)
+	for (RoboCompAGMCommonBehavior::ParameterMap::const_iterator it=prs.begin(); it!=prs.end(); it++)
 	{
 		params[it->first] = it->second;
 	}
