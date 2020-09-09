@@ -5,6 +5,7 @@ Component faceDetector
 
     };
     language python;
+    gui Qt(QWidget);
     options agmagent;
     statemachine "statemachine.smdsl";
 };

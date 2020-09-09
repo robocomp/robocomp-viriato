@@ -48,6 +48,20 @@ class SpecificWorker(GenericWorker):
         self.initAGM()
         self.prev_person_near = []
 
+        self.faceDetected = False
+        self.faceStateChanged = False
+        self.ui.faceDet_checkbox.stateChanged.connect(self.state_changed)
+
+    def state_changed(self):
+        if self.ui.faceDet_checkbox.isChecked():
+            print('Face Detected')
+            self.faceDetected = True
+        else:
+            print('Face Not Detected')
+            self.faceDetected = False
+
+        self.faceStateChanged = True
+
     def initAGM(self):
         self.worldModel = AGMGraph()
         try:
@@ -68,7 +82,7 @@ class SpecificWorker(GenericWorker):
     @QtCore.Slot()
     def compute(self):
         print('SpecificWorker.compute...')
-        id_robot = '1'
+        id_robot = '1' #Leer del DSR ?
         (people_near, people_id) = self.searchPeopleNearRobot()
 
         print('prev ', self.prev_person_near)
@@ -79,10 +93,10 @@ class SpecificWorker(GenericWorker):
 
         edges_changed = False
 
-        if self.prev_person_near != people_id:
+        if self.prev_person_near != people_id or self.faceStateChanged:
 
             for id_to_remove in self.prev_person_near:
-                if id_to_remove in people_id:
+                if id_to_remove in people_id and self.faceDetected:
                     continue
                 if self.worldModel.getEdge(id_to_remove, id_robot, 'front') is not None:
                     print('The edge exists -- edgesChanged = True')
@@ -92,15 +106,17 @@ class SpecificWorker(GenericWorker):
                     print(id_to_remove, 'the edge doesnt exists')
 
             for id_to_add in people_id:
-                if self.worldModel.getEdge(id_to_add, id_robot, 'front') is None:
-                    print('The edge doesnt exist --- edgesChanged = True')
-                    self.newModel.addEdge(id_to_add, id_robot, 'front')
-                    edges_changed = True
-                else:
-                    print(id_to_add,'the edge already exists')
+                if self.faceDetected:
+                    print('Face Detected', id_to_add)
+                    if self.worldModel.getEdge(id_to_add, id_robot, 'front') is None:
+                        print('The edge doesnt exist --- edgesChanged = True')
+                        self.newModel.addEdge(id_to_add, id_robot, 'front')
+                        edges_changed = True
+                    else:
+                        print(id_to_add,'the edge already exists')
 
             self.prev_person_near = people_id
-
+            self.faceStateChanged = False
         if edges_changed:
             try:
                 print('Updating world')

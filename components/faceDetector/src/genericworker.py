@@ -85,9 +85,15 @@ import agmcommonbehaviorI
 import agmexecutivetopicI
 
 
+try:
+    from ui_mainUI import *
+except:
+    print("Can't import UI file. Did you run 'make'?")
+    sys.exit(-1)
 
 
-class GenericWorker(QtCore.QObject):
+
+class GenericWorker(QtWidgets.QWidget):
 
     kill = QtCore.Signal()
     #Signals for State Machine
@@ -101,6 +107,10 @@ class GenericWorker(QtCore.QObject):
         super(GenericWorker, self).__init__()
 
         self.agmexecutive_proxy = mprx["AGMExecutiveProxy"]
+
+        self.ui = Ui_guiDlg()
+        self.ui.setupUi(self)
+        self.show()
 
         self.mutex = QtCore.QMutex(QtCore.QMutex.Recursive)
         self.Period = 30
