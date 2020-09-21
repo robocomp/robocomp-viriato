@@ -29,8 +29,8 @@ void ActionExecution::update(std::string action_,  ParameterMap params_)
 
 ActionExecution::retActions ActionExecution::runActions(std::string action_,  ParameterMap params_)
 {
-    qDebug() << "---------------------------------------------------";
-    qDebug() <<__FUNCTION__ <<"Checking ACTION: " << QString::fromStdString(action_);
+//    qDebug() << "---------------------------------------------------";
+//    qDebug() <<__FUNCTION__ <<"Checking ACTION: " << QString::fromStdString(action_);
 
     retActions ret;
 
@@ -53,7 +53,7 @@ ActionExecution::retActions ActionExecution::runActions(std::string action_,  Pa
 ActionExecution::retActions ActionExecution::action_ChangeRoom(ParameterMap params_)
 {
 
-    qDebug()<<"-------------------------------"<< __FUNCTION__<< "-------------------------------";
+//    qDebug()<<"-------------------------------"<< __FUNCTION__<< ----------------";
     AGMModelSymbol::SPtr roomSymbol;
     AGMModelSymbol::SPtr robotSymbol;
 
@@ -123,7 +123,7 @@ ActionExecution::retActions ActionExecution::action_ChangeRoom(ParameterMap para
 
     }
 
-    qDebug()<<  __FUNCTION__ << "Returning "<< needsReplanning << newTarget;
+//    qDebug()<<  __FUNCTION__ << "Returning "<< needsReplanning << newTarget;
     return std::make_tuple(needsReplanning, newTarget);
 };
 
@@ -187,6 +187,7 @@ QPointF ActionExecution::getPointInSocialSpace(AGMModelSymbol::SPtr personSymbol
     robot.x = str2float(edgeRT_r.attributes["tx"]);
     robot.z = str2float(edgeRT_r.attributes["tz"]);
 
+    qDebug()<<__FUNCTION__<<"ROBOT POSE "<< robot.x << robot.z ;
 
     AGMModelSymbol::SPtr personalSpace;
 

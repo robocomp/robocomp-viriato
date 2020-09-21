@@ -191,92 +191,55 @@ void SpecificWorker::checkHumanBlock()
 	newModel = AGMModel::SPtr(new AGMModel(worldModel));
 
 	bool edgesChanged = false;
-
+    string edgeName;
+    string currentEdge;
 
 	auto blockingIDs = navigation.blockIDs;
-    auto softBlockingIDs = navigation.softBlockIDs;
     auto affBlockingIDs = navigation.affBlockIDs;
 
 
-    if((prev_blockingIDs != blockingIDs) or (prev_softBlockingIDs != softBlockingIDs) or (prev_affBlockingIDs != affBlockingIDs))
+    if((prev_blockingIDs == blockingIDs)  and (prev_affBlockingIDs == affBlockingIDs) and robotBlocked)
+        return;
+
+//    qDebug()<< "blocking - prev: " << prev_blockingIDs << " current: " << blockingIDs;
+//    qDebug()<< "aff blocking - prev: " << prev_affBlockingIDs << " current: " << affBlockingIDs;
+
+//    if(blockingIDs.size() == 1) edgeName = "is_blocking";
+//    else edgeName = "strongInterBlock";
+    edgeName = "is_blocking";
+
+    for(auto id: blockingIDs)
     {
-        qDebug()<< "blocking - prev: " << prev_blockingIDs << " current: " << blockingIDs;
-		qDebug()<< "aff blocking - prev: " << prev_affBlockingIDs << " current: " << affBlockingIDs;
-		qDebug()<< "SOFT blocking - prev: " << prev_softBlockingIDs << " current: " << softBlockingIDs;
-
-           ////////////////////// block /////////////////////////////////
-          //  Si solo hay una persona bloqueando el camino --block   ///
-         // Si son dos -- estan interaccionando -- strongInterBlock ///
-        //////////////////////////////////////////////////////////////
-        string edgeName;
-
-		vector<string> edgeNames{"is_blocking" , "strongInterBlock"};
-
-		for (auto edgeName : edgeNames)
-		{
-			for(auto id: prev_blockingIDs)
-                removeEdgeModel(id,robotID,edgeName);
-		}
-
-        if(blockingIDs.size() == 1) edgeName = "is_blocking";
-        else edgeName = "strongInterBlock";
-
-        for(auto id: blockingIDs)
-           addEdgeModel(id,robotID,edgeName);
-
-
-
-        ////////////////////////// affordanceBlock ////////////////////////
-
-        string newEdgeName = "affordanceBlock";
-
-        for(auto id: prev_affBlockingIDs)
-            removeEdgeModel(id,robotID,newEdgeName);
-
-
-        for(auto id: affBlockingIDs)
-            addEdgeModel(id,robotID,newEdgeName);
-
-
-
-        ////////////////////////// softBlock //////////////////////////////
-
-        for(auto groupID: prev_softBlockingIDs)
+        if (addEdgeModel(id,robotID,edgeName))
         {
-			vector<string> edgeNames{"softBlock" , "softInterBlock"};
-
-			for (auto edgeName : edgeNames)
-			{
-				for(auto id : groupID)
-                    removeEdgeModel(id,robotID,edgeName);
-			}
+            edgesChanged = true;
         }
+        currentEdge = edgeName;
 
-        for(auto groupID: softBlockingIDs)
-        {
-			if(groupID.size() == 1) edgeName = "softBlock";
-			else edgeName = "softInterBlock";
-
-        	for(auto id : groupID)
-                addEdgeModel(id,robotID,edgeName);
-
-        }
-
-
-        edgesChanged = true;
     }
 
-    else
-		edgesChanged = false;
+    ////////////////////////// affordanceBlock ////////////////////////
+
+    edgeName = "affordanceBlock";
+
+    for(auto id: affBlockingIDs)
+    {
+        if(addEdgeModel(id,robotID,edgeName))
+        {
+            edgesChanged = true;
+        }
+        currentEdge = edgeName;
+    }
+     ////////////////////////////////////////////////////////////////////
+
 
 
     if  (active and
-            (blockingIDs.size() != 0 or affBlockingIDs.size() != 0) and
-                ((prev_blockingIDs != blockingIDs) or  (prev_affBlockingIDs != affBlockingIDs)))
+            (blockingIDs.size() != 0 or affBlockingIDs.size() != 0))
     {
+
         if(addEdgeModel(robotID,robotID,"blocked"))
             edgesChanged = true;
-
 
         robotBlocked = true;
 
@@ -294,15 +257,27 @@ void SpecificWorker::checkHumanBlock()
             edgesChanged = true;
 
 
+        for (auto id: blockingIDsInModel)
+        {
+            if(removeEdgeModel(id,robotID,edgeInModel))
+            {
+                edgesChanged = true;
+            }
+        }
+
         actionBlocked = "";
         planBlocked = "";
         paramsBlocked.clear();
+
+        edgeInModel = "";
+
 
     }
 
 
 
 	if(edgesChanged){
+
 		try
 		{
             qDebug()<< "sendModificationProposal";
@@ -312,13 +287,23 @@ void SpecificWorker::checkHumanBlock()
 		{
 			std::cout<<"No se puede actualizar worldModel"<<std::endl;
 		}
+
+		if (currentEdge != "")
+		{
+            edgeInModel = currentEdge;
+            if (!blockingIDs.empty())
+                blockingIDsInModel = blockingIDs;
+            else if (!affBlockingIDs.empty())
+                blockingIDsInModel = affBlockingIDs;
+        }
 	}
 
 
 
     prev_blockingIDs = blockingIDs;
     prev_affBlockingIDs = affBlockingIDs;
-    prev_softBlockingIDs = softBlockingIDs;
+
+
 
 }
 
@@ -347,12 +332,13 @@ bool SpecificWorker::addEdgeModel(int32_t id1, int32_t id2, string edgeName)
     {
         newModel->addEdgeByIdentifiers(id1, id2, edgeName);
         qDebug ()<<" Se añade el enlace " << QString::fromStdString(edgeName) << " de " << id1;
+        return true;
     }
 
     catch(...)
     {
-        std::cout<<__FUNCTION__<<" No existe el enlace " << edgeName <<std::endl;
-
+        std::cout<<__FUNCTION__<<" Ya existe el enlace " << edgeName <<std::endl;
+        return false;
     }
 }
 
@@ -407,6 +393,7 @@ void SpecificWorker::getPeopleBlocking()
             if (edge->getLabel()=="is_blocking") {
                 const std::pair<int32_t, int32_t> symbolPair = edge->getSymbolPair();
                 prev_blockingIDs.push_back(symbolPair.first);
+                edgeInModel = "is_blocking";
             }
         }
     }
@@ -584,7 +571,7 @@ void  SpecificWorker::moveRobot()
 
 void  SpecificWorker::checkRobotAutoMovState()
 {
-	qDebug()<<__FUNCTION__;
+//	qDebug()<<__FUNCTION__;
 
 	if(autoMov_checkbox->checkState() == Qt::CheckState(2))
 	{
