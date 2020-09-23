@@ -112,6 +112,8 @@ void SpecificWorker::compute()
 
 //    static QTime reloj = QTime::currentTime();
 
+    QMutexLocker lockIM(mutex);
+
     bool needsReplaning = false;
 
     if(personalSpacesChanged)
@@ -132,16 +134,10 @@ void SpecificWorker::compute()
 		needsReplaning = true;
 	}
 
-    QMutexLocker lockIM(mutex);
 
     RoboCompLaser::TLaserData laserData = updateLaser();
-
 	navigation.update(totalPersons, laserData, needsReplaning);
-
-//    static QTime reloj = QTime::currentTime();
-
     viewer->run();
-//    qDebug()<< "viewer " << reloj.restart();
 
 
 	if (!totalPersons.empty())
@@ -155,6 +151,18 @@ void SpecificWorker::compute()
         {
             qDebug()<< "new target "<< target;
             bool reachable = navigation.newTarget(target);
+
+            int searchedPoints = 0;
+
+            if (action == "changeroom")
+            {
+                while(!reachable and searchedPoints<10){
+                    auto [_, target_] = actionExecution.runActions(action,params);
+                    reachable = navigation.newTarget(target_);
+                    searchedPoints++;
+                }
+
+            }
 
             if (!reachable)
                 qDebug()<< "Can't reach new target ";
@@ -200,7 +208,7 @@ void SpecificWorker::checkHumanBlock()
 
     if((prev_blockingIDs == blockingIDs)  and (prev_affBlockingIDs == affBlockingIDs) and robotBlocked)
         return;
-
+//
 //    qDebug()<< "blocking - prev: " << prev_blockingIDs << " current: " << blockingIDs;
 //    qDebug()<< "aff blocking - prev: " << prev_affBlockingIDs << " current: " << affBlockingIDs;
 
@@ -441,7 +449,7 @@ SpecificWorker::retPersonalSpaces SpecificWorker::getPolylinesFromModel()
 
         if(!sharedWithIDs.empty())
         {
-            qDebug()<< "Searching for " << owner;
+//            qDebug()<< "Searching for " << owner;
             if( std::find(std::begin(IDsAlreadyIncluded), std::end(IDsAlreadyIncluded), owner) != std::end(IDsAlreadyIncluded))
                 continue;
         }

@@ -107,8 +107,8 @@ ActionExecution::retActions ActionExecution::action_ChangeRoom(ParameterMap para
     bool needsReplanning = false;
 
     auto roomPolygon = getRoomPolyline(roomSymbol);
-    QPointF newTarget = roomPolygon.boundingRect().center();
-
+//    QPointF newTarget = roomPolygon.boundingRect().center();
+    QPointF newTarget = getRandomPointInRoom(roomPolygon);
 
     if (currentRoom == destRoomID)
     {
@@ -159,6 +159,7 @@ ActionExecution::retActions ActionExecution::action_GoToPerson(ParameterMap para
     }
 
     qDebug()<<  __FUNCTION__ << "Returning "<< needsReplanning << newTarget;
+
 
     return std::make_tuple(needsReplanning, newTarget);
 
@@ -247,8 +248,6 @@ QPointF ActionExecution::getPointInSocialSpace(AGMModelSymbol::SPtr personSymbol
         }
     }
 
-
-
 }
 
 QPolygonF ActionExecution::getRoomPolyline(AGMModelSymbol::SPtr roomSymbol)
@@ -280,4 +279,39 @@ QPolygonF ActionExecution::getRoomPolyline(AGMModelSymbol::SPtr roomSymbol)
         std::cout << "Exception reading room "<< roomSymbol->identifier << " polyline: " << e.what() << std::endl;
     }
 
+}
+
+QPointF ActionExecution::getRandomPointInRoom(QPolygonF room) {
+
+    float hmin, hmax, vmin, vmax;
+    auto rect = room.boundingRect();
+    
+    if (rect.top() < rect.bottom())
+    {
+        vmin = rect.top() + 200;
+        vmax = rect.bottom() - 200;
+    }
+    else
+    {
+        vmin = rect.bottom() + 200;
+        vmax = rect.top() - 200;
+    }
+
+    if (rect.right()<rect.left() )
+    {
+        hmin = rect.right() + 200;
+        hmax = rect.left() - 200;
+    }
+    else
+    {
+        hmin = rect.left()+ 200;
+        hmax = rect.right() - 200;
+
+    }
+
+
+    auto x = hmin + (double)rand() * (hmax - hmin)/ (double)RAND_MAX;
+    auto z = vmin + (double)rand() * (vmax - vmin)/ (double)RAND_MAX;
+
+    return QPointF(x,z);
 }

@@ -28,6 +28,7 @@ private:
     ActionExecution::retActions action_GoToPerson(ParameterMap params_);
     QPolygonF getRoomPolyline(AGMModelSymbol::SPtr roomSymbol);
     QPointF getPointInSocialSpace(AGMModelSymbol::SPtr personSymbol,AGMModelSymbol::SPtr robotSymbol);
+    QPointF getRandomPointInRoom(QPolygonF room);
 
 };
 
