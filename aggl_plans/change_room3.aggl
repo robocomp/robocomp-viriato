@@ -110,7 +110,44 @@ goToPerson : active(1)
 		p->robot(is_blocking)
 		robot->p(is_near)
 	}
+	precondition
+	{
+		(forall 
+			otherp:person
+			(when   
+				(not (= p otherp))
+				(not (is_blocking otherp robot))
+			)       
+		)
+	}
 }
+
+goToGroupOfPeople : active(1)
+{
+	{
+		p:person(-235,-35)
+		robot:robot(-35,-180)
+		p->robot(is_blocking)
+	}
+	=>
+	{
+		p:person(-225,-80)
+		robot:robot(0,-205)
+		p->robot(is_blocking)
+		robot->p(is_near)
+	}
+	precondition
+	{
+		(forall 
+			otherp:person
+			(when   
+				(not (= p otherp))
+				(is_blocking otherp robot))
+			)       
+		)
+	}
+}
+
 
 takeTheAttention : active(1)
 {

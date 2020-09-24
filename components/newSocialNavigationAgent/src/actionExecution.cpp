@@ -29,21 +29,21 @@ void ActionExecution::update(std::string action_,  ParameterMap params_)
 
 ActionExecution::retActions ActionExecution::runActions(std::string action_,  ParameterMap params_)
 {
-//    qDebug() << "---------------------------------------------------";
-//    qDebug() <<__FUNCTION__ <<"Checking ACTION: " << QString::fromStdString(action_);
+    qDebug() << "---------------------------------------------------";
+    qDebug() <<__FUNCTION__ <<"Checking ACTION: " << QString::fromStdString(action_);
 
     retActions ret;
 
 
     if (action_ == "changeroom")
-    {
         ret = action_ChangeRoom(params_);
-    }
+
 
     if (action_ == "gotoperson")
-    {
         ret = action_GoToPerson(params_);
-    }
+
+    if (action_ == "gotogroupofpeople")
+        ret = action_GoToGroupOfPeople(params_);
 
     return ret;
 
@@ -166,6 +166,103 @@ ActionExecution::retActions ActionExecution::action_GoToPerson(ParameterMap para
 
 }
 
+ActionExecution::retActions ActionExecution::action_GoToGroupOfPeople(ParameterMap params_)
+{
+    qDebug()<<"-------------------------------"<< __FUNCTION__<< "-------------------------------";
+    AGMModelSymbol::SPtr robotSymbol;
+    bool needsReplanning = false;
+
+    try
+    {
+        robotSymbol = worldModel->getSymbolByIdentifier(std::stoi(params_["robot"].value));
+    }
+    catch( const Ice::Exception& ex)
+    {
+        std::cout << "Exception:: Error reading robot symbol" << ex << endl;
+    }
+
+    vector<AGMModelSymbol::SPtr> totalPerson;
+
+    try
+    {
+
+        for (AGMModelSymbol::iterator edge = robotSymbol->edgesBegin(worldModel);
+             edge != robotSymbol->edgesEnd(worldModel);
+             edge++)
+        {
+            if (edge->getLabel()=="is_blocking") {
+                const std::pair<int32_t, int32_t> symbolPair = edge->getSymbolPair();
+                totalPerson.push_back(worldModel->getSymbol(symbolPair.first));
+
+            }
+        }
+
+    }
+
+    catch( const Ice::Exception& ex)
+    {
+        std::cout << "Exception:: Cant get edge between robot and person:" << ex << endl;
+    }
+
+    auto nearestPerson = getNearestPerson(totalPerson,robotSymbol);
+    QPointF newTarget = getPointInSocialSpace(nearestPerson,robotSymbol);
+
+    qDebug()<<"Nearest person is "<< nearestPerson->identifier;
+
+    if (newActionReceived)
+    {
+
+        newActionReceived = false;
+        needsReplanning = true;
+
+    }
+
+    return std::make_tuple(needsReplanning, newTarget);
+
+}
+
+
+
+AGMModelSymbol::SPtr ActionExecution::getNearestPerson(vector<AGMModelSymbol::SPtr> totalPersons,AGMModelSymbol::SPtr robotSymbol)
+{
+    float minDist  = std::numeric_limits<int>::max();
+    AGMModelSymbol::SPtr nearestPerson;
+
+    localPerson robot;
+    auto id_r = robotSymbol->identifier;
+    AGMModelSymbol::SPtr robotParent = worldModel->getParentByLink(id_r, "RT");
+    AGMModelEdge& edgeRT_r = worldModel->getEdgeByIdentifiers(robotParent->identifier, id_r, "RT");
+
+    robot.id = id_r;
+    robot.x = str2float(edgeRT_r.attributes["tx"]);
+    robot.z = str2float(edgeRT_r.attributes["tz"]);
+
+
+    for (auto personSymbol : totalPersons)
+    {
+        localPerson person;
+
+        auto id = personSymbol->identifier;
+        AGMModelSymbol::SPtr personParent = worldModel->getParentByLink(id, "RT");
+        AGMModelEdge& edgeRT = worldModel->getEdgeByIdentifiers(personParent->identifier, id, "RT");
+
+        person.id = id;
+        person.x = str2float(edgeRT.attributes["tx"]);
+        person.z = str2float(edgeRT.attributes["tz"]);
+
+        auto dist = sqrt((robot.x - person.x) * (robot.x - person.x) + (robot.z - person.z) * (robot.z - person.z));
+
+        if (dist< minDist)
+        {
+            nearestPerson = personSymbol;
+            minDist = dist;
+        }
+
+    }
+
+    return nearestPerson;
+}
+
 QPointF ActionExecution::getPointInSocialSpace(AGMModelSymbol::SPtr personSymbol,AGMModelSymbol::SPtr robotSymbol)
 {
     localPerson person;
@@ -249,6 +346,8 @@ QPointF ActionExecution::getPointInSocialSpace(AGMModelSymbol::SPtr personSymbol
     }
 
 }
+
+
 
 QPolygonF ActionExecution::getRoomPolyline(AGMModelSymbol::SPtr roomSymbol)
 {

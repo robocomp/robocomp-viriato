@@ -26,9 +26,12 @@ private:
 
     ActionExecution::retActions action_ChangeRoom(ParameterMap params_);
     ActionExecution::retActions action_GoToPerson(ParameterMap params_);
+    ActionExecution::retActions action_GoToGroupOfPeople(ParameterMap params_);
+
     QPolygonF getRoomPolyline(AGMModelSymbol::SPtr roomSymbol);
     QPointF getPointInSocialSpace(AGMModelSymbol::SPtr personSymbol,AGMModelSymbol::SPtr robotSymbol);
     QPointF getRandomPointInRoom(QPolygonF room);
+    AGMModelSymbol::SPtr getNearestPerson(vector<AGMModelSymbol::SPtr> totalPersons,AGMModelSymbol::SPtr robotSymbol);
 
 };
 
