@@ -24,6 +24,8 @@ private:
     ParameterMap params;
     bool newActionReceived = false;
 
+    string prevRoomTarget;
+
     ActionExecution::retActions action_ChangeRoom(ParameterMap params_);
     ActionExecution::retActions action_GoToPerson(ParameterMap params_);
     ActionExecution::retActions action_GoToGroupOfPeople(ParameterMap params_);

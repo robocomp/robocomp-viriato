@@ -70,7 +70,7 @@ ActionExecution::retActions ActionExecution::action_ChangeRoom(ParameterMap para
 
 
     int32_t destRoomID = roomSymbol->identifier;
-    std::string imName =roomSymbol->getAttribute("imName");
+    std::string roomName = roomSymbol->getAttribute("imName");
 //    printf("imName: <%s>\n", imName.c_str());
 
     int32_t currentRoom = -1;
@@ -117,10 +117,13 @@ ActionExecution::retActions ActionExecution::action_ChangeRoom(ParameterMap para
 
     else if (newActionReceived)
     {
+        if (prevRoomTarget != roomName)
+        {
+            needsReplanning = true;
+            prevRoomTarget = roomName;
+        }
 
         newActionReceived = false;
-        needsReplanning = true;
-
     }
 
 //    qDebug()<<  __FUNCTION__ << "Returning "<< needsReplanning << newTarget;
