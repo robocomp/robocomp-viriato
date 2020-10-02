@@ -236,11 +236,7 @@ public:
                     qDebug()<< "checkPathState - Deactivating current target";
 
                     stopRobot();
-
-                    this->current_target.lock();
-                    current_target.active.store(false);
-                    this->current_target.unlock();
-
+                    deactivateTarget();
                     pathPoints.clear();
 
                     if(robotAutoMov) newRandomTarget();
@@ -543,6 +539,7 @@ bool findNewPath()
 
         if(checkHumanBlock() or checkAffordancesBlock())
         {
+            qDebug()<< "humanBlock = True";
             this->current_target.lock();
                 current_target.humanBlock.store(true);
             this->current_target.unlock();
@@ -555,7 +552,7 @@ bool findNewPath()
 
 bool checkHumanBlock()
 {
-    qDebug()<<__FUNCTION__;
+    qDebug()<<"---"<<__FUNCTION__<<"---";
 
     grid.resetGrid();
 
@@ -569,6 +566,7 @@ bool checkHumanBlock()
 
     if(!path.empty()) //hay alguna persona bloqueando el camino
     {
+
         for(auto pol : intimateSpaces)
         {
             grid.markAreaInGridAs(pol, false);
@@ -576,6 +574,8 @@ bool checkHumanBlock()
 
             if (path.empty())
             {
+                qDebug()<<__FUNCTION__<< "Human Blocking robot";
+
                 blockFound = true;
 
 				for (auto p: totalPersons)

@@ -21,23 +21,26 @@ void ActionExecution::update(std::string action_,  ParameterMap params_)
     action = action_;
     params = params_;
     newActionReceived = true;
+
+
 }
 
 
 
 //////////////////////////////////missions//////////////////////////////////////////
 
-ActionExecution::retActions ActionExecution::runActions(std::string action_,  ParameterMap params_)
+ActionExecution::retActions ActionExecution::runActions(std::string action_,  ParameterMap params_, bool testing)
 {
-    qDebug() << "---------------------------------------------------";
-    qDebug() <<__FUNCTION__ <<"Checking ACTION: " << QString::fromStdString(action_);
+//    qDebug() << "---------------------------------------------------";
+//    qDebug() <<__FUNCTION__ <<"Checking ACTION: " << QString::fromStdString(action_);
 
     retActions ret;
 
 
     if (action_ == "changeroom")
-        ret = action_ChangeRoom(params_);
-
+        ret = action_ChangeRoom(params_,testing);
+    else
+        prevRoomTarget = "";
 
     if (action_ == "gotoperson")
         ret = action_GoToPerson(params_);
@@ -45,12 +48,13 @@ ActionExecution::retActions ActionExecution::runActions(std::string action_,  Pa
     if (action_ == "gotogroupofpeople")
         ret = action_GoToGroupOfPeople(params_);
 
+
     return ret;
 
 }
 
 
-ActionExecution::retActions ActionExecution::action_ChangeRoom(ParameterMap params_)
+ActionExecution::retActions ActionExecution::action_ChangeRoom(ParameterMap params_,bool testing)
 {
 
 //    qDebug()<<"-------------------------------"<< __FUNCTION__<< ----------------";
@@ -117,10 +121,13 @@ ActionExecution::retActions ActionExecution::action_ChangeRoom(ParameterMap para
 
     else if (newActionReceived)
     {
-        if (prevRoomTarget != roomName)
+        qDebug()<< QString::fromStdString(prevRoomTarget) << QString::fromStdString(roomName);
+
+        if (prevRoomTarget != roomName and (!testing))
         {
-            needsReplanning = true;
             prevRoomTarget = roomName;
+            needsReplanning = true;
+
         }
 
         newActionReceived = false;
@@ -214,10 +221,8 @@ ActionExecution::retActions ActionExecution::action_GoToGroupOfPeople(ParameterM
 
     if (newActionReceived)
     {
-
         newActionReceived = false;
         needsReplanning = true;
-
     }
 
     return std::make_tuple(needsReplanning, newTarget);

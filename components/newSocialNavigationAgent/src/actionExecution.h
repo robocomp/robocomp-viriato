@@ -10,12 +10,15 @@
 class ActionExecution {
 
 public:
+    string prevRoomTarget;
+
+
     using retActions = std::tuple <bool,QPointF>;
 
     void initialize(AGMModel::SPtr worldModel_);
     void updateWordModel(AGMModel::SPtr worldModel_);
     void update(std::string action_,  ParameterMap params_);
-    ActionExecution::retActions runActions(std::string action_,  ParameterMap params_);
+    ActionExecution::retActions runActions(std::string action_,  ParameterMap params_, bool testing=false);
 
 
 private:
@@ -24,9 +27,8 @@ private:
     ParameterMap params;
     bool newActionReceived = false;
 
-    string prevRoomTarget;
 
-    ActionExecution::retActions action_ChangeRoom(ParameterMap params_);
+    ActionExecution::retActions action_ChangeRoom(ParameterMap params_, bool testing=false);
     ActionExecution::retActions action_GoToPerson(ParameterMap params_);
     ActionExecution::retActions action_GoToGroupOfPeople(ParameterMap params_);
 

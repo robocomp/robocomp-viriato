@@ -57,7 +57,7 @@
 	<attribute key="mass" value="0" />
 </symbol>
 <symbol id="104" type="plane">
-	<attribute key="collidable" value="false" />
+	<attribute key="collidable" value="true" />
 	<attribute key="depth" value="100" />
 	<attribute key="height" value="1900" />
 	<attribute key="imName" value="muro0" />
@@ -79,7 +79,7 @@
 	<attribute key="mass" value="0" />
 </symbol>
 <symbol id="106" type="plane">
-	<attribute key="collidable" value="false" />
+	<attribute key="collidable" value="true" />
 	<attribute key="depth" value="100" />
 	<attribute key="height" value="1900" />
 	<attribute key="imName" value="muro1" />
@@ -101,7 +101,7 @@
 	<attribute key="mass" value="0" />
 </symbol>
 <symbol id="108" type="plane">
-	<attribute key="collidable" value="false" />
+	<attribute key="collidable" value="true" />
 	<attribute key="depth" value="100" />
 	<attribute key="height" value="1900" />
 	<attribute key="imName" value="muro2" />
@@ -114,7 +114,7 @@
 	<attribute key="pz" value="0" />
 	<attribute key="repeat" value="1000" />
 	<attribute key="texture" value="#74ADA1" />
-	<attribute key="width" value="3500" />
+	<attribute key="width" value="3250" />
 </symbol>
 <symbol id="109" type="transform">
 	<attribute key="engine" value="static" />
@@ -123,7 +123,7 @@
 	<attribute key="mass" value="0" />
 </symbol>
 <symbol id="110" type="plane">
-	<attribute key="collidable" value="false" />
+	<attribute key="collidable" value="true" />
 	<attribute key="depth" value="100" />
 	<attribute key="height" value="1900" />
 	<attribute key="imName" value="muro3" />
@@ -167,7 +167,7 @@
 	<attribute key="mass" value="0" />
 </symbol>
 <symbol id="114" type="plane">
-	<attribute key="collidable" value="false" />
+	<attribute key="collidable" value="true" />
 	<attribute key="depth" value="100" />
 	<attribute key="height" value="1900" />
 	<attribute key="imName" value="muro4" />
@@ -189,7 +189,7 @@
 	<attribute key="mass" value="0" />
 </symbol>
 <symbol id="116" type="plane">
-	<attribute key="collidable" value="false" />
+	<attribute key="collidable" value="true" />
 	<attribute key="depth" value="100" />
 	<attribute key="height" value="1900" />
 	<attribute key="imName" value="muro5" />
@@ -211,7 +211,7 @@
 	<attribute key="mass" value="0" />
 </symbol>
 <symbol id="118" type="plane">
-	<attribute key="collidable" value="false" />
+	<attribute key="collidable" value="true" />
 	<attribute key="depth" value="100" />
 	<attribute key="height" value="1900" />
 	<attribute key="imName" value="muro6" />
@@ -255,7 +255,7 @@
 	<attribute key="mass" value="0" />
 </symbol>
 <symbol id="122" type="plane">
-	<attribute key="collidable" value="false" />
+	<attribute key="collidable" value="true" />
 	<attribute key="depth" value="100" />
 	<attribute key="height" value="1900" />
 	<attribute key="imName" value="muro7" />
@@ -268,7 +268,7 @@
 	<attribute key="pz" value="0" />
 	<attribute key="repeat" value="1000" />
 	<attribute key="texture" value="#74ADA1" />
-	<attribute key="width" value="1500" />
+	<attribute key="width" value="500" />
 </symbol>
 <symbol id="123" type="transform">
 	<attribute key="engine" value="static" />
@@ -277,7 +277,7 @@
 	<attribute key="mass" value="0" />
 </symbol>
 <symbol id="124" type="plane">
-	<attribute key="collidable" value="false" />
+	<attribute key="collidable" value="true" />
 	<attribute key="depth" value="100" />
 	<attribute key="height" value="1900" />
 	<attribute key="imName" value="muro8" />
@@ -290,7 +290,7 @@
 	<attribute key="pz" value="0" />
 	<attribute key="repeat" value="1000" />
 	<attribute key="texture" value="#74ADA1" />
-	<attribute key="width" value="1500" />
+	<attribute key="width" value="3250" />
 </symbol>
 <symbol id="125" type="transform">
 	<attribute key="engine" value="static" />
@@ -299,7 +299,7 @@
 	<attribute key="mass" value="0" />
 </symbol>
 <symbol id="126" type="plane">
-	<attribute key="collidable" value="false" />
+	<attribute key="collidable" value="true" />
 	<attribute key="depth" value="100" />
 	<attribute key="height" value="1900" />
 	<attribute key="imName" value="muro9" />
@@ -343,7 +343,7 @@
 	<attribute key="mass" value="0" />
 </symbol>
 <symbol id="130" type="plane">
-	<attribute key="collidable" value="false" />
+	<attribute key="collidable" value="true" />
 	<attribute key="depth" value="100" />
 	<attribute key="height" value="1900" />
 	<attribute key="imName" value="muro10" />
@@ -365,7 +365,7 @@
 	<attribute key="mass" value="0" />
 </symbol>
 <symbol id="132" type="plane">
-	<attribute key="collidable" value="false" />
+	<attribute key="collidable" value="true" />
 	<attribute key="depth" value="100" />
 	<attribute key="height" value="1900" />
 	<attribute key="imName" value="muro11" />
@@ -387,7 +387,7 @@
 	<attribute key="mass" value="0" />
 </symbol>
 <symbol id="134" type="plane">
-	<attribute key="collidable" value="false" />
+	<attribute key="collidable" value="true" />
 	<attribute key="depth" value="100" />
 	<attribute key="height" value="1900" />
 	<attribute key="imName" value="muro12" />
@@ -565,7 +565,7 @@
 	<linkAttribute key="rz" value="0" />
 	<linkAttribute key="tx" value="-2000" />
 	<linkAttribute key="ty" value="950" />
-	<linkAttribute key="tz" value="-1250" />
+	<linkAttribute key="tz" value="-1125" />
 </link>
 <link src="107" dst="108" label="RT">
 	<linkAttribute key="rx" value="0" />
@@ -591,15 +591,7 @@
 	<linkAttribute key="ty" value="0" />
 	<linkAttribute key="tz" value="0" />
 </link>
-<link src="100" dst="4" label="RT">
-	<linkAttribute key="rx" value="0" />
-	<linkAttribute key="ry" value="0" />
-	<linkAttribute key="rz" value="0" />
-	<linkAttribute key="tx" value="0" />
-	<linkAttribute key="ty" value="0" />
-	<linkAttribute key="tz" value="0" />
-</link>
-<link src="4" dst="111" label="RT">
+<link src="3" dst="111" label="RT">
 	<linkAttribute key="rx" value="0" />
 	<linkAttribute key="ry" value="0" />
 	<linkAttribute key="rz" value="0" />
@@ -615,7 +607,7 @@
 	<linkAttribute key="ty" value="0" />
 	<linkAttribute key="tz" value="0" />
 </link>
-<link src="4" dst="113" label="RT">
+<link src="3" dst="113" label="RT">
 	<linkAttribute key="rx" value="0" />
 	<linkAttribute key="ry" value="0" />
 	<linkAttribute key="rz" value="0" />
@@ -631,7 +623,7 @@
 	<linkAttribute key="ty" value="0" />
 	<linkAttribute key="tz" value="0" />
 </link>
-<link src="4" dst="115" label="RT">
+<link src="3" dst="115" label="RT">
 	<linkAttribute key="rx" value="0" />
 	<linkAttribute key="ry" value="0" />
 	<linkAttribute key="rz" value="0" />
@@ -647,7 +639,7 @@
 	<linkAttribute key="ty" value="0" />
 	<linkAttribute key="tz" value="0" />
 </link>
-<link src="4" dst="117" label="RT">
+<link src="3" dst="117" label="RT">
 	<linkAttribute key="rx" value="0" />
 	<linkAttribute key="ry" value="0" />
 	<linkAttribute key="rz" value="0" />
@@ -663,15 +655,7 @@
 	<linkAttribute key="ty" value="0" />
 	<linkAttribute key="tz" value="0" />
 </link>
-<link src="100" dst="5" label="RT">
-	<linkAttribute key="rx" value="0" />
-	<linkAttribute key="ry" value="0" />
-	<linkAttribute key="rz" value="0" />
-	<linkAttribute key="tx" value="0" />
-	<linkAttribute key="ty" value="0" />
-	<linkAttribute key="tz" value="0" />
-</link>
-<link src="5" dst="119" label="RT">
+<link src="3" dst="119" label="RT">
 	<linkAttribute key="rx" value="0" />
 	<linkAttribute key="ry" value="0" />
 	<linkAttribute key="rz" value="0" />
@@ -687,13 +671,13 @@
 	<linkAttribute key="ty" value="0" />
 	<linkAttribute key="tz" value="0" />
 </link>
-<link src="5" dst="121" label="RT">
+<link src="3" dst="121" label="RT">
 	<linkAttribute key="rx" value="0" />
 	<linkAttribute key="ry" value="0" />
 	<linkAttribute key="rz" value="0" />
 	<linkAttribute key="tx" value="0" />
 	<linkAttribute key="ty" value="950" />
-	<linkAttribute key="tz" value="-250" />
+	<linkAttribute key="tz" value="250" />
 </link>
 <link src="121" dst="122" label="RT">
 	<linkAttribute key="rx" value="0" />
@@ -703,13 +687,13 @@
 	<linkAttribute key="ty" value="0" />
 	<linkAttribute key="tz" value="0" />
 </link>
-<link src="5" dst="123" label="RT">
+<link src="3" dst="123" label="RT">
 	<linkAttribute key="rx" value="0" />
 	<linkAttribute key="ry" value="0" />
 	<linkAttribute key="rz" value="0" />
 	<linkAttribute key="tx" value="0" />
 	<linkAttribute key="ty" value="950" />
-	<linkAttribute key="tz" value="-3750" />
+	<linkAttribute key="tz" value="-2900" />
 </link>
 <link src="123" dst="124" label="RT">
 	<linkAttribute key="rx" value="0" />
@@ -719,7 +703,7 @@
 	<linkAttribute key="ty" value="0" />
 	<linkAttribute key="tz" value="0" />
 </link>
-<link src="5" dst="125" label="RT">
+<link src="3" dst="125" label="RT">
 	<linkAttribute key="rx" value="0" />
 	<linkAttribute key="ry" value="0" />
 	<linkAttribute key="rz" value="0" />
@@ -735,15 +719,7 @@
 	<linkAttribute key="ty" value="0" />
 	<linkAttribute key="tz" value="0" />
 </link>
-<link src="100" dst="6" label="RT">
-	<linkAttribute key="rx" value="0" />
-	<linkAttribute key="ry" value="0" />
-	<linkAttribute key="rz" value="0" />
-	<linkAttribute key="tx" value="0" />
-	<linkAttribute key="ty" value="0" />
-	<linkAttribute key="tz" value="0" />
-</link>
-<link src="6" dst="127" label="RT">
+<link src="3" dst="127" label="RT">
 	<linkAttribute key="rx" value="0" />
 	<linkAttribute key="ry" value="0" />
 	<linkAttribute key="rz" value="0" />
@@ -759,7 +735,7 @@
 	<linkAttribute key="ty" value="0" />
 	<linkAttribute key="tz" value="0" />
 </link>
-<link src="6" dst="129" label="RT">
+<link src="3" dst="129" label="RT">
 	<linkAttribute key="rx" value="0" />
 	<linkAttribute key="ry" value="0" />
 	<linkAttribute key="rz" value="0" />
@@ -775,7 +751,7 @@
 	<linkAttribute key="ty" value="0" />
 	<linkAttribute key="tz" value="0" />
 </link>
-<link src="6" dst="131" label="RT">
+<link src="3" dst="131" label="RT">
 	<linkAttribute key="rx" value="0" />
 	<linkAttribute key="ry" value="0" />
 	<linkAttribute key="rz" value="0" />
@@ -791,7 +767,7 @@
 	<linkAttribute key="ty" value="0" />
 	<linkAttribute key="tz" value="0" />
 </link>
-<link src="6" dst="133" label="RT">
+<link src="3" dst="133" label="RT">
 	<linkAttribute key="rx" value="0" />
 	<linkAttribute key="ry" value="0" />
 	<linkAttribute key="rz" value="0" />

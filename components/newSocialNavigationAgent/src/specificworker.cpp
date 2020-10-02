@@ -180,7 +180,7 @@ void SpecificWorker::compute()
 void SpecificWorker::checkRobotBlock()
 {
     qDebug()<<__FUNCTION__;
-    auto [_, target] = actionExecution.runActions(actionBlocked,paramsBlocked);
+    auto [_, target] = actionExecution.runActions(actionBlocked,paramsBlocked, true);
     if(navigation.isPointVisitable(target))
     {
         qDebug()<< "---- ROBOT NOT BLOCKED ----";
@@ -937,6 +937,7 @@ bool SpecificWorker::setParametersAndPossibleActivation(const ParameterMap &prs,
             currentPlan = "none";
             planBlocked = "";
             paramsBlocked.clear();
+            actionExecution.prevRoomTarget ="";
         }
 	}
 	catch (...)

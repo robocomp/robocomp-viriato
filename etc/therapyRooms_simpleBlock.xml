@@ -60,12 +60,12 @@
 				<plane id="floor5_plane" ny="1" size="2000,5000,10" texture="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/wood1.jpg" />
 			</transform>
 
-			<transform id="pared7" tx="0" tz="-250" ty="950" >
-				<plane id="muro7" nx="-500" nz="0" size="1500,1900,100"  texture="#74ADA1"collide="1" />
+			<transform id="pared7" tx="0" tz="250" ty="950" >
+				<plane id="muro7" nx="-500" nz="0" size="500,1900,100"  texture="#74ADA1"collide="1" /> <!--Modificar-->
 			</transform>
 
-			<transform id="pared8" tx="0" tz="-3200" ty="950" >
-				<plane id="muro8" nx="-500" nz="0" size="2500,1900,100"  texture="#745DA1" collide="1"/>
+			<transform id="pared8" tx="0" tz="-2900" ty="950" >
+				<plane id="muro8" nx="-500" nz="0" size="3250,1900,100"  texture="#74ADA1" collide="1"/><!--Modificar-->
 			</transform>
 
 			<transform id="pared9" tx="-1000" tz="-4500" ty="950" >
