@@ -163,7 +163,7 @@
 
  <node alias="socialnavigG" endpoint="socialnavigationgaussian:tcp -h localhost -p 20020">
   <workingDir path="/home/robocomp/" />
-  <upCommand command="rcremote localhost socialnavGauss /home/robocomp/robocomp/components/robocomp-viriato/components/socialnavigationGaussian python src/socialnavigationGaussian.py etc/config" />
+  <upCommand command="rcremote localhost socialnavGauss /home/robocomp/robocomp/components/robocomp-viriato/components/socialnavigationGaussian python2 src/socialnavigationGaussian.py etc/config" />
   <downCommand command="pkill -9 -f socialnavigationGaussian.py"/>
 <configFile path="/home/robocomp/robocomp/components/robocomp-viriato/etcSim/socialnavigationGaussian.conf" />
   <xpos value="100.097569307" />
