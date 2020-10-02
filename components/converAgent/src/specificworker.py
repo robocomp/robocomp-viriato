@@ -689,12 +689,10 @@ class SpecificWorker(GenericWorker):
 
                     elif prs['action'].value == 'askForGroupalPermission' or self.action == 'takeTheAttention':
                         print('------ askForGroupalPermission ------')
-                        if self.interaction.isVisible() == False:
+                        if not self.interaction.isVisible():
                             self.interaction.interactionUI = True
                             self.situation = 'two'
-                            print(self.situation)
-
-                            self.link = "softBlock"
+                            self.link = "is_blocking"
                             self.human_id = prs['p'].value
                             self.robot_id = prs['robot'].value
                             self.writeToFile(prs['p'].value, self.situation)

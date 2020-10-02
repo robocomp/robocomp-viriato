@@ -84,7 +84,7 @@
  <node alias="executive" endpoint="agmexecutive:tcp -h localhost -p 10198">
   <dependence alias="storm" />
   <workingDir path="/home/robocomp/" />
-  <upCommand command="rcremote localhost AGMExecutive /home/robocomp/AGM/tools/AGMExecutive_robocomp python AGMExecutive_robocomp.py /home/robocomp/robocomp/components/robocomp-viriato/etcSim/executiveAUTONOMY.conf" />
+  <upCommand command="rcremote localhost AGMExecutive /home/robocomp/AGM/tools/AGMExecutive_robocomp python2 AGMExecutive_robocomp.py /home/robocomp/robocomp/components/robocomp-viriato/etcSim/executiveAUTONOMY.conf" />
   <downCommand command="pkill -9 -f AGMExecutive_robocomp.py" />
   <configFile path="xxx" />
   <xpos value="-8.22150957623" />
@@ -113,7 +113,7 @@
 
   <workingDir path="/home/robocomp/" />
   <upCommand command="rcremote localhost roomlocalizationAgent /home/robocomp/robocomp/components/robocomp-viriato/components/roomLocalizationAgent ./bin/roomLocalizationAgent /home/robocomp/robocomp/components/robocomp-viriato/etcSim/roomLocalizationAgent.conf" />
-  <downCommand command="killall -9 roomLocalizationA" />
+  <downCommand command="killall -9 roomLocalizationAgent" />
   <configFile path="/home/robocomp/robocomp/components/robocomp-viriato/etcSim/roomLocalizationAgent.conf" />
   <xpos value="-216.350970747" />
   <ypos value="-45.512538117" />
@@ -202,6 +202,45 @@
  </node>
 
 
+ <node alias="converAgent" endpoint="agmcommonbehavior:tcp -h localhost -p 10258">
+  <dependence alias="executive" />
+  <workingDir path="/home/robocomp/" />
+  <upCommand command="rcremote localhost conversationalAgent /home/robocomp/robocomp/components/robocomp-viriato/components/converAgent python3 src/converAgent.py /home/robocomp/robocomp/components/robocomp-viriato/etcSim/conversationalAgent.conf" />
+  <downCommand command="pkill -9 -f converAgent.py" />
+  <configFile path="/home/robocomp/robocomp/components/robocomp-viriato/etcSim/conversationalAgent.conf" />
+  <xpos value="138.188181907" />
+  <ypos value="-239.333666022" />
+  <radius value="13.0" />
+  <color value="#33FF33" />
+ </node>
+
+
+ 
+<node alias="rasaServer" endpoint="agmcommonbehavior:tcp -h localhost -p 10258">
+  <dependence alias="converAgent"/>
+  <workingDir path="/home/robocomp/" />
+  <upCommand command="rcremote localhost rasaServer /home/robocomp/robocomp/components/robocomp-viriato/components/conversationalAgent/chatbot rasa run --port 5002"/>
+  <downCommand command="fuser -k 5002/tcp" />
+  <configFile path=""/>
+  <xpos value="188.188181907" />
+  <ypos value="-299.333666022" />
+  <radius value="10.0" />
+  <color value="#FF3333" />
+</node>
+
+<node alias="actionServer" endpoint="agmcommonbehavior:tcp -h localhost -p 10258">
+  <dependence alias="converAgent"/>
+  <workingDir path="/home/robocomp/" />
+  <upCommand command="rcremote localhost actionServer /home/robocomp/robocomp/components/robocomp-viriato/components/conversationalAgent/chatbot rasa run actions"/>
+  <downCommand command="fuser -k 5055/tcp" />
+  <configFile path=""/>
+  <xpos value="188.188181907" />
+  <ypos value="-179.333666022" />
+  <radius value="10.0" />
+  <color value="#FF3333" />
+</node>
+
+ 
   <!--<node alias="humanAgent" endpoint="agmcommonbehavior:tcp -h localhost -p 10217">
   <workingDir path="/home/robocomp/" />
   <upCommand command="rcremote localhost humanAgent /home/robocomp/robocomp/components/robocomp-viriato/components/humanAgent ./bin/humanAgent /home/robocomp/robocomp/components/robocomp-viriato/etcSim/humanAgent.conf" />

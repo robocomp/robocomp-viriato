@@ -36,7 +36,7 @@ askForGroupalPermission : active(1)
 			otherp:person
 			(when   
 				(not (= p otherp))
-				(is_blocking otherp robot))
+				(is_blocking otherp robot)
 			)       
 		)
 	}
@@ -112,7 +112,7 @@ goToGroupOfPeople : active(1)
 			otherp:person
 			(when   
 				(not (= p otherp))
-				(is_blocking otherp robot))
+				(is_blocking otherp robot)
 			)       
 		)
 	}
