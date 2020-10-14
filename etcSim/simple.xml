@@ -201,12 +201,23 @@
   <color value="#33FF33" />
  </node>
 
-
- <node alias="converAgent" endpoint="agmcommonbehavior:tcp -h localhost -p 10258">
+<node alias="faceDetector" endpoint="agmcommonbehavior:tcp -h localhost -p 10288">
   <dependence alias="executive" />
   <workingDir path="/home/robocomp/" />
-  <upCommand command="rcremote localhost conversationalAgent /home/robocomp/robocomp/components/robocomp-viriato/components/converAgent python3 src/converAgent.py /home/robocomp/robocomp/components/robocomp-viriato/etcSim/conversationalAgent.conf" />
-  <downCommand command="pkill -9 -f converAgent.py" />
+  <upCommand command="rcremote localhost faceDetector /home/robocomp/robocomp/components/robocomp-viriato/components/faceDetector python2 src/faceDetector.py /home/robocomp/robocomp/components/robocomp-viriato/etcSim/faceDetector.conf" />
+  <downCommand command="pkill -9 -f faceDetector.py" />
+  <configFile path="/home/robocomp/robocomp/components/robocomp-viriato/etcSim/faceDetector.conf" />
+  <xpos value="138.188181907" />
+  <ypos value="-39.333666022" />
+  <radius value="13.0" />
+  <color value="#33FF33" />
+ </node>
+
+ <node alias="converationalAgent" endpoint="agmcommonbehavior:tcp -h localhost -p 10258">
+  <dependence alias="executive" />
+  <workingDir path="/home/robocomp/" />
+  <upCommand command="rcremote localhost conversationalAgent /home/robocomp/robocomp/components/robocomp-viriato/components/conversationalAgent python3 src/conversationalAgent.py /home/robocomp/robocomp/components/robocomp-viriato/etcSim/conversationalAgent.conf" />
+  <downCommand command="pkill -9 -f conversationalAgent.py" />
   <configFile path="/home/robocomp/robocomp/components/robocomp-viriato/etcSim/conversationalAgent.conf" />
   <xpos value="138.188181907" />
   <ypos value="-239.333666022" />
@@ -217,7 +228,7 @@
 
  
 <node alias="rasaServer" endpoint="agmcommonbehavior:tcp -h localhost -p 10258">
-  <dependence alias="converAgent"/>
+  <dependence alias="converationalAgent"/>
   <workingDir path="/home/robocomp/" />
   <upCommand command="rcremote localhost rasaServer /home/robocomp/robocomp/components/robocomp-viriato/components/conversationalAgent/chatbot rasa run --port 5002"/>
   <downCommand command="fuser -k 5002/tcp" />
@@ -229,7 +240,7 @@
 </node>
 
 <node alias="actionServer" endpoint="agmcommonbehavior:tcp -h localhost -p 10258">
-  <dependence alias="converAgent"/>
+  <dependence alias="converationalAgent"/>
   <workingDir path="/home/robocomp/" />
   <upCommand command="rcremote localhost actionServer /home/robocomp/robocomp/components/robocomp-viriato/components/conversationalAgent/chatbot rasa run actions"/>
   <downCommand command="fuser -k 5055/tcp" />
