@@ -169,7 +169,11 @@ private:
     RoboCompSocialNavigationGaussian::SNGPolyline affordanceRectangular(ObjectType obj);
     RoboCompSocialNavigationGaussian::SNGPolyline affordanceCircular(ObjectType obj);
 
-	void applySocialRules();
+    int32_t personPermission = -1;
+    void checkHumanPermissions();
+
+    void calculatePersonalSpaces(RoboCompSocialNavigationGaussian::SNGPersonSeq personGroup);
+    void applySocialRules();
 	void publishPersonalSpaces();
 	void publishAffordances();
 

@@ -175,6 +175,7 @@ public:
             }
 
 		collisions_->checkRobotValidStateAtTargetFast(QVec::vec3(0,10,0),QVec::zeros(3)); //para devolver el robot a la posición 0,0
+        qDebug()<< "Collisions - END checkRobotValidStateAtTargetFast";
 
 		fmap_aux = fmap;
 

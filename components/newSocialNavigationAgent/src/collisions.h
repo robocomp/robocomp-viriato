@@ -58,9 +58,7 @@ public:
 
     bool checkRobotValidStateAtTargetFast(const QVec &targetPos, const QVec &targetRot) const   {
         //First we move the robot in our copy of innermodel to its current coordinates
-
             innerModel->updateTransformValues("robot", targetPos.x(), targetPos.y(), targetPos.z(), targetRot.x(), targetRot.y(), targetRot.z());
-
             ///////////////////////
             //// Check if the robot at the target collides with any know object
             ///////////////////////
@@ -71,7 +69,8 @@ public:
             {
                 for ( auto &out : restNodes )
                 {
-                    try {
+                    try
+                    {
                         collision = innerModel->collide(in, out);
                     }
 

@@ -105,19 +105,20 @@ void SpecificWorker::compute()
 
     if (worldModelChanged)
 	{
-		updatePeopleInModel();
+        updatePeopleInModel();
         checkInteractions();
 		checkObjectAffordance();
-        applySocialRules();
+        if(active)
+            checkHumanPermissions();
+		applySocialRules();
 
         updatePersonalSpacesInGraph();
         updateAffordancesInGraph();
-//        publishPersonalSpaces();
-//        publishAffordances();
 
 		worldModelChanged = false;
         costChanged = false;
     }
+
 
 	else if (costChanged)
     {
@@ -170,6 +171,31 @@ void SpecificWorker::updatePeopleInModel()
 	}
 }
 
+void SpecificWorker::checkHumanPermissions()
+{
+    auto robotID = worldModel->getIdentifierByType("robot");
+    AGMModelSymbol::SPtr robotSymbol = worldModel->getSymbol(robotID);
+
+    for (AGMModelSymbol::iterator edge = robotSymbol->edgesBegin(worldModel); edge!=robotSymbol->edgesEnd(worldModel); edge++) {
+        if (edge->getLabel()=="interacting") {
+            const std::pair<int32_t, int32_t> symbolPair = edge->getSymbolPair();
+            const string secondType = worldModel->getSymbol(symbolPair.second)->symbolType;
+
+            if (symbolPair.first== robotID and secondType=="person") {
+                //check the attribute of the link
+                auto attr = edge->attributes;
+                bool permission = (attr["typeResponse"] == "true");
+                if (permission)
+                {
+                    //guardar el id de la persona para que no se añadan los enlaces interacting
+                    personPermission = symbolPair.second;
+                }
+
+                break;
+            }
+        }
+    }
+}
 
 void SpecificWorker::checkInteractions()
 {
@@ -284,35 +310,73 @@ void SpecificWorker::applySocialRules()
 
     RoboCompSocialNavigationGaussian::SNGPolylineSeq seq;
 
-    if(!interactingPersonsVec.empty())
-    {
-        try
+    if(interactingPersonsVec.empty())
+        return;
+
+
+    for (auto const &personGroup: interactingPersonsVec) {
+
+        bool permissionToPass = false;
+
+        if (personPermission != -1)
         {
-            for (auto const &personGroup: interactingPersonsVec) {
-                RoboCompSocialNavigationGaussian::SNGPolylineSeq intimateResult, personalResult, socialResult;
-
-                vector<QPolygonF> intimatePolygon, personalPolygon, socialPolygon;
-
-                socialnavigationgaussian_proxy->getAllPersonalSpaces(personGroup, false, intimateResult,
-                        personalResult, socialResult);
-
-
-                for (auto s:intimateResult) {intimateSpace_seq.push_back(s);}
-                for (auto s:personalResult) {personalSpace_seq.push_back(s);}
-                for (auto s:socialResult) {socialSpace_seq.push_back(s);}
-
-                arrangePersonalSpaces(personGroup, intimateResult, personalResult, socialResult);
+            for (auto const &p : personGroup)
+            {
+                auto personID = p.id;
+                if (personID == personPermission)
+                {
+                    permissionToPass = true;
+                    break;
+                }
             }
-
         }
 
-        catch( const Ice::Exception &e)
-        {
-            std::cout << e << std::endl;
+        if(permissionToPass) {
+            //Esta parte no se ha comprobado aun
+
+            for (auto const &p : personGroup)
+            {
+                RoboCompSocialNavigationGaussian::SNGPersonSeq seqPerson =  {p};
+                calculatePersonalSpaces(seqPerson);
+
+            }
         }
+        else
+            calculatePersonalSpaces(personGroup);
+
     }
 
+
+
+
+
+
 }
+
+void SpecificWorker::calculatePersonalSpaces(RoboCompSocialNavigationGaussian::SNGPersonSeq personGroup){
+    try
+    {
+        RoboCompSocialNavigationGaussian::SNGPolylineSeq intimateResult, personalResult, socialResult;
+
+        vector<QPolygonF> intimatePolygon, personalPolygon, socialPolygon;
+
+        socialnavigationgaussian_proxy->getAllPersonalSpaces(personGroup, false, intimateResult,
+                                                             personalResult, socialResult);
+
+
+        for (auto s:intimateResult) {intimateSpace_seq.push_back(s);}
+        for (auto s:personalResult) {personalSpace_seq.push_back(s);}
+        for (auto s:socialResult) {socialSpace_seq.push_back(s);}
+
+        arrangePersonalSpaces(personGroup, intimateResult, personalResult, socialResult);
+    }
+
+    catch( const Ice::Exception &e)
+    {
+        std::cout << e << std::endl;
+    }
+}
+
 
 void SpecificWorker::arrangePersonalSpaces(RoboCompSocialNavigationGaussian::SNGPersonSeq personGroup,RoboCompSocialNavigationGaussian::SNGPolylineSeq intimate,
                                            RoboCompSocialNavigationGaussian::SNGPolylineSeq personal, RoboCompSocialNavigationGaussian::SNGPolylineSeq social)
@@ -1374,14 +1438,15 @@ bool SpecificWorker::setParametersAndPossibleActivation(const RoboCompAGMCommonB
 		action = params["action"].value;
 		std::transform(action.begin(), action.end(), action.begin(), ::tolower);
 		//TYPE YOUR ACTION NAME
-		if (action == "actionname")
-		{
-			active = true;
-		}
-		else
-		{
-			active = true;
-		}
+        if (action == "askforgroupalpermission")
+        {
+            qDebug()<< "action received";
+            active = true;
+        }
+        else if (action == "none")
+        {
+            active = false;
+        }
 	}
 	catch (...)
 	{

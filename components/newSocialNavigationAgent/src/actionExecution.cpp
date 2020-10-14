@@ -111,8 +111,8 @@ ActionExecution::retActions ActionExecution::action_ChangeRoom(ParameterMap para
     bool needsReplanning = false;
 
     auto roomPolygon = getRoomPolyline(roomSymbol);
-//    QPointF newTarget = roomPolygon.boundingRect().center();
-    QPointF newTarget = getRandomPointInRoom(roomPolygon);
+    QPointF newTarget = roomPolygon.boundingRect().center();
+//    QPointF newTarget = getRandomPointInRoom(roomPolygon);
 
     if (currentRoom == destRoomID)
     {
@@ -123,13 +123,13 @@ ActionExecution::retActions ActionExecution::action_ChangeRoom(ParameterMap para
     {
         qDebug()<< QString::fromStdString(prevRoomTarget) << QString::fromStdString(roomName);
 
-        if (prevRoomTarget != roomName and (!testing))
-        {
-            prevRoomTarget = roomName;
-            needsReplanning = true;
+//        if (prevRoomTarget != roomName and (!testing))
+//        {
+//            prevRoomTarget = roomName;
+//            needsReplanning = true;
+//        }
 
-        }
-
+        needsReplanning = true;
         newActionReceived = false;
     }
 
