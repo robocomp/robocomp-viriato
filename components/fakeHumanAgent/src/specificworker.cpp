@@ -570,29 +570,16 @@ void SpecificWorker::addPerson()
 			break;
 
 		case 7:
-			meshname = "human07.3ds";
+			meshname = "nurse.ive";
 			scale ="10";
-			rotationz = "0";
-			translationy="950";
+			rotationz = "3.1415926535";
 			break;
 
 		case 8:
 			meshname = "human08.3DS";
-			scale = "25";
+			scale = "950";
 			rotationz= "0";
 			break;
-		case 9:
-			meshname = "human09.3DS";
-			scale = "1000";
-			rotationz= "0";
-			break;
-
-		case 10:
-			meshname = "human10.3DS";
-			scale = "1000";
-			rotationz= "0";
-			break;
-
 
 		default:
 			qDebug()<< "Mesh error";

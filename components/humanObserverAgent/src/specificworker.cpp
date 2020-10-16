@@ -46,7 +46,9 @@ bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 	{
 		RoboCompAGMWorldModel::World w = agmexecutive_proxy->getModel();
 		AGMExecutiveTopic_structuralChange(w);
-	}
+        robotID = worldModel->getIdentifierByType("robot");
+
+    }
 	catch(...)
 	{
 		printf("The executive is probably not running, waiting for first AGM model publication...");
@@ -372,7 +374,6 @@ QPolygonF SpecificWorker::getAffordance(int objectID)
 bool SpecificWorker::checkHumansNear()
 {
 	auto currentRobotPose = innerModel->transformS6D("world","robot");
-	auto robotID = worldModel->getIdentifierByType("robot");
 
 	bool changesInEdges = false;
 	vector <int32_t> currentPersonsNear;
@@ -529,8 +530,12 @@ void SpecificWorker::AGMExecutiveTopic_edgeUpdated(const RoboCompAGMWorldModel::
 	QMutexLocker locker(mutex);
 	AGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);
 	AGMInner::updateImNodeFromEdge(worldModel, modification, innerModel.get());
-    worldModelChanged = true;
 
+    if (modification.b != robotID )
+    {
+        qDebug()<< modification.a << modification.b;
+        worldModelChanged = true;
+    }
 }
 
 void SpecificWorker::AGMExecutiveTopic_edgesUpdated(const RoboCompAGMWorldModel::EdgeSequence &modifications)
@@ -541,9 +546,13 @@ void SpecificWorker::AGMExecutiveTopic_edgesUpdated(const RoboCompAGMWorldModel:
 	{
 		AGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);
 		AGMInner::updateImNodeFromEdge(worldModel, modification, innerModel.get());
-	}
+        if (modification.b != robotID )
+        {
+            qDebug()<< modification.a << modification.b;
+            worldModelChanged = true;
+        }
+    }
 
-    worldModelChanged = true;
 }
 
 void SpecificWorker::AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldModel::World &w)

@@ -74,6 +74,8 @@ public slots:
     void removeTherapy();
 	void drawPersonalSpace();
 	void recordData();
+    void checkRobotPermission();
+
 
 
 private:
@@ -148,6 +150,7 @@ private:
 
     std::map<QString, vector<float>> mapCostsPerHour;
 
+    bool permission_given = false;
 
     //------------------------------------------//
     std::shared_ptr<InnerModel> innerModel;

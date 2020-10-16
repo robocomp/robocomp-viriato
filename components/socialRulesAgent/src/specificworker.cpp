@@ -74,6 +74,8 @@ void SpecificWorker::initialize(int period)
     connect(removeT_button, SIGNAL (clicked()),this,SLOT(removeTherapy()));
     connect(currtime_slider, SIGNAL (valueChanged(int)),this,SLOT(affordanceTimeSliderChanged(int)));
 
+    connect(permission_checkbox, SIGNAL(clicked()),this, SLOT(checkRobotPermission()));
+
     checkObjectAffordance();
 
 	auto timeValue = currtime_slider->value();
@@ -108,7 +110,7 @@ void SpecificWorker::compute()
         updatePeopleInModel();
         checkInteractions();
 		checkObjectAffordance();
-        if(active)
+        if(isActive())
             checkHumanPermissions();
 		applySocialRules();
 
@@ -185,7 +187,8 @@ void SpecificWorker::checkHumanPermissions()
                 //check the attribute of the link
                 auto attr = edge->attributes;
                 bool permission = (attr["typeResponse"] == "true");
-                if (permission)
+
+                if (permission) //Replace with permission when the atribute exists
                 {
                     //guardar el id de la persona para que no se añadan los enlaces interacting
                     personPermission = symbolPair.second;
@@ -325,6 +328,7 @@ void SpecificWorker::applySocialRules()
                 auto personID = p.id;
                 if (personID == personPermission)
                 {
+                    qDebug()<<"::::: PERMISSION FOUND :::::" << personID;
                     permissionToPass = true;
                     break;
                 }
@@ -332,8 +336,7 @@ void SpecificWorker::applySocialRules()
         }
 
         if(permissionToPass) {
-            //Esta parte no se ha comprobado aun
-
+            qDebug()<<"Robot has permission to pass";
             for (auto const &p : personGroup)
             {
                 RoboCompSocialNavigationGaussian::SNGPersonSeq seqPerson =  {p};
@@ -944,6 +947,21 @@ void SpecificWorker::checkRobotmov()
 
 }
 
+void SpecificWorker::checkRobotPermission()
+{
+    qDebug()<< __FUNCTION__;
+    if(permission_checkbox->checkState() == Qt::CheckState(2)) {
+        permission_given = true;
+        personPermission = sngPersonSeq[0].id;
+    }
+    else
+    {
+        permission_given = false;
+        personPermission = -1;
+    }
+    worldModelChanged = true;
+
+}
 
 void SpecificWorker::publishPersonalSpaces()
 {

@@ -126,6 +126,8 @@ private:
     RoboCompAGMCommonBehavior::ParameterMap params;
 	AGMModel::SPtr worldModel,newModel;
 	bool active;
+	int32_t robotID;
+
 	bool setParametersAndPossibleActivation(const RoboCompAGMCommonBehavior::ParameterMap &prs, bool &reactivated);
 	void sendModificationProposal(AGMModel::SPtr &worldModel, AGMModel::SPtr &newModel);
 	bool startup_check_flag;
