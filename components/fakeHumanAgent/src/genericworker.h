@@ -1,5 +1,5 @@
 /*
- *    Copyright (C)2020 by YOUR NAME HERE
+ *    Copyright (C) 2020 by YOUR NAME HERE
  *
  *    This file is part of RoboComp
  *
@@ -31,26 +31,18 @@
 #include <ui_mainUI.h>
 #include <CommonBehavior.h>
 
-#include <Planning.h>
-#include <InnerModelManager.h>
 #include <AGMCommonBehavior.h>
 #include <AGMExecutive.h>
 #include <AGMExecutiveTopic.h>
 #include <AGMWorldModel.h>
+#include <InnerModelManager.h>
+#include <Planning.h>
 #include <agm.h>
 
-#include <agm.h>
 
 #define CHECK_PERIOD 5000
 #define BASIC_PERIOD 100
 
-using namespace std;
-using namespace RoboCompPlanning;
-using namespace RoboCompInnerModelManager;
-using namespace RoboCompAGMCommonBehavior;
-using namespace RoboCompAGMExecutive;
-using namespace RoboCompAGMExecutiveTopic;
-using namespace RoboCompAGMWorldModel;
 
 typedef map <string,::IceProxy::Ice::Object*> MapPrx;
 
@@ -61,12 +53,7 @@ struct BehaviorParameters
 	std::vector< std::vector <std::string> > plan;
 };
 
-class GenericWorker :
-#ifdef USE_QTGUI
-	public QWidget, public Ui_guiDlg
-#else
-	public QObject
- #endif
+class GenericWorker : public QWidget, public Ui_guiDlg
 {
 Q_OBJECT
 public:
@@ -82,33 +69,34 @@ public:
 	bool isActive() { return active; }
 
 
-	AGMExecutivePrx agmexecutive_proxy;
-	InnerModelManagerPrx innermodelmanager_proxy;
+	RoboCompAGMExecutive::AGMExecutivePrx agmexecutive_proxy;
+	RoboCompInnerModelManager::InnerModelManagerPrx innermodelmanager_proxy;
 
-	virtual bool AGMCommonBehavior_activateAgent(const ParameterMap &prs) = 0;
+	virtual bool AGMCommonBehavior_activateAgent(const RoboCompAGMCommonBehavior::ParameterMap &prs) = 0;
 	virtual bool AGMCommonBehavior_deactivateAgent() = 0;
-	virtual ParameterMap AGMCommonBehavior_getAgentParameters() = 0;
-	virtual StateStruct AGMCommonBehavior_getAgentState() = 0;
+	virtual RoboCompAGMCommonBehavior::ParameterMap AGMCommonBehavior_getAgentParameters() = 0;
+	virtual RoboCompAGMCommonBehavior::StateStruct AGMCommonBehavior_getAgentState() = 0;
 	virtual void AGMCommonBehavior_killAgent() = 0;
 	virtual bool AGMCommonBehavior_reloadConfigAgent() = 0;
-	virtual bool AGMCommonBehavior_setAgentParameters(const ParameterMap &prs) = 0;
+	virtual bool AGMCommonBehavior_setAgentParameters(const RoboCompAGMCommonBehavior::ParameterMap &prs) = 0;
 	virtual int AGMCommonBehavior_uptimeAgent() = 0;
-	virtual void AGMExecutiveTopic_edgeUpdated(const RoboCompAGMWorldModel::Edge &modification) = 0;
-	virtual void AGMExecutiveTopic_edgesUpdated(const RoboCompAGMWorldModel::EdgeSequence &modifications) = 0;
-	virtual void AGMExecutiveTopic_selfEdgeAdded(const int nodeid, const string &edgeType, const RoboCompAGMWorldModel::StringDictionary &attributes) = 0;
-	virtual void AGMExecutiveTopic_selfEdgeDeleted(const int nodeid, const string &edgeType) = 0;
-	virtual void AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldModel::World &w) = 0;
-	virtual void AGMExecutiveTopic_symbolUpdated(const RoboCompAGMWorldModel::Node &modification) = 0;
-	virtual void AGMExecutiveTopic_symbolsUpdated(const RoboCompAGMWorldModel::NodeSequence &modifications) = 0;
+	virtual void AGMExecutiveTopic_edgeUpdated (const RoboCompAGMWorldModel::Edge &modification) = 0;
+	virtual void AGMExecutiveTopic_edgesUpdated (const RoboCompAGMWorldModel::EdgeSequence &modifications) = 0;
+	virtual void AGMExecutiveTopic_selfEdgeAdded (const int nodeid, const std::string &edgeType, const RoboCompAGMWorldModel::StringDictionary &attributes) = 0;
+	virtual void AGMExecutiveTopic_selfEdgeDeleted (const int nodeid, const std::string &edgeType) = 0;
+	virtual void AGMExecutiveTopic_structuralChange (const RoboCompAGMWorldModel::World &w) = 0;
+	virtual void AGMExecutiveTopic_symbolUpdated (const RoboCompAGMWorldModel::Node &modification) = 0;
+	virtual void AGMExecutiveTopic_symbolsUpdated (const RoboCompAGMWorldModel::NodeSequence &modifications) = 0;
 
 protected:
 
 	QTimer timer;
 	int Period;
+
 	bool active;
 	AGMModel::SPtr worldModel;
 	BehaviorParameters p;
-	ParameterMap params;
+	RoboCompAGMCommonBehavior::ParameterMap params;
 	int iter;
 	bool setParametersAndPossibleActivation(const RoboCompAGMCommonBehavior::ParameterMap &prs, bool &reactivated);
 	RoboCompPlanning::Action createAction(std::string s);
@@ -118,7 +106,7 @@ private:
 
 public slots:
 	virtual void compute() = 0;
-    virtual void initialize(int period) = 0;
+	virtual void initialize(int period) = 0;
 	
 signals:
 	void kill();

@@ -126,23 +126,23 @@ public:
     virtual bool deactivateAgent(const ::Ice::Current&) = 0;
     bool _iceD_deactivateAgent(::IceInternal::Incoming&, const ::Ice::Current&);
 
-    virtual ::RoboCompAGMCommonBehavior::StateStruct getAgentState(const ::Ice::Current&) = 0;
-    bool _iceD_getAgentState(::IceInternal::Incoming&, const ::Ice::Current&);
-
     virtual ::RoboCompAGMCommonBehavior::ParameterMap getAgentParameters(const ::Ice::Current&) = 0;
     bool _iceD_getAgentParameters(::IceInternal::Incoming&, const ::Ice::Current&);
 
-    virtual bool setAgentParameters(::RoboCompAGMCommonBehavior::ParameterMap, const ::Ice::Current&) = 0;
-    bool _iceD_setAgentParameters(::IceInternal::Incoming&, const ::Ice::Current&);
+    virtual ::RoboCompAGMCommonBehavior::StateStruct getAgentState(const ::Ice::Current&) = 0;
+    bool _iceD_getAgentState(::IceInternal::Incoming&, const ::Ice::Current&);
 
     virtual void killAgent(const ::Ice::Current&) = 0;
     bool _iceD_killAgent(::IceInternal::Incoming&, const ::Ice::Current&);
 
-    virtual int uptimeAgent(const ::Ice::Current&) = 0;
-    bool _iceD_uptimeAgent(::IceInternal::Incoming&, const ::Ice::Current&);
-
     virtual bool reloadConfigAgent(const ::Ice::Current&) = 0;
     bool _iceD_reloadConfigAgent(::IceInternal::Incoming&, const ::Ice::Current&);
+
+    virtual bool setAgentParameters(::RoboCompAGMCommonBehavior::ParameterMap, const ::Ice::Current&) = 0;
+    bool _iceD_setAgentParameters(::IceInternal::Incoming&, const ::Ice::Current&);
+
+    virtual int uptimeAgent(const ::Ice::Current&) = 0;
+    bool _iceD_uptimeAgent(::IceInternal::Incoming&, const ::Ice::Current&);
 
     virtual bool _iceDispatch(::IceInternal::Incoming&, const ::Ice::Current&) override;
 };
@@ -203,6 +203,29 @@ public:
 
     void _iceI_deactivateAgent(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<bool>>&, const ::Ice::Context&);
 
+    ::RoboCompAGMCommonBehavior::ParameterMap getAgentParameters(const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        return _makePromiseOutgoing<::RoboCompAGMCommonBehavior::ParameterMap>(true, this, &RoboCompAGMCommonBehavior::AGMCommonBehaviorPrx::_iceI_getAgentParameters, context).get();
+    }
+
+    template<template<typename> class P = ::std::promise>
+    auto getAgentParametersAsync(const ::Ice::Context& context = Ice::noExplicitContext)
+        -> decltype(::std::declval<P<::RoboCompAGMCommonBehavior::ParameterMap>>().get_future())
+    {
+        return _makePromiseOutgoing<::RoboCompAGMCommonBehavior::ParameterMap, P>(false, this, &RoboCompAGMCommonBehavior::AGMCommonBehaviorPrx::_iceI_getAgentParameters, context);
+    }
+
+    ::std::function<void()>
+    getAgentParametersAsync(::std::function<void(::RoboCompAGMCommonBehavior::ParameterMap)> response,
+                            ::std::function<void(::std::exception_ptr)> ex = nullptr,
+                            ::std::function<void(bool)> sent = nullptr,
+                            const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        return _makeLamdaOutgoing<::RoboCompAGMCommonBehavior::ParameterMap>(response, ex, sent, this, &RoboCompAGMCommonBehavior::AGMCommonBehaviorPrx::_iceI_getAgentParameters, context);
+    }
+
+    void _iceI_getAgentParameters(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::RoboCompAGMCommonBehavior::ParameterMap>>&, const ::Ice::Context&);
+
     ::RoboCompAGMCommonBehavior::StateStruct getAgentState(const ::Ice::Context& context = Ice::noExplicitContext)
     {
         return _makePromiseOutgoing<::RoboCompAGMCommonBehavior::StateStruct>(true, this, &RoboCompAGMCommonBehavior::AGMCommonBehaviorPrx::_iceI_getAgentState, context).get();
@@ -226,28 +249,51 @@ public:
 
     void _iceI_getAgentState(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::RoboCompAGMCommonBehavior::StateStruct>>&, const ::Ice::Context&);
 
-    ::RoboCompAGMCommonBehavior::ParameterMap getAgentParameters(const ::Ice::Context& context = Ice::noExplicitContext)
+    void killAgent(const ::Ice::Context& context = Ice::noExplicitContext)
     {
-        return _makePromiseOutgoing<::RoboCompAGMCommonBehavior::ParameterMap>(true, this, &RoboCompAGMCommonBehavior::AGMCommonBehaviorPrx::_iceI_getAgentParameters, context).get();
+        _makePromiseOutgoing<void>(true, this, &RoboCompAGMCommonBehavior::AGMCommonBehaviorPrx::_iceI_killAgent, context).get();
     }
 
     template<template<typename> class P = ::std::promise>
-    auto getAgentParametersAsync(const ::Ice::Context& context = Ice::noExplicitContext)
-        -> decltype(::std::declval<P<::RoboCompAGMCommonBehavior::ParameterMap>>().get_future())
+    auto killAgentAsync(const ::Ice::Context& context = Ice::noExplicitContext)
+        -> decltype(::std::declval<P<void>>().get_future())
     {
-        return _makePromiseOutgoing<::RoboCompAGMCommonBehavior::ParameterMap, P>(false, this, &RoboCompAGMCommonBehavior::AGMCommonBehaviorPrx::_iceI_getAgentParameters, context);
+        return _makePromiseOutgoing<void, P>(false, this, &RoboCompAGMCommonBehavior::AGMCommonBehaviorPrx::_iceI_killAgent, context);
     }
 
     ::std::function<void()>
-    getAgentParametersAsync(::std::function<void(::RoboCompAGMCommonBehavior::ParameterMap)> response,
-                            ::std::function<void(::std::exception_ptr)> ex = nullptr,
-                            ::std::function<void(bool)> sent = nullptr,
-                            const ::Ice::Context& context = Ice::noExplicitContext)
+    killAgentAsync(::std::function<void()> response,
+                   ::std::function<void(::std::exception_ptr)> ex = nullptr,
+                   ::std::function<void(bool)> sent = nullptr,
+                   const ::Ice::Context& context = Ice::noExplicitContext)
     {
-        return _makeLamdaOutgoing<::RoboCompAGMCommonBehavior::ParameterMap>(response, ex, sent, this, &RoboCompAGMCommonBehavior::AGMCommonBehaviorPrx::_iceI_getAgentParameters, context);
+        return _makeLamdaOutgoing<void>(response, ex, sent, this, &RoboCompAGMCommonBehavior::AGMCommonBehaviorPrx::_iceI_killAgent, context);
     }
 
-    void _iceI_getAgentParameters(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::RoboCompAGMCommonBehavior::ParameterMap>>&, const ::Ice::Context&);
+    void _iceI_killAgent(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>&, const ::Ice::Context&);
+
+    bool reloadConfigAgent(const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        return _makePromiseOutgoing<bool>(true, this, &RoboCompAGMCommonBehavior::AGMCommonBehaviorPrx::_iceI_reloadConfigAgent, context).get();
+    }
+
+    template<template<typename> class P = ::std::promise>
+    auto reloadConfigAgentAsync(const ::Ice::Context& context = Ice::noExplicitContext)
+        -> decltype(::std::declval<P<bool>>().get_future())
+    {
+        return _makePromiseOutgoing<bool, P>(false, this, &RoboCompAGMCommonBehavior::AGMCommonBehaviorPrx::_iceI_reloadConfigAgent, context);
+    }
+
+    ::std::function<void()>
+    reloadConfigAgentAsync(::std::function<void(bool)> response,
+                           ::std::function<void(::std::exception_ptr)> ex = nullptr,
+                           ::std::function<void(bool)> sent = nullptr,
+                           const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        return _makeLamdaOutgoing<bool>(response, ex, sent, this, &RoboCompAGMCommonBehavior::AGMCommonBehaviorPrx::_iceI_reloadConfigAgent, context);
+    }
+
+    void _iceI_reloadConfigAgent(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<bool>>&, const ::Ice::Context&);
 
     bool setAgentParameters(const ::RoboCompAGMCommonBehavior::ParameterMap& iceP_prs, const ::Ice::Context& context = Ice::noExplicitContext)
     {
@@ -273,29 +319,6 @@ public:
 
     void _iceI_setAgentParameters(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<bool>>&, const ::RoboCompAGMCommonBehavior::ParameterMap&, const ::Ice::Context&);
 
-    void killAgent(const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        _makePromiseOutgoing<void>(true, this, &RoboCompAGMCommonBehavior::AGMCommonBehaviorPrx::_iceI_killAgent, context).get();
-    }
-
-    template<template<typename> class P = ::std::promise>
-    auto killAgentAsync(const ::Ice::Context& context = Ice::noExplicitContext)
-        -> decltype(::std::declval<P<void>>().get_future())
-    {
-        return _makePromiseOutgoing<void, P>(false, this, &RoboCompAGMCommonBehavior::AGMCommonBehaviorPrx::_iceI_killAgent, context);
-    }
-
-    ::std::function<void()>
-    killAgentAsync(::std::function<void()> response,
-                   ::std::function<void(::std::exception_ptr)> ex = nullptr,
-                   ::std::function<void(bool)> sent = nullptr,
-                   const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        return _makeLamdaOutgoing<void>(response, ex, sent, this, &RoboCompAGMCommonBehavior::AGMCommonBehaviorPrx::_iceI_killAgent, context);
-    }
-
-    void _iceI_killAgent(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>&, const ::Ice::Context&);
-
     int uptimeAgent(const ::Ice::Context& context = Ice::noExplicitContext)
     {
         return _makePromiseOutgoing<int>(true, this, &RoboCompAGMCommonBehavior::AGMCommonBehaviorPrx::_iceI_uptimeAgent, context).get();
@@ -318,29 +341,6 @@ public:
     }
 
     void _iceI_uptimeAgent(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<int>>&, const ::Ice::Context&);
-
-    bool reloadConfigAgent(const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        return _makePromiseOutgoing<bool>(true, this, &RoboCompAGMCommonBehavior::AGMCommonBehaviorPrx::_iceI_reloadConfigAgent, context).get();
-    }
-
-    template<template<typename> class P = ::std::promise>
-    auto reloadConfigAgentAsync(const ::Ice::Context& context = Ice::noExplicitContext)
-        -> decltype(::std::declval<P<bool>>().get_future())
-    {
-        return _makePromiseOutgoing<bool, P>(false, this, &RoboCompAGMCommonBehavior::AGMCommonBehaviorPrx::_iceI_reloadConfigAgent, context);
-    }
-
-    ::std::function<void()>
-    reloadConfigAgentAsync(::std::function<void(bool)> response,
-                           ::std::function<void(::std::exception_ptr)> ex = nullptr,
-                           ::std::function<void(bool)> sent = nullptr,
-                           const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        return _makeLamdaOutgoing<bool>(response, ex, sent, this, &RoboCompAGMCommonBehavior::AGMCommonBehaviorPrx::_iceI_reloadConfigAgent, context);
-    }
-
-    void _iceI_reloadConfigAgent(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<bool>>&, const ::Ice::Context&);
 
     static const ::std::string& ice_staticId();
 
@@ -605,23 +605,23 @@ typedef ::IceUtil::Handle< Callback_AGMCommonBehavior_activateAgent_Base> Callba
 class Callback_AGMCommonBehavior_deactivateAgent_Base : public virtual ::IceInternal::CallbackBase { };
 typedef ::IceUtil::Handle< Callback_AGMCommonBehavior_deactivateAgent_Base> Callback_AGMCommonBehavior_deactivateAgentPtr;
 
-class Callback_AGMCommonBehavior_getAgentState_Base : public virtual ::IceInternal::CallbackBase { };
-typedef ::IceUtil::Handle< Callback_AGMCommonBehavior_getAgentState_Base> Callback_AGMCommonBehavior_getAgentStatePtr;
-
 class Callback_AGMCommonBehavior_getAgentParameters_Base : public virtual ::IceInternal::CallbackBase { };
 typedef ::IceUtil::Handle< Callback_AGMCommonBehavior_getAgentParameters_Base> Callback_AGMCommonBehavior_getAgentParametersPtr;
 
-class Callback_AGMCommonBehavior_setAgentParameters_Base : public virtual ::IceInternal::CallbackBase { };
-typedef ::IceUtil::Handle< Callback_AGMCommonBehavior_setAgentParameters_Base> Callback_AGMCommonBehavior_setAgentParametersPtr;
+class Callback_AGMCommonBehavior_getAgentState_Base : public virtual ::IceInternal::CallbackBase { };
+typedef ::IceUtil::Handle< Callback_AGMCommonBehavior_getAgentState_Base> Callback_AGMCommonBehavior_getAgentStatePtr;
 
 class Callback_AGMCommonBehavior_killAgent_Base : public virtual ::IceInternal::CallbackBase { };
 typedef ::IceUtil::Handle< Callback_AGMCommonBehavior_killAgent_Base> Callback_AGMCommonBehavior_killAgentPtr;
 
-class Callback_AGMCommonBehavior_uptimeAgent_Base : public virtual ::IceInternal::CallbackBase { };
-typedef ::IceUtil::Handle< Callback_AGMCommonBehavior_uptimeAgent_Base> Callback_AGMCommonBehavior_uptimeAgentPtr;
-
 class Callback_AGMCommonBehavior_reloadConfigAgent_Base : public virtual ::IceInternal::CallbackBase { };
 typedef ::IceUtil::Handle< Callback_AGMCommonBehavior_reloadConfigAgent_Base> Callback_AGMCommonBehavior_reloadConfigAgentPtr;
+
+class Callback_AGMCommonBehavior_setAgentParameters_Base : public virtual ::IceInternal::CallbackBase { };
+typedef ::IceUtil::Handle< Callback_AGMCommonBehavior_setAgentParameters_Base> Callback_AGMCommonBehavior_setAgentParametersPtr;
+
+class Callback_AGMCommonBehavior_uptimeAgent_Base : public virtual ::IceInternal::CallbackBase { };
+typedef ::IceUtil::Handle< Callback_AGMCommonBehavior_uptimeAgent_Base> Callback_AGMCommonBehavior_uptimeAgentPtr;
 
 }
 
@@ -711,44 +711,6 @@ private:
 
 public:
 
-    ::RoboCompAGMCommonBehavior::StateStruct getAgentState(const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        return end_getAgentState(_iceI_begin_getAgentState(context, ::IceInternal::dummyCallback, 0, true));
-    }
-
-    ::Ice::AsyncResultPtr begin_getAgentState(const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        return _iceI_begin_getAgentState(context, ::IceInternal::dummyCallback, 0);
-    }
-
-    ::Ice::AsyncResultPtr begin_getAgentState(const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_getAgentState(::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_getAgentState(const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_getAgentState(context, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_getAgentState(const ::RoboCompAGMCommonBehavior::Callback_AGMCommonBehavior_getAgentStatePtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_getAgentState(::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_getAgentState(const ::Ice::Context& context, const ::RoboCompAGMCommonBehavior::Callback_AGMCommonBehavior_getAgentStatePtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_getAgentState(context, del, cookie);
-    }
-
-    ::RoboCompAGMCommonBehavior::StateStruct end_getAgentState(const ::Ice::AsyncResultPtr&);
-
-private:
-
-    ::Ice::AsyncResultPtr _iceI_begin_getAgentState(const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
-
-public:
-
     ::RoboCompAGMCommonBehavior::ParameterMap getAgentParameters(const ::Ice::Context& context = ::Ice::noExplicitContext)
     {
         return end_getAgentParameters(_iceI_begin_getAgentParameters(context, ::IceInternal::dummyCallback, 0, true));
@@ -787,41 +749,41 @@ private:
 
 public:
 
-    bool setAgentParameters(const ::RoboCompAGMCommonBehavior::ParameterMap& iceP_prs, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    ::RoboCompAGMCommonBehavior::StateStruct getAgentState(const ::Ice::Context& context = ::Ice::noExplicitContext)
     {
-        return end_setAgentParameters(_iceI_begin_setAgentParameters(iceP_prs, context, ::IceInternal::dummyCallback, 0, true));
+        return end_getAgentState(_iceI_begin_getAgentState(context, ::IceInternal::dummyCallback, 0, true));
     }
 
-    ::Ice::AsyncResultPtr begin_setAgentParameters(const ::RoboCompAGMCommonBehavior::ParameterMap& iceP_prs, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    ::Ice::AsyncResultPtr begin_getAgentState(const ::Ice::Context& context = ::Ice::noExplicitContext)
     {
-        return _iceI_begin_setAgentParameters(iceP_prs, context, ::IceInternal::dummyCallback, 0);
+        return _iceI_begin_getAgentState(context, ::IceInternal::dummyCallback, 0);
     }
 
-    ::Ice::AsyncResultPtr begin_setAgentParameters(const ::RoboCompAGMCommonBehavior::ParameterMap& iceP_prs, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    ::Ice::AsyncResultPtr begin_getAgentState(const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
     {
-        return _iceI_begin_setAgentParameters(iceP_prs, ::Ice::noExplicitContext, del, cookie);
+        return _iceI_begin_getAgentState(::Ice::noExplicitContext, del, cookie);
     }
 
-    ::Ice::AsyncResultPtr begin_setAgentParameters(const ::RoboCompAGMCommonBehavior::ParameterMap& iceP_prs, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    ::Ice::AsyncResultPtr begin_getAgentState(const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
     {
-        return _iceI_begin_setAgentParameters(iceP_prs, context, del, cookie);
+        return _iceI_begin_getAgentState(context, del, cookie);
     }
 
-    ::Ice::AsyncResultPtr begin_setAgentParameters(const ::RoboCompAGMCommonBehavior::ParameterMap& iceP_prs, const ::RoboCompAGMCommonBehavior::Callback_AGMCommonBehavior_setAgentParametersPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    ::Ice::AsyncResultPtr begin_getAgentState(const ::RoboCompAGMCommonBehavior::Callback_AGMCommonBehavior_getAgentStatePtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
     {
-        return _iceI_begin_setAgentParameters(iceP_prs, ::Ice::noExplicitContext, del, cookie);
+        return _iceI_begin_getAgentState(::Ice::noExplicitContext, del, cookie);
     }
 
-    ::Ice::AsyncResultPtr begin_setAgentParameters(const ::RoboCompAGMCommonBehavior::ParameterMap& iceP_prs, const ::Ice::Context& context, const ::RoboCompAGMCommonBehavior::Callback_AGMCommonBehavior_setAgentParametersPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    ::Ice::AsyncResultPtr begin_getAgentState(const ::Ice::Context& context, const ::RoboCompAGMCommonBehavior::Callback_AGMCommonBehavior_getAgentStatePtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
     {
-        return _iceI_begin_setAgentParameters(iceP_prs, context, del, cookie);
+        return _iceI_begin_getAgentState(context, del, cookie);
     }
 
-    bool end_setAgentParameters(const ::Ice::AsyncResultPtr&);
+    ::RoboCompAGMCommonBehavior::StateStruct end_getAgentState(const ::Ice::AsyncResultPtr&);
 
 private:
 
-    ::Ice::AsyncResultPtr _iceI_begin_setAgentParameters(const ::RoboCompAGMCommonBehavior::ParameterMap&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
+    ::Ice::AsyncResultPtr _iceI_begin_getAgentState(const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
 
 public:
 
@@ -863,44 +825,6 @@ private:
 
 public:
 
-    ::Ice::Int uptimeAgent(const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        return end_uptimeAgent(_iceI_begin_uptimeAgent(context, ::IceInternal::dummyCallback, 0, true));
-    }
-
-    ::Ice::AsyncResultPtr begin_uptimeAgent(const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        return _iceI_begin_uptimeAgent(context, ::IceInternal::dummyCallback, 0);
-    }
-
-    ::Ice::AsyncResultPtr begin_uptimeAgent(const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_uptimeAgent(::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_uptimeAgent(const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_uptimeAgent(context, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_uptimeAgent(const ::RoboCompAGMCommonBehavior::Callback_AGMCommonBehavior_uptimeAgentPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_uptimeAgent(::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_uptimeAgent(const ::Ice::Context& context, const ::RoboCompAGMCommonBehavior::Callback_AGMCommonBehavior_uptimeAgentPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_uptimeAgent(context, del, cookie);
-    }
-
-    ::Ice::Int end_uptimeAgent(const ::Ice::AsyncResultPtr&);
-
-private:
-
-    ::Ice::AsyncResultPtr _iceI_begin_uptimeAgent(const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
-
-public:
-
     bool reloadConfigAgent(const ::Ice::Context& context = ::Ice::noExplicitContext)
     {
         return end_reloadConfigAgent(_iceI_begin_reloadConfigAgent(context, ::IceInternal::dummyCallback, 0, true));
@@ -939,6 +863,82 @@ private:
 
 public:
 
+    bool setAgentParameters(const ::RoboCompAGMCommonBehavior::ParameterMap& iceP_prs, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    {
+        return end_setAgentParameters(_iceI_begin_setAgentParameters(iceP_prs, context, ::IceInternal::dummyCallback, 0, true));
+    }
+
+    ::Ice::AsyncResultPtr begin_setAgentParameters(const ::RoboCompAGMCommonBehavior::ParameterMap& iceP_prs, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    {
+        return _iceI_begin_setAgentParameters(iceP_prs, context, ::IceInternal::dummyCallback, 0);
+    }
+
+    ::Ice::AsyncResultPtr begin_setAgentParameters(const ::RoboCompAGMCommonBehavior::ParameterMap& iceP_prs, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_setAgentParameters(iceP_prs, ::Ice::noExplicitContext, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_setAgentParameters(const ::RoboCompAGMCommonBehavior::ParameterMap& iceP_prs, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_setAgentParameters(iceP_prs, context, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_setAgentParameters(const ::RoboCompAGMCommonBehavior::ParameterMap& iceP_prs, const ::RoboCompAGMCommonBehavior::Callback_AGMCommonBehavior_setAgentParametersPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_setAgentParameters(iceP_prs, ::Ice::noExplicitContext, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_setAgentParameters(const ::RoboCompAGMCommonBehavior::ParameterMap& iceP_prs, const ::Ice::Context& context, const ::RoboCompAGMCommonBehavior::Callback_AGMCommonBehavior_setAgentParametersPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_setAgentParameters(iceP_prs, context, del, cookie);
+    }
+
+    bool end_setAgentParameters(const ::Ice::AsyncResultPtr&);
+
+private:
+
+    ::Ice::AsyncResultPtr _iceI_begin_setAgentParameters(const ::RoboCompAGMCommonBehavior::ParameterMap&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
+
+public:
+
+    ::Ice::Int uptimeAgent(const ::Ice::Context& context = ::Ice::noExplicitContext)
+    {
+        return end_uptimeAgent(_iceI_begin_uptimeAgent(context, ::IceInternal::dummyCallback, 0, true));
+    }
+
+    ::Ice::AsyncResultPtr begin_uptimeAgent(const ::Ice::Context& context = ::Ice::noExplicitContext)
+    {
+        return _iceI_begin_uptimeAgent(context, ::IceInternal::dummyCallback, 0);
+    }
+
+    ::Ice::AsyncResultPtr begin_uptimeAgent(const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_uptimeAgent(::Ice::noExplicitContext, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_uptimeAgent(const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_uptimeAgent(context, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_uptimeAgent(const ::RoboCompAGMCommonBehavior::Callback_AGMCommonBehavior_uptimeAgentPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_uptimeAgent(::Ice::noExplicitContext, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_uptimeAgent(const ::Ice::Context& context, const ::RoboCompAGMCommonBehavior::Callback_AGMCommonBehavior_uptimeAgentPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_uptimeAgent(context, del, cookie);
+    }
+
+    ::Ice::Int end_uptimeAgent(const ::Ice::AsyncResultPtr&);
+
+private:
+
+    ::Ice::AsyncResultPtr _iceI_begin_uptimeAgent(const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
+
+public:
+
     static const ::std::string& ice_staticId();
 
 protected:
@@ -974,23 +974,23 @@ public:
     virtual bool deactivateAgent(const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
     bool _iceD_deactivateAgent(::IceInternal::Incoming&, const ::Ice::Current&);
 
-    virtual ::RoboCompAGMCommonBehavior::StateStruct getAgentState(const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
-    bool _iceD_getAgentState(::IceInternal::Incoming&, const ::Ice::Current&);
-
     virtual ::RoboCompAGMCommonBehavior::ParameterMap getAgentParameters(const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
     bool _iceD_getAgentParameters(::IceInternal::Incoming&, const ::Ice::Current&);
 
-    virtual bool setAgentParameters(const ::RoboCompAGMCommonBehavior::ParameterMap&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
-    bool _iceD_setAgentParameters(::IceInternal::Incoming&, const ::Ice::Current&);
+    virtual ::RoboCompAGMCommonBehavior::StateStruct getAgentState(const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
+    bool _iceD_getAgentState(::IceInternal::Incoming&, const ::Ice::Current&);
 
     virtual void killAgent(const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
     bool _iceD_killAgent(::IceInternal::Incoming&, const ::Ice::Current&);
 
-    virtual ::Ice::Int uptimeAgent(const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
-    bool _iceD_uptimeAgent(::IceInternal::Incoming&, const ::Ice::Current&);
-
     virtual bool reloadConfigAgent(const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
     bool _iceD_reloadConfigAgent(::IceInternal::Incoming&, const ::Ice::Current&);
+
+    virtual bool setAgentParameters(const ::RoboCompAGMCommonBehavior::ParameterMap&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
+    bool _iceD_setAgentParameters(::IceInternal::Incoming&, const ::Ice::Current&);
+
+    virtual ::Ice::Int uptimeAgent(const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
+    bool _iceD_uptimeAgent(::IceInternal::Incoming&, const ::Ice::Current&);
 
     virtual bool _iceDispatch(::IceInternal::Incoming&, const ::Ice::Current&);
 
@@ -1297,6 +1297,110 @@ newCallback_AGMCommonBehavior_deactivateAgent(T* instance, void (T::*cb)(bool, c
 }
 
 template<class T>
+class CallbackNC_AGMCommonBehavior_getAgentParameters : public Callback_AGMCommonBehavior_getAgentParameters_Base, public ::IceInternal::TwowayCallbackNC<T>
+{
+public:
+
+    typedef IceUtil::Handle<T> TPtr;
+
+    typedef void (T::*Exception)(const ::Ice::Exception&);
+    typedef void (T::*Sent)(bool);
+    typedef void (T::*Response)(const ::RoboCompAGMCommonBehavior::ParameterMap&);
+
+    CallbackNC_AGMCommonBehavior_getAgentParameters(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::TwowayCallbackNC<T>(obj, cb != 0, excb, sentcb), _response(cb)
+    {
+    }
+
+    virtual void completed(const ::Ice::AsyncResultPtr& result) const
+    {
+        ::RoboCompAGMCommonBehavior::AGMCommonBehaviorPrx proxy = ::RoboCompAGMCommonBehavior::AGMCommonBehaviorPrx::uncheckedCast(result->getProxy());
+        ::RoboCompAGMCommonBehavior::ParameterMap ret;
+        try
+        {
+            ret = proxy->end_getAgentParameters(result);
+        }
+        catch(const ::Ice::Exception& ex)
+        {
+            ::IceInternal::CallbackNC<T>::exception(result, ex);
+            return;
+        }
+        if(_response)
+        {
+            (::IceInternal::CallbackNC<T>::_callback.get()->*_response)(ret);
+        }
+    }
+
+private:
+
+    Response _response;
+};
+
+template<class T> Callback_AGMCommonBehavior_getAgentParametersPtr
+newCallback_AGMCommonBehavior_getAgentParameters(const IceUtil::Handle<T>& instance, void (T::*cb)(const ::RoboCompAGMCommonBehavior::ParameterMap&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_AGMCommonBehavior_getAgentParameters<T>(instance, cb, excb, sentcb);
+}
+
+template<class T> Callback_AGMCommonBehavior_getAgentParametersPtr
+newCallback_AGMCommonBehavior_getAgentParameters(T* instance, void (T::*cb)(const ::RoboCompAGMCommonBehavior::ParameterMap&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_AGMCommonBehavior_getAgentParameters<T>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT>
+class Callback_AGMCommonBehavior_getAgentParameters : public Callback_AGMCommonBehavior_getAgentParameters_Base, public ::IceInternal::TwowayCallback<T, CT>
+{
+public:
+
+    typedef IceUtil::Handle<T> TPtr;
+
+    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
+    typedef void (T::*Sent)(bool , const CT&);
+    typedef void (T::*Response)(const ::RoboCompAGMCommonBehavior::ParameterMap&, const CT&);
+
+    Callback_AGMCommonBehavior_getAgentParameters(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::TwowayCallback<T, CT>(obj, cb != 0, excb, sentcb), _response(cb)
+    {
+    }
+
+    virtual void completed(const ::Ice::AsyncResultPtr& result) const
+    {
+        ::RoboCompAGMCommonBehavior::AGMCommonBehaviorPrx proxy = ::RoboCompAGMCommonBehavior::AGMCommonBehaviorPrx::uncheckedCast(result->getProxy());
+        ::RoboCompAGMCommonBehavior::ParameterMap ret;
+        try
+        {
+            ret = proxy->end_getAgentParameters(result);
+        }
+        catch(const ::Ice::Exception& ex)
+        {
+            ::IceInternal::Callback<T, CT>::exception(result, ex);
+            return;
+        }
+        if(_response)
+        {
+            (::IceInternal::Callback<T, CT>::_callback.get()->*_response)(ret, CT::dynamicCast(result->getCookie()));
+        }
+    }
+
+private:
+
+    Response _response;
+};
+
+template<class T, typename CT> Callback_AGMCommonBehavior_getAgentParametersPtr
+newCallback_AGMCommonBehavior_getAgentParameters(const IceUtil::Handle<T>& instance, void (T::*cb)(const ::RoboCompAGMCommonBehavior::ParameterMap&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_AGMCommonBehavior_getAgentParameters<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_AGMCommonBehavior_getAgentParametersPtr
+newCallback_AGMCommonBehavior_getAgentParameters(T* instance, void (T::*cb)(const ::RoboCompAGMCommonBehavior::ParameterMap&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_AGMCommonBehavior_getAgentParameters<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T>
 class CallbackNC_AGMCommonBehavior_getAgentState : public Callback_AGMCommonBehavior_getAgentState_Base, public ::IceInternal::TwowayCallbackNC<T>
 {
 public:
@@ -1401,7 +1505,7 @@ newCallback_AGMCommonBehavior_getAgentState(T* instance, void (T::*cb)(const ::R
 }
 
 template<class T>
-class CallbackNC_AGMCommonBehavior_getAgentParameters : public Callback_AGMCommonBehavior_getAgentParameters_Base, public ::IceInternal::TwowayCallbackNC<T>
+class CallbackNC_AGMCommonBehavior_killAgent : public Callback_AGMCommonBehavior_killAgent_Base, public ::IceInternal::OnewayCallbackNC<T>
 {
 public:
 
@@ -1409,9 +1513,91 @@ public:
 
     typedef void (T::*Exception)(const ::Ice::Exception&);
     typedef void (T::*Sent)(bool);
-    typedef void (T::*Response)(const ::RoboCompAGMCommonBehavior::ParameterMap&);
+    typedef void (T::*Response)();
 
-    CallbackNC_AGMCommonBehavior_getAgentParameters(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+    CallbackNC_AGMCommonBehavior_killAgent(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::OnewayCallbackNC<T>(obj, cb, excb, sentcb)
+    {
+    }
+};
+
+template<class T> Callback_AGMCommonBehavior_killAgentPtr
+newCallback_AGMCommonBehavior_killAgent(const IceUtil::Handle<T>& instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_AGMCommonBehavior_killAgent<T>(instance, cb, excb, sentcb);
+}
+
+template<class T> Callback_AGMCommonBehavior_killAgentPtr
+newCallback_AGMCommonBehavior_killAgent(const IceUtil::Handle<T>& instance, void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_AGMCommonBehavior_killAgent<T>(instance, 0, excb, sentcb);
+}
+
+template<class T> Callback_AGMCommonBehavior_killAgentPtr
+newCallback_AGMCommonBehavior_killAgent(T* instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_AGMCommonBehavior_killAgent<T>(instance, cb, excb, sentcb);
+}
+
+template<class T> Callback_AGMCommonBehavior_killAgentPtr
+newCallback_AGMCommonBehavior_killAgent(T* instance, void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_AGMCommonBehavior_killAgent<T>(instance, 0, excb, sentcb);
+}
+
+template<class T, typename CT>
+class Callback_AGMCommonBehavior_killAgent : public Callback_AGMCommonBehavior_killAgent_Base, public ::IceInternal::OnewayCallback<T, CT>
+{
+public:
+
+    typedef IceUtil::Handle<T> TPtr;
+
+    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
+    typedef void (T::*Sent)(bool , const CT&);
+    typedef void (T::*Response)(const CT&);
+
+    Callback_AGMCommonBehavior_killAgent(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::OnewayCallback<T, CT>(obj, cb, excb, sentcb)
+    {
+    }
+};
+
+template<class T, typename CT> Callback_AGMCommonBehavior_killAgentPtr
+newCallback_AGMCommonBehavior_killAgent(const IceUtil::Handle<T>& instance, void (T::*cb)(const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_AGMCommonBehavior_killAgent<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_AGMCommonBehavior_killAgentPtr
+newCallback_AGMCommonBehavior_killAgent(const IceUtil::Handle<T>& instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_AGMCommonBehavior_killAgent<T, CT>(instance, 0, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_AGMCommonBehavior_killAgentPtr
+newCallback_AGMCommonBehavior_killAgent(T* instance, void (T::*cb)(const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_AGMCommonBehavior_killAgent<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_AGMCommonBehavior_killAgentPtr
+newCallback_AGMCommonBehavior_killAgent(T* instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_AGMCommonBehavior_killAgent<T, CT>(instance, 0, excb, sentcb);
+}
+
+template<class T>
+class CallbackNC_AGMCommonBehavior_reloadConfigAgent : public Callback_AGMCommonBehavior_reloadConfigAgent_Base, public ::IceInternal::TwowayCallbackNC<T>
+{
+public:
+
+    typedef IceUtil::Handle<T> TPtr;
+
+    typedef void (T::*Exception)(const ::Ice::Exception&);
+    typedef void (T::*Sent)(bool);
+    typedef void (T::*Response)(bool);
+
+    CallbackNC_AGMCommonBehavior_reloadConfigAgent(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
         : ::IceInternal::TwowayCallbackNC<T>(obj, cb != 0, excb, sentcb), _response(cb)
     {
     }
@@ -1419,10 +1605,10 @@ public:
     virtual void completed(const ::Ice::AsyncResultPtr& result) const
     {
         ::RoboCompAGMCommonBehavior::AGMCommonBehaviorPrx proxy = ::RoboCompAGMCommonBehavior::AGMCommonBehaviorPrx::uncheckedCast(result->getProxy());
-        ::RoboCompAGMCommonBehavior::ParameterMap ret;
+        bool ret;
         try
         {
-            ret = proxy->end_getAgentParameters(result);
+            ret = proxy->end_reloadConfigAgent(result);
         }
         catch(const ::Ice::Exception& ex)
         {
@@ -1440,20 +1626,20 @@ private:
     Response _response;
 };
 
-template<class T> Callback_AGMCommonBehavior_getAgentParametersPtr
-newCallback_AGMCommonBehavior_getAgentParameters(const IceUtil::Handle<T>& instance, void (T::*cb)(const ::RoboCompAGMCommonBehavior::ParameterMap&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+template<class T> Callback_AGMCommonBehavior_reloadConfigAgentPtr
+newCallback_AGMCommonBehavior_reloadConfigAgent(const IceUtil::Handle<T>& instance, void (T::*cb)(bool), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
 {
-    return new CallbackNC_AGMCommonBehavior_getAgentParameters<T>(instance, cb, excb, sentcb);
+    return new CallbackNC_AGMCommonBehavior_reloadConfigAgent<T>(instance, cb, excb, sentcb);
 }
 
-template<class T> Callback_AGMCommonBehavior_getAgentParametersPtr
-newCallback_AGMCommonBehavior_getAgentParameters(T* instance, void (T::*cb)(const ::RoboCompAGMCommonBehavior::ParameterMap&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+template<class T> Callback_AGMCommonBehavior_reloadConfigAgentPtr
+newCallback_AGMCommonBehavior_reloadConfigAgent(T* instance, void (T::*cb)(bool), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
 {
-    return new CallbackNC_AGMCommonBehavior_getAgentParameters<T>(instance, cb, excb, sentcb);
+    return new CallbackNC_AGMCommonBehavior_reloadConfigAgent<T>(instance, cb, excb, sentcb);
 }
 
 template<class T, typename CT>
-class Callback_AGMCommonBehavior_getAgentParameters : public Callback_AGMCommonBehavior_getAgentParameters_Base, public ::IceInternal::TwowayCallback<T, CT>
+class Callback_AGMCommonBehavior_reloadConfigAgent : public Callback_AGMCommonBehavior_reloadConfigAgent_Base, public ::IceInternal::TwowayCallback<T, CT>
 {
 public:
 
@@ -1461,9 +1647,9 @@ public:
 
     typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
     typedef void (T::*Sent)(bool , const CT&);
-    typedef void (T::*Response)(const ::RoboCompAGMCommonBehavior::ParameterMap&, const CT&);
+    typedef void (T::*Response)(bool, const CT&);
 
-    Callback_AGMCommonBehavior_getAgentParameters(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+    Callback_AGMCommonBehavior_reloadConfigAgent(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
         : ::IceInternal::TwowayCallback<T, CT>(obj, cb != 0, excb, sentcb), _response(cb)
     {
     }
@@ -1471,10 +1657,10 @@ public:
     virtual void completed(const ::Ice::AsyncResultPtr& result) const
     {
         ::RoboCompAGMCommonBehavior::AGMCommonBehaviorPrx proxy = ::RoboCompAGMCommonBehavior::AGMCommonBehaviorPrx::uncheckedCast(result->getProxy());
-        ::RoboCompAGMCommonBehavior::ParameterMap ret;
+        bool ret;
         try
         {
-            ret = proxy->end_getAgentParameters(result);
+            ret = proxy->end_reloadConfigAgent(result);
         }
         catch(const ::Ice::Exception& ex)
         {
@@ -1492,16 +1678,16 @@ private:
     Response _response;
 };
 
-template<class T, typename CT> Callback_AGMCommonBehavior_getAgentParametersPtr
-newCallback_AGMCommonBehavior_getAgentParameters(const IceUtil::Handle<T>& instance, void (T::*cb)(const ::RoboCompAGMCommonBehavior::ParameterMap&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+template<class T, typename CT> Callback_AGMCommonBehavior_reloadConfigAgentPtr
+newCallback_AGMCommonBehavior_reloadConfigAgent(const IceUtil::Handle<T>& instance, void (T::*cb)(bool, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
 {
-    return new Callback_AGMCommonBehavior_getAgentParameters<T, CT>(instance, cb, excb, sentcb);
+    return new Callback_AGMCommonBehavior_reloadConfigAgent<T, CT>(instance, cb, excb, sentcb);
 }
 
-template<class T, typename CT> Callback_AGMCommonBehavior_getAgentParametersPtr
-newCallback_AGMCommonBehavior_getAgentParameters(T* instance, void (T::*cb)(const ::RoboCompAGMCommonBehavior::ParameterMap&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+template<class T, typename CT> Callback_AGMCommonBehavior_reloadConfigAgentPtr
+newCallback_AGMCommonBehavior_reloadConfigAgent(T* instance, void (T::*cb)(bool, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
 {
-    return new Callback_AGMCommonBehavior_getAgentParameters<T, CT>(instance, cb, excb, sentcb);
+    return new Callback_AGMCommonBehavior_reloadConfigAgent<T, CT>(instance, cb, excb, sentcb);
 }
 
 template<class T>
@@ -1609,88 +1795,6 @@ newCallback_AGMCommonBehavior_setAgentParameters(T* instance, void (T::*cb)(bool
 }
 
 template<class T>
-class CallbackNC_AGMCommonBehavior_killAgent : public Callback_AGMCommonBehavior_killAgent_Base, public ::IceInternal::OnewayCallbackNC<T>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception&);
-    typedef void (T::*Sent)(bool);
-    typedef void (T::*Response)();
-
-    CallbackNC_AGMCommonBehavior_killAgent(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::OnewayCallbackNC<T>(obj, cb, excb, sentcb)
-    {
-    }
-};
-
-template<class T> Callback_AGMCommonBehavior_killAgentPtr
-newCallback_AGMCommonBehavior_killAgent(const IceUtil::Handle<T>& instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_AGMCommonBehavior_killAgent<T>(instance, cb, excb, sentcb);
-}
-
-template<class T> Callback_AGMCommonBehavior_killAgentPtr
-newCallback_AGMCommonBehavior_killAgent(const IceUtil::Handle<T>& instance, void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_AGMCommonBehavior_killAgent<T>(instance, 0, excb, sentcb);
-}
-
-template<class T> Callback_AGMCommonBehavior_killAgentPtr
-newCallback_AGMCommonBehavior_killAgent(T* instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_AGMCommonBehavior_killAgent<T>(instance, cb, excb, sentcb);
-}
-
-template<class T> Callback_AGMCommonBehavior_killAgentPtr
-newCallback_AGMCommonBehavior_killAgent(T* instance, void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_AGMCommonBehavior_killAgent<T>(instance, 0, excb, sentcb);
-}
-
-template<class T, typename CT>
-class Callback_AGMCommonBehavior_killAgent : public Callback_AGMCommonBehavior_killAgent_Base, public ::IceInternal::OnewayCallback<T, CT>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
-    typedef void (T::*Sent)(bool , const CT&);
-    typedef void (T::*Response)(const CT&);
-
-    Callback_AGMCommonBehavior_killAgent(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::OnewayCallback<T, CT>(obj, cb, excb, sentcb)
-    {
-    }
-};
-
-template<class T, typename CT> Callback_AGMCommonBehavior_killAgentPtr
-newCallback_AGMCommonBehavior_killAgent(const IceUtil::Handle<T>& instance, void (T::*cb)(const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_AGMCommonBehavior_killAgent<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT> Callback_AGMCommonBehavior_killAgentPtr
-newCallback_AGMCommonBehavior_killAgent(const IceUtil::Handle<T>& instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_AGMCommonBehavior_killAgent<T, CT>(instance, 0, excb, sentcb);
-}
-
-template<class T, typename CT> Callback_AGMCommonBehavior_killAgentPtr
-newCallback_AGMCommonBehavior_killAgent(T* instance, void (T::*cb)(const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_AGMCommonBehavior_killAgent<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT> Callback_AGMCommonBehavior_killAgentPtr
-newCallback_AGMCommonBehavior_killAgent(T* instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_AGMCommonBehavior_killAgent<T, CT>(instance, 0, excb, sentcb);
-}
-
-template<class T>
 class CallbackNC_AGMCommonBehavior_uptimeAgent : public Callback_AGMCommonBehavior_uptimeAgent_Base, public ::IceInternal::TwowayCallbackNC<T>
 {
 public:
@@ -1792,110 +1896,6 @@ template<class T, typename CT> Callback_AGMCommonBehavior_uptimeAgentPtr
 newCallback_AGMCommonBehavior_uptimeAgent(T* instance, void (T::*cb)(::Ice::Int, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
 {
     return new Callback_AGMCommonBehavior_uptimeAgent<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T>
-class CallbackNC_AGMCommonBehavior_reloadConfigAgent : public Callback_AGMCommonBehavior_reloadConfigAgent_Base, public ::IceInternal::TwowayCallbackNC<T>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception&);
-    typedef void (T::*Sent)(bool);
-    typedef void (T::*Response)(bool);
-
-    CallbackNC_AGMCommonBehavior_reloadConfigAgent(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallbackNC<T>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::RoboCompAGMCommonBehavior::AGMCommonBehaviorPrx proxy = ::RoboCompAGMCommonBehavior::AGMCommonBehaviorPrx::uncheckedCast(result->getProxy());
-        bool ret;
-        try
-        {
-            ret = proxy->end_reloadConfigAgent(result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::CallbackNC<T>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::CallbackNC<T>::_callback.get()->*_response)(ret);
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T> Callback_AGMCommonBehavior_reloadConfigAgentPtr
-newCallback_AGMCommonBehavior_reloadConfigAgent(const IceUtil::Handle<T>& instance, void (T::*cb)(bool), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_AGMCommonBehavior_reloadConfigAgent<T>(instance, cb, excb, sentcb);
-}
-
-template<class T> Callback_AGMCommonBehavior_reloadConfigAgentPtr
-newCallback_AGMCommonBehavior_reloadConfigAgent(T* instance, void (T::*cb)(bool), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_AGMCommonBehavior_reloadConfigAgent<T>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT>
-class Callback_AGMCommonBehavior_reloadConfigAgent : public Callback_AGMCommonBehavior_reloadConfigAgent_Base, public ::IceInternal::TwowayCallback<T, CT>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
-    typedef void (T::*Sent)(bool , const CT&);
-    typedef void (T::*Response)(bool, const CT&);
-
-    Callback_AGMCommonBehavior_reloadConfigAgent(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallback<T, CT>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::RoboCompAGMCommonBehavior::AGMCommonBehaviorPrx proxy = ::RoboCompAGMCommonBehavior::AGMCommonBehaviorPrx::uncheckedCast(result->getProxy());
-        bool ret;
-        try
-        {
-            ret = proxy->end_reloadConfigAgent(result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::Callback<T, CT>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::Callback<T, CT>::_callback.get()->*_response)(ret, CT::dynamicCast(result->getCookie()));
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T, typename CT> Callback_AGMCommonBehavior_reloadConfigAgentPtr
-newCallback_AGMCommonBehavior_reloadConfigAgent(const IceUtil::Handle<T>& instance, void (T::*cb)(bool, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_AGMCommonBehavior_reloadConfigAgent<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT> Callback_AGMCommonBehavior_reloadConfigAgentPtr
-newCallback_AGMCommonBehavior_reloadConfigAgent(T* instance, void (T::*cb)(bool, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_AGMCommonBehavior_reloadConfigAgent<T, CT>(instance, cb, excb, sentcb);
 }
 
 }

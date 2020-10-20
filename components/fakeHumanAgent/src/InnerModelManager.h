@@ -290,8 +290,8 @@ public:
 
     static const ::std::string& ice_staticId();
 
-    virtual bool addTransform(::std::string, ::std::string, ::std::string, ::RoboCompInnerModelManager::Pose3D, const ::Ice::Current&) = 0;
-    bool _iceD_addTransform(::IceInternal::Incoming&, const ::Ice::Current&);
+    virtual bool addAttribute(::std::string, ::std::string, ::std::string, ::std::string, const ::Ice::Current&) = 0;
+    bool _iceD_addAttribute(::IceInternal::Incoming&, const ::Ice::Current&);
 
     virtual bool addJoint(::std::string, ::std::string, ::RoboCompInnerModelManager::jointType, const ::Ice::Current&) = 0;
     bool _iceD_addJoint(::IceInternal::Incoming&, const ::Ice::Current&);
@@ -302,14 +302,24 @@ public:
     virtual bool addPlane(::std::string, ::std::string, ::RoboCompInnerModelManager::Plane3D, const ::Ice::Current&) = 0;
     bool _iceD_addPlane(::IceInternal::Incoming&, const ::Ice::Current&);
 
+    virtual bool addTransform(::std::string, ::std::string, ::std::string, ::RoboCompInnerModelManager::Pose3D, const ::Ice::Current&) = 0;
+    bool _iceD_addTransform(::IceInternal::Incoming&, const ::Ice::Current&);
+
+    virtual bool collide(::std::string, ::std::string, const ::Ice::Current&) = 0;
+    bool _iceD_collide(::IceInternal::Incoming&, const ::Ice::Current&);
+
     virtual void getAllNodeInformation(::RoboCompInnerModelManager::NodeInformationSequence&, const ::Ice::Current&) = 0;
     bool _iceD_getAllNodeInformation(::IceInternal::Incoming&, const ::Ice::Current&);
 
-    virtual bool setPose(::std::string, ::std::string, ::RoboCompInnerModelManager::Pose3D, const ::Ice::Current&) = 0;
-    bool _iceD_setPose(::IceInternal::Incoming&, const ::Ice::Current&);
+    struct GetAttributeResult
+    {
+        bool returnValue;
+        ::std::string type;
+        ::std::string value;
+    };
 
-    virtual bool setPoseFromParent(::std::string, ::RoboCompInnerModelManager::Pose3D, const ::Ice::Current&) = 0;
-    bool _iceD_setPoseFromParent(::IceInternal::Incoming&, const ::Ice::Current&);
+    virtual bool getAttribute(::std::string, ::std::string, ::std::string&, ::std::string&, const ::Ice::Current&) = 0;
+    bool _iceD_getAttribute(::IceInternal::Incoming&, const ::Ice::Current&);
 
     struct GetPoseResult
     {
@@ -329,11 +339,35 @@ public:
     virtual bool getPoseFromParent(::std::string, ::RoboCompInnerModelManager::Pose3D&, const ::Ice::Current&) = 0;
     bool _iceD_getPoseFromParent(::IceInternal::Incoming&, const ::Ice::Current&);
 
+    virtual ::RoboCompInnerModelManager::Matrix getTransformationMatrix(::std::string, ::std::string, const ::Ice::Current&) = 0;
+    bool _iceD_getTransformationMatrix(::IceInternal::Incoming&, const ::Ice::Current&);
+
+    virtual bool moveNode(::std::string, ::std::string, const ::Ice::Current&) = 0;
+    bool _iceD_moveNode(::IceInternal::Incoming&, const ::Ice::Current&);
+
+    virtual bool removeAttribute(::std::string, ::std::string, const ::Ice::Current&) = 0;
+    bool _iceD_removeAttribute(::IceInternal::Incoming&, const ::Ice::Current&);
+
+    virtual bool removeNode(::std::string, const ::Ice::Current&) = 0;
+    bool _iceD_removeNode(::IceInternal::Incoming&, const ::Ice::Current&);
+
+    virtual bool setAttribute(::std::string, ::std::string, ::std::string, ::std::string, const ::Ice::Current&) = 0;
+    bool _iceD_setAttribute(::IceInternal::Incoming&, const ::Ice::Current&);
+
     virtual bool setPlane(::std::string, ::RoboCompInnerModelManager::Plane3D, const ::Ice::Current&) = 0;
     bool _iceD_setPlane(::IceInternal::Incoming&, const ::Ice::Current&);
 
-    virtual bool setPlaneTexture(::std::string, ::std::string, const ::Ice::Current&) = 0;
-    bool _iceD_setPlaneTexture(::IceInternal::Incoming&, const ::Ice::Current&);
+    virtual void setPointCloudData(::std::string, ::RoboCompInnerModelManager::PointCloudVector, const ::Ice::Current&) = 0;
+    bool _iceD_setPointCloudData(::IceInternal::Incoming&, const ::Ice::Current&);
+
+    virtual bool setPose(::std::string, ::std::string, ::RoboCompInnerModelManager::Pose3D, const ::Ice::Current&) = 0;
+    bool _iceD_setPose(::IceInternal::Incoming&, const ::Ice::Current&);
+
+    virtual bool setPoseFromParent(::std::string, ::RoboCompInnerModelManager::Pose3D, const ::Ice::Current&) = 0;
+    bool _iceD_setPoseFromParent(::IceInternal::Incoming&, const ::Ice::Current&);
+
+    virtual bool setScale(::std::string, float, float, float, const ::Ice::Current&) = 0;
+    bool _iceD_setScale(::IceInternal::Incoming&, const ::Ice::Current&);
 
     struct TransformResult
     {
@@ -343,43 +377,6 @@ public:
 
     virtual bool transform(::std::string, ::std::string, ::RoboCompInnerModelManager::coord3D, ::RoboCompInnerModelManager::coord3D&, const ::Ice::Current&) = 0;
     bool _iceD_transform(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    virtual ::RoboCompInnerModelManager::Matrix getTransformationMatrix(::std::string, ::std::string, const ::Ice::Current&) = 0;
-    bool _iceD_getTransformationMatrix(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    virtual bool setScale(::std::string, float, float, float, const ::Ice::Current&) = 0;
-    bool _iceD_setScale(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    virtual bool addAttribute(::std::string, ::std::string, ::std::string, ::std::string, const ::Ice::Current&) = 0;
-    bool _iceD_addAttribute(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    virtual bool removeAttribute(::std::string, ::std::string, const ::Ice::Current&) = 0;
-    bool _iceD_removeAttribute(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    virtual bool setAttribute(::std::string, ::std::string, ::std::string, ::std::string, const ::Ice::Current&) = 0;
-    bool _iceD_setAttribute(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    struct GetAttributeResult
-    {
-        bool returnValue;
-        ::std::string type;
-        ::std::string value;
-    };
-
-    virtual bool getAttribute(::std::string, ::std::string, ::std::string&, ::std::string&, const ::Ice::Current&) = 0;
-    bool _iceD_getAttribute(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    virtual bool removeNode(::std::string, const ::Ice::Current&) = 0;
-    bool _iceD_removeNode(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    virtual bool moveNode(::std::string, ::std::string, const ::Ice::Current&) = 0;
-    bool _iceD_moveNode(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    virtual bool collide(::std::string, ::std::string, const ::Ice::Current&) = 0;
-    bool _iceD_collide(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    virtual void setPointCloudData(::std::string, ::RoboCompInnerModelManager::PointCloudVector, const ::Ice::Current&) = 0;
-    bool _iceD_setPointCloudData(::IceInternal::Incoming&, const ::Ice::Current&);
 
     virtual bool _iceDispatch(::IceInternal::Incoming&, const ::Ice::Current&) override;
 };
@@ -393,29 +390,29 @@ class InnerModelManagerPrx : public virtual ::Ice::Proxy<InnerModelManagerPrx, :
 {
 public:
 
-    bool addTransform(const ::std::string& iceP_item, const ::std::string& iceP_engine, const ::std::string& iceP_base, const ::RoboCompInnerModelManager::Pose3D& iceP_pose, const ::Ice::Context& context = Ice::noExplicitContext)
+    bool addAttribute(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::std::string& iceP_type, const ::std::string& iceP_value, const ::Ice::Context& context = Ice::noExplicitContext)
     {
-        return _makePromiseOutgoing<bool>(true, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_addTransform, iceP_item, iceP_engine, iceP_base, iceP_pose, context).get();
+        return _makePromiseOutgoing<bool>(true, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_addAttribute, iceP_idNode, iceP_name, iceP_type, iceP_value, context).get();
     }
 
     template<template<typename> class P = ::std::promise>
-    auto addTransformAsync(const ::std::string& iceP_item, const ::std::string& iceP_engine, const ::std::string& iceP_base, const ::RoboCompInnerModelManager::Pose3D& iceP_pose, const ::Ice::Context& context = Ice::noExplicitContext)
+    auto addAttributeAsync(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::std::string& iceP_type, const ::std::string& iceP_value, const ::Ice::Context& context = Ice::noExplicitContext)
         -> decltype(::std::declval<P<bool>>().get_future())
     {
-        return _makePromiseOutgoing<bool, P>(false, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_addTransform, iceP_item, iceP_engine, iceP_base, iceP_pose, context);
+        return _makePromiseOutgoing<bool, P>(false, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_addAttribute, iceP_idNode, iceP_name, iceP_type, iceP_value, context);
     }
 
     ::std::function<void()>
-    addTransformAsync(const ::std::string& iceP_item, const ::std::string& iceP_engine, const ::std::string& iceP_base, const ::RoboCompInnerModelManager::Pose3D& iceP_pose,
+    addAttributeAsync(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::std::string& iceP_type, const ::std::string& iceP_value,
                       ::std::function<void(bool)> response,
                       ::std::function<void(::std::exception_ptr)> ex = nullptr,
                       ::std::function<void(bool)> sent = nullptr,
                       const ::Ice::Context& context = Ice::noExplicitContext)
     {
-        return _makeLamdaOutgoing<bool>(response, ex, sent, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_addTransform, iceP_item, iceP_engine, iceP_base, iceP_pose, context);
+        return _makeLamdaOutgoing<bool>(response, ex, sent, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_addAttribute, iceP_idNode, iceP_name, iceP_type, iceP_value, context);
     }
 
-    void _iceI_addTransform(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<bool>>&, const ::std::string&, const ::std::string&, const ::std::string&, const ::RoboCompInnerModelManager::Pose3D&, const ::Ice::Context&);
+    void _iceI_addAttribute(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<bool>>&, const ::std::string&, const ::std::string&, const ::std::string&, const ::std::string&, const ::Ice::Context&);
 
     bool addJoint(const ::std::string& iceP_item, const ::std::string& iceP_base, const ::RoboCompInnerModelManager::jointType& iceP_j, const ::Ice::Context& context = Ice::noExplicitContext)
     {
@@ -489,6 +486,54 @@ public:
 
     void _iceI_addPlane(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<bool>>&, const ::std::string&, const ::std::string&, const ::RoboCompInnerModelManager::Plane3D&, const ::Ice::Context&);
 
+    bool addTransform(const ::std::string& iceP_item, const ::std::string& iceP_engine, const ::std::string& iceP_base, const ::RoboCompInnerModelManager::Pose3D& iceP_pose, const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        return _makePromiseOutgoing<bool>(true, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_addTransform, iceP_item, iceP_engine, iceP_base, iceP_pose, context).get();
+    }
+
+    template<template<typename> class P = ::std::promise>
+    auto addTransformAsync(const ::std::string& iceP_item, const ::std::string& iceP_engine, const ::std::string& iceP_base, const ::RoboCompInnerModelManager::Pose3D& iceP_pose, const ::Ice::Context& context = Ice::noExplicitContext)
+        -> decltype(::std::declval<P<bool>>().get_future())
+    {
+        return _makePromiseOutgoing<bool, P>(false, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_addTransform, iceP_item, iceP_engine, iceP_base, iceP_pose, context);
+    }
+
+    ::std::function<void()>
+    addTransformAsync(const ::std::string& iceP_item, const ::std::string& iceP_engine, const ::std::string& iceP_base, const ::RoboCompInnerModelManager::Pose3D& iceP_pose,
+                      ::std::function<void(bool)> response,
+                      ::std::function<void(::std::exception_ptr)> ex = nullptr,
+                      ::std::function<void(bool)> sent = nullptr,
+                      const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        return _makeLamdaOutgoing<bool>(response, ex, sent, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_addTransform, iceP_item, iceP_engine, iceP_base, iceP_pose, context);
+    }
+
+    void _iceI_addTransform(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<bool>>&, const ::std::string&, const ::std::string&, const ::std::string&, const ::RoboCompInnerModelManager::Pose3D&, const ::Ice::Context&);
+
+    bool collide(const ::std::string& iceP_a, const ::std::string& iceP_b, const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        return _makePromiseOutgoing<bool>(true, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_collide, iceP_a, iceP_b, context).get();
+    }
+
+    template<template<typename> class P = ::std::promise>
+    auto collideAsync(const ::std::string& iceP_a, const ::std::string& iceP_b, const ::Ice::Context& context = Ice::noExplicitContext)
+        -> decltype(::std::declval<P<bool>>().get_future())
+    {
+        return _makePromiseOutgoing<bool, P>(false, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_collide, iceP_a, iceP_b, context);
+    }
+
+    ::std::function<void()>
+    collideAsync(const ::std::string& iceP_a, const ::std::string& iceP_b,
+                 ::std::function<void(bool)> response,
+                 ::std::function<void(::std::exception_ptr)> ex = nullptr,
+                 ::std::function<void(bool)> sent = nullptr,
+                 const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        return _makeLamdaOutgoing<bool>(response, ex, sent, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_collide, iceP_a, iceP_b, context);
+    }
+
+    void _iceI_collide(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<bool>>&, const ::std::string&, const ::std::string&, const ::Ice::Context&);
+
     void getAllNodeInformation(::RoboCompInnerModelManager::NodeInformationSequence& iceP_nodesInfo, const ::Ice::Context& context = Ice::noExplicitContext)
     {
         iceP_nodesInfo = _makePromiseOutgoing<::RoboCompInnerModelManager::NodeInformationSequence>(true, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_getAllNodeInformation, context).get();
@@ -512,53 +557,36 @@ public:
 
     void _iceI_getAllNodeInformation(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::RoboCompInnerModelManager::NodeInformationSequence>>&, const ::Ice::Context&);
 
-    bool setPose(const ::std::string& iceP_base, const ::std::string& iceP_item, const ::RoboCompInnerModelManager::Pose3D& iceP_pose, const ::Ice::Context& context = Ice::noExplicitContext)
+    bool getAttribute(const ::std::string& iceP_idNode, const ::std::string& iceP_name, ::std::string& iceP_type, ::std::string& iceP_value, const ::Ice::Context& context = Ice::noExplicitContext)
     {
-        return _makePromiseOutgoing<bool>(true, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_setPose, iceP_base, iceP_item, iceP_pose, context).get();
+        auto result = _makePromiseOutgoing<::RoboCompInnerModelManager::InnerModelManager::GetAttributeResult>(true, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_getAttribute, iceP_idNode, iceP_name, context).get();
+        iceP_type = ::std::move(result.type);
+        iceP_value = ::std::move(result.value);
+        return result.returnValue;
     }
 
     template<template<typename> class P = ::std::promise>
-    auto setPoseAsync(const ::std::string& iceP_base, const ::std::string& iceP_item, const ::RoboCompInnerModelManager::Pose3D& iceP_pose, const ::Ice::Context& context = Ice::noExplicitContext)
-        -> decltype(::std::declval<P<bool>>().get_future())
+    auto getAttributeAsync(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::Ice::Context& context = Ice::noExplicitContext)
+        -> decltype(::std::declval<P<::RoboCompInnerModelManager::InnerModelManager::GetAttributeResult>>().get_future())
     {
-        return _makePromiseOutgoing<bool, P>(false, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_setPose, iceP_base, iceP_item, iceP_pose, context);
+        return _makePromiseOutgoing<::RoboCompInnerModelManager::InnerModelManager::GetAttributeResult, P>(false, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_getAttribute, iceP_idNode, iceP_name, context);
     }
 
     ::std::function<void()>
-    setPoseAsync(const ::std::string& iceP_base, const ::std::string& iceP_item, const ::RoboCompInnerModelManager::Pose3D& iceP_pose,
-                 ::std::function<void(bool)> response,
-                 ::std::function<void(::std::exception_ptr)> ex = nullptr,
-                 ::std::function<void(bool)> sent = nullptr,
-                 const ::Ice::Context& context = Ice::noExplicitContext)
+    getAttributeAsync(const ::std::string& iceP_idNode, const ::std::string& iceP_name,
+                      ::std::function<void(bool, ::std::string, ::std::string)> response,
+                      ::std::function<void(::std::exception_ptr)> ex = nullptr,
+                      ::std::function<void(bool)> sent = nullptr,
+                      const ::Ice::Context& context = Ice::noExplicitContext)
     {
-        return _makeLamdaOutgoing<bool>(response, ex, sent, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_setPose, iceP_base, iceP_item, iceP_pose, context);
+        auto responseCb = [response](::RoboCompInnerModelManager::InnerModelManager::GetAttributeResult&& result)
+        {
+            response(result.returnValue, ::std::move(result.type), ::std::move(result.value));
+        };
+        return _makeLamdaOutgoing<::RoboCompInnerModelManager::InnerModelManager::GetAttributeResult>(responseCb, ex, sent, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_getAttribute, iceP_idNode, iceP_name, context);
     }
 
-    void _iceI_setPose(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<bool>>&, const ::std::string&, const ::std::string&, const ::RoboCompInnerModelManager::Pose3D&, const ::Ice::Context&);
-
-    bool setPoseFromParent(const ::std::string& iceP_item, const ::RoboCompInnerModelManager::Pose3D& iceP_pose, const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        return _makePromiseOutgoing<bool>(true, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_setPoseFromParent, iceP_item, iceP_pose, context).get();
-    }
-
-    template<template<typename> class P = ::std::promise>
-    auto setPoseFromParentAsync(const ::std::string& iceP_item, const ::RoboCompInnerModelManager::Pose3D& iceP_pose, const ::Ice::Context& context = Ice::noExplicitContext)
-        -> decltype(::std::declval<P<bool>>().get_future())
-    {
-        return _makePromiseOutgoing<bool, P>(false, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_setPoseFromParent, iceP_item, iceP_pose, context);
-    }
-
-    ::std::function<void()>
-    setPoseFromParentAsync(const ::std::string& iceP_item, const ::RoboCompInnerModelManager::Pose3D& iceP_pose,
-                           ::std::function<void(bool)> response,
-                           ::std::function<void(::std::exception_ptr)> ex = nullptr,
-                           ::std::function<void(bool)> sent = nullptr,
-                           const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        return _makeLamdaOutgoing<bool>(response, ex, sent, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_setPoseFromParent, iceP_item, iceP_pose, context);
-    }
-
-    void _iceI_setPoseFromParent(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<bool>>&, const ::std::string&, const ::RoboCompInnerModelManager::Pose3D&, const ::Ice::Context&);
+    void _iceI_getAttribute(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::RoboCompInnerModelManager::InnerModelManager::GetAttributeResult>>&, const ::std::string&, const ::std::string&, const ::Ice::Context&);
 
     bool getPose(const ::std::string& iceP_base, const ::std::string& iceP_item, ::RoboCompInnerModelManager::Pose3D& iceP_pose, const ::Ice::Context& context = Ice::noExplicitContext)
     {
@@ -620,6 +648,126 @@ public:
 
     void _iceI_getPoseFromParent(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::RoboCompInnerModelManager::InnerModelManager::GetPoseFromParentResult>>&, const ::std::string&, const ::Ice::Context&);
 
+    ::RoboCompInnerModelManager::Matrix getTransformationMatrix(const ::std::string& iceP_base, const ::std::string& iceP_item, const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        return _makePromiseOutgoing<::RoboCompInnerModelManager::Matrix>(true, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_getTransformationMatrix, iceP_base, iceP_item, context).get();
+    }
+
+    template<template<typename> class P = ::std::promise>
+    auto getTransformationMatrixAsync(const ::std::string& iceP_base, const ::std::string& iceP_item, const ::Ice::Context& context = Ice::noExplicitContext)
+        -> decltype(::std::declval<P<::RoboCompInnerModelManager::Matrix>>().get_future())
+    {
+        return _makePromiseOutgoing<::RoboCompInnerModelManager::Matrix, P>(false, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_getTransformationMatrix, iceP_base, iceP_item, context);
+    }
+
+    ::std::function<void()>
+    getTransformationMatrixAsync(const ::std::string& iceP_base, const ::std::string& iceP_item,
+                                 ::std::function<void(::RoboCompInnerModelManager::Matrix)> response,
+                                 ::std::function<void(::std::exception_ptr)> ex = nullptr,
+                                 ::std::function<void(bool)> sent = nullptr,
+                                 const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        return _makeLamdaOutgoing<::RoboCompInnerModelManager::Matrix>(response, ex, sent, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_getTransformationMatrix, iceP_base, iceP_item, context);
+    }
+
+    void _iceI_getTransformationMatrix(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::RoboCompInnerModelManager::Matrix>>&, const ::std::string&, const ::std::string&, const ::Ice::Context&);
+
+    bool moveNode(const ::std::string& iceP_src, const ::std::string& iceP_dst, const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        return _makePromiseOutgoing<bool>(true, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_moveNode, iceP_src, iceP_dst, context).get();
+    }
+
+    template<template<typename> class P = ::std::promise>
+    auto moveNodeAsync(const ::std::string& iceP_src, const ::std::string& iceP_dst, const ::Ice::Context& context = Ice::noExplicitContext)
+        -> decltype(::std::declval<P<bool>>().get_future())
+    {
+        return _makePromiseOutgoing<bool, P>(false, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_moveNode, iceP_src, iceP_dst, context);
+    }
+
+    ::std::function<void()>
+    moveNodeAsync(const ::std::string& iceP_src, const ::std::string& iceP_dst,
+                  ::std::function<void(bool)> response,
+                  ::std::function<void(::std::exception_ptr)> ex = nullptr,
+                  ::std::function<void(bool)> sent = nullptr,
+                  const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        return _makeLamdaOutgoing<bool>(response, ex, sent, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_moveNode, iceP_src, iceP_dst, context);
+    }
+
+    void _iceI_moveNode(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<bool>>&, const ::std::string&, const ::std::string&, const ::Ice::Context&);
+
+    bool removeAttribute(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        return _makePromiseOutgoing<bool>(true, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_removeAttribute, iceP_idNode, iceP_name, context).get();
+    }
+
+    template<template<typename> class P = ::std::promise>
+    auto removeAttributeAsync(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::Ice::Context& context = Ice::noExplicitContext)
+        -> decltype(::std::declval<P<bool>>().get_future())
+    {
+        return _makePromiseOutgoing<bool, P>(false, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_removeAttribute, iceP_idNode, iceP_name, context);
+    }
+
+    ::std::function<void()>
+    removeAttributeAsync(const ::std::string& iceP_idNode, const ::std::string& iceP_name,
+                         ::std::function<void(bool)> response,
+                         ::std::function<void(::std::exception_ptr)> ex = nullptr,
+                         ::std::function<void(bool)> sent = nullptr,
+                         const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        return _makeLamdaOutgoing<bool>(response, ex, sent, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_removeAttribute, iceP_idNode, iceP_name, context);
+    }
+
+    void _iceI_removeAttribute(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<bool>>&, const ::std::string&, const ::std::string&, const ::Ice::Context&);
+
+    bool removeNode(const ::std::string& iceP_item, const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        return _makePromiseOutgoing<bool>(true, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_removeNode, iceP_item, context).get();
+    }
+
+    template<template<typename> class P = ::std::promise>
+    auto removeNodeAsync(const ::std::string& iceP_item, const ::Ice::Context& context = Ice::noExplicitContext)
+        -> decltype(::std::declval<P<bool>>().get_future())
+    {
+        return _makePromiseOutgoing<bool, P>(false, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_removeNode, iceP_item, context);
+    }
+
+    ::std::function<void()>
+    removeNodeAsync(const ::std::string& iceP_item,
+                    ::std::function<void(bool)> response,
+                    ::std::function<void(::std::exception_ptr)> ex = nullptr,
+                    ::std::function<void(bool)> sent = nullptr,
+                    const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        return _makeLamdaOutgoing<bool>(response, ex, sent, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_removeNode, iceP_item, context);
+    }
+
+    void _iceI_removeNode(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<bool>>&, const ::std::string&, const ::Ice::Context&);
+
+    bool setAttribute(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::std::string& iceP_type, const ::std::string& iceP_value, const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        return _makePromiseOutgoing<bool>(true, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_setAttribute, iceP_idNode, iceP_name, iceP_type, iceP_value, context).get();
+    }
+
+    template<template<typename> class P = ::std::promise>
+    auto setAttributeAsync(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::std::string& iceP_type, const ::std::string& iceP_value, const ::Ice::Context& context = Ice::noExplicitContext)
+        -> decltype(::std::declval<P<bool>>().get_future())
+    {
+        return _makePromiseOutgoing<bool, P>(false, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_setAttribute, iceP_idNode, iceP_name, iceP_type, iceP_value, context);
+    }
+
+    ::std::function<void()>
+    setAttributeAsync(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::std::string& iceP_type, const ::std::string& iceP_value,
+                      ::std::function<void(bool)> response,
+                      ::std::function<void(::std::exception_ptr)> ex = nullptr,
+                      ::std::function<void(bool)> sent = nullptr,
+                      const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        return _makeLamdaOutgoing<bool>(response, ex, sent, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_setAttribute, iceP_idNode, iceP_name, iceP_type, iceP_value, context);
+    }
+
+    void _iceI_setAttribute(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<bool>>&, const ::std::string&, const ::std::string&, const ::std::string&, const ::std::string&, const ::Ice::Context&);
+
     bool setPlane(const ::std::string& iceP_item, const ::RoboCompInnerModelManager::Plane3D& iceP_plane, const ::Ice::Context& context = Ice::noExplicitContext)
     {
         return _makePromiseOutgoing<bool>(true, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_setPlane, iceP_item, iceP_plane, context).get();
@@ -644,29 +792,101 @@ public:
 
     void _iceI_setPlane(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<bool>>&, const ::std::string&, const ::RoboCompInnerModelManager::Plane3D&, const ::Ice::Context&);
 
-    bool setPlaneTexture(const ::std::string& iceP_item, const ::std::string& iceP_texure, const ::Ice::Context& context = Ice::noExplicitContext)
+    void setPointCloudData(const ::std::string& iceP_id, const ::RoboCompInnerModelManager::PointCloudVector& iceP_cloud, const ::Ice::Context& context = Ice::noExplicitContext)
     {
-        return _makePromiseOutgoing<bool>(true, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_setPlaneTexture, iceP_item, iceP_texure, context).get();
+        _makePromiseOutgoing<void>(true, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_setPointCloudData, iceP_id, iceP_cloud, context).get();
     }
 
     template<template<typename> class P = ::std::promise>
-    auto setPlaneTextureAsync(const ::std::string& iceP_item, const ::std::string& iceP_texure, const ::Ice::Context& context = Ice::noExplicitContext)
-        -> decltype(::std::declval<P<bool>>().get_future())
+    auto setPointCloudDataAsync(const ::std::string& iceP_id, const ::RoboCompInnerModelManager::PointCloudVector& iceP_cloud, const ::Ice::Context& context = Ice::noExplicitContext)
+        -> decltype(::std::declval<P<void>>().get_future())
     {
-        return _makePromiseOutgoing<bool, P>(false, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_setPlaneTexture, iceP_item, iceP_texure, context);
+        return _makePromiseOutgoing<void, P>(false, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_setPointCloudData, iceP_id, iceP_cloud, context);
     }
 
     ::std::function<void()>
-    setPlaneTextureAsync(const ::std::string& iceP_item, const ::std::string& iceP_texure,
-                         ::std::function<void(bool)> response,
-                         ::std::function<void(::std::exception_ptr)> ex = nullptr,
-                         ::std::function<void(bool)> sent = nullptr,
-                         const ::Ice::Context& context = Ice::noExplicitContext)
+    setPointCloudDataAsync(const ::std::string& iceP_id, const ::RoboCompInnerModelManager::PointCloudVector& iceP_cloud,
+                           ::std::function<void()> response,
+                           ::std::function<void(::std::exception_ptr)> ex = nullptr,
+                           ::std::function<void(bool)> sent = nullptr,
+                           const ::Ice::Context& context = Ice::noExplicitContext)
     {
-        return _makeLamdaOutgoing<bool>(response, ex, sent, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_setPlaneTexture, iceP_item, iceP_texure, context);
+        return _makeLamdaOutgoing<void>(response, ex, sent, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_setPointCloudData, iceP_id, iceP_cloud, context);
     }
 
-    void _iceI_setPlaneTexture(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<bool>>&, const ::std::string&, const ::std::string&, const ::Ice::Context&);
+    void _iceI_setPointCloudData(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>&, const ::std::string&, const ::RoboCompInnerModelManager::PointCloudVector&, const ::Ice::Context&);
+
+    bool setPose(const ::std::string& iceP_base, const ::std::string& iceP_item, const ::RoboCompInnerModelManager::Pose3D& iceP_pose, const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        return _makePromiseOutgoing<bool>(true, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_setPose, iceP_base, iceP_item, iceP_pose, context).get();
+    }
+
+    template<template<typename> class P = ::std::promise>
+    auto setPoseAsync(const ::std::string& iceP_base, const ::std::string& iceP_item, const ::RoboCompInnerModelManager::Pose3D& iceP_pose, const ::Ice::Context& context = Ice::noExplicitContext)
+        -> decltype(::std::declval<P<bool>>().get_future())
+    {
+        return _makePromiseOutgoing<bool, P>(false, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_setPose, iceP_base, iceP_item, iceP_pose, context);
+    }
+
+    ::std::function<void()>
+    setPoseAsync(const ::std::string& iceP_base, const ::std::string& iceP_item, const ::RoboCompInnerModelManager::Pose3D& iceP_pose,
+                 ::std::function<void(bool)> response,
+                 ::std::function<void(::std::exception_ptr)> ex = nullptr,
+                 ::std::function<void(bool)> sent = nullptr,
+                 const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        return _makeLamdaOutgoing<bool>(response, ex, sent, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_setPose, iceP_base, iceP_item, iceP_pose, context);
+    }
+
+    void _iceI_setPose(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<bool>>&, const ::std::string&, const ::std::string&, const ::RoboCompInnerModelManager::Pose3D&, const ::Ice::Context&);
+
+    bool setPoseFromParent(const ::std::string& iceP_item, const ::RoboCompInnerModelManager::Pose3D& iceP_pose, const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        return _makePromiseOutgoing<bool>(true, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_setPoseFromParent, iceP_item, iceP_pose, context).get();
+    }
+
+    template<template<typename> class P = ::std::promise>
+    auto setPoseFromParentAsync(const ::std::string& iceP_item, const ::RoboCompInnerModelManager::Pose3D& iceP_pose, const ::Ice::Context& context = Ice::noExplicitContext)
+        -> decltype(::std::declval<P<bool>>().get_future())
+    {
+        return _makePromiseOutgoing<bool, P>(false, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_setPoseFromParent, iceP_item, iceP_pose, context);
+    }
+
+    ::std::function<void()>
+    setPoseFromParentAsync(const ::std::string& iceP_item, const ::RoboCompInnerModelManager::Pose3D& iceP_pose,
+                           ::std::function<void(bool)> response,
+                           ::std::function<void(::std::exception_ptr)> ex = nullptr,
+                           ::std::function<void(bool)> sent = nullptr,
+                           const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        return _makeLamdaOutgoing<bool>(response, ex, sent, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_setPoseFromParent, iceP_item, iceP_pose, context);
+    }
+
+    void _iceI_setPoseFromParent(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<bool>>&, const ::std::string&, const ::RoboCompInnerModelManager::Pose3D&, const ::Ice::Context&);
+
+    bool setScale(const ::std::string& iceP_item, float iceP_scaleX, float iceP_scaleY, float iceP_scaleZ, const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        return _makePromiseOutgoing<bool>(true, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_setScale, iceP_item, iceP_scaleX, iceP_scaleY, iceP_scaleZ, context).get();
+    }
+
+    template<template<typename> class P = ::std::promise>
+    auto setScaleAsync(const ::std::string& iceP_item, float iceP_scaleX, float iceP_scaleY, float iceP_scaleZ, const ::Ice::Context& context = Ice::noExplicitContext)
+        -> decltype(::std::declval<P<bool>>().get_future())
+    {
+        return _makePromiseOutgoing<bool, P>(false, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_setScale, iceP_item, iceP_scaleX, iceP_scaleY, iceP_scaleZ, context);
+    }
+
+    ::std::function<void()>
+    setScaleAsync(const ::std::string& iceP_item, float iceP_scaleX, float iceP_scaleY, float iceP_scaleZ,
+                  ::std::function<void(bool)> response,
+                  ::std::function<void(::std::exception_ptr)> ex = nullptr,
+                  ::std::function<void(bool)> sent = nullptr,
+                  const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        return _makeLamdaOutgoing<bool>(response, ex, sent, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_setScale, iceP_item, iceP_scaleX, iceP_scaleY, iceP_scaleZ, context);
+    }
+
+    void _iceI_setScale(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<bool>>&, const ::std::string&, float, float, float, const ::Ice::Context&);
 
     bool transform(const ::std::string& iceP_base, const ::std::string& iceP_item, const ::RoboCompInnerModelManager::coord3D& iceP_coordInItem, ::RoboCompInnerModelManager::coord3D& iceP_coordInBase, const ::Ice::Context& context = Ice::noExplicitContext)
     {
@@ -697,253 +917,6 @@ public:
     }
 
     void _iceI_transform(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::RoboCompInnerModelManager::InnerModelManager::TransformResult>>&, const ::std::string&, const ::std::string&, const ::RoboCompInnerModelManager::coord3D&, const ::Ice::Context&);
-
-    ::RoboCompInnerModelManager::Matrix getTransformationMatrix(const ::std::string& iceP_base, const ::std::string& iceP_item, const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        return _makePromiseOutgoing<::RoboCompInnerModelManager::Matrix>(true, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_getTransformationMatrix, iceP_base, iceP_item, context).get();
-    }
-
-    template<template<typename> class P = ::std::promise>
-    auto getTransformationMatrixAsync(const ::std::string& iceP_base, const ::std::string& iceP_item, const ::Ice::Context& context = Ice::noExplicitContext)
-        -> decltype(::std::declval<P<::RoboCompInnerModelManager::Matrix>>().get_future())
-    {
-        return _makePromiseOutgoing<::RoboCompInnerModelManager::Matrix, P>(false, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_getTransformationMatrix, iceP_base, iceP_item, context);
-    }
-
-    ::std::function<void()>
-    getTransformationMatrixAsync(const ::std::string& iceP_base, const ::std::string& iceP_item,
-                                 ::std::function<void(::RoboCompInnerModelManager::Matrix)> response,
-                                 ::std::function<void(::std::exception_ptr)> ex = nullptr,
-                                 ::std::function<void(bool)> sent = nullptr,
-                                 const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        return _makeLamdaOutgoing<::RoboCompInnerModelManager::Matrix>(response, ex, sent, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_getTransformationMatrix, iceP_base, iceP_item, context);
-    }
-
-    void _iceI_getTransformationMatrix(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::RoboCompInnerModelManager::Matrix>>&, const ::std::string&, const ::std::string&, const ::Ice::Context&);
-
-    bool setScale(const ::std::string& iceP_item, float iceP_scaleX, float iceP_scaleY, float iceP_scaleZ, const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        return _makePromiseOutgoing<bool>(true, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_setScale, iceP_item, iceP_scaleX, iceP_scaleY, iceP_scaleZ, context).get();
-    }
-
-    template<template<typename> class P = ::std::promise>
-    auto setScaleAsync(const ::std::string& iceP_item, float iceP_scaleX, float iceP_scaleY, float iceP_scaleZ, const ::Ice::Context& context = Ice::noExplicitContext)
-        -> decltype(::std::declval<P<bool>>().get_future())
-    {
-        return _makePromiseOutgoing<bool, P>(false, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_setScale, iceP_item, iceP_scaleX, iceP_scaleY, iceP_scaleZ, context);
-    }
-
-    ::std::function<void()>
-    setScaleAsync(const ::std::string& iceP_item, float iceP_scaleX, float iceP_scaleY, float iceP_scaleZ,
-                  ::std::function<void(bool)> response,
-                  ::std::function<void(::std::exception_ptr)> ex = nullptr,
-                  ::std::function<void(bool)> sent = nullptr,
-                  const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        return _makeLamdaOutgoing<bool>(response, ex, sent, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_setScale, iceP_item, iceP_scaleX, iceP_scaleY, iceP_scaleZ, context);
-    }
-
-    void _iceI_setScale(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<bool>>&, const ::std::string&, float, float, float, const ::Ice::Context&);
-
-    bool addAttribute(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::std::string& iceP_type, const ::std::string& iceP_value, const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        return _makePromiseOutgoing<bool>(true, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_addAttribute, iceP_idNode, iceP_name, iceP_type, iceP_value, context).get();
-    }
-
-    template<template<typename> class P = ::std::promise>
-    auto addAttributeAsync(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::std::string& iceP_type, const ::std::string& iceP_value, const ::Ice::Context& context = Ice::noExplicitContext)
-        -> decltype(::std::declval<P<bool>>().get_future())
-    {
-        return _makePromiseOutgoing<bool, P>(false, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_addAttribute, iceP_idNode, iceP_name, iceP_type, iceP_value, context);
-    }
-
-    ::std::function<void()>
-    addAttributeAsync(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::std::string& iceP_type, const ::std::string& iceP_value,
-                      ::std::function<void(bool)> response,
-                      ::std::function<void(::std::exception_ptr)> ex = nullptr,
-                      ::std::function<void(bool)> sent = nullptr,
-                      const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        return _makeLamdaOutgoing<bool>(response, ex, sent, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_addAttribute, iceP_idNode, iceP_name, iceP_type, iceP_value, context);
-    }
-
-    void _iceI_addAttribute(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<bool>>&, const ::std::string&, const ::std::string&, const ::std::string&, const ::std::string&, const ::Ice::Context&);
-
-    bool removeAttribute(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        return _makePromiseOutgoing<bool>(true, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_removeAttribute, iceP_idNode, iceP_name, context).get();
-    }
-
-    template<template<typename> class P = ::std::promise>
-    auto removeAttributeAsync(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::Ice::Context& context = Ice::noExplicitContext)
-        -> decltype(::std::declval<P<bool>>().get_future())
-    {
-        return _makePromiseOutgoing<bool, P>(false, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_removeAttribute, iceP_idNode, iceP_name, context);
-    }
-
-    ::std::function<void()>
-    removeAttributeAsync(const ::std::string& iceP_idNode, const ::std::string& iceP_name,
-                         ::std::function<void(bool)> response,
-                         ::std::function<void(::std::exception_ptr)> ex = nullptr,
-                         ::std::function<void(bool)> sent = nullptr,
-                         const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        return _makeLamdaOutgoing<bool>(response, ex, sent, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_removeAttribute, iceP_idNode, iceP_name, context);
-    }
-
-    void _iceI_removeAttribute(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<bool>>&, const ::std::string&, const ::std::string&, const ::Ice::Context&);
-
-    bool setAttribute(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::std::string& iceP_type, const ::std::string& iceP_value, const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        return _makePromiseOutgoing<bool>(true, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_setAttribute, iceP_idNode, iceP_name, iceP_type, iceP_value, context).get();
-    }
-
-    template<template<typename> class P = ::std::promise>
-    auto setAttributeAsync(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::std::string& iceP_type, const ::std::string& iceP_value, const ::Ice::Context& context = Ice::noExplicitContext)
-        -> decltype(::std::declval<P<bool>>().get_future())
-    {
-        return _makePromiseOutgoing<bool, P>(false, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_setAttribute, iceP_idNode, iceP_name, iceP_type, iceP_value, context);
-    }
-
-    ::std::function<void()>
-    setAttributeAsync(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::std::string& iceP_type, const ::std::string& iceP_value,
-                      ::std::function<void(bool)> response,
-                      ::std::function<void(::std::exception_ptr)> ex = nullptr,
-                      ::std::function<void(bool)> sent = nullptr,
-                      const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        return _makeLamdaOutgoing<bool>(response, ex, sent, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_setAttribute, iceP_idNode, iceP_name, iceP_type, iceP_value, context);
-    }
-
-    void _iceI_setAttribute(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<bool>>&, const ::std::string&, const ::std::string&, const ::std::string&, const ::std::string&, const ::Ice::Context&);
-
-    bool getAttribute(const ::std::string& iceP_idNode, const ::std::string& iceP_name, ::std::string& iceP_type, ::std::string& iceP_value, const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        auto result = _makePromiseOutgoing<::RoboCompInnerModelManager::InnerModelManager::GetAttributeResult>(true, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_getAttribute, iceP_idNode, iceP_name, context).get();
-        iceP_type = ::std::move(result.type);
-        iceP_value = ::std::move(result.value);
-        return result.returnValue;
-    }
-
-    template<template<typename> class P = ::std::promise>
-    auto getAttributeAsync(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::Ice::Context& context = Ice::noExplicitContext)
-        -> decltype(::std::declval<P<::RoboCompInnerModelManager::InnerModelManager::GetAttributeResult>>().get_future())
-    {
-        return _makePromiseOutgoing<::RoboCompInnerModelManager::InnerModelManager::GetAttributeResult, P>(false, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_getAttribute, iceP_idNode, iceP_name, context);
-    }
-
-    ::std::function<void()>
-    getAttributeAsync(const ::std::string& iceP_idNode, const ::std::string& iceP_name,
-                      ::std::function<void(bool, ::std::string, ::std::string)> response,
-                      ::std::function<void(::std::exception_ptr)> ex = nullptr,
-                      ::std::function<void(bool)> sent = nullptr,
-                      const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        auto responseCb = [response](::RoboCompInnerModelManager::InnerModelManager::GetAttributeResult&& result)
-        {
-            response(result.returnValue, ::std::move(result.type), ::std::move(result.value));
-        };
-        return _makeLamdaOutgoing<::RoboCompInnerModelManager::InnerModelManager::GetAttributeResult>(responseCb, ex, sent, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_getAttribute, iceP_idNode, iceP_name, context);
-    }
-
-    void _iceI_getAttribute(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::RoboCompInnerModelManager::InnerModelManager::GetAttributeResult>>&, const ::std::string&, const ::std::string&, const ::Ice::Context&);
-
-    bool removeNode(const ::std::string& iceP_item, const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        return _makePromiseOutgoing<bool>(true, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_removeNode, iceP_item, context).get();
-    }
-
-    template<template<typename> class P = ::std::promise>
-    auto removeNodeAsync(const ::std::string& iceP_item, const ::Ice::Context& context = Ice::noExplicitContext)
-        -> decltype(::std::declval<P<bool>>().get_future())
-    {
-        return _makePromiseOutgoing<bool, P>(false, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_removeNode, iceP_item, context);
-    }
-
-    ::std::function<void()>
-    removeNodeAsync(const ::std::string& iceP_item,
-                    ::std::function<void(bool)> response,
-                    ::std::function<void(::std::exception_ptr)> ex = nullptr,
-                    ::std::function<void(bool)> sent = nullptr,
-                    const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        return _makeLamdaOutgoing<bool>(response, ex, sent, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_removeNode, iceP_item, context);
-    }
-
-    void _iceI_removeNode(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<bool>>&, const ::std::string&, const ::Ice::Context&);
-
-    bool moveNode(const ::std::string& iceP_src, const ::std::string& iceP_dst, const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        return _makePromiseOutgoing<bool>(true, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_moveNode, iceP_src, iceP_dst, context).get();
-    }
-
-    template<template<typename> class P = ::std::promise>
-    auto moveNodeAsync(const ::std::string& iceP_src, const ::std::string& iceP_dst, const ::Ice::Context& context = Ice::noExplicitContext)
-        -> decltype(::std::declval<P<bool>>().get_future())
-    {
-        return _makePromiseOutgoing<bool, P>(false, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_moveNode, iceP_src, iceP_dst, context);
-    }
-
-    ::std::function<void()>
-    moveNodeAsync(const ::std::string& iceP_src, const ::std::string& iceP_dst,
-                  ::std::function<void(bool)> response,
-                  ::std::function<void(::std::exception_ptr)> ex = nullptr,
-                  ::std::function<void(bool)> sent = nullptr,
-                  const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        return _makeLamdaOutgoing<bool>(response, ex, sent, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_moveNode, iceP_src, iceP_dst, context);
-    }
-
-    void _iceI_moveNode(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<bool>>&, const ::std::string&, const ::std::string&, const ::Ice::Context&);
-
-    bool collide(const ::std::string& iceP_a, const ::std::string& iceP_b, const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        return _makePromiseOutgoing<bool>(true, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_collide, iceP_a, iceP_b, context).get();
-    }
-
-    template<template<typename> class P = ::std::promise>
-    auto collideAsync(const ::std::string& iceP_a, const ::std::string& iceP_b, const ::Ice::Context& context = Ice::noExplicitContext)
-        -> decltype(::std::declval<P<bool>>().get_future())
-    {
-        return _makePromiseOutgoing<bool, P>(false, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_collide, iceP_a, iceP_b, context);
-    }
-
-    ::std::function<void()>
-    collideAsync(const ::std::string& iceP_a, const ::std::string& iceP_b,
-                 ::std::function<void(bool)> response,
-                 ::std::function<void(::std::exception_ptr)> ex = nullptr,
-                 ::std::function<void(bool)> sent = nullptr,
-                 const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        return _makeLamdaOutgoing<bool>(response, ex, sent, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_collide, iceP_a, iceP_b, context);
-    }
-
-    void _iceI_collide(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<bool>>&, const ::std::string&, const ::std::string&, const ::Ice::Context&);
-
-    void setPointCloudData(const ::std::string& iceP_id, const ::RoboCompInnerModelManager::PointCloudVector& iceP_cloud, const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        _makePromiseOutgoing<void>(true, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_setPointCloudData, iceP_id, iceP_cloud, context).get();
-    }
-
-    template<template<typename> class P = ::std::promise>
-    auto setPointCloudDataAsync(const ::std::string& iceP_id, const ::RoboCompInnerModelManager::PointCloudVector& iceP_cloud, const ::Ice::Context& context = Ice::noExplicitContext)
-        -> decltype(::std::declval<P<void>>().get_future())
-    {
-        return _makePromiseOutgoing<void, P>(false, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_setPointCloudData, iceP_id, iceP_cloud, context);
-    }
-
-    ::std::function<void()>
-    setPointCloudDataAsync(const ::std::string& iceP_id, const ::RoboCompInnerModelManager::PointCloudVector& iceP_cloud,
-                           ::std::function<void()> response,
-                           ::std::function<void(::std::exception_ptr)> ex = nullptr,
-                           ::std::function<void(bool)> sent = nullptr,
-                           const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        return _makeLamdaOutgoing<void>(response, ex, sent, this, &RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_setPointCloudData, iceP_id, iceP_cloud, context);
-    }
-
-    void _iceI_setPointCloudData(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>&, const ::std::string&, const ::RoboCompInnerModelManager::PointCloudVector&, const ::Ice::Context&);
 
     static const ::std::string& ice_staticId();
 
@@ -1397,8 +1370,8 @@ struct Matrix
 namespace RoboCompInnerModelManager
 {
 
-class Callback_InnerModelManager_addTransform_Base : public virtual ::IceInternal::CallbackBase { };
-typedef ::IceUtil::Handle< Callback_InnerModelManager_addTransform_Base> Callback_InnerModelManager_addTransformPtr;
+class Callback_InnerModelManager_addAttribute_Base : public virtual ::IceInternal::CallbackBase { };
+typedef ::IceUtil::Handle< Callback_InnerModelManager_addAttribute_Base> Callback_InnerModelManager_addAttributePtr;
 
 class Callback_InnerModelManager_addJoint_Base : public virtual ::IceInternal::CallbackBase { };
 typedef ::IceUtil::Handle< Callback_InnerModelManager_addJoint_Base> Callback_InnerModelManager_addJointPtr;
@@ -1409,14 +1382,17 @@ typedef ::IceUtil::Handle< Callback_InnerModelManager_addMesh_Base> Callback_Inn
 class Callback_InnerModelManager_addPlane_Base : public virtual ::IceInternal::CallbackBase { };
 typedef ::IceUtil::Handle< Callback_InnerModelManager_addPlane_Base> Callback_InnerModelManager_addPlanePtr;
 
+class Callback_InnerModelManager_addTransform_Base : public virtual ::IceInternal::CallbackBase { };
+typedef ::IceUtil::Handle< Callback_InnerModelManager_addTransform_Base> Callback_InnerModelManager_addTransformPtr;
+
+class Callback_InnerModelManager_collide_Base : public virtual ::IceInternal::CallbackBase { };
+typedef ::IceUtil::Handle< Callback_InnerModelManager_collide_Base> Callback_InnerModelManager_collidePtr;
+
 class Callback_InnerModelManager_getAllNodeInformation_Base : public virtual ::IceInternal::CallbackBase { };
 typedef ::IceUtil::Handle< Callback_InnerModelManager_getAllNodeInformation_Base> Callback_InnerModelManager_getAllNodeInformationPtr;
 
-class Callback_InnerModelManager_setPose_Base : public virtual ::IceInternal::CallbackBase { };
-typedef ::IceUtil::Handle< Callback_InnerModelManager_setPose_Base> Callback_InnerModelManager_setPosePtr;
-
-class Callback_InnerModelManager_setPoseFromParent_Base : public virtual ::IceInternal::CallbackBase { };
-typedef ::IceUtil::Handle< Callback_InnerModelManager_setPoseFromParent_Base> Callback_InnerModelManager_setPoseFromParentPtr;
+class Callback_InnerModelManager_getAttribute_Base : public virtual ::IceInternal::CallbackBase { };
+typedef ::IceUtil::Handle< Callback_InnerModelManager_getAttribute_Base> Callback_InnerModelManager_getAttributePtr;
 
 class Callback_InnerModelManager_getPose_Base : public virtual ::IceInternal::CallbackBase { };
 typedef ::IceUtil::Handle< Callback_InnerModelManager_getPose_Base> Callback_InnerModelManager_getPosePtr;
@@ -1424,44 +1400,38 @@ typedef ::IceUtil::Handle< Callback_InnerModelManager_getPose_Base> Callback_Inn
 class Callback_InnerModelManager_getPoseFromParent_Base : public virtual ::IceInternal::CallbackBase { };
 typedef ::IceUtil::Handle< Callback_InnerModelManager_getPoseFromParent_Base> Callback_InnerModelManager_getPoseFromParentPtr;
 
-class Callback_InnerModelManager_setPlane_Base : public virtual ::IceInternal::CallbackBase { };
-typedef ::IceUtil::Handle< Callback_InnerModelManager_setPlane_Base> Callback_InnerModelManager_setPlanePtr;
-
-class Callback_InnerModelManager_setPlaneTexture_Base : public virtual ::IceInternal::CallbackBase { };
-typedef ::IceUtil::Handle< Callback_InnerModelManager_setPlaneTexture_Base> Callback_InnerModelManager_setPlaneTexturePtr;
-
-class Callback_InnerModelManager_transform_Base : public virtual ::IceInternal::CallbackBase { };
-typedef ::IceUtil::Handle< Callback_InnerModelManager_transform_Base> Callback_InnerModelManager_transformPtr;
-
 class Callback_InnerModelManager_getTransformationMatrix_Base : public virtual ::IceInternal::CallbackBase { };
 typedef ::IceUtil::Handle< Callback_InnerModelManager_getTransformationMatrix_Base> Callback_InnerModelManager_getTransformationMatrixPtr;
-
-class Callback_InnerModelManager_setScale_Base : public virtual ::IceInternal::CallbackBase { };
-typedef ::IceUtil::Handle< Callback_InnerModelManager_setScale_Base> Callback_InnerModelManager_setScalePtr;
-
-class Callback_InnerModelManager_addAttribute_Base : public virtual ::IceInternal::CallbackBase { };
-typedef ::IceUtil::Handle< Callback_InnerModelManager_addAttribute_Base> Callback_InnerModelManager_addAttributePtr;
-
-class Callback_InnerModelManager_removeAttribute_Base : public virtual ::IceInternal::CallbackBase { };
-typedef ::IceUtil::Handle< Callback_InnerModelManager_removeAttribute_Base> Callback_InnerModelManager_removeAttributePtr;
-
-class Callback_InnerModelManager_setAttribute_Base : public virtual ::IceInternal::CallbackBase { };
-typedef ::IceUtil::Handle< Callback_InnerModelManager_setAttribute_Base> Callback_InnerModelManager_setAttributePtr;
-
-class Callback_InnerModelManager_getAttribute_Base : public virtual ::IceInternal::CallbackBase { };
-typedef ::IceUtil::Handle< Callback_InnerModelManager_getAttribute_Base> Callback_InnerModelManager_getAttributePtr;
-
-class Callback_InnerModelManager_removeNode_Base : public virtual ::IceInternal::CallbackBase { };
-typedef ::IceUtil::Handle< Callback_InnerModelManager_removeNode_Base> Callback_InnerModelManager_removeNodePtr;
 
 class Callback_InnerModelManager_moveNode_Base : public virtual ::IceInternal::CallbackBase { };
 typedef ::IceUtil::Handle< Callback_InnerModelManager_moveNode_Base> Callback_InnerModelManager_moveNodePtr;
 
-class Callback_InnerModelManager_collide_Base : public virtual ::IceInternal::CallbackBase { };
-typedef ::IceUtil::Handle< Callback_InnerModelManager_collide_Base> Callback_InnerModelManager_collidePtr;
+class Callback_InnerModelManager_removeAttribute_Base : public virtual ::IceInternal::CallbackBase { };
+typedef ::IceUtil::Handle< Callback_InnerModelManager_removeAttribute_Base> Callback_InnerModelManager_removeAttributePtr;
+
+class Callback_InnerModelManager_removeNode_Base : public virtual ::IceInternal::CallbackBase { };
+typedef ::IceUtil::Handle< Callback_InnerModelManager_removeNode_Base> Callback_InnerModelManager_removeNodePtr;
+
+class Callback_InnerModelManager_setAttribute_Base : public virtual ::IceInternal::CallbackBase { };
+typedef ::IceUtil::Handle< Callback_InnerModelManager_setAttribute_Base> Callback_InnerModelManager_setAttributePtr;
+
+class Callback_InnerModelManager_setPlane_Base : public virtual ::IceInternal::CallbackBase { };
+typedef ::IceUtil::Handle< Callback_InnerModelManager_setPlane_Base> Callback_InnerModelManager_setPlanePtr;
 
 class Callback_InnerModelManager_setPointCloudData_Base : public virtual ::IceInternal::CallbackBase { };
 typedef ::IceUtil::Handle< Callback_InnerModelManager_setPointCloudData_Base> Callback_InnerModelManager_setPointCloudDataPtr;
+
+class Callback_InnerModelManager_setPose_Base : public virtual ::IceInternal::CallbackBase { };
+typedef ::IceUtil::Handle< Callback_InnerModelManager_setPose_Base> Callback_InnerModelManager_setPosePtr;
+
+class Callback_InnerModelManager_setPoseFromParent_Base : public virtual ::IceInternal::CallbackBase { };
+typedef ::IceUtil::Handle< Callback_InnerModelManager_setPoseFromParent_Base> Callback_InnerModelManager_setPoseFromParentPtr;
+
+class Callback_InnerModelManager_setScale_Base : public virtual ::IceInternal::CallbackBase { };
+typedef ::IceUtil::Handle< Callback_InnerModelManager_setScale_Base> Callback_InnerModelManager_setScalePtr;
+
+class Callback_InnerModelManager_transform_Base : public virtual ::IceInternal::CallbackBase { };
+typedef ::IceUtil::Handle< Callback_InnerModelManager_transform_Base> Callback_InnerModelManager_transformPtr;
 
 }
 
@@ -1475,41 +1445,41 @@ class InnerModelManager : public virtual ::Ice::Proxy<InnerModelManager, ::IcePr
 {
 public:
 
-    bool addTransform(const ::std::string& iceP_item, const ::std::string& iceP_engine, const ::std::string& iceP_base, const ::RoboCompInnerModelManager::Pose3D& iceP_pose, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    bool addAttribute(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::std::string& iceP_type, const ::std::string& iceP_value, const ::Ice::Context& context = ::Ice::noExplicitContext)
     {
-        return end_addTransform(_iceI_begin_addTransform(iceP_item, iceP_engine, iceP_base, iceP_pose, context, ::IceInternal::dummyCallback, 0, true));
+        return end_addAttribute(_iceI_begin_addAttribute(iceP_idNode, iceP_name, iceP_type, iceP_value, context, ::IceInternal::dummyCallback, 0, true));
     }
 
-    ::Ice::AsyncResultPtr begin_addTransform(const ::std::string& iceP_item, const ::std::string& iceP_engine, const ::std::string& iceP_base, const ::RoboCompInnerModelManager::Pose3D& iceP_pose, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    ::Ice::AsyncResultPtr begin_addAttribute(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::std::string& iceP_type, const ::std::string& iceP_value, const ::Ice::Context& context = ::Ice::noExplicitContext)
     {
-        return _iceI_begin_addTransform(iceP_item, iceP_engine, iceP_base, iceP_pose, context, ::IceInternal::dummyCallback, 0);
+        return _iceI_begin_addAttribute(iceP_idNode, iceP_name, iceP_type, iceP_value, context, ::IceInternal::dummyCallback, 0);
     }
 
-    ::Ice::AsyncResultPtr begin_addTransform(const ::std::string& iceP_item, const ::std::string& iceP_engine, const ::std::string& iceP_base, const ::RoboCompInnerModelManager::Pose3D& iceP_pose, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    ::Ice::AsyncResultPtr begin_addAttribute(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::std::string& iceP_type, const ::std::string& iceP_value, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
     {
-        return _iceI_begin_addTransform(iceP_item, iceP_engine, iceP_base, iceP_pose, ::Ice::noExplicitContext, del, cookie);
+        return _iceI_begin_addAttribute(iceP_idNode, iceP_name, iceP_type, iceP_value, ::Ice::noExplicitContext, del, cookie);
     }
 
-    ::Ice::AsyncResultPtr begin_addTransform(const ::std::string& iceP_item, const ::std::string& iceP_engine, const ::std::string& iceP_base, const ::RoboCompInnerModelManager::Pose3D& iceP_pose, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    ::Ice::AsyncResultPtr begin_addAttribute(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::std::string& iceP_type, const ::std::string& iceP_value, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
     {
-        return _iceI_begin_addTransform(iceP_item, iceP_engine, iceP_base, iceP_pose, context, del, cookie);
+        return _iceI_begin_addAttribute(iceP_idNode, iceP_name, iceP_type, iceP_value, context, del, cookie);
     }
 
-    ::Ice::AsyncResultPtr begin_addTransform(const ::std::string& iceP_item, const ::std::string& iceP_engine, const ::std::string& iceP_base, const ::RoboCompInnerModelManager::Pose3D& iceP_pose, const ::RoboCompInnerModelManager::Callback_InnerModelManager_addTransformPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    ::Ice::AsyncResultPtr begin_addAttribute(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::std::string& iceP_type, const ::std::string& iceP_value, const ::RoboCompInnerModelManager::Callback_InnerModelManager_addAttributePtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
     {
-        return _iceI_begin_addTransform(iceP_item, iceP_engine, iceP_base, iceP_pose, ::Ice::noExplicitContext, del, cookie);
+        return _iceI_begin_addAttribute(iceP_idNode, iceP_name, iceP_type, iceP_value, ::Ice::noExplicitContext, del, cookie);
     }
 
-    ::Ice::AsyncResultPtr begin_addTransform(const ::std::string& iceP_item, const ::std::string& iceP_engine, const ::std::string& iceP_base, const ::RoboCompInnerModelManager::Pose3D& iceP_pose, const ::Ice::Context& context, const ::RoboCompInnerModelManager::Callback_InnerModelManager_addTransformPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    ::Ice::AsyncResultPtr begin_addAttribute(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::std::string& iceP_type, const ::std::string& iceP_value, const ::Ice::Context& context, const ::RoboCompInnerModelManager::Callback_InnerModelManager_addAttributePtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
     {
-        return _iceI_begin_addTransform(iceP_item, iceP_engine, iceP_base, iceP_pose, context, del, cookie);
+        return _iceI_begin_addAttribute(iceP_idNode, iceP_name, iceP_type, iceP_value, context, del, cookie);
     }
 
-    bool end_addTransform(const ::Ice::AsyncResultPtr&);
+    bool end_addAttribute(const ::Ice::AsyncResultPtr&);
 
 private:
 
-    ::Ice::AsyncResultPtr _iceI_begin_addTransform(const ::std::string&, const ::std::string&, const ::std::string&, const ::RoboCompInnerModelManager::Pose3D&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
+    ::Ice::AsyncResultPtr _iceI_begin_addAttribute(const ::std::string&, const ::std::string&, const ::std::string&, const ::std::string&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
 
 public:
 
@@ -1627,6 +1597,82 @@ private:
 
 public:
 
+    bool addTransform(const ::std::string& iceP_item, const ::std::string& iceP_engine, const ::std::string& iceP_base, const ::RoboCompInnerModelManager::Pose3D& iceP_pose, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    {
+        return end_addTransform(_iceI_begin_addTransform(iceP_item, iceP_engine, iceP_base, iceP_pose, context, ::IceInternal::dummyCallback, 0, true));
+    }
+
+    ::Ice::AsyncResultPtr begin_addTransform(const ::std::string& iceP_item, const ::std::string& iceP_engine, const ::std::string& iceP_base, const ::RoboCompInnerModelManager::Pose3D& iceP_pose, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    {
+        return _iceI_begin_addTransform(iceP_item, iceP_engine, iceP_base, iceP_pose, context, ::IceInternal::dummyCallback, 0);
+    }
+
+    ::Ice::AsyncResultPtr begin_addTransform(const ::std::string& iceP_item, const ::std::string& iceP_engine, const ::std::string& iceP_base, const ::RoboCompInnerModelManager::Pose3D& iceP_pose, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_addTransform(iceP_item, iceP_engine, iceP_base, iceP_pose, ::Ice::noExplicitContext, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_addTransform(const ::std::string& iceP_item, const ::std::string& iceP_engine, const ::std::string& iceP_base, const ::RoboCompInnerModelManager::Pose3D& iceP_pose, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_addTransform(iceP_item, iceP_engine, iceP_base, iceP_pose, context, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_addTransform(const ::std::string& iceP_item, const ::std::string& iceP_engine, const ::std::string& iceP_base, const ::RoboCompInnerModelManager::Pose3D& iceP_pose, const ::RoboCompInnerModelManager::Callback_InnerModelManager_addTransformPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_addTransform(iceP_item, iceP_engine, iceP_base, iceP_pose, ::Ice::noExplicitContext, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_addTransform(const ::std::string& iceP_item, const ::std::string& iceP_engine, const ::std::string& iceP_base, const ::RoboCompInnerModelManager::Pose3D& iceP_pose, const ::Ice::Context& context, const ::RoboCompInnerModelManager::Callback_InnerModelManager_addTransformPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_addTransform(iceP_item, iceP_engine, iceP_base, iceP_pose, context, del, cookie);
+    }
+
+    bool end_addTransform(const ::Ice::AsyncResultPtr&);
+
+private:
+
+    ::Ice::AsyncResultPtr _iceI_begin_addTransform(const ::std::string&, const ::std::string&, const ::std::string&, const ::RoboCompInnerModelManager::Pose3D&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
+
+public:
+
+    bool collide(const ::std::string& iceP_a, const ::std::string& iceP_b, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    {
+        return end_collide(_iceI_begin_collide(iceP_a, iceP_b, context, ::IceInternal::dummyCallback, 0, true));
+    }
+
+    ::Ice::AsyncResultPtr begin_collide(const ::std::string& iceP_a, const ::std::string& iceP_b, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    {
+        return _iceI_begin_collide(iceP_a, iceP_b, context, ::IceInternal::dummyCallback, 0);
+    }
+
+    ::Ice::AsyncResultPtr begin_collide(const ::std::string& iceP_a, const ::std::string& iceP_b, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_collide(iceP_a, iceP_b, ::Ice::noExplicitContext, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_collide(const ::std::string& iceP_a, const ::std::string& iceP_b, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_collide(iceP_a, iceP_b, context, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_collide(const ::std::string& iceP_a, const ::std::string& iceP_b, const ::RoboCompInnerModelManager::Callback_InnerModelManager_collidePtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_collide(iceP_a, iceP_b, ::Ice::noExplicitContext, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_collide(const ::std::string& iceP_a, const ::std::string& iceP_b, const ::Ice::Context& context, const ::RoboCompInnerModelManager::Callback_InnerModelManager_collidePtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_collide(iceP_a, iceP_b, context, del, cookie);
+    }
+
+    bool end_collide(const ::Ice::AsyncResultPtr&);
+
+private:
+
+    ::Ice::AsyncResultPtr _iceI_begin_collide(const ::std::string&, const ::std::string&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
+
+public:
+
     void getAllNodeInformation(::RoboCompInnerModelManager::NodeInformationSequence& iceP_nodesInfo, const ::Ice::Context& context = ::Ice::noExplicitContext)
     {
         end_getAllNodeInformation(iceP_nodesInfo, _iceI_begin_getAllNodeInformation(context, ::IceInternal::dummyCallback, 0, true));
@@ -1665,79 +1711,41 @@ private:
 
 public:
 
-    bool setPose(const ::std::string& iceP_base, const ::std::string& iceP_item, const ::RoboCompInnerModelManager::Pose3D& iceP_pose, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    bool getAttribute(const ::std::string& iceP_idNode, const ::std::string& iceP_name, ::std::string& iceP_type, ::std::string& iceP_value, const ::Ice::Context& context = ::Ice::noExplicitContext)
     {
-        return end_setPose(_iceI_begin_setPose(iceP_base, iceP_item, iceP_pose, context, ::IceInternal::dummyCallback, 0, true));
+        return end_getAttribute(iceP_type, iceP_value, _iceI_begin_getAttribute(iceP_idNode, iceP_name, context, ::IceInternal::dummyCallback, 0, true));
     }
 
-    ::Ice::AsyncResultPtr begin_setPose(const ::std::string& iceP_base, const ::std::string& iceP_item, const ::RoboCompInnerModelManager::Pose3D& iceP_pose, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    ::Ice::AsyncResultPtr begin_getAttribute(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::Ice::Context& context = ::Ice::noExplicitContext)
     {
-        return _iceI_begin_setPose(iceP_base, iceP_item, iceP_pose, context, ::IceInternal::dummyCallback, 0);
+        return _iceI_begin_getAttribute(iceP_idNode, iceP_name, context, ::IceInternal::dummyCallback, 0);
     }
 
-    ::Ice::AsyncResultPtr begin_setPose(const ::std::string& iceP_base, const ::std::string& iceP_item, const ::RoboCompInnerModelManager::Pose3D& iceP_pose, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    ::Ice::AsyncResultPtr begin_getAttribute(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
     {
-        return _iceI_begin_setPose(iceP_base, iceP_item, iceP_pose, ::Ice::noExplicitContext, del, cookie);
+        return _iceI_begin_getAttribute(iceP_idNode, iceP_name, ::Ice::noExplicitContext, del, cookie);
     }
 
-    ::Ice::AsyncResultPtr begin_setPose(const ::std::string& iceP_base, const ::std::string& iceP_item, const ::RoboCompInnerModelManager::Pose3D& iceP_pose, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    ::Ice::AsyncResultPtr begin_getAttribute(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
     {
-        return _iceI_begin_setPose(iceP_base, iceP_item, iceP_pose, context, del, cookie);
+        return _iceI_begin_getAttribute(iceP_idNode, iceP_name, context, del, cookie);
     }
 
-    ::Ice::AsyncResultPtr begin_setPose(const ::std::string& iceP_base, const ::std::string& iceP_item, const ::RoboCompInnerModelManager::Pose3D& iceP_pose, const ::RoboCompInnerModelManager::Callback_InnerModelManager_setPosePtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    ::Ice::AsyncResultPtr begin_getAttribute(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::RoboCompInnerModelManager::Callback_InnerModelManager_getAttributePtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
     {
-        return _iceI_begin_setPose(iceP_base, iceP_item, iceP_pose, ::Ice::noExplicitContext, del, cookie);
+        return _iceI_begin_getAttribute(iceP_idNode, iceP_name, ::Ice::noExplicitContext, del, cookie);
     }
 
-    ::Ice::AsyncResultPtr begin_setPose(const ::std::string& iceP_base, const ::std::string& iceP_item, const ::RoboCompInnerModelManager::Pose3D& iceP_pose, const ::Ice::Context& context, const ::RoboCompInnerModelManager::Callback_InnerModelManager_setPosePtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    ::Ice::AsyncResultPtr begin_getAttribute(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::Ice::Context& context, const ::RoboCompInnerModelManager::Callback_InnerModelManager_getAttributePtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
     {
-        return _iceI_begin_setPose(iceP_base, iceP_item, iceP_pose, context, del, cookie);
+        return _iceI_begin_getAttribute(iceP_idNode, iceP_name, context, del, cookie);
     }
 
-    bool end_setPose(const ::Ice::AsyncResultPtr&);
+    bool end_getAttribute(::std::string& iceP_type, ::std::string& iceP_value, const ::Ice::AsyncResultPtr&);
 
 private:
 
-    ::Ice::AsyncResultPtr _iceI_begin_setPose(const ::std::string&, const ::std::string&, const ::RoboCompInnerModelManager::Pose3D&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
-
-public:
-
-    bool setPoseFromParent(const ::std::string& iceP_item, const ::RoboCompInnerModelManager::Pose3D& iceP_pose, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        return end_setPoseFromParent(_iceI_begin_setPoseFromParent(iceP_item, iceP_pose, context, ::IceInternal::dummyCallback, 0, true));
-    }
-
-    ::Ice::AsyncResultPtr begin_setPoseFromParent(const ::std::string& iceP_item, const ::RoboCompInnerModelManager::Pose3D& iceP_pose, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        return _iceI_begin_setPoseFromParent(iceP_item, iceP_pose, context, ::IceInternal::dummyCallback, 0);
-    }
-
-    ::Ice::AsyncResultPtr begin_setPoseFromParent(const ::std::string& iceP_item, const ::RoboCompInnerModelManager::Pose3D& iceP_pose, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_setPoseFromParent(iceP_item, iceP_pose, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_setPoseFromParent(const ::std::string& iceP_item, const ::RoboCompInnerModelManager::Pose3D& iceP_pose, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_setPoseFromParent(iceP_item, iceP_pose, context, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_setPoseFromParent(const ::std::string& iceP_item, const ::RoboCompInnerModelManager::Pose3D& iceP_pose, const ::RoboCompInnerModelManager::Callback_InnerModelManager_setPoseFromParentPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_setPoseFromParent(iceP_item, iceP_pose, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_setPoseFromParent(const ::std::string& iceP_item, const ::RoboCompInnerModelManager::Pose3D& iceP_pose, const ::Ice::Context& context, const ::RoboCompInnerModelManager::Callback_InnerModelManager_setPoseFromParentPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_setPoseFromParent(iceP_item, iceP_pose, context, del, cookie);
-    }
-
-    bool end_setPoseFromParent(const ::Ice::AsyncResultPtr&);
-
-private:
-
-    ::Ice::AsyncResultPtr _iceI_begin_setPoseFromParent(const ::std::string&, const ::RoboCompInnerModelManager::Pose3D&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
+    ::Ice::AsyncResultPtr _iceI_begin_getAttribute(const ::std::string&, const ::std::string&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
 
 public:
 
@@ -1817,120 +1825,6 @@ private:
 
 public:
 
-    bool setPlane(const ::std::string& iceP_item, const ::RoboCompInnerModelManager::Plane3D& iceP_plane, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        return end_setPlane(_iceI_begin_setPlane(iceP_item, iceP_plane, context, ::IceInternal::dummyCallback, 0, true));
-    }
-
-    ::Ice::AsyncResultPtr begin_setPlane(const ::std::string& iceP_item, const ::RoboCompInnerModelManager::Plane3D& iceP_plane, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        return _iceI_begin_setPlane(iceP_item, iceP_plane, context, ::IceInternal::dummyCallback, 0);
-    }
-
-    ::Ice::AsyncResultPtr begin_setPlane(const ::std::string& iceP_item, const ::RoboCompInnerModelManager::Plane3D& iceP_plane, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_setPlane(iceP_item, iceP_plane, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_setPlane(const ::std::string& iceP_item, const ::RoboCompInnerModelManager::Plane3D& iceP_plane, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_setPlane(iceP_item, iceP_plane, context, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_setPlane(const ::std::string& iceP_item, const ::RoboCompInnerModelManager::Plane3D& iceP_plane, const ::RoboCompInnerModelManager::Callback_InnerModelManager_setPlanePtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_setPlane(iceP_item, iceP_plane, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_setPlane(const ::std::string& iceP_item, const ::RoboCompInnerModelManager::Plane3D& iceP_plane, const ::Ice::Context& context, const ::RoboCompInnerModelManager::Callback_InnerModelManager_setPlanePtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_setPlane(iceP_item, iceP_plane, context, del, cookie);
-    }
-
-    bool end_setPlane(const ::Ice::AsyncResultPtr&);
-
-private:
-
-    ::Ice::AsyncResultPtr _iceI_begin_setPlane(const ::std::string&, const ::RoboCompInnerModelManager::Plane3D&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
-
-public:
-
-    bool setPlaneTexture(const ::std::string& iceP_item, const ::std::string& iceP_texure, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        return end_setPlaneTexture(_iceI_begin_setPlaneTexture(iceP_item, iceP_texure, context, ::IceInternal::dummyCallback, 0, true));
-    }
-
-    ::Ice::AsyncResultPtr begin_setPlaneTexture(const ::std::string& iceP_item, const ::std::string& iceP_texure, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        return _iceI_begin_setPlaneTexture(iceP_item, iceP_texure, context, ::IceInternal::dummyCallback, 0);
-    }
-
-    ::Ice::AsyncResultPtr begin_setPlaneTexture(const ::std::string& iceP_item, const ::std::string& iceP_texure, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_setPlaneTexture(iceP_item, iceP_texure, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_setPlaneTexture(const ::std::string& iceP_item, const ::std::string& iceP_texure, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_setPlaneTexture(iceP_item, iceP_texure, context, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_setPlaneTexture(const ::std::string& iceP_item, const ::std::string& iceP_texure, const ::RoboCompInnerModelManager::Callback_InnerModelManager_setPlaneTexturePtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_setPlaneTexture(iceP_item, iceP_texure, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_setPlaneTexture(const ::std::string& iceP_item, const ::std::string& iceP_texure, const ::Ice::Context& context, const ::RoboCompInnerModelManager::Callback_InnerModelManager_setPlaneTexturePtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_setPlaneTexture(iceP_item, iceP_texure, context, del, cookie);
-    }
-
-    bool end_setPlaneTexture(const ::Ice::AsyncResultPtr&);
-
-private:
-
-    ::Ice::AsyncResultPtr _iceI_begin_setPlaneTexture(const ::std::string&, const ::std::string&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
-
-public:
-
-    bool transform(const ::std::string& iceP_base, const ::std::string& iceP_item, const ::RoboCompInnerModelManager::coord3D& iceP_coordInItem, ::RoboCompInnerModelManager::coord3D& iceP_coordInBase, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        return end_transform(iceP_coordInBase, _iceI_begin_transform(iceP_base, iceP_item, iceP_coordInItem, context, ::IceInternal::dummyCallback, 0, true));
-    }
-
-    ::Ice::AsyncResultPtr begin_transform(const ::std::string& iceP_base, const ::std::string& iceP_item, const ::RoboCompInnerModelManager::coord3D& iceP_coordInItem, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        return _iceI_begin_transform(iceP_base, iceP_item, iceP_coordInItem, context, ::IceInternal::dummyCallback, 0);
-    }
-
-    ::Ice::AsyncResultPtr begin_transform(const ::std::string& iceP_base, const ::std::string& iceP_item, const ::RoboCompInnerModelManager::coord3D& iceP_coordInItem, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_transform(iceP_base, iceP_item, iceP_coordInItem, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_transform(const ::std::string& iceP_base, const ::std::string& iceP_item, const ::RoboCompInnerModelManager::coord3D& iceP_coordInItem, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_transform(iceP_base, iceP_item, iceP_coordInItem, context, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_transform(const ::std::string& iceP_base, const ::std::string& iceP_item, const ::RoboCompInnerModelManager::coord3D& iceP_coordInItem, const ::RoboCompInnerModelManager::Callback_InnerModelManager_transformPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_transform(iceP_base, iceP_item, iceP_coordInItem, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_transform(const ::std::string& iceP_base, const ::std::string& iceP_item, const ::RoboCompInnerModelManager::coord3D& iceP_coordInItem, const ::Ice::Context& context, const ::RoboCompInnerModelManager::Callback_InnerModelManager_transformPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_transform(iceP_base, iceP_item, iceP_coordInItem, context, del, cookie);
-    }
-
-    bool end_transform(::RoboCompInnerModelManager::coord3D& iceP_coordInBase, const ::Ice::AsyncResultPtr&);
-
-private:
-
-    ::Ice::AsyncResultPtr _iceI_begin_transform(const ::std::string&, const ::std::string&, const ::RoboCompInnerModelManager::coord3D&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
-
-public:
-
     ::RoboCompInnerModelManager::Matrix getTransformationMatrix(const ::std::string& iceP_base, const ::std::string& iceP_item, const ::Ice::Context& context = ::Ice::noExplicitContext)
     {
         return end_getTransformationMatrix(_iceI_begin_getTransformationMatrix(iceP_base, iceP_item, context, ::IceInternal::dummyCallback, 0, true));
@@ -1966,234 +1860,6 @@ public:
 private:
 
     ::Ice::AsyncResultPtr _iceI_begin_getTransformationMatrix(const ::std::string&, const ::std::string&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
-
-public:
-
-    bool setScale(const ::std::string& iceP_item, ::Ice::Float iceP_scaleX, ::Ice::Float iceP_scaleY, ::Ice::Float iceP_scaleZ, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        return end_setScale(_iceI_begin_setScale(iceP_item, iceP_scaleX, iceP_scaleY, iceP_scaleZ, context, ::IceInternal::dummyCallback, 0, true));
-    }
-
-    ::Ice::AsyncResultPtr begin_setScale(const ::std::string& iceP_item, ::Ice::Float iceP_scaleX, ::Ice::Float iceP_scaleY, ::Ice::Float iceP_scaleZ, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        return _iceI_begin_setScale(iceP_item, iceP_scaleX, iceP_scaleY, iceP_scaleZ, context, ::IceInternal::dummyCallback, 0);
-    }
-
-    ::Ice::AsyncResultPtr begin_setScale(const ::std::string& iceP_item, ::Ice::Float iceP_scaleX, ::Ice::Float iceP_scaleY, ::Ice::Float iceP_scaleZ, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_setScale(iceP_item, iceP_scaleX, iceP_scaleY, iceP_scaleZ, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_setScale(const ::std::string& iceP_item, ::Ice::Float iceP_scaleX, ::Ice::Float iceP_scaleY, ::Ice::Float iceP_scaleZ, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_setScale(iceP_item, iceP_scaleX, iceP_scaleY, iceP_scaleZ, context, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_setScale(const ::std::string& iceP_item, ::Ice::Float iceP_scaleX, ::Ice::Float iceP_scaleY, ::Ice::Float iceP_scaleZ, const ::RoboCompInnerModelManager::Callback_InnerModelManager_setScalePtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_setScale(iceP_item, iceP_scaleX, iceP_scaleY, iceP_scaleZ, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_setScale(const ::std::string& iceP_item, ::Ice::Float iceP_scaleX, ::Ice::Float iceP_scaleY, ::Ice::Float iceP_scaleZ, const ::Ice::Context& context, const ::RoboCompInnerModelManager::Callback_InnerModelManager_setScalePtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_setScale(iceP_item, iceP_scaleX, iceP_scaleY, iceP_scaleZ, context, del, cookie);
-    }
-
-    bool end_setScale(const ::Ice::AsyncResultPtr&);
-
-private:
-
-    ::Ice::AsyncResultPtr _iceI_begin_setScale(const ::std::string&, ::Ice::Float, ::Ice::Float, ::Ice::Float, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
-
-public:
-
-    bool addAttribute(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::std::string& iceP_type, const ::std::string& iceP_value, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        return end_addAttribute(_iceI_begin_addAttribute(iceP_idNode, iceP_name, iceP_type, iceP_value, context, ::IceInternal::dummyCallback, 0, true));
-    }
-
-    ::Ice::AsyncResultPtr begin_addAttribute(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::std::string& iceP_type, const ::std::string& iceP_value, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        return _iceI_begin_addAttribute(iceP_idNode, iceP_name, iceP_type, iceP_value, context, ::IceInternal::dummyCallback, 0);
-    }
-
-    ::Ice::AsyncResultPtr begin_addAttribute(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::std::string& iceP_type, const ::std::string& iceP_value, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_addAttribute(iceP_idNode, iceP_name, iceP_type, iceP_value, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_addAttribute(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::std::string& iceP_type, const ::std::string& iceP_value, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_addAttribute(iceP_idNode, iceP_name, iceP_type, iceP_value, context, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_addAttribute(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::std::string& iceP_type, const ::std::string& iceP_value, const ::RoboCompInnerModelManager::Callback_InnerModelManager_addAttributePtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_addAttribute(iceP_idNode, iceP_name, iceP_type, iceP_value, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_addAttribute(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::std::string& iceP_type, const ::std::string& iceP_value, const ::Ice::Context& context, const ::RoboCompInnerModelManager::Callback_InnerModelManager_addAttributePtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_addAttribute(iceP_idNode, iceP_name, iceP_type, iceP_value, context, del, cookie);
-    }
-
-    bool end_addAttribute(const ::Ice::AsyncResultPtr&);
-
-private:
-
-    ::Ice::AsyncResultPtr _iceI_begin_addAttribute(const ::std::string&, const ::std::string&, const ::std::string&, const ::std::string&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
-
-public:
-
-    bool removeAttribute(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        return end_removeAttribute(_iceI_begin_removeAttribute(iceP_idNode, iceP_name, context, ::IceInternal::dummyCallback, 0, true));
-    }
-
-    ::Ice::AsyncResultPtr begin_removeAttribute(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        return _iceI_begin_removeAttribute(iceP_idNode, iceP_name, context, ::IceInternal::dummyCallback, 0);
-    }
-
-    ::Ice::AsyncResultPtr begin_removeAttribute(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_removeAttribute(iceP_idNode, iceP_name, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_removeAttribute(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_removeAttribute(iceP_idNode, iceP_name, context, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_removeAttribute(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::RoboCompInnerModelManager::Callback_InnerModelManager_removeAttributePtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_removeAttribute(iceP_idNode, iceP_name, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_removeAttribute(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::Ice::Context& context, const ::RoboCompInnerModelManager::Callback_InnerModelManager_removeAttributePtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_removeAttribute(iceP_idNode, iceP_name, context, del, cookie);
-    }
-
-    bool end_removeAttribute(const ::Ice::AsyncResultPtr&);
-
-private:
-
-    ::Ice::AsyncResultPtr _iceI_begin_removeAttribute(const ::std::string&, const ::std::string&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
-
-public:
-
-    bool setAttribute(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::std::string& iceP_type, const ::std::string& iceP_value, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        return end_setAttribute(_iceI_begin_setAttribute(iceP_idNode, iceP_name, iceP_type, iceP_value, context, ::IceInternal::dummyCallback, 0, true));
-    }
-
-    ::Ice::AsyncResultPtr begin_setAttribute(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::std::string& iceP_type, const ::std::string& iceP_value, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        return _iceI_begin_setAttribute(iceP_idNode, iceP_name, iceP_type, iceP_value, context, ::IceInternal::dummyCallback, 0);
-    }
-
-    ::Ice::AsyncResultPtr begin_setAttribute(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::std::string& iceP_type, const ::std::string& iceP_value, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_setAttribute(iceP_idNode, iceP_name, iceP_type, iceP_value, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_setAttribute(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::std::string& iceP_type, const ::std::string& iceP_value, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_setAttribute(iceP_idNode, iceP_name, iceP_type, iceP_value, context, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_setAttribute(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::std::string& iceP_type, const ::std::string& iceP_value, const ::RoboCompInnerModelManager::Callback_InnerModelManager_setAttributePtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_setAttribute(iceP_idNode, iceP_name, iceP_type, iceP_value, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_setAttribute(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::std::string& iceP_type, const ::std::string& iceP_value, const ::Ice::Context& context, const ::RoboCompInnerModelManager::Callback_InnerModelManager_setAttributePtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_setAttribute(iceP_idNode, iceP_name, iceP_type, iceP_value, context, del, cookie);
-    }
-
-    bool end_setAttribute(const ::Ice::AsyncResultPtr&);
-
-private:
-
-    ::Ice::AsyncResultPtr _iceI_begin_setAttribute(const ::std::string&, const ::std::string&, const ::std::string&, const ::std::string&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
-
-public:
-
-    bool getAttribute(const ::std::string& iceP_idNode, const ::std::string& iceP_name, ::std::string& iceP_type, ::std::string& iceP_value, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        return end_getAttribute(iceP_type, iceP_value, _iceI_begin_getAttribute(iceP_idNode, iceP_name, context, ::IceInternal::dummyCallback, 0, true));
-    }
-
-    ::Ice::AsyncResultPtr begin_getAttribute(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        return _iceI_begin_getAttribute(iceP_idNode, iceP_name, context, ::IceInternal::dummyCallback, 0);
-    }
-
-    ::Ice::AsyncResultPtr begin_getAttribute(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_getAttribute(iceP_idNode, iceP_name, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_getAttribute(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_getAttribute(iceP_idNode, iceP_name, context, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_getAttribute(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::RoboCompInnerModelManager::Callback_InnerModelManager_getAttributePtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_getAttribute(iceP_idNode, iceP_name, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_getAttribute(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::Ice::Context& context, const ::RoboCompInnerModelManager::Callback_InnerModelManager_getAttributePtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_getAttribute(iceP_idNode, iceP_name, context, del, cookie);
-    }
-
-    bool end_getAttribute(::std::string& iceP_type, ::std::string& iceP_value, const ::Ice::AsyncResultPtr&);
-
-private:
-
-    ::Ice::AsyncResultPtr _iceI_begin_getAttribute(const ::std::string&, const ::std::string&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
-
-public:
-
-    bool removeNode(const ::std::string& iceP_item, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        return end_removeNode(_iceI_begin_removeNode(iceP_item, context, ::IceInternal::dummyCallback, 0, true));
-    }
-
-    ::Ice::AsyncResultPtr begin_removeNode(const ::std::string& iceP_item, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        return _iceI_begin_removeNode(iceP_item, context, ::IceInternal::dummyCallback, 0);
-    }
-
-    ::Ice::AsyncResultPtr begin_removeNode(const ::std::string& iceP_item, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_removeNode(iceP_item, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_removeNode(const ::std::string& iceP_item, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_removeNode(iceP_item, context, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_removeNode(const ::std::string& iceP_item, const ::RoboCompInnerModelManager::Callback_InnerModelManager_removeNodePtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_removeNode(iceP_item, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_removeNode(const ::std::string& iceP_item, const ::Ice::Context& context, const ::RoboCompInnerModelManager::Callback_InnerModelManager_removeNodePtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_removeNode(iceP_item, context, del, cookie);
-    }
-
-    bool end_removeNode(const ::Ice::AsyncResultPtr&);
-
-private:
-
-    ::Ice::AsyncResultPtr _iceI_begin_removeNode(const ::std::string&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
 
 public:
 
@@ -2235,41 +1901,155 @@ private:
 
 public:
 
-    bool collide(const ::std::string& iceP_a, const ::std::string& iceP_b, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    bool removeAttribute(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::Ice::Context& context = ::Ice::noExplicitContext)
     {
-        return end_collide(_iceI_begin_collide(iceP_a, iceP_b, context, ::IceInternal::dummyCallback, 0, true));
+        return end_removeAttribute(_iceI_begin_removeAttribute(iceP_idNode, iceP_name, context, ::IceInternal::dummyCallback, 0, true));
     }
 
-    ::Ice::AsyncResultPtr begin_collide(const ::std::string& iceP_a, const ::std::string& iceP_b, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    ::Ice::AsyncResultPtr begin_removeAttribute(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::Ice::Context& context = ::Ice::noExplicitContext)
     {
-        return _iceI_begin_collide(iceP_a, iceP_b, context, ::IceInternal::dummyCallback, 0);
+        return _iceI_begin_removeAttribute(iceP_idNode, iceP_name, context, ::IceInternal::dummyCallback, 0);
     }
 
-    ::Ice::AsyncResultPtr begin_collide(const ::std::string& iceP_a, const ::std::string& iceP_b, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    ::Ice::AsyncResultPtr begin_removeAttribute(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
     {
-        return _iceI_begin_collide(iceP_a, iceP_b, ::Ice::noExplicitContext, del, cookie);
+        return _iceI_begin_removeAttribute(iceP_idNode, iceP_name, ::Ice::noExplicitContext, del, cookie);
     }
 
-    ::Ice::AsyncResultPtr begin_collide(const ::std::string& iceP_a, const ::std::string& iceP_b, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    ::Ice::AsyncResultPtr begin_removeAttribute(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
     {
-        return _iceI_begin_collide(iceP_a, iceP_b, context, del, cookie);
+        return _iceI_begin_removeAttribute(iceP_idNode, iceP_name, context, del, cookie);
     }
 
-    ::Ice::AsyncResultPtr begin_collide(const ::std::string& iceP_a, const ::std::string& iceP_b, const ::RoboCompInnerModelManager::Callback_InnerModelManager_collidePtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    ::Ice::AsyncResultPtr begin_removeAttribute(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::RoboCompInnerModelManager::Callback_InnerModelManager_removeAttributePtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
     {
-        return _iceI_begin_collide(iceP_a, iceP_b, ::Ice::noExplicitContext, del, cookie);
+        return _iceI_begin_removeAttribute(iceP_idNode, iceP_name, ::Ice::noExplicitContext, del, cookie);
     }
 
-    ::Ice::AsyncResultPtr begin_collide(const ::std::string& iceP_a, const ::std::string& iceP_b, const ::Ice::Context& context, const ::RoboCompInnerModelManager::Callback_InnerModelManager_collidePtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    ::Ice::AsyncResultPtr begin_removeAttribute(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::Ice::Context& context, const ::RoboCompInnerModelManager::Callback_InnerModelManager_removeAttributePtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
     {
-        return _iceI_begin_collide(iceP_a, iceP_b, context, del, cookie);
+        return _iceI_begin_removeAttribute(iceP_idNode, iceP_name, context, del, cookie);
     }
 
-    bool end_collide(const ::Ice::AsyncResultPtr&);
+    bool end_removeAttribute(const ::Ice::AsyncResultPtr&);
 
 private:
 
-    ::Ice::AsyncResultPtr _iceI_begin_collide(const ::std::string&, const ::std::string&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
+    ::Ice::AsyncResultPtr _iceI_begin_removeAttribute(const ::std::string&, const ::std::string&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
+
+public:
+
+    bool removeNode(const ::std::string& iceP_item, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    {
+        return end_removeNode(_iceI_begin_removeNode(iceP_item, context, ::IceInternal::dummyCallback, 0, true));
+    }
+
+    ::Ice::AsyncResultPtr begin_removeNode(const ::std::string& iceP_item, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    {
+        return _iceI_begin_removeNode(iceP_item, context, ::IceInternal::dummyCallback, 0);
+    }
+
+    ::Ice::AsyncResultPtr begin_removeNode(const ::std::string& iceP_item, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_removeNode(iceP_item, ::Ice::noExplicitContext, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_removeNode(const ::std::string& iceP_item, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_removeNode(iceP_item, context, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_removeNode(const ::std::string& iceP_item, const ::RoboCompInnerModelManager::Callback_InnerModelManager_removeNodePtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_removeNode(iceP_item, ::Ice::noExplicitContext, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_removeNode(const ::std::string& iceP_item, const ::Ice::Context& context, const ::RoboCompInnerModelManager::Callback_InnerModelManager_removeNodePtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_removeNode(iceP_item, context, del, cookie);
+    }
+
+    bool end_removeNode(const ::Ice::AsyncResultPtr&);
+
+private:
+
+    ::Ice::AsyncResultPtr _iceI_begin_removeNode(const ::std::string&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
+
+public:
+
+    bool setAttribute(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::std::string& iceP_type, const ::std::string& iceP_value, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    {
+        return end_setAttribute(_iceI_begin_setAttribute(iceP_idNode, iceP_name, iceP_type, iceP_value, context, ::IceInternal::dummyCallback, 0, true));
+    }
+
+    ::Ice::AsyncResultPtr begin_setAttribute(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::std::string& iceP_type, const ::std::string& iceP_value, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    {
+        return _iceI_begin_setAttribute(iceP_idNode, iceP_name, iceP_type, iceP_value, context, ::IceInternal::dummyCallback, 0);
+    }
+
+    ::Ice::AsyncResultPtr begin_setAttribute(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::std::string& iceP_type, const ::std::string& iceP_value, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_setAttribute(iceP_idNode, iceP_name, iceP_type, iceP_value, ::Ice::noExplicitContext, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_setAttribute(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::std::string& iceP_type, const ::std::string& iceP_value, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_setAttribute(iceP_idNode, iceP_name, iceP_type, iceP_value, context, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_setAttribute(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::std::string& iceP_type, const ::std::string& iceP_value, const ::RoboCompInnerModelManager::Callback_InnerModelManager_setAttributePtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_setAttribute(iceP_idNode, iceP_name, iceP_type, iceP_value, ::Ice::noExplicitContext, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_setAttribute(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::std::string& iceP_type, const ::std::string& iceP_value, const ::Ice::Context& context, const ::RoboCompInnerModelManager::Callback_InnerModelManager_setAttributePtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_setAttribute(iceP_idNode, iceP_name, iceP_type, iceP_value, context, del, cookie);
+    }
+
+    bool end_setAttribute(const ::Ice::AsyncResultPtr&);
+
+private:
+
+    ::Ice::AsyncResultPtr _iceI_begin_setAttribute(const ::std::string&, const ::std::string&, const ::std::string&, const ::std::string&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
+
+public:
+
+    bool setPlane(const ::std::string& iceP_item, const ::RoboCompInnerModelManager::Plane3D& iceP_plane, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    {
+        return end_setPlane(_iceI_begin_setPlane(iceP_item, iceP_plane, context, ::IceInternal::dummyCallback, 0, true));
+    }
+
+    ::Ice::AsyncResultPtr begin_setPlane(const ::std::string& iceP_item, const ::RoboCompInnerModelManager::Plane3D& iceP_plane, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    {
+        return _iceI_begin_setPlane(iceP_item, iceP_plane, context, ::IceInternal::dummyCallback, 0);
+    }
+
+    ::Ice::AsyncResultPtr begin_setPlane(const ::std::string& iceP_item, const ::RoboCompInnerModelManager::Plane3D& iceP_plane, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_setPlane(iceP_item, iceP_plane, ::Ice::noExplicitContext, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_setPlane(const ::std::string& iceP_item, const ::RoboCompInnerModelManager::Plane3D& iceP_plane, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_setPlane(iceP_item, iceP_plane, context, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_setPlane(const ::std::string& iceP_item, const ::RoboCompInnerModelManager::Plane3D& iceP_plane, const ::RoboCompInnerModelManager::Callback_InnerModelManager_setPlanePtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_setPlane(iceP_item, iceP_plane, ::Ice::noExplicitContext, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_setPlane(const ::std::string& iceP_item, const ::RoboCompInnerModelManager::Plane3D& iceP_plane, const ::Ice::Context& context, const ::RoboCompInnerModelManager::Callback_InnerModelManager_setPlanePtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_setPlane(iceP_item, iceP_plane, context, del, cookie);
+    }
+
+    bool end_setPlane(const ::Ice::AsyncResultPtr&);
+
+private:
+
+    ::Ice::AsyncResultPtr _iceI_begin_setPlane(const ::std::string&, const ::RoboCompInnerModelManager::Plane3D&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
 
 public:
 
@@ -2311,6 +2091,158 @@ private:
 
 public:
 
+    bool setPose(const ::std::string& iceP_base, const ::std::string& iceP_item, const ::RoboCompInnerModelManager::Pose3D& iceP_pose, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    {
+        return end_setPose(_iceI_begin_setPose(iceP_base, iceP_item, iceP_pose, context, ::IceInternal::dummyCallback, 0, true));
+    }
+
+    ::Ice::AsyncResultPtr begin_setPose(const ::std::string& iceP_base, const ::std::string& iceP_item, const ::RoboCompInnerModelManager::Pose3D& iceP_pose, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    {
+        return _iceI_begin_setPose(iceP_base, iceP_item, iceP_pose, context, ::IceInternal::dummyCallback, 0);
+    }
+
+    ::Ice::AsyncResultPtr begin_setPose(const ::std::string& iceP_base, const ::std::string& iceP_item, const ::RoboCompInnerModelManager::Pose3D& iceP_pose, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_setPose(iceP_base, iceP_item, iceP_pose, ::Ice::noExplicitContext, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_setPose(const ::std::string& iceP_base, const ::std::string& iceP_item, const ::RoboCompInnerModelManager::Pose3D& iceP_pose, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_setPose(iceP_base, iceP_item, iceP_pose, context, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_setPose(const ::std::string& iceP_base, const ::std::string& iceP_item, const ::RoboCompInnerModelManager::Pose3D& iceP_pose, const ::RoboCompInnerModelManager::Callback_InnerModelManager_setPosePtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_setPose(iceP_base, iceP_item, iceP_pose, ::Ice::noExplicitContext, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_setPose(const ::std::string& iceP_base, const ::std::string& iceP_item, const ::RoboCompInnerModelManager::Pose3D& iceP_pose, const ::Ice::Context& context, const ::RoboCompInnerModelManager::Callback_InnerModelManager_setPosePtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_setPose(iceP_base, iceP_item, iceP_pose, context, del, cookie);
+    }
+
+    bool end_setPose(const ::Ice::AsyncResultPtr&);
+
+private:
+
+    ::Ice::AsyncResultPtr _iceI_begin_setPose(const ::std::string&, const ::std::string&, const ::RoboCompInnerModelManager::Pose3D&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
+
+public:
+
+    bool setPoseFromParent(const ::std::string& iceP_item, const ::RoboCompInnerModelManager::Pose3D& iceP_pose, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    {
+        return end_setPoseFromParent(_iceI_begin_setPoseFromParent(iceP_item, iceP_pose, context, ::IceInternal::dummyCallback, 0, true));
+    }
+
+    ::Ice::AsyncResultPtr begin_setPoseFromParent(const ::std::string& iceP_item, const ::RoboCompInnerModelManager::Pose3D& iceP_pose, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    {
+        return _iceI_begin_setPoseFromParent(iceP_item, iceP_pose, context, ::IceInternal::dummyCallback, 0);
+    }
+
+    ::Ice::AsyncResultPtr begin_setPoseFromParent(const ::std::string& iceP_item, const ::RoboCompInnerModelManager::Pose3D& iceP_pose, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_setPoseFromParent(iceP_item, iceP_pose, ::Ice::noExplicitContext, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_setPoseFromParent(const ::std::string& iceP_item, const ::RoboCompInnerModelManager::Pose3D& iceP_pose, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_setPoseFromParent(iceP_item, iceP_pose, context, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_setPoseFromParent(const ::std::string& iceP_item, const ::RoboCompInnerModelManager::Pose3D& iceP_pose, const ::RoboCompInnerModelManager::Callback_InnerModelManager_setPoseFromParentPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_setPoseFromParent(iceP_item, iceP_pose, ::Ice::noExplicitContext, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_setPoseFromParent(const ::std::string& iceP_item, const ::RoboCompInnerModelManager::Pose3D& iceP_pose, const ::Ice::Context& context, const ::RoboCompInnerModelManager::Callback_InnerModelManager_setPoseFromParentPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_setPoseFromParent(iceP_item, iceP_pose, context, del, cookie);
+    }
+
+    bool end_setPoseFromParent(const ::Ice::AsyncResultPtr&);
+
+private:
+
+    ::Ice::AsyncResultPtr _iceI_begin_setPoseFromParent(const ::std::string&, const ::RoboCompInnerModelManager::Pose3D&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
+
+public:
+
+    bool setScale(const ::std::string& iceP_item, ::Ice::Float iceP_scaleX, ::Ice::Float iceP_scaleY, ::Ice::Float iceP_scaleZ, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    {
+        return end_setScale(_iceI_begin_setScale(iceP_item, iceP_scaleX, iceP_scaleY, iceP_scaleZ, context, ::IceInternal::dummyCallback, 0, true));
+    }
+
+    ::Ice::AsyncResultPtr begin_setScale(const ::std::string& iceP_item, ::Ice::Float iceP_scaleX, ::Ice::Float iceP_scaleY, ::Ice::Float iceP_scaleZ, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    {
+        return _iceI_begin_setScale(iceP_item, iceP_scaleX, iceP_scaleY, iceP_scaleZ, context, ::IceInternal::dummyCallback, 0);
+    }
+
+    ::Ice::AsyncResultPtr begin_setScale(const ::std::string& iceP_item, ::Ice::Float iceP_scaleX, ::Ice::Float iceP_scaleY, ::Ice::Float iceP_scaleZ, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_setScale(iceP_item, iceP_scaleX, iceP_scaleY, iceP_scaleZ, ::Ice::noExplicitContext, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_setScale(const ::std::string& iceP_item, ::Ice::Float iceP_scaleX, ::Ice::Float iceP_scaleY, ::Ice::Float iceP_scaleZ, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_setScale(iceP_item, iceP_scaleX, iceP_scaleY, iceP_scaleZ, context, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_setScale(const ::std::string& iceP_item, ::Ice::Float iceP_scaleX, ::Ice::Float iceP_scaleY, ::Ice::Float iceP_scaleZ, const ::RoboCompInnerModelManager::Callback_InnerModelManager_setScalePtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_setScale(iceP_item, iceP_scaleX, iceP_scaleY, iceP_scaleZ, ::Ice::noExplicitContext, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_setScale(const ::std::string& iceP_item, ::Ice::Float iceP_scaleX, ::Ice::Float iceP_scaleY, ::Ice::Float iceP_scaleZ, const ::Ice::Context& context, const ::RoboCompInnerModelManager::Callback_InnerModelManager_setScalePtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_setScale(iceP_item, iceP_scaleX, iceP_scaleY, iceP_scaleZ, context, del, cookie);
+    }
+
+    bool end_setScale(const ::Ice::AsyncResultPtr&);
+
+private:
+
+    ::Ice::AsyncResultPtr _iceI_begin_setScale(const ::std::string&, ::Ice::Float, ::Ice::Float, ::Ice::Float, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
+
+public:
+
+    bool transform(const ::std::string& iceP_base, const ::std::string& iceP_item, const ::RoboCompInnerModelManager::coord3D& iceP_coordInItem, ::RoboCompInnerModelManager::coord3D& iceP_coordInBase, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    {
+        return end_transform(iceP_coordInBase, _iceI_begin_transform(iceP_base, iceP_item, iceP_coordInItem, context, ::IceInternal::dummyCallback, 0, true));
+    }
+
+    ::Ice::AsyncResultPtr begin_transform(const ::std::string& iceP_base, const ::std::string& iceP_item, const ::RoboCompInnerModelManager::coord3D& iceP_coordInItem, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    {
+        return _iceI_begin_transform(iceP_base, iceP_item, iceP_coordInItem, context, ::IceInternal::dummyCallback, 0);
+    }
+
+    ::Ice::AsyncResultPtr begin_transform(const ::std::string& iceP_base, const ::std::string& iceP_item, const ::RoboCompInnerModelManager::coord3D& iceP_coordInItem, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_transform(iceP_base, iceP_item, iceP_coordInItem, ::Ice::noExplicitContext, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_transform(const ::std::string& iceP_base, const ::std::string& iceP_item, const ::RoboCompInnerModelManager::coord3D& iceP_coordInItem, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_transform(iceP_base, iceP_item, iceP_coordInItem, context, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_transform(const ::std::string& iceP_base, const ::std::string& iceP_item, const ::RoboCompInnerModelManager::coord3D& iceP_coordInItem, const ::RoboCompInnerModelManager::Callback_InnerModelManager_transformPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_transform(iceP_base, iceP_item, iceP_coordInItem, ::Ice::noExplicitContext, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_transform(const ::std::string& iceP_base, const ::std::string& iceP_item, const ::RoboCompInnerModelManager::coord3D& iceP_coordInItem, const ::Ice::Context& context, const ::RoboCompInnerModelManager::Callback_InnerModelManager_transformPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_transform(iceP_base, iceP_item, iceP_coordInItem, context, del, cookie);
+    }
+
+    bool end_transform(::RoboCompInnerModelManager::coord3D& iceP_coordInBase, const ::Ice::AsyncResultPtr&);
+
+private:
+
+    ::Ice::AsyncResultPtr _iceI_begin_transform(const ::std::string&, const ::std::string&, const ::RoboCompInnerModelManager::coord3D&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
+
+public:
+
     static const ::std::string& ice_staticId();
 
 protected:
@@ -2340,8 +2272,8 @@ public:
 
     static const ::std::string& ice_staticId();
 
-    virtual bool addTransform(const ::std::string&, const ::std::string&, const ::std::string&, const ::RoboCompInnerModelManager::Pose3D&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
-    bool _iceD_addTransform(::IceInternal::Incoming&, const ::Ice::Current&);
+    virtual bool addAttribute(const ::std::string&, const ::std::string&, const ::std::string&, const ::std::string&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
+    bool _iceD_addAttribute(::IceInternal::Incoming&, const ::Ice::Current&);
 
     virtual bool addJoint(const ::std::string&, const ::std::string&, const ::RoboCompInnerModelManager::jointType&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
     bool _iceD_addJoint(::IceInternal::Incoming&, const ::Ice::Current&);
@@ -2352,14 +2284,17 @@ public:
     virtual bool addPlane(const ::std::string&, const ::std::string&, const ::RoboCompInnerModelManager::Plane3D&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
     bool _iceD_addPlane(::IceInternal::Incoming&, const ::Ice::Current&);
 
+    virtual bool addTransform(const ::std::string&, const ::std::string&, const ::std::string&, const ::RoboCompInnerModelManager::Pose3D&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
+    bool _iceD_addTransform(::IceInternal::Incoming&, const ::Ice::Current&);
+
+    virtual bool collide(const ::std::string&, const ::std::string&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
+    bool _iceD_collide(::IceInternal::Incoming&, const ::Ice::Current&);
+
     virtual void getAllNodeInformation(::RoboCompInnerModelManager::NodeInformationSequence&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
     bool _iceD_getAllNodeInformation(::IceInternal::Incoming&, const ::Ice::Current&);
 
-    virtual bool setPose(const ::std::string&, const ::std::string&, const ::RoboCompInnerModelManager::Pose3D&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
-    bool _iceD_setPose(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    virtual bool setPoseFromParent(const ::std::string&, const ::RoboCompInnerModelManager::Pose3D&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
-    bool _iceD_setPoseFromParent(::IceInternal::Incoming&, const ::Ice::Current&);
+    virtual bool getAttribute(const ::std::string&, const ::std::string&, ::std::string&, ::std::string&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
+    bool _iceD_getAttribute(::IceInternal::Incoming&, const ::Ice::Current&);
 
     virtual bool getPose(const ::std::string&, const ::std::string&, ::RoboCompInnerModelManager::Pose3D&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
     bool _iceD_getPose(::IceInternal::Incoming&, const ::Ice::Current&);
@@ -2367,44 +2302,38 @@ public:
     virtual bool getPoseFromParent(const ::std::string&, ::RoboCompInnerModelManager::Pose3D&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
     bool _iceD_getPoseFromParent(::IceInternal::Incoming&, const ::Ice::Current&);
 
-    virtual bool setPlane(const ::std::string&, const ::RoboCompInnerModelManager::Plane3D&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
-    bool _iceD_setPlane(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    virtual bool setPlaneTexture(const ::std::string&, const ::std::string&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
-    bool _iceD_setPlaneTexture(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    virtual bool transform(const ::std::string&, const ::std::string&, const ::RoboCompInnerModelManager::coord3D&, ::RoboCompInnerModelManager::coord3D&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
-    bool _iceD_transform(::IceInternal::Incoming&, const ::Ice::Current&);
-
     virtual ::RoboCompInnerModelManager::Matrix getTransformationMatrix(const ::std::string&, const ::std::string&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
     bool _iceD_getTransformationMatrix(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    virtual bool setScale(const ::std::string&, ::Ice::Float, ::Ice::Float, ::Ice::Float, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
-    bool _iceD_setScale(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    virtual bool addAttribute(const ::std::string&, const ::std::string&, const ::std::string&, const ::std::string&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
-    bool _iceD_addAttribute(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    virtual bool removeAttribute(const ::std::string&, const ::std::string&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
-    bool _iceD_removeAttribute(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    virtual bool setAttribute(const ::std::string&, const ::std::string&, const ::std::string&, const ::std::string&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
-    bool _iceD_setAttribute(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    virtual bool getAttribute(const ::std::string&, const ::std::string&, ::std::string&, ::std::string&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
-    bool _iceD_getAttribute(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    virtual bool removeNode(const ::std::string&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
-    bool _iceD_removeNode(::IceInternal::Incoming&, const ::Ice::Current&);
 
     virtual bool moveNode(const ::std::string&, const ::std::string&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
     bool _iceD_moveNode(::IceInternal::Incoming&, const ::Ice::Current&);
 
-    virtual bool collide(const ::std::string&, const ::std::string&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
-    bool _iceD_collide(::IceInternal::Incoming&, const ::Ice::Current&);
+    virtual bool removeAttribute(const ::std::string&, const ::std::string&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
+    bool _iceD_removeAttribute(::IceInternal::Incoming&, const ::Ice::Current&);
+
+    virtual bool removeNode(const ::std::string&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
+    bool _iceD_removeNode(::IceInternal::Incoming&, const ::Ice::Current&);
+
+    virtual bool setAttribute(const ::std::string&, const ::std::string&, const ::std::string&, const ::std::string&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
+    bool _iceD_setAttribute(::IceInternal::Incoming&, const ::Ice::Current&);
+
+    virtual bool setPlane(const ::std::string&, const ::RoboCompInnerModelManager::Plane3D&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
+    bool _iceD_setPlane(::IceInternal::Incoming&, const ::Ice::Current&);
 
     virtual void setPointCloudData(const ::std::string&, const ::RoboCompInnerModelManager::PointCloudVector&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
     bool _iceD_setPointCloudData(::IceInternal::Incoming&, const ::Ice::Current&);
+
+    virtual bool setPose(const ::std::string&, const ::std::string&, const ::RoboCompInnerModelManager::Pose3D&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
+    bool _iceD_setPose(::IceInternal::Incoming&, const ::Ice::Current&);
+
+    virtual bool setPoseFromParent(const ::std::string&, const ::RoboCompInnerModelManager::Pose3D&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
+    bool _iceD_setPoseFromParent(::IceInternal::Incoming&, const ::Ice::Current&);
+
+    virtual bool setScale(const ::std::string&, ::Ice::Float, ::Ice::Float, ::Ice::Float, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
+    bool _iceD_setScale(::IceInternal::Incoming&, const ::Ice::Current&);
+
+    virtual bool transform(const ::std::string&, const ::std::string&, const ::RoboCompInnerModelManager::coord3D&, ::RoboCompInnerModelManager::coord3D&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
+    bool _iceD_transform(::IceInternal::Incoming&, const ::Ice::Current&);
 
     virtual bool _iceDispatch(::IceInternal::Incoming&, const ::Ice::Current&);
 
@@ -2801,7 +2730,7 @@ namespace RoboCompInnerModelManager
 {
 
 template<class T>
-class CallbackNC_InnerModelManager_addTransform : public Callback_InnerModelManager_addTransform_Base, public ::IceInternal::TwowayCallbackNC<T>
+class CallbackNC_InnerModelManager_addAttribute : public Callback_InnerModelManager_addAttribute_Base, public ::IceInternal::TwowayCallbackNC<T>
 {
 public:
 
@@ -2811,7 +2740,7 @@ public:
     typedef void (T::*Sent)(bool);
     typedef void (T::*Response)(bool);
 
-    CallbackNC_InnerModelManager_addTransform(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+    CallbackNC_InnerModelManager_addAttribute(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
         : ::IceInternal::TwowayCallbackNC<T>(obj, cb != 0, excb, sentcb), _response(cb)
     {
     }
@@ -2822,7 +2751,7 @@ public:
         bool ret;
         try
         {
-            ret = proxy->end_addTransform(result);
+            ret = proxy->end_addAttribute(result);
         }
         catch(const ::Ice::Exception& ex)
         {
@@ -2840,20 +2769,20 @@ private:
     Response _response;
 };
 
-template<class T> Callback_InnerModelManager_addTransformPtr
-newCallback_InnerModelManager_addTransform(const IceUtil::Handle<T>& instance, void (T::*cb)(bool), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+template<class T> Callback_InnerModelManager_addAttributePtr
+newCallback_InnerModelManager_addAttribute(const IceUtil::Handle<T>& instance, void (T::*cb)(bool), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
 {
-    return new CallbackNC_InnerModelManager_addTransform<T>(instance, cb, excb, sentcb);
+    return new CallbackNC_InnerModelManager_addAttribute<T>(instance, cb, excb, sentcb);
 }
 
-template<class T> Callback_InnerModelManager_addTransformPtr
-newCallback_InnerModelManager_addTransform(T* instance, void (T::*cb)(bool), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+template<class T> Callback_InnerModelManager_addAttributePtr
+newCallback_InnerModelManager_addAttribute(T* instance, void (T::*cb)(bool), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
 {
-    return new CallbackNC_InnerModelManager_addTransform<T>(instance, cb, excb, sentcb);
+    return new CallbackNC_InnerModelManager_addAttribute<T>(instance, cb, excb, sentcb);
 }
 
 template<class T, typename CT>
-class Callback_InnerModelManager_addTransform : public Callback_InnerModelManager_addTransform_Base, public ::IceInternal::TwowayCallback<T, CT>
+class Callback_InnerModelManager_addAttribute : public Callback_InnerModelManager_addAttribute_Base, public ::IceInternal::TwowayCallback<T, CT>
 {
 public:
 
@@ -2863,7 +2792,7 @@ public:
     typedef void (T::*Sent)(bool , const CT&);
     typedef void (T::*Response)(bool, const CT&);
 
-    Callback_InnerModelManager_addTransform(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+    Callback_InnerModelManager_addAttribute(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
         : ::IceInternal::TwowayCallback<T, CT>(obj, cb != 0, excb, sentcb), _response(cb)
     {
     }
@@ -2874,7 +2803,7 @@ public:
         bool ret;
         try
         {
-            ret = proxy->end_addTransform(result);
+            ret = proxy->end_addAttribute(result);
         }
         catch(const ::Ice::Exception& ex)
         {
@@ -2892,16 +2821,16 @@ private:
     Response _response;
 };
 
-template<class T, typename CT> Callback_InnerModelManager_addTransformPtr
-newCallback_InnerModelManager_addTransform(const IceUtil::Handle<T>& instance, void (T::*cb)(bool, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+template<class T, typename CT> Callback_InnerModelManager_addAttributePtr
+newCallback_InnerModelManager_addAttribute(const IceUtil::Handle<T>& instance, void (T::*cb)(bool, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
 {
-    return new Callback_InnerModelManager_addTransform<T, CT>(instance, cb, excb, sentcb);
+    return new Callback_InnerModelManager_addAttribute<T, CT>(instance, cb, excb, sentcb);
 }
 
-template<class T, typename CT> Callback_InnerModelManager_addTransformPtr
-newCallback_InnerModelManager_addTransform(T* instance, void (T::*cb)(bool, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+template<class T, typename CT> Callback_InnerModelManager_addAttributePtr
+newCallback_InnerModelManager_addAttribute(T* instance, void (T::*cb)(bool, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
 {
-    return new Callback_InnerModelManager_addTransform<T, CT>(instance, cb, excb, sentcb);
+    return new Callback_InnerModelManager_addAttribute<T, CT>(instance, cb, excb, sentcb);
 }
 
 template<class T>
@@ -3217,6 +3146,214 @@ newCallback_InnerModelManager_addPlane(T* instance, void (T::*cb)(bool, const CT
 }
 
 template<class T>
+class CallbackNC_InnerModelManager_addTransform : public Callback_InnerModelManager_addTransform_Base, public ::IceInternal::TwowayCallbackNC<T>
+{
+public:
+
+    typedef IceUtil::Handle<T> TPtr;
+
+    typedef void (T::*Exception)(const ::Ice::Exception&);
+    typedef void (T::*Sent)(bool);
+    typedef void (T::*Response)(bool);
+
+    CallbackNC_InnerModelManager_addTransform(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::TwowayCallbackNC<T>(obj, cb != 0, excb, sentcb), _response(cb)
+    {
+    }
+
+    virtual void completed(const ::Ice::AsyncResultPtr& result) const
+    {
+        ::RoboCompInnerModelManager::InnerModelManagerPrx proxy = ::RoboCompInnerModelManager::InnerModelManagerPrx::uncheckedCast(result->getProxy());
+        bool ret;
+        try
+        {
+            ret = proxy->end_addTransform(result);
+        }
+        catch(const ::Ice::Exception& ex)
+        {
+            ::IceInternal::CallbackNC<T>::exception(result, ex);
+            return;
+        }
+        if(_response)
+        {
+            (::IceInternal::CallbackNC<T>::_callback.get()->*_response)(ret);
+        }
+    }
+
+private:
+
+    Response _response;
+};
+
+template<class T> Callback_InnerModelManager_addTransformPtr
+newCallback_InnerModelManager_addTransform(const IceUtil::Handle<T>& instance, void (T::*cb)(bool), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_InnerModelManager_addTransform<T>(instance, cb, excb, sentcb);
+}
+
+template<class T> Callback_InnerModelManager_addTransformPtr
+newCallback_InnerModelManager_addTransform(T* instance, void (T::*cb)(bool), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_InnerModelManager_addTransform<T>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT>
+class Callback_InnerModelManager_addTransform : public Callback_InnerModelManager_addTransform_Base, public ::IceInternal::TwowayCallback<T, CT>
+{
+public:
+
+    typedef IceUtil::Handle<T> TPtr;
+
+    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
+    typedef void (T::*Sent)(bool , const CT&);
+    typedef void (T::*Response)(bool, const CT&);
+
+    Callback_InnerModelManager_addTransform(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::TwowayCallback<T, CT>(obj, cb != 0, excb, sentcb), _response(cb)
+    {
+    }
+
+    virtual void completed(const ::Ice::AsyncResultPtr& result) const
+    {
+        ::RoboCompInnerModelManager::InnerModelManagerPrx proxy = ::RoboCompInnerModelManager::InnerModelManagerPrx::uncheckedCast(result->getProxy());
+        bool ret;
+        try
+        {
+            ret = proxy->end_addTransform(result);
+        }
+        catch(const ::Ice::Exception& ex)
+        {
+            ::IceInternal::Callback<T, CT>::exception(result, ex);
+            return;
+        }
+        if(_response)
+        {
+            (::IceInternal::Callback<T, CT>::_callback.get()->*_response)(ret, CT::dynamicCast(result->getCookie()));
+        }
+    }
+
+private:
+
+    Response _response;
+};
+
+template<class T, typename CT> Callback_InnerModelManager_addTransformPtr
+newCallback_InnerModelManager_addTransform(const IceUtil::Handle<T>& instance, void (T::*cb)(bool, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_InnerModelManager_addTransform<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_InnerModelManager_addTransformPtr
+newCallback_InnerModelManager_addTransform(T* instance, void (T::*cb)(bool, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_InnerModelManager_addTransform<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T>
+class CallbackNC_InnerModelManager_collide : public Callback_InnerModelManager_collide_Base, public ::IceInternal::TwowayCallbackNC<T>
+{
+public:
+
+    typedef IceUtil::Handle<T> TPtr;
+
+    typedef void (T::*Exception)(const ::Ice::Exception&);
+    typedef void (T::*Sent)(bool);
+    typedef void (T::*Response)(bool);
+
+    CallbackNC_InnerModelManager_collide(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::TwowayCallbackNC<T>(obj, cb != 0, excb, sentcb), _response(cb)
+    {
+    }
+
+    virtual void completed(const ::Ice::AsyncResultPtr& result) const
+    {
+        ::RoboCompInnerModelManager::InnerModelManagerPrx proxy = ::RoboCompInnerModelManager::InnerModelManagerPrx::uncheckedCast(result->getProxy());
+        bool ret;
+        try
+        {
+            ret = proxy->end_collide(result);
+        }
+        catch(const ::Ice::Exception& ex)
+        {
+            ::IceInternal::CallbackNC<T>::exception(result, ex);
+            return;
+        }
+        if(_response)
+        {
+            (::IceInternal::CallbackNC<T>::_callback.get()->*_response)(ret);
+        }
+    }
+
+private:
+
+    Response _response;
+};
+
+template<class T> Callback_InnerModelManager_collidePtr
+newCallback_InnerModelManager_collide(const IceUtil::Handle<T>& instance, void (T::*cb)(bool), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_InnerModelManager_collide<T>(instance, cb, excb, sentcb);
+}
+
+template<class T> Callback_InnerModelManager_collidePtr
+newCallback_InnerModelManager_collide(T* instance, void (T::*cb)(bool), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_InnerModelManager_collide<T>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT>
+class Callback_InnerModelManager_collide : public Callback_InnerModelManager_collide_Base, public ::IceInternal::TwowayCallback<T, CT>
+{
+public:
+
+    typedef IceUtil::Handle<T> TPtr;
+
+    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
+    typedef void (T::*Sent)(bool , const CT&);
+    typedef void (T::*Response)(bool, const CT&);
+
+    Callback_InnerModelManager_collide(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::TwowayCallback<T, CT>(obj, cb != 0, excb, sentcb), _response(cb)
+    {
+    }
+
+    virtual void completed(const ::Ice::AsyncResultPtr& result) const
+    {
+        ::RoboCompInnerModelManager::InnerModelManagerPrx proxy = ::RoboCompInnerModelManager::InnerModelManagerPrx::uncheckedCast(result->getProxy());
+        bool ret;
+        try
+        {
+            ret = proxy->end_collide(result);
+        }
+        catch(const ::Ice::Exception& ex)
+        {
+            ::IceInternal::Callback<T, CT>::exception(result, ex);
+            return;
+        }
+        if(_response)
+        {
+            (::IceInternal::Callback<T, CT>::_callback.get()->*_response)(ret, CT::dynamicCast(result->getCookie()));
+        }
+    }
+
+private:
+
+    Response _response;
+};
+
+template<class T, typename CT> Callback_InnerModelManager_collidePtr
+newCallback_InnerModelManager_collide(const IceUtil::Handle<T>& instance, void (T::*cb)(bool, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_InnerModelManager_collide<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_InnerModelManager_collidePtr
+newCallback_InnerModelManager_collide(T* instance, void (T::*cb)(bool, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_InnerModelManager_collide<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T>
 class CallbackNC_InnerModelManager_getAllNodeInformation : public Callback_InnerModelManager_getAllNodeInformation_Base, public ::IceInternal::TwowayCallbackNC<T>
 {
 public:
@@ -3321,7 +3458,7 @@ newCallback_InnerModelManager_getAllNodeInformation(T* instance, void (T::*cb)(c
 }
 
 template<class T>
-class CallbackNC_InnerModelManager_setPose : public Callback_InnerModelManager_setPose_Base, public ::IceInternal::TwowayCallbackNC<T>
+class CallbackNC_InnerModelManager_getAttribute : public Callback_InnerModelManager_getAttribute_Base, public ::IceInternal::TwowayCallbackNC<T>
 {
 public:
 
@@ -3329,9 +3466,9 @@ public:
 
     typedef void (T::*Exception)(const ::Ice::Exception&);
     typedef void (T::*Sent)(bool);
-    typedef void (T::*Response)(bool);
+    typedef void (T::*Response)(bool, const ::std::string&, const ::std::string&);
 
-    CallbackNC_InnerModelManager_setPose(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+    CallbackNC_InnerModelManager_getAttribute(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
         : ::IceInternal::TwowayCallbackNC<T>(obj, cb != 0, excb, sentcb), _response(cb)
     {
     }
@@ -3339,10 +3476,12 @@ public:
     virtual void completed(const ::Ice::AsyncResultPtr& result) const
     {
         ::RoboCompInnerModelManager::InnerModelManagerPrx proxy = ::RoboCompInnerModelManager::InnerModelManagerPrx::uncheckedCast(result->getProxy());
+        ::std::string iceP_type;
+        ::std::string iceP_value;
         bool ret;
         try
         {
-            ret = proxy->end_setPose(result);
+            ret = proxy->end_getAttribute(iceP_type, iceP_value, result);
         }
         catch(const ::Ice::Exception& ex)
         {
@@ -3351,7 +3490,7 @@ public:
         }
         if(_response)
         {
-            (::IceInternal::CallbackNC<T>::_callback.get()->*_response)(ret);
+            (::IceInternal::CallbackNC<T>::_callback.get()->*_response)(ret, iceP_type, iceP_value);
         }
     }
 
@@ -3360,20 +3499,20 @@ private:
     Response _response;
 };
 
-template<class T> Callback_InnerModelManager_setPosePtr
-newCallback_InnerModelManager_setPose(const IceUtil::Handle<T>& instance, void (T::*cb)(bool), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+template<class T> Callback_InnerModelManager_getAttributePtr
+newCallback_InnerModelManager_getAttribute(const IceUtil::Handle<T>& instance, void (T::*cb)(bool, const ::std::string&, const ::std::string&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
 {
-    return new CallbackNC_InnerModelManager_setPose<T>(instance, cb, excb, sentcb);
+    return new CallbackNC_InnerModelManager_getAttribute<T>(instance, cb, excb, sentcb);
 }
 
-template<class T> Callback_InnerModelManager_setPosePtr
-newCallback_InnerModelManager_setPose(T* instance, void (T::*cb)(bool), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+template<class T> Callback_InnerModelManager_getAttributePtr
+newCallback_InnerModelManager_getAttribute(T* instance, void (T::*cb)(bool, const ::std::string&, const ::std::string&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
 {
-    return new CallbackNC_InnerModelManager_setPose<T>(instance, cb, excb, sentcb);
+    return new CallbackNC_InnerModelManager_getAttribute<T>(instance, cb, excb, sentcb);
 }
 
 template<class T, typename CT>
-class Callback_InnerModelManager_setPose : public Callback_InnerModelManager_setPose_Base, public ::IceInternal::TwowayCallback<T, CT>
+class Callback_InnerModelManager_getAttribute : public Callback_InnerModelManager_getAttribute_Base, public ::IceInternal::TwowayCallback<T, CT>
 {
 public:
 
@@ -3381,9 +3520,9 @@ public:
 
     typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
     typedef void (T::*Sent)(bool , const CT&);
-    typedef void (T::*Response)(bool, const CT&);
+    typedef void (T::*Response)(bool, const ::std::string&, const ::std::string&, const CT&);
 
-    Callback_InnerModelManager_setPose(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+    Callback_InnerModelManager_getAttribute(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
         : ::IceInternal::TwowayCallback<T, CT>(obj, cb != 0, excb, sentcb), _response(cb)
     {
     }
@@ -3391,10 +3530,12 @@ public:
     virtual void completed(const ::Ice::AsyncResultPtr& result) const
     {
         ::RoboCompInnerModelManager::InnerModelManagerPrx proxy = ::RoboCompInnerModelManager::InnerModelManagerPrx::uncheckedCast(result->getProxy());
+        ::std::string iceP_type;
+        ::std::string iceP_value;
         bool ret;
         try
         {
-            ret = proxy->end_setPose(result);
+            ret = proxy->end_getAttribute(iceP_type, iceP_value, result);
         }
         catch(const ::Ice::Exception& ex)
         {
@@ -3403,7 +3544,7 @@ public:
         }
         if(_response)
         {
-            (::IceInternal::Callback<T, CT>::_callback.get()->*_response)(ret, CT::dynamicCast(result->getCookie()));
+            (::IceInternal::Callback<T, CT>::_callback.get()->*_response)(ret, iceP_type, iceP_value, CT::dynamicCast(result->getCookie()));
         }
     }
 
@@ -3412,120 +3553,16 @@ private:
     Response _response;
 };
 
-template<class T, typename CT> Callback_InnerModelManager_setPosePtr
-newCallback_InnerModelManager_setPose(const IceUtil::Handle<T>& instance, void (T::*cb)(bool, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+template<class T, typename CT> Callback_InnerModelManager_getAttributePtr
+newCallback_InnerModelManager_getAttribute(const IceUtil::Handle<T>& instance, void (T::*cb)(bool, const ::std::string&, const ::std::string&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
 {
-    return new Callback_InnerModelManager_setPose<T, CT>(instance, cb, excb, sentcb);
+    return new Callback_InnerModelManager_getAttribute<T, CT>(instance, cb, excb, sentcb);
 }
 
-template<class T, typename CT> Callback_InnerModelManager_setPosePtr
-newCallback_InnerModelManager_setPose(T* instance, void (T::*cb)(bool, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+template<class T, typename CT> Callback_InnerModelManager_getAttributePtr
+newCallback_InnerModelManager_getAttribute(T* instance, void (T::*cb)(bool, const ::std::string&, const ::std::string&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
 {
-    return new Callback_InnerModelManager_setPose<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T>
-class CallbackNC_InnerModelManager_setPoseFromParent : public Callback_InnerModelManager_setPoseFromParent_Base, public ::IceInternal::TwowayCallbackNC<T>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception&);
-    typedef void (T::*Sent)(bool);
-    typedef void (T::*Response)(bool);
-
-    CallbackNC_InnerModelManager_setPoseFromParent(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallbackNC<T>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::RoboCompInnerModelManager::InnerModelManagerPrx proxy = ::RoboCompInnerModelManager::InnerModelManagerPrx::uncheckedCast(result->getProxy());
-        bool ret;
-        try
-        {
-            ret = proxy->end_setPoseFromParent(result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::CallbackNC<T>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::CallbackNC<T>::_callback.get()->*_response)(ret);
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T> Callback_InnerModelManager_setPoseFromParentPtr
-newCallback_InnerModelManager_setPoseFromParent(const IceUtil::Handle<T>& instance, void (T::*cb)(bool), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_InnerModelManager_setPoseFromParent<T>(instance, cb, excb, sentcb);
-}
-
-template<class T> Callback_InnerModelManager_setPoseFromParentPtr
-newCallback_InnerModelManager_setPoseFromParent(T* instance, void (T::*cb)(bool), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_InnerModelManager_setPoseFromParent<T>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT>
-class Callback_InnerModelManager_setPoseFromParent : public Callback_InnerModelManager_setPoseFromParent_Base, public ::IceInternal::TwowayCallback<T, CT>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
-    typedef void (T::*Sent)(bool , const CT&);
-    typedef void (T::*Response)(bool, const CT&);
-
-    Callback_InnerModelManager_setPoseFromParent(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallback<T, CT>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::RoboCompInnerModelManager::InnerModelManagerPrx proxy = ::RoboCompInnerModelManager::InnerModelManagerPrx::uncheckedCast(result->getProxy());
-        bool ret;
-        try
-        {
-            ret = proxy->end_setPoseFromParent(result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::Callback<T, CT>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::Callback<T, CT>::_callback.get()->*_response)(ret, CT::dynamicCast(result->getCookie()));
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T, typename CT> Callback_InnerModelManager_setPoseFromParentPtr
-newCallback_InnerModelManager_setPoseFromParent(const IceUtil::Handle<T>& instance, void (T::*cb)(bool, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_InnerModelManager_setPoseFromParent<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT> Callback_InnerModelManager_setPoseFromParentPtr
-newCallback_InnerModelManager_setPoseFromParent(T* instance, void (T::*cb)(bool, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_InnerModelManager_setPoseFromParent<T, CT>(instance, cb, excb, sentcb);
+    return new Callback_InnerModelManager_getAttribute<T, CT>(instance, cb, excb, sentcb);
 }
 
 template<class T>
@@ -3741,320 +3778,6 @@ newCallback_InnerModelManager_getPoseFromParent(T* instance, void (T::*cb)(bool,
 }
 
 template<class T>
-class CallbackNC_InnerModelManager_setPlane : public Callback_InnerModelManager_setPlane_Base, public ::IceInternal::TwowayCallbackNC<T>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception&);
-    typedef void (T::*Sent)(bool);
-    typedef void (T::*Response)(bool);
-
-    CallbackNC_InnerModelManager_setPlane(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallbackNC<T>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::RoboCompInnerModelManager::InnerModelManagerPrx proxy = ::RoboCompInnerModelManager::InnerModelManagerPrx::uncheckedCast(result->getProxy());
-        bool ret;
-        try
-        {
-            ret = proxy->end_setPlane(result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::CallbackNC<T>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::CallbackNC<T>::_callback.get()->*_response)(ret);
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T> Callback_InnerModelManager_setPlanePtr
-newCallback_InnerModelManager_setPlane(const IceUtil::Handle<T>& instance, void (T::*cb)(bool), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_InnerModelManager_setPlane<T>(instance, cb, excb, sentcb);
-}
-
-template<class T> Callback_InnerModelManager_setPlanePtr
-newCallback_InnerModelManager_setPlane(T* instance, void (T::*cb)(bool), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_InnerModelManager_setPlane<T>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT>
-class Callback_InnerModelManager_setPlane : public Callback_InnerModelManager_setPlane_Base, public ::IceInternal::TwowayCallback<T, CT>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
-    typedef void (T::*Sent)(bool , const CT&);
-    typedef void (T::*Response)(bool, const CT&);
-
-    Callback_InnerModelManager_setPlane(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallback<T, CT>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::RoboCompInnerModelManager::InnerModelManagerPrx proxy = ::RoboCompInnerModelManager::InnerModelManagerPrx::uncheckedCast(result->getProxy());
-        bool ret;
-        try
-        {
-            ret = proxy->end_setPlane(result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::Callback<T, CT>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::Callback<T, CT>::_callback.get()->*_response)(ret, CT::dynamicCast(result->getCookie()));
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T, typename CT> Callback_InnerModelManager_setPlanePtr
-newCallback_InnerModelManager_setPlane(const IceUtil::Handle<T>& instance, void (T::*cb)(bool, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_InnerModelManager_setPlane<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT> Callback_InnerModelManager_setPlanePtr
-newCallback_InnerModelManager_setPlane(T* instance, void (T::*cb)(bool, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_InnerModelManager_setPlane<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T>
-class CallbackNC_InnerModelManager_setPlaneTexture : public Callback_InnerModelManager_setPlaneTexture_Base, public ::IceInternal::TwowayCallbackNC<T>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception&);
-    typedef void (T::*Sent)(bool);
-    typedef void (T::*Response)(bool);
-
-    CallbackNC_InnerModelManager_setPlaneTexture(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallbackNC<T>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::RoboCompInnerModelManager::InnerModelManagerPrx proxy = ::RoboCompInnerModelManager::InnerModelManagerPrx::uncheckedCast(result->getProxy());
-        bool ret;
-        try
-        {
-            ret = proxy->end_setPlaneTexture(result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::CallbackNC<T>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::CallbackNC<T>::_callback.get()->*_response)(ret);
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T> Callback_InnerModelManager_setPlaneTexturePtr
-newCallback_InnerModelManager_setPlaneTexture(const IceUtil::Handle<T>& instance, void (T::*cb)(bool), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_InnerModelManager_setPlaneTexture<T>(instance, cb, excb, sentcb);
-}
-
-template<class T> Callback_InnerModelManager_setPlaneTexturePtr
-newCallback_InnerModelManager_setPlaneTexture(T* instance, void (T::*cb)(bool), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_InnerModelManager_setPlaneTexture<T>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT>
-class Callback_InnerModelManager_setPlaneTexture : public Callback_InnerModelManager_setPlaneTexture_Base, public ::IceInternal::TwowayCallback<T, CT>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
-    typedef void (T::*Sent)(bool , const CT&);
-    typedef void (T::*Response)(bool, const CT&);
-
-    Callback_InnerModelManager_setPlaneTexture(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallback<T, CT>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::RoboCompInnerModelManager::InnerModelManagerPrx proxy = ::RoboCompInnerModelManager::InnerModelManagerPrx::uncheckedCast(result->getProxy());
-        bool ret;
-        try
-        {
-            ret = proxy->end_setPlaneTexture(result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::Callback<T, CT>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::Callback<T, CT>::_callback.get()->*_response)(ret, CT::dynamicCast(result->getCookie()));
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T, typename CT> Callback_InnerModelManager_setPlaneTexturePtr
-newCallback_InnerModelManager_setPlaneTexture(const IceUtil::Handle<T>& instance, void (T::*cb)(bool, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_InnerModelManager_setPlaneTexture<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT> Callback_InnerModelManager_setPlaneTexturePtr
-newCallback_InnerModelManager_setPlaneTexture(T* instance, void (T::*cb)(bool, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_InnerModelManager_setPlaneTexture<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T>
-class CallbackNC_InnerModelManager_transform : public Callback_InnerModelManager_transform_Base, public ::IceInternal::TwowayCallbackNC<T>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception&);
-    typedef void (T::*Sent)(bool);
-    typedef void (T::*Response)(bool, const ::RoboCompInnerModelManager::coord3D&);
-
-    CallbackNC_InnerModelManager_transform(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallbackNC<T>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::RoboCompInnerModelManager::InnerModelManagerPrx proxy = ::RoboCompInnerModelManager::InnerModelManagerPrx::uncheckedCast(result->getProxy());
-        ::RoboCompInnerModelManager::coord3D iceP_coordInBase;
-        bool ret;
-        try
-        {
-            ret = proxy->end_transform(iceP_coordInBase, result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::CallbackNC<T>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::CallbackNC<T>::_callback.get()->*_response)(ret, iceP_coordInBase);
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T> Callback_InnerModelManager_transformPtr
-newCallback_InnerModelManager_transform(const IceUtil::Handle<T>& instance, void (T::*cb)(bool, const ::RoboCompInnerModelManager::coord3D&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_InnerModelManager_transform<T>(instance, cb, excb, sentcb);
-}
-
-template<class T> Callback_InnerModelManager_transformPtr
-newCallback_InnerModelManager_transform(T* instance, void (T::*cb)(bool, const ::RoboCompInnerModelManager::coord3D&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_InnerModelManager_transform<T>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT>
-class Callback_InnerModelManager_transform : public Callback_InnerModelManager_transform_Base, public ::IceInternal::TwowayCallback<T, CT>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
-    typedef void (T::*Sent)(bool , const CT&);
-    typedef void (T::*Response)(bool, const ::RoboCompInnerModelManager::coord3D&, const CT&);
-
-    Callback_InnerModelManager_transform(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallback<T, CT>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::RoboCompInnerModelManager::InnerModelManagerPrx proxy = ::RoboCompInnerModelManager::InnerModelManagerPrx::uncheckedCast(result->getProxy());
-        ::RoboCompInnerModelManager::coord3D iceP_coordInBase;
-        bool ret;
-        try
-        {
-            ret = proxy->end_transform(iceP_coordInBase, result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::Callback<T, CT>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::Callback<T, CT>::_callback.get()->*_response)(ret, iceP_coordInBase, CT::dynamicCast(result->getCookie()));
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T, typename CT> Callback_InnerModelManager_transformPtr
-newCallback_InnerModelManager_transform(const IceUtil::Handle<T>& instance, void (T::*cb)(bool, const ::RoboCompInnerModelManager::coord3D&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_InnerModelManager_transform<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT> Callback_InnerModelManager_transformPtr
-newCallback_InnerModelManager_transform(T* instance, void (T::*cb)(bool, const ::RoboCompInnerModelManager::coord3D&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_InnerModelManager_transform<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T>
 class CallbackNC_InnerModelManager_getTransformationMatrix : public Callback_InnerModelManager_getTransformationMatrix_Base, public ::IceInternal::TwowayCallbackNC<T>
 {
 public:
@@ -4156,634 +3879,6 @@ template<class T, typename CT> Callback_InnerModelManager_getTransformationMatri
 newCallback_InnerModelManager_getTransformationMatrix(T* instance, void (T::*cb)(const ::RoboCompInnerModelManager::Matrix&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
 {
     return new Callback_InnerModelManager_getTransformationMatrix<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T>
-class CallbackNC_InnerModelManager_setScale : public Callback_InnerModelManager_setScale_Base, public ::IceInternal::TwowayCallbackNC<T>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception&);
-    typedef void (T::*Sent)(bool);
-    typedef void (T::*Response)(bool);
-
-    CallbackNC_InnerModelManager_setScale(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallbackNC<T>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::RoboCompInnerModelManager::InnerModelManagerPrx proxy = ::RoboCompInnerModelManager::InnerModelManagerPrx::uncheckedCast(result->getProxy());
-        bool ret;
-        try
-        {
-            ret = proxy->end_setScale(result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::CallbackNC<T>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::CallbackNC<T>::_callback.get()->*_response)(ret);
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T> Callback_InnerModelManager_setScalePtr
-newCallback_InnerModelManager_setScale(const IceUtil::Handle<T>& instance, void (T::*cb)(bool), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_InnerModelManager_setScale<T>(instance, cb, excb, sentcb);
-}
-
-template<class T> Callback_InnerModelManager_setScalePtr
-newCallback_InnerModelManager_setScale(T* instance, void (T::*cb)(bool), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_InnerModelManager_setScale<T>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT>
-class Callback_InnerModelManager_setScale : public Callback_InnerModelManager_setScale_Base, public ::IceInternal::TwowayCallback<T, CT>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
-    typedef void (T::*Sent)(bool , const CT&);
-    typedef void (T::*Response)(bool, const CT&);
-
-    Callback_InnerModelManager_setScale(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallback<T, CT>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::RoboCompInnerModelManager::InnerModelManagerPrx proxy = ::RoboCompInnerModelManager::InnerModelManagerPrx::uncheckedCast(result->getProxy());
-        bool ret;
-        try
-        {
-            ret = proxy->end_setScale(result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::Callback<T, CT>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::Callback<T, CT>::_callback.get()->*_response)(ret, CT::dynamicCast(result->getCookie()));
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T, typename CT> Callback_InnerModelManager_setScalePtr
-newCallback_InnerModelManager_setScale(const IceUtil::Handle<T>& instance, void (T::*cb)(bool, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_InnerModelManager_setScale<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT> Callback_InnerModelManager_setScalePtr
-newCallback_InnerModelManager_setScale(T* instance, void (T::*cb)(bool, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_InnerModelManager_setScale<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T>
-class CallbackNC_InnerModelManager_addAttribute : public Callback_InnerModelManager_addAttribute_Base, public ::IceInternal::TwowayCallbackNC<T>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception&);
-    typedef void (T::*Sent)(bool);
-    typedef void (T::*Response)(bool);
-
-    CallbackNC_InnerModelManager_addAttribute(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallbackNC<T>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::RoboCompInnerModelManager::InnerModelManagerPrx proxy = ::RoboCompInnerModelManager::InnerModelManagerPrx::uncheckedCast(result->getProxy());
-        bool ret;
-        try
-        {
-            ret = proxy->end_addAttribute(result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::CallbackNC<T>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::CallbackNC<T>::_callback.get()->*_response)(ret);
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T> Callback_InnerModelManager_addAttributePtr
-newCallback_InnerModelManager_addAttribute(const IceUtil::Handle<T>& instance, void (T::*cb)(bool), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_InnerModelManager_addAttribute<T>(instance, cb, excb, sentcb);
-}
-
-template<class T> Callback_InnerModelManager_addAttributePtr
-newCallback_InnerModelManager_addAttribute(T* instance, void (T::*cb)(bool), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_InnerModelManager_addAttribute<T>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT>
-class Callback_InnerModelManager_addAttribute : public Callback_InnerModelManager_addAttribute_Base, public ::IceInternal::TwowayCallback<T, CT>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
-    typedef void (T::*Sent)(bool , const CT&);
-    typedef void (T::*Response)(bool, const CT&);
-
-    Callback_InnerModelManager_addAttribute(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallback<T, CT>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::RoboCompInnerModelManager::InnerModelManagerPrx proxy = ::RoboCompInnerModelManager::InnerModelManagerPrx::uncheckedCast(result->getProxy());
-        bool ret;
-        try
-        {
-            ret = proxy->end_addAttribute(result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::Callback<T, CT>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::Callback<T, CT>::_callback.get()->*_response)(ret, CT::dynamicCast(result->getCookie()));
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T, typename CT> Callback_InnerModelManager_addAttributePtr
-newCallback_InnerModelManager_addAttribute(const IceUtil::Handle<T>& instance, void (T::*cb)(bool, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_InnerModelManager_addAttribute<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT> Callback_InnerModelManager_addAttributePtr
-newCallback_InnerModelManager_addAttribute(T* instance, void (T::*cb)(bool, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_InnerModelManager_addAttribute<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T>
-class CallbackNC_InnerModelManager_removeAttribute : public Callback_InnerModelManager_removeAttribute_Base, public ::IceInternal::TwowayCallbackNC<T>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception&);
-    typedef void (T::*Sent)(bool);
-    typedef void (T::*Response)(bool);
-
-    CallbackNC_InnerModelManager_removeAttribute(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallbackNC<T>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::RoboCompInnerModelManager::InnerModelManagerPrx proxy = ::RoboCompInnerModelManager::InnerModelManagerPrx::uncheckedCast(result->getProxy());
-        bool ret;
-        try
-        {
-            ret = proxy->end_removeAttribute(result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::CallbackNC<T>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::CallbackNC<T>::_callback.get()->*_response)(ret);
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T> Callback_InnerModelManager_removeAttributePtr
-newCallback_InnerModelManager_removeAttribute(const IceUtil::Handle<T>& instance, void (T::*cb)(bool), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_InnerModelManager_removeAttribute<T>(instance, cb, excb, sentcb);
-}
-
-template<class T> Callback_InnerModelManager_removeAttributePtr
-newCallback_InnerModelManager_removeAttribute(T* instance, void (T::*cb)(bool), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_InnerModelManager_removeAttribute<T>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT>
-class Callback_InnerModelManager_removeAttribute : public Callback_InnerModelManager_removeAttribute_Base, public ::IceInternal::TwowayCallback<T, CT>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
-    typedef void (T::*Sent)(bool , const CT&);
-    typedef void (T::*Response)(bool, const CT&);
-
-    Callback_InnerModelManager_removeAttribute(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallback<T, CT>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::RoboCompInnerModelManager::InnerModelManagerPrx proxy = ::RoboCompInnerModelManager::InnerModelManagerPrx::uncheckedCast(result->getProxy());
-        bool ret;
-        try
-        {
-            ret = proxy->end_removeAttribute(result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::Callback<T, CT>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::Callback<T, CT>::_callback.get()->*_response)(ret, CT::dynamicCast(result->getCookie()));
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T, typename CT> Callback_InnerModelManager_removeAttributePtr
-newCallback_InnerModelManager_removeAttribute(const IceUtil::Handle<T>& instance, void (T::*cb)(bool, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_InnerModelManager_removeAttribute<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT> Callback_InnerModelManager_removeAttributePtr
-newCallback_InnerModelManager_removeAttribute(T* instance, void (T::*cb)(bool, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_InnerModelManager_removeAttribute<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T>
-class CallbackNC_InnerModelManager_setAttribute : public Callback_InnerModelManager_setAttribute_Base, public ::IceInternal::TwowayCallbackNC<T>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception&);
-    typedef void (T::*Sent)(bool);
-    typedef void (T::*Response)(bool);
-
-    CallbackNC_InnerModelManager_setAttribute(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallbackNC<T>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::RoboCompInnerModelManager::InnerModelManagerPrx proxy = ::RoboCompInnerModelManager::InnerModelManagerPrx::uncheckedCast(result->getProxy());
-        bool ret;
-        try
-        {
-            ret = proxy->end_setAttribute(result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::CallbackNC<T>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::CallbackNC<T>::_callback.get()->*_response)(ret);
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T> Callback_InnerModelManager_setAttributePtr
-newCallback_InnerModelManager_setAttribute(const IceUtil::Handle<T>& instance, void (T::*cb)(bool), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_InnerModelManager_setAttribute<T>(instance, cb, excb, sentcb);
-}
-
-template<class T> Callback_InnerModelManager_setAttributePtr
-newCallback_InnerModelManager_setAttribute(T* instance, void (T::*cb)(bool), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_InnerModelManager_setAttribute<T>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT>
-class Callback_InnerModelManager_setAttribute : public Callback_InnerModelManager_setAttribute_Base, public ::IceInternal::TwowayCallback<T, CT>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
-    typedef void (T::*Sent)(bool , const CT&);
-    typedef void (T::*Response)(bool, const CT&);
-
-    Callback_InnerModelManager_setAttribute(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallback<T, CT>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::RoboCompInnerModelManager::InnerModelManagerPrx proxy = ::RoboCompInnerModelManager::InnerModelManagerPrx::uncheckedCast(result->getProxy());
-        bool ret;
-        try
-        {
-            ret = proxy->end_setAttribute(result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::Callback<T, CT>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::Callback<T, CT>::_callback.get()->*_response)(ret, CT::dynamicCast(result->getCookie()));
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T, typename CT> Callback_InnerModelManager_setAttributePtr
-newCallback_InnerModelManager_setAttribute(const IceUtil::Handle<T>& instance, void (T::*cb)(bool, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_InnerModelManager_setAttribute<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT> Callback_InnerModelManager_setAttributePtr
-newCallback_InnerModelManager_setAttribute(T* instance, void (T::*cb)(bool, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_InnerModelManager_setAttribute<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T>
-class CallbackNC_InnerModelManager_getAttribute : public Callback_InnerModelManager_getAttribute_Base, public ::IceInternal::TwowayCallbackNC<T>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception&);
-    typedef void (T::*Sent)(bool);
-    typedef void (T::*Response)(bool, const ::std::string&, const ::std::string&);
-
-    CallbackNC_InnerModelManager_getAttribute(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallbackNC<T>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::RoboCompInnerModelManager::InnerModelManagerPrx proxy = ::RoboCompInnerModelManager::InnerModelManagerPrx::uncheckedCast(result->getProxy());
-        ::std::string iceP_type;
-        ::std::string iceP_value;
-        bool ret;
-        try
-        {
-            ret = proxy->end_getAttribute(iceP_type, iceP_value, result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::CallbackNC<T>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::CallbackNC<T>::_callback.get()->*_response)(ret, iceP_type, iceP_value);
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T> Callback_InnerModelManager_getAttributePtr
-newCallback_InnerModelManager_getAttribute(const IceUtil::Handle<T>& instance, void (T::*cb)(bool, const ::std::string&, const ::std::string&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_InnerModelManager_getAttribute<T>(instance, cb, excb, sentcb);
-}
-
-template<class T> Callback_InnerModelManager_getAttributePtr
-newCallback_InnerModelManager_getAttribute(T* instance, void (T::*cb)(bool, const ::std::string&, const ::std::string&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_InnerModelManager_getAttribute<T>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT>
-class Callback_InnerModelManager_getAttribute : public Callback_InnerModelManager_getAttribute_Base, public ::IceInternal::TwowayCallback<T, CT>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
-    typedef void (T::*Sent)(bool , const CT&);
-    typedef void (T::*Response)(bool, const ::std::string&, const ::std::string&, const CT&);
-
-    Callback_InnerModelManager_getAttribute(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallback<T, CT>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::RoboCompInnerModelManager::InnerModelManagerPrx proxy = ::RoboCompInnerModelManager::InnerModelManagerPrx::uncheckedCast(result->getProxy());
-        ::std::string iceP_type;
-        ::std::string iceP_value;
-        bool ret;
-        try
-        {
-            ret = proxy->end_getAttribute(iceP_type, iceP_value, result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::Callback<T, CT>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::Callback<T, CT>::_callback.get()->*_response)(ret, iceP_type, iceP_value, CT::dynamicCast(result->getCookie()));
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T, typename CT> Callback_InnerModelManager_getAttributePtr
-newCallback_InnerModelManager_getAttribute(const IceUtil::Handle<T>& instance, void (T::*cb)(bool, const ::std::string&, const ::std::string&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_InnerModelManager_getAttribute<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT> Callback_InnerModelManager_getAttributePtr
-newCallback_InnerModelManager_getAttribute(T* instance, void (T::*cb)(bool, const ::std::string&, const ::std::string&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_InnerModelManager_getAttribute<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T>
-class CallbackNC_InnerModelManager_removeNode : public Callback_InnerModelManager_removeNode_Base, public ::IceInternal::TwowayCallbackNC<T>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception&);
-    typedef void (T::*Sent)(bool);
-    typedef void (T::*Response)(bool);
-
-    CallbackNC_InnerModelManager_removeNode(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallbackNC<T>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::RoboCompInnerModelManager::InnerModelManagerPrx proxy = ::RoboCompInnerModelManager::InnerModelManagerPrx::uncheckedCast(result->getProxy());
-        bool ret;
-        try
-        {
-            ret = proxy->end_removeNode(result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::CallbackNC<T>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::CallbackNC<T>::_callback.get()->*_response)(ret);
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T> Callback_InnerModelManager_removeNodePtr
-newCallback_InnerModelManager_removeNode(const IceUtil::Handle<T>& instance, void (T::*cb)(bool), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_InnerModelManager_removeNode<T>(instance, cb, excb, sentcb);
-}
-
-template<class T> Callback_InnerModelManager_removeNodePtr
-newCallback_InnerModelManager_removeNode(T* instance, void (T::*cb)(bool), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_InnerModelManager_removeNode<T>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT>
-class Callback_InnerModelManager_removeNode : public Callback_InnerModelManager_removeNode_Base, public ::IceInternal::TwowayCallback<T, CT>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
-    typedef void (T::*Sent)(bool , const CT&);
-    typedef void (T::*Response)(bool, const CT&);
-
-    Callback_InnerModelManager_removeNode(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallback<T, CT>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::RoboCompInnerModelManager::InnerModelManagerPrx proxy = ::RoboCompInnerModelManager::InnerModelManagerPrx::uncheckedCast(result->getProxy());
-        bool ret;
-        try
-        {
-            ret = proxy->end_removeNode(result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::Callback<T, CT>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::Callback<T, CT>::_callback.get()->*_response)(ret, CT::dynamicCast(result->getCookie()));
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T, typename CT> Callback_InnerModelManager_removeNodePtr
-newCallback_InnerModelManager_removeNode(const IceUtil::Handle<T>& instance, void (T::*cb)(bool, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_InnerModelManager_removeNode<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT> Callback_InnerModelManager_removeNodePtr
-newCallback_InnerModelManager_removeNode(T* instance, void (T::*cb)(bool, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_InnerModelManager_removeNode<T, CT>(instance, cb, excb, sentcb);
 }
 
 template<class T>
@@ -4891,7 +3986,7 @@ newCallback_InnerModelManager_moveNode(T* instance, void (T::*cb)(bool, const CT
 }
 
 template<class T>
-class CallbackNC_InnerModelManager_collide : public Callback_InnerModelManager_collide_Base, public ::IceInternal::TwowayCallbackNC<T>
+class CallbackNC_InnerModelManager_removeAttribute : public Callback_InnerModelManager_removeAttribute_Base, public ::IceInternal::TwowayCallbackNC<T>
 {
 public:
 
@@ -4901,7 +3996,7 @@ public:
     typedef void (T::*Sent)(bool);
     typedef void (T::*Response)(bool);
 
-    CallbackNC_InnerModelManager_collide(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+    CallbackNC_InnerModelManager_removeAttribute(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
         : ::IceInternal::TwowayCallbackNC<T>(obj, cb != 0, excb, sentcb), _response(cb)
     {
     }
@@ -4912,7 +4007,7 @@ public:
         bool ret;
         try
         {
-            ret = proxy->end_collide(result);
+            ret = proxy->end_removeAttribute(result);
         }
         catch(const ::Ice::Exception& ex)
         {
@@ -4930,20 +4025,20 @@ private:
     Response _response;
 };
 
-template<class T> Callback_InnerModelManager_collidePtr
-newCallback_InnerModelManager_collide(const IceUtil::Handle<T>& instance, void (T::*cb)(bool), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+template<class T> Callback_InnerModelManager_removeAttributePtr
+newCallback_InnerModelManager_removeAttribute(const IceUtil::Handle<T>& instance, void (T::*cb)(bool), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
 {
-    return new CallbackNC_InnerModelManager_collide<T>(instance, cb, excb, sentcb);
+    return new CallbackNC_InnerModelManager_removeAttribute<T>(instance, cb, excb, sentcb);
 }
 
-template<class T> Callback_InnerModelManager_collidePtr
-newCallback_InnerModelManager_collide(T* instance, void (T::*cb)(bool), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+template<class T> Callback_InnerModelManager_removeAttributePtr
+newCallback_InnerModelManager_removeAttribute(T* instance, void (T::*cb)(bool), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
 {
-    return new CallbackNC_InnerModelManager_collide<T>(instance, cb, excb, sentcb);
+    return new CallbackNC_InnerModelManager_removeAttribute<T>(instance, cb, excb, sentcb);
 }
 
 template<class T, typename CT>
-class Callback_InnerModelManager_collide : public Callback_InnerModelManager_collide_Base, public ::IceInternal::TwowayCallback<T, CT>
+class Callback_InnerModelManager_removeAttribute : public Callback_InnerModelManager_removeAttribute_Base, public ::IceInternal::TwowayCallback<T, CT>
 {
 public:
 
@@ -4953,7 +4048,7 @@ public:
     typedef void (T::*Sent)(bool , const CT&);
     typedef void (T::*Response)(bool, const CT&);
 
-    Callback_InnerModelManager_collide(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+    Callback_InnerModelManager_removeAttribute(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
         : ::IceInternal::TwowayCallback<T, CT>(obj, cb != 0, excb, sentcb), _response(cb)
     {
     }
@@ -4964,7 +4059,7 @@ public:
         bool ret;
         try
         {
-            ret = proxy->end_collide(result);
+            ret = proxy->end_removeAttribute(result);
         }
         catch(const ::Ice::Exception& ex)
         {
@@ -4982,16 +4077,328 @@ private:
     Response _response;
 };
 
-template<class T, typename CT> Callback_InnerModelManager_collidePtr
-newCallback_InnerModelManager_collide(const IceUtil::Handle<T>& instance, void (T::*cb)(bool, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+template<class T, typename CT> Callback_InnerModelManager_removeAttributePtr
+newCallback_InnerModelManager_removeAttribute(const IceUtil::Handle<T>& instance, void (T::*cb)(bool, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
 {
-    return new Callback_InnerModelManager_collide<T, CT>(instance, cb, excb, sentcb);
+    return new Callback_InnerModelManager_removeAttribute<T, CT>(instance, cb, excb, sentcb);
 }
 
-template<class T, typename CT> Callback_InnerModelManager_collidePtr
-newCallback_InnerModelManager_collide(T* instance, void (T::*cb)(bool, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+template<class T, typename CT> Callback_InnerModelManager_removeAttributePtr
+newCallback_InnerModelManager_removeAttribute(T* instance, void (T::*cb)(bool, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
 {
-    return new Callback_InnerModelManager_collide<T, CT>(instance, cb, excb, sentcb);
+    return new Callback_InnerModelManager_removeAttribute<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T>
+class CallbackNC_InnerModelManager_removeNode : public Callback_InnerModelManager_removeNode_Base, public ::IceInternal::TwowayCallbackNC<T>
+{
+public:
+
+    typedef IceUtil::Handle<T> TPtr;
+
+    typedef void (T::*Exception)(const ::Ice::Exception&);
+    typedef void (T::*Sent)(bool);
+    typedef void (T::*Response)(bool);
+
+    CallbackNC_InnerModelManager_removeNode(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::TwowayCallbackNC<T>(obj, cb != 0, excb, sentcb), _response(cb)
+    {
+    }
+
+    virtual void completed(const ::Ice::AsyncResultPtr& result) const
+    {
+        ::RoboCompInnerModelManager::InnerModelManagerPrx proxy = ::RoboCompInnerModelManager::InnerModelManagerPrx::uncheckedCast(result->getProxy());
+        bool ret;
+        try
+        {
+            ret = proxy->end_removeNode(result);
+        }
+        catch(const ::Ice::Exception& ex)
+        {
+            ::IceInternal::CallbackNC<T>::exception(result, ex);
+            return;
+        }
+        if(_response)
+        {
+            (::IceInternal::CallbackNC<T>::_callback.get()->*_response)(ret);
+        }
+    }
+
+private:
+
+    Response _response;
+};
+
+template<class T> Callback_InnerModelManager_removeNodePtr
+newCallback_InnerModelManager_removeNode(const IceUtil::Handle<T>& instance, void (T::*cb)(bool), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_InnerModelManager_removeNode<T>(instance, cb, excb, sentcb);
+}
+
+template<class T> Callback_InnerModelManager_removeNodePtr
+newCallback_InnerModelManager_removeNode(T* instance, void (T::*cb)(bool), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_InnerModelManager_removeNode<T>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT>
+class Callback_InnerModelManager_removeNode : public Callback_InnerModelManager_removeNode_Base, public ::IceInternal::TwowayCallback<T, CT>
+{
+public:
+
+    typedef IceUtil::Handle<T> TPtr;
+
+    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
+    typedef void (T::*Sent)(bool , const CT&);
+    typedef void (T::*Response)(bool, const CT&);
+
+    Callback_InnerModelManager_removeNode(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::TwowayCallback<T, CT>(obj, cb != 0, excb, sentcb), _response(cb)
+    {
+    }
+
+    virtual void completed(const ::Ice::AsyncResultPtr& result) const
+    {
+        ::RoboCompInnerModelManager::InnerModelManagerPrx proxy = ::RoboCompInnerModelManager::InnerModelManagerPrx::uncheckedCast(result->getProxy());
+        bool ret;
+        try
+        {
+            ret = proxy->end_removeNode(result);
+        }
+        catch(const ::Ice::Exception& ex)
+        {
+            ::IceInternal::Callback<T, CT>::exception(result, ex);
+            return;
+        }
+        if(_response)
+        {
+            (::IceInternal::Callback<T, CT>::_callback.get()->*_response)(ret, CT::dynamicCast(result->getCookie()));
+        }
+    }
+
+private:
+
+    Response _response;
+};
+
+template<class T, typename CT> Callback_InnerModelManager_removeNodePtr
+newCallback_InnerModelManager_removeNode(const IceUtil::Handle<T>& instance, void (T::*cb)(bool, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_InnerModelManager_removeNode<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_InnerModelManager_removeNodePtr
+newCallback_InnerModelManager_removeNode(T* instance, void (T::*cb)(bool, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_InnerModelManager_removeNode<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T>
+class CallbackNC_InnerModelManager_setAttribute : public Callback_InnerModelManager_setAttribute_Base, public ::IceInternal::TwowayCallbackNC<T>
+{
+public:
+
+    typedef IceUtil::Handle<T> TPtr;
+
+    typedef void (T::*Exception)(const ::Ice::Exception&);
+    typedef void (T::*Sent)(bool);
+    typedef void (T::*Response)(bool);
+
+    CallbackNC_InnerModelManager_setAttribute(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::TwowayCallbackNC<T>(obj, cb != 0, excb, sentcb), _response(cb)
+    {
+    }
+
+    virtual void completed(const ::Ice::AsyncResultPtr& result) const
+    {
+        ::RoboCompInnerModelManager::InnerModelManagerPrx proxy = ::RoboCompInnerModelManager::InnerModelManagerPrx::uncheckedCast(result->getProxy());
+        bool ret;
+        try
+        {
+            ret = proxy->end_setAttribute(result);
+        }
+        catch(const ::Ice::Exception& ex)
+        {
+            ::IceInternal::CallbackNC<T>::exception(result, ex);
+            return;
+        }
+        if(_response)
+        {
+            (::IceInternal::CallbackNC<T>::_callback.get()->*_response)(ret);
+        }
+    }
+
+private:
+
+    Response _response;
+};
+
+template<class T> Callback_InnerModelManager_setAttributePtr
+newCallback_InnerModelManager_setAttribute(const IceUtil::Handle<T>& instance, void (T::*cb)(bool), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_InnerModelManager_setAttribute<T>(instance, cb, excb, sentcb);
+}
+
+template<class T> Callback_InnerModelManager_setAttributePtr
+newCallback_InnerModelManager_setAttribute(T* instance, void (T::*cb)(bool), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_InnerModelManager_setAttribute<T>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT>
+class Callback_InnerModelManager_setAttribute : public Callback_InnerModelManager_setAttribute_Base, public ::IceInternal::TwowayCallback<T, CT>
+{
+public:
+
+    typedef IceUtil::Handle<T> TPtr;
+
+    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
+    typedef void (T::*Sent)(bool , const CT&);
+    typedef void (T::*Response)(bool, const CT&);
+
+    Callback_InnerModelManager_setAttribute(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::TwowayCallback<T, CT>(obj, cb != 0, excb, sentcb), _response(cb)
+    {
+    }
+
+    virtual void completed(const ::Ice::AsyncResultPtr& result) const
+    {
+        ::RoboCompInnerModelManager::InnerModelManagerPrx proxy = ::RoboCompInnerModelManager::InnerModelManagerPrx::uncheckedCast(result->getProxy());
+        bool ret;
+        try
+        {
+            ret = proxy->end_setAttribute(result);
+        }
+        catch(const ::Ice::Exception& ex)
+        {
+            ::IceInternal::Callback<T, CT>::exception(result, ex);
+            return;
+        }
+        if(_response)
+        {
+            (::IceInternal::Callback<T, CT>::_callback.get()->*_response)(ret, CT::dynamicCast(result->getCookie()));
+        }
+    }
+
+private:
+
+    Response _response;
+};
+
+template<class T, typename CT> Callback_InnerModelManager_setAttributePtr
+newCallback_InnerModelManager_setAttribute(const IceUtil::Handle<T>& instance, void (T::*cb)(bool, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_InnerModelManager_setAttribute<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_InnerModelManager_setAttributePtr
+newCallback_InnerModelManager_setAttribute(T* instance, void (T::*cb)(bool, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_InnerModelManager_setAttribute<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T>
+class CallbackNC_InnerModelManager_setPlane : public Callback_InnerModelManager_setPlane_Base, public ::IceInternal::TwowayCallbackNC<T>
+{
+public:
+
+    typedef IceUtil::Handle<T> TPtr;
+
+    typedef void (T::*Exception)(const ::Ice::Exception&);
+    typedef void (T::*Sent)(bool);
+    typedef void (T::*Response)(bool);
+
+    CallbackNC_InnerModelManager_setPlane(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::TwowayCallbackNC<T>(obj, cb != 0, excb, sentcb), _response(cb)
+    {
+    }
+
+    virtual void completed(const ::Ice::AsyncResultPtr& result) const
+    {
+        ::RoboCompInnerModelManager::InnerModelManagerPrx proxy = ::RoboCompInnerModelManager::InnerModelManagerPrx::uncheckedCast(result->getProxy());
+        bool ret;
+        try
+        {
+            ret = proxy->end_setPlane(result);
+        }
+        catch(const ::Ice::Exception& ex)
+        {
+            ::IceInternal::CallbackNC<T>::exception(result, ex);
+            return;
+        }
+        if(_response)
+        {
+            (::IceInternal::CallbackNC<T>::_callback.get()->*_response)(ret);
+        }
+    }
+
+private:
+
+    Response _response;
+};
+
+template<class T> Callback_InnerModelManager_setPlanePtr
+newCallback_InnerModelManager_setPlane(const IceUtil::Handle<T>& instance, void (T::*cb)(bool), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_InnerModelManager_setPlane<T>(instance, cb, excb, sentcb);
+}
+
+template<class T> Callback_InnerModelManager_setPlanePtr
+newCallback_InnerModelManager_setPlane(T* instance, void (T::*cb)(bool), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_InnerModelManager_setPlane<T>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT>
+class Callback_InnerModelManager_setPlane : public Callback_InnerModelManager_setPlane_Base, public ::IceInternal::TwowayCallback<T, CT>
+{
+public:
+
+    typedef IceUtil::Handle<T> TPtr;
+
+    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
+    typedef void (T::*Sent)(bool , const CT&);
+    typedef void (T::*Response)(bool, const CT&);
+
+    Callback_InnerModelManager_setPlane(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::TwowayCallback<T, CT>(obj, cb != 0, excb, sentcb), _response(cb)
+    {
+    }
+
+    virtual void completed(const ::Ice::AsyncResultPtr& result) const
+    {
+        ::RoboCompInnerModelManager::InnerModelManagerPrx proxy = ::RoboCompInnerModelManager::InnerModelManagerPrx::uncheckedCast(result->getProxy());
+        bool ret;
+        try
+        {
+            ret = proxy->end_setPlane(result);
+        }
+        catch(const ::Ice::Exception& ex)
+        {
+            ::IceInternal::Callback<T, CT>::exception(result, ex);
+            return;
+        }
+        if(_response)
+        {
+            (::IceInternal::Callback<T, CT>::_callback.get()->*_response)(ret, CT::dynamicCast(result->getCookie()));
+        }
+    }
+
+private:
+
+    Response _response;
+};
+
+template<class T, typename CT> Callback_InnerModelManager_setPlanePtr
+newCallback_InnerModelManager_setPlane(const IceUtil::Handle<T>& instance, void (T::*cb)(bool, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_InnerModelManager_setPlane<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_InnerModelManager_setPlanePtr
+newCallback_InnerModelManager_setPlane(T* instance, void (T::*cb)(bool, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_InnerModelManager_setPlane<T, CT>(instance, cb, excb, sentcb);
 }
 
 template<class T>
@@ -5074,6 +4481,424 @@ template<class T, typename CT> Callback_InnerModelManager_setPointCloudDataPtr
 newCallback_InnerModelManager_setPointCloudData(T* instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
 {
     return new Callback_InnerModelManager_setPointCloudData<T, CT>(instance, 0, excb, sentcb);
+}
+
+template<class T>
+class CallbackNC_InnerModelManager_setPose : public Callback_InnerModelManager_setPose_Base, public ::IceInternal::TwowayCallbackNC<T>
+{
+public:
+
+    typedef IceUtil::Handle<T> TPtr;
+
+    typedef void (T::*Exception)(const ::Ice::Exception&);
+    typedef void (T::*Sent)(bool);
+    typedef void (T::*Response)(bool);
+
+    CallbackNC_InnerModelManager_setPose(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::TwowayCallbackNC<T>(obj, cb != 0, excb, sentcb), _response(cb)
+    {
+    }
+
+    virtual void completed(const ::Ice::AsyncResultPtr& result) const
+    {
+        ::RoboCompInnerModelManager::InnerModelManagerPrx proxy = ::RoboCompInnerModelManager::InnerModelManagerPrx::uncheckedCast(result->getProxy());
+        bool ret;
+        try
+        {
+            ret = proxy->end_setPose(result);
+        }
+        catch(const ::Ice::Exception& ex)
+        {
+            ::IceInternal::CallbackNC<T>::exception(result, ex);
+            return;
+        }
+        if(_response)
+        {
+            (::IceInternal::CallbackNC<T>::_callback.get()->*_response)(ret);
+        }
+    }
+
+private:
+
+    Response _response;
+};
+
+template<class T> Callback_InnerModelManager_setPosePtr
+newCallback_InnerModelManager_setPose(const IceUtil::Handle<T>& instance, void (T::*cb)(bool), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_InnerModelManager_setPose<T>(instance, cb, excb, sentcb);
+}
+
+template<class T> Callback_InnerModelManager_setPosePtr
+newCallback_InnerModelManager_setPose(T* instance, void (T::*cb)(bool), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_InnerModelManager_setPose<T>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT>
+class Callback_InnerModelManager_setPose : public Callback_InnerModelManager_setPose_Base, public ::IceInternal::TwowayCallback<T, CT>
+{
+public:
+
+    typedef IceUtil::Handle<T> TPtr;
+
+    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
+    typedef void (T::*Sent)(bool , const CT&);
+    typedef void (T::*Response)(bool, const CT&);
+
+    Callback_InnerModelManager_setPose(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::TwowayCallback<T, CT>(obj, cb != 0, excb, sentcb), _response(cb)
+    {
+    }
+
+    virtual void completed(const ::Ice::AsyncResultPtr& result) const
+    {
+        ::RoboCompInnerModelManager::InnerModelManagerPrx proxy = ::RoboCompInnerModelManager::InnerModelManagerPrx::uncheckedCast(result->getProxy());
+        bool ret;
+        try
+        {
+            ret = proxy->end_setPose(result);
+        }
+        catch(const ::Ice::Exception& ex)
+        {
+            ::IceInternal::Callback<T, CT>::exception(result, ex);
+            return;
+        }
+        if(_response)
+        {
+            (::IceInternal::Callback<T, CT>::_callback.get()->*_response)(ret, CT::dynamicCast(result->getCookie()));
+        }
+    }
+
+private:
+
+    Response _response;
+};
+
+template<class T, typename CT> Callback_InnerModelManager_setPosePtr
+newCallback_InnerModelManager_setPose(const IceUtil::Handle<T>& instance, void (T::*cb)(bool, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_InnerModelManager_setPose<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_InnerModelManager_setPosePtr
+newCallback_InnerModelManager_setPose(T* instance, void (T::*cb)(bool, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_InnerModelManager_setPose<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T>
+class CallbackNC_InnerModelManager_setPoseFromParent : public Callback_InnerModelManager_setPoseFromParent_Base, public ::IceInternal::TwowayCallbackNC<T>
+{
+public:
+
+    typedef IceUtil::Handle<T> TPtr;
+
+    typedef void (T::*Exception)(const ::Ice::Exception&);
+    typedef void (T::*Sent)(bool);
+    typedef void (T::*Response)(bool);
+
+    CallbackNC_InnerModelManager_setPoseFromParent(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::TwowayCallbackNC<T>(obj, cb != 0, excb, sentcb), _response(cb)
+    {
+    }
+
+    virtual void completed(const ::Ice::AsyncResultPtr& result) const
+    {
+        ::RoboCompInnerModelManager::InnerModelManagerPrx proxy = ::RoboCompInnerModelManager::InnerModelManagerPrx::uncheckedCast(result->getProxy());
+        bool ret;
+        try
+        {
+            ret = proxy->end_setPoseFromParent(result);
+        }
+        catch(const ::Ice::Exception& ex)
+        {
+            ::IceInternal::CallbackNC<T>::exception(result, ex);
+            return;
+        }
+        if(_response)
+        {
+            (::IceInternal::CallbackNC<T>::_callback.get()->*_response)(ret);
+        }
+    }
+
+private:
+
+    Response _response;
+};
+
+template<class T> Callback_InnerModelManager_setPoseFromParentPtr
+newCallback_InnerModelManager_setPoseFromParent(const IceUtil::Handle<T>& instance, void (T::*cb)(bool), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_InnerModelManager_setPoseFromParent<T>(instance, cb, excb, sentcb);
+}
+
+template<class T> Callback_InnerModelManager_setPoseFromParentPtr
+newCallback_InnerModelManager_setPoseFromParent(T* instance, void (T::*cb)(bool), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_InnerModelManager_setPoseFromParent<T>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT>
+class Callback_InnerModelManager_setPoseFromParent : public Callback_InnerModelManager_setPoseFromParent_Base, public ::IceInternal::TwowayCallback<T, CT>
+{
+public:
+
+    typedef IceUtil::Handle<T> TPtr;
+
+    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
+    typedef void (T::*Sent)(bool , const CT&);
+    typedef void (T::*Response)(bool, const CT&);
+
+    Callback_InnerModelManager_setPoseFromParent(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::TwowayCallback<T, CT>(obj, cb != 0, excb, sentcb), _response(cb)
+    {
+    }
+
+    virtual void completed(const ::Ice::AsyncResultPtr& result) const
+    {
+        ::RoboCompInnerModelManager::InnerModelManagerPrx proxy = ::RoboCompInnerModelManager::InnerModelManagerPrx::uncheckedCast(result->getProxy());
+        bool ret;
+        try
+        {
+            ret = proxy->end_setPoseFromParent(result);
+        }
+        catch(const ::Ice::Exception& ex)
+        {
+            ::IceInternal::Callback<T, CT>::exception(result, ex);
+            return;
+        }
+        if(_response)
+        {
+            (::IceInternal::Callback<T, CT>::_callback.get()->*_response)(ret, CT::dynamicCast(result->getCookie()));
+        }
+    }
+
+private:
+
+    Response _response;
+};
+
+template<class T, typename CT> Callback_InnerModelManager_setPoseFromParentPtr
+newCallback_InnerModelManager_setPoseFromParent(const IceUtil::Handle<T>& instance, void (T::*cb)(bool, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_InnerModelManager_setPoseFromParent<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_InnerModelManager_setPoseFromParentPtr
+newCallback_InnerModelManager_setPoseFromParent(T* instance, void (T::*cb)(bool, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_InnerModelManager_setPoseFromParent<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T>
+class CallbackNC_InnerModelManager_setScale : public Callback_InnerModelManager_setScale_Base, public ::IceInternal::TwowayCallbackNC<T>
+{
+public:
+
+    typedef IceUtil::Handle<T> TPtr;
+
+    typedef void (T::*Exception)(const ::Ice::Exception&);
+    typedef void (T::*Sent)(bool);
+    typedef void (T::*Response)(bool);
+
+    CallbackNC_InnerModelManager_setScale(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::TwowayCallbackNC<T>(obj, cb != 0, excb, sentcb), _response(cb)
+    {
+    }
+
+    virtual void completed(const ::Ice::AsyncResultPtr& result) const
+    {
+        ::RoboCompInnerModelManager::InnerModelManagerPrx proxy = ::RoboCompInnerModelManager::InnerModelManagerPrx::uncheckedCast(result->getProxy());
+        bool ret;
+        try
+        {
+            ret = proxy->end_setScale(result);
+        }
+        catch(const ::Ice::Exception& ex)
+        {
+            ::IceInternal::CallbackNC<T>::exception(result, ex);
+            return;
+        }
+        if(_response)
+        {
+            (::IceInternal::CallbackNC<T>::_callback.get()->*_response)(ret);
+        }
+    }
+
+private:
+
+    Response _response;
+};
+
+template<class T> Callback_InnerModelManager_setScalePtr
+newCallback_InnerModelManager_setScale(const IceUtil::Handle<T>& instance, void (T::*cb)(bool), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_InnerModelManager_setScale<T>(instance, cb, excb, sentcb);
+}
+
+template<class T> Callback_InnerModelManager_setScalePtr
+newCallback_InnerModelManager_setScale(T* instance, void (T::*cb)(bool), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_InnerModelManager_setScale<T>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT>
+class Callback_InnerModelManager_setScale : public Callback_InnerModelManager_setScale_Base, public ::IceInternal::TwowayCallback<T, CT>
+{
+public:
+
+    typedef IceUtil::Handle<T> TPtr;
+
+    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
+    typedef void (T::*Sent)(bool , const CT&);
+    typedef void (T::*Response)(bool, const CT&);
+
+    Callback_InnerModelManager_setScale(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::TwowayCallback<T, CT>(obj, cb != 0, excb, sentcb), _response(cb)
+    {
+    }
+
+    virtual void completed(const ::Ice::AsyncResultPtr& result) const
+    {
+        ::RoboCompInnerModelManager::InnerModelManagerPrx proxy = ::RoboCompInnerModelManager::InnerModelManagerPrx::uncheckedCast(result->getProxy());
+        bool ret;
+        try
+        {
+            ret = proxy->end_setScale(result);
+        }
+        catch(const ::Ice::Exception& ex)
+        {
+            ::IceInternal::Callback<T, CT>::exception(result, ex);
+            return;
+        }
+        if(_response)
+        {
+            (::IceInternal::Callback<T, CT>::_callback.get()->*_response)(ret, CT::dynamicCast(result->getCookie()));
+        }
+    }
+
+private:
+
+    Response _response;
+};
+
+template<class T, typename CT> Callback_InnerModelManager_setScalePtr
+newCallback_InnerModelManager_setScale(const IceUtil::Handle<T>& instance, void (T::*cb)(bool, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_InnerModelManager_setScale<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_InnerModelManager_setScalePtr
+newCallback_InnerModelManager_setScale(T* instance, void (T::*cb)(bool, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_InnerModelManager_setScale<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T>
+class CallbackNC_InnerModelManager_transform : public Callback_InnerModelManager_transform_Base, public ::IceInternal::TwowayCallbackNC<T>
+{
+public:
+
+    typedef IceUtil::Handle<T> TPtr;
+
+    typedef void (T::*Exception)(const ::Ice::Exception&);
+    typedef void (T::*Sent)(bool);
+    typedef void (T::*Response)(bool, const ::RoboCompInnerModelManager::coord3D&);
+
+    CallbackNC_InnerModelManager_transform(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::TwowayCallbackNC<T>(obj, cb != 0, excb, sentcb), _response(cb)
+    {
+    }
+
+    virtual void completed(const ::Ice::AsyncResultPtr& result) const
+    {
+        ::RoboCompInnerModelManager::InnerModelManagerPrx proxy = ::RoboCompInnerModelManager::InnerModelManagerPrx::uncheckedCast(result->getProxy());
+        ::RoboCompInnerModelManager::coord3D iceP_coordInBase;
+        bool ret;
+        try
+        {
+            ret = proxy->end_transform(iceP_coordInBase, result);
+        }
+        catch(const ::Ice::Exception& ex)
+        {
+            ::IceInternal::CallbackNC<T>::exception(result, ex);
+            return;
+        }
+        if(_response)
+        {
+            (::IceInternal::CallbackNC<T>::_callback.get()->*_response)(ret, iceP_coordInBase);
+        }
+    }
+
+private:
+
+    Response _response;
+};
+
+template<class T> Callback_InnerModelManager_transformPtr
+newCallback_InnerModelManager_transform(const IceUtil::Handle<T>& instance, void (T::*cb)(bool, const ::RoboCompInnerModelManager::coord3D&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_InnerModelManager_transform<T>(instance, cb, excb, sentcb);
+}
+
+template<class T> Callback_InnerModelManager_transformPtr
+newCallback_InnerModelManager_transform(T* instance, void (T::*cb)(bool, const ::RoboCompInnerModelManager::coord3D&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_InnerModelManager_transform<T>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT>
+class Callback_InnerModelManager_transform : public Callback_InnerModelManager_transform_Base, public ::IceInternal::TwowayCallback<T, CT>
+{
+public:
+
+    typedef IceUtil::Handle<T> TPtr;
+
+    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
+    typedef void (T::*Sent)(bool , const CT&);
+    typedef void (T::*Response)(bool, const ::RoboCompInnerModelManager::coord3D&, const CT&);
+
+    Callback_InnerModelManager_transform(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::TwowayCallback<T, CT>(obj, cb != 0, excb, sentcb), _response(cb)
+    {
+    }
+
+    virtual void completed(const ::Ice::AsyncResultPtr& result) const
+    {
+        ::RoboCompInnerModelManager::InnerModelManagerPrx proxy = ::RoboCompInnerModelManager::InnerModelManagerPrx::uncheckedCast(result->getProxy());
+        ::RoboCompInnerModelManager::coord3D iceP_coordInBase;
+        bool ret;
+        try
+        {
+            ret = proxy->end_transform(iceP_coordInBase, result);
+        }
+        catch(const ::Ice::Exception& ex)
+        {
+            ::IceInternal::Callback<T, CT>::exception(result, ex);
+            return;
+        }
+        if(_response)
+        {
+            (::IceInternal::Callback<T, CT>::_callback.get()->*_response)(ret, iceP_coordInBase, CT::dynamicCast(result->getCookie()));
+        }
+    }
+
+private:
+
+    Response _response;
+};
+
+template<class T, typename CT> Callback_InnerModelManager_transformPtr
+newCallback_InnerModelManager_transform(const IceUtil::Handle<T>& instance, void (T::*cb)(bool, const ::RoboCompInnerModelManager::coord3D&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_InnerModelManager_transform<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_InnerModelManager_transformPtr
+newCallback_InnerModelManager_transform(T* instance, void (T::*cb)(bool, const ::RoboCompInnerModelManager::coord3D&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_InnerModelManager_transform<T, CT>(instance, cb, excb, sentcb);
 }
 
 }

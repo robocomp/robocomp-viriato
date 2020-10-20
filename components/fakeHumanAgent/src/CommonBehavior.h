@@ -108,29 +108,29 @@ public:
 
     static const ::std::string& ice_staticId();
 
+    virtual ::RoboCompCommonBehavior::ParameterList getParameterList(const ::Ice::Current&) = 0;
+    bool _iceD_getParameterList(::IceInternal::Incoming&, const ::Ice::Current&);
+
     virtual int getPeriod(const ::Ice::Current&) = 0;
     bool _iceD_getPeriod(::IceInternal::Incoming&, const ::Ice::Current&);
+
+    virtual ::RoboCompCommonBehavior::State getState(const ::Ice::Current&) = 0;
+    bool _iceD_getState(::IceInternal::Incoming&, const ::Ice::Current&);
+
+    virtual void killYourSelf(const ::Ice::Current&) = 0;
+    bool _iceD_killYourSelf(::IceInternal::Incoming&, const ::Ice::Current&);
+
+    virtual void reloadConfig(const ::Ice::Current&) = 0;
+    bool _iceD_reloadConfig(::IceInternal::Incoming&, const ::Ice::Current&);
+
+    virtual void setParameterList(::RoboCompCommonBehavior::ParameterList, const ::Ice::Current&) = 0;
+    bool _iceD_setParameterList(::IceInternal::Incoming&, const ::Ice::Current&);
 
     virtual void setPeriod(int, const ::Ice::Current&) = 0;
     bool _iceD_setPeriod(::IceInternal::Incoming&, const ::Ice::Current&);
 
     virtual int timeAwake(const ::Ice::Current&) = 0;
     bool _iceD_timeAwake(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    virtual void killYourSelf(const ::Ice::Current&) = 0;
-    bool _iceD_killYourSelf(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    virtual ::RoboCompCommonBehavior::ParameterList getParameterList(const ::Ice::Current&) = 0;
-    bool _iceD_getParameterList(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    virtual void setParameterList(::RoboCompCommonBehavior::ParameterList, const ::Ice::Current&) = 0;
-    bool _iceD_setParameterList(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    virtual void reloadConfig(const ::Ice::Current&) = 0;
-    bool _iceD_reloadConfig(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    virtual ::RoboCompCommonBehavior::State getState(const ::Ice::Current&) = 0;
-    bool _iceD_getState(::IceInternal::Incoming&, const ::Ice::Current&);
 
     virtual bool _iceDispatch(::IceInternal::Incoming&, const ::Ice::Current&) override;
 };
@@ -143,6 +143,29 @@ namespace RoboCompCommonBehavior
 class CommonBehaviorPrx : public virtual ::Ice::Proxy<CommonBehaviorPrx, ::Ice::ObjectPrx>
 {
 public:
+
+    ::RoboCompCommonBehavior::ParameterList getParameterList(const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        return _makePromiseOutgoing<::RoboCompCommonBehavior::ParameterList>(true, this, &RoboCompCommonBehavior::CommonBehaviorPrx::_iceI_getParameterList, context).get();
+    }
+
+    template<template<typename> class P = ::std::promise>
+    auto getParameterListAsync(const ::Ice::Context& context = Ice::noExplicitContext)
+        -> decltype(::std::declval<P<::RoboCompCommonBehavior::ParameterList>>().get_future())
+    {
+        return _makePromiseOutgoing<::RoboCompCommonBehavior::ParameterList, P>(false, this, &RoboCompCommonBehavior::CommonBehaviorPrx::_iceI_getParameterList, context);
+    }
+
+    ::std::function<void()>
+    getParameterListAsync(::std::function<void(::RoboCompCommonBehavior::ParameterList)> response,
+                          ::std::function<void(::std::exception_ptr)> ex = nullptr,
+                          ::std::function<void(bool)> sent = nullptr,
+                          const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        return _makeLamdaOutgoing<::RoboCompCommonBehavior::ParameterList>(response, ex, sent, this, &RoboCompCommonBehavior::CommonBehaviorPrx::_iceI_getParameterList, context);
+    }
+
+    void _iceI_getParameterList(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::RoboCompCommonBehavior::ParameterList>>&, const ::Ice::Context&);
 
     int getPeriod(const ::Ice::Context& context = Ice::noExplicitContext)
     {
@@ -166,6 +189,99 @@ public:
     }
 
     void _iceI_getPeriod(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<int>>&, const ::Ice::Context&);
+
+    ::RoboCompCommonBehavior::State getState(const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        return _makePromiseOutgoing<::RoboCompCommonBehavior::State>(true, this, &RoboCompCommonBehavior::CommonBehaviorPrx::_iceI_getState, context).get();
+    }
+
+    template<template<typename> class P = ::std::promise>
+    auto getStateAsync(const ::Ice::Context& context = Ice::noExplicitContext)
+        -> decltype(::std::declval<P<::RoboCompCommonBehavior::State>>().get_future())
+    {
+        return _makePromiseOutgoing<::RoboCompCommonBehavior::State, P>(false, this, &RoboCompCommonBehavior::CommonBehaviorPrx::_iceI_getState, context);
+    }
+
+    ::std::function<void()>
+    getStateAsync(::std::function<void(::RoboCompCommonBehavior::State)> response,
+                  ::std::function<void(::std::exception_ptr)> ex = nullptr,
+                  ::std::function<void(bool)> sent = nullptr,
+                  const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        return _makeLamdaOutgoing<::RoboCompCommonBehavior::State>(response, ex, sent, this, &RoboCompCommonBehavior::CommonBehaviorPrx::_iceI_getState, context);
+    }
+
+    void _iceI_getState(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::RoboCompCommonBehavior::State>>&, const ::Ice::Context&);
+
+    void killYourSelf(const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        _makePromiseOutgoing<void>(true, this, &RoboCompCommonBehavior::CommonBehaviorPrx::_iceI_killYourSelf, context).get();
+    }
+
+    template<template<typename> class P = ::std::promise>
+    auto killYourSelfAsync(const ::Ice::Context& context = Ice::noExplicitContext)
+        -> decltype(::std::declval<P<void>>().get_future())
+    {
+        return _makePromiseOutgoing<void, P>(false, this, &RoboCompCommonBehavior::CommonBehaviorPrx::_iceI_killYourSelf, context);
+    }
+
+    ::std::function<void()>
+    killYourSelfAsync(::std::function<void()> response,
+                      ::std::function<void(::std::exception_ptr)> ex = nullptr,
+                      ::std::function<void(bool)> sent = nullptr,
+                      const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        return _makeLamdaOutgoing<void>(response, ex, sent, this, &RoboCompCommonBehavior::CommonBehaviorPrx::_iceI_killYourSelf, context);
+    }
+
+    void _iceI_killYourSelf(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>&, const ::Ice::Context&);
+
+    void reloadConfig(const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        _makePromiseOutgoing<void>(true, this, &RoboCompCommonBehavior::CommonBehaviorPrx::_iceI_reloadConfig, context).get();
+    }
+
+    template<template<typename> class P = ::std::promise>
+    auto reloadConfigAsync(const ::Ice::Context& context = Ice::noExplicitContext)
+        -> decltype(::std::declval<P<void>>().get_future())
+    {
+        return _makePromiseOutgoing<void, P>(false, this, &RoboCompCommonBehavior::CommonBehaviorPrx::_iceI_reloadConfig, context);
+    }
+
+    ::std::function<void()>
+    reloadConfigAsync(::std::function<void()> response,
+                      ::std::function<void(::std::exception_ptr)> ex = nullptr,
+                      ::std::function<void(bool)> sent = nullptr,
+                      const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        return _makeLamdaOutgoing<void>(response, ex, sent, this, &RoboCompCommonBehavior::CommonBehaviorPrx::_iceI_reloadConfig, context);
+    }
+
+    void _iceI_reloadConfig(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>&, const ::Ice::Context&);
+
+    void setParameterList(const ::RoboCompCommonBehavior::ParameterList& iceP_l, const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        _makePromiseOutgoing<void>(true, this, &RoboCompCommonBehavior::CommonBehaviorPrx::_iceI_setParameterList, iceP_l, context).get();
+    }
+
+    template<template<typename> class P = ::std::promise>
+    auto setParameterListAsync(const ::RoboCompCommonBehavior::ParameterList& iceP_l, const ::Ice::Context& context = Ice::noExplicitContext)
+        -> decltype(::std::declval<P<void>>().get_future())
+    {
+        return _makePromiseOutgoing<void, P>(false, this, &RoboCompCommonBehavior::CommonBehaviorPrx::_iceI_setParameterList, iceP_l, context);
+    }
+
+    ::std::function<void()>
+    setParameterListAsync(const ::RoboCompCommonBehavior::ParameterList& iceP_l,
+                          ::std::function<void()> response,
+                          ::std::function<void(::std::exception_ptr)> ex = nullptr,
+                          ::std::function<void(bool)> sent = nullptr,
+                          const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        return _makeLamdaOutgoing<void>(response, ex, sent, this, &RoboCompCommonBehavior::CommonBehaviorPrx::_iceI_setParameterList, iceP_l, context);
+    }
+
+    void _iceI_setParameterList(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>&, const ::RoboCompCommonBehavior::ParameterList&, const ::Ice::Context&);
 
     void setPeriod(int iceP_period, const ::Ice::Context& context = Ice::noExplicitContext)
     {
@@ -213,122 +329,6 @@ public:
     }
 
     void _iceI_timeAwake(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<int>>&, const ::Ice::Context&);
-
-    void killYourSelf(const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        _makePromiseOutgoing<void>(true, this, &RoboCompCommonBehavior::CommonBehaviorPrx::_iceI_killYourSelf, context).get();
-    }
-
-    template<template<typename> class P = ::std::promise>
-    auto killYourSelfAsync(const ::Ice::Context& context = Ice::noExplicitContext)
-        -> decltype(::std::declval<P<void>>().get_future())
-    {
-        return _makePromiseOutgoing<void, P>(false, this, &RoboCompCommonBehavior::CommonBehaviorPrx::_iceI_killYourSelf, context);
-    }
-
-    ::std::function<void()>
-    killYourSelfAsync(::std::function<void()> response,
-                      ::std::function<void(::std::exception_ptr)> ex = nullptr,
-                      ::std::function<void(bool)> sent = nullptr,
-                      const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        return _makeLamdaOutgoing<void>(response, ex, sent, this, &RoboCompCommonBehavior::CommonBehaviorPrx::_iceI_killYourSelf, context);
-    }
-
-    void _iceI_killYourSelf(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>&, const ::Ice::Context&);
-
-    ::RoboCompCommonBehavior::ParameterList getParameterList(const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        return _makePromiseOutgoing<::RoboCompCommonBehavior::ParameterList>(true, this, &RoboCompCommonBehavior::CommonBehaviorPrx::_iceI_getParameterList, context).get();
-    }
-
-    template<template<typename> class P = ::std::promise>
-    auto getParameterListAsync(const ::Ice::Context& context = Ice::noExplicitContext)
-        -> decltype(::std::declval<P<::RoboCompCommonBehavior::ParameterList>>().get_future())
-    {
-        return _makePromiseOutgoing<::RoboCompCommonBehavior::ParameterList, P>(false, this, &RoboCompCommonBehavior::CommonBehaviorPrx::_iceI_getParameterList, context);
-    }
-
-    ::std::function<void()>
-    getParameterListAsync(::std::function<void(::RoboCompCommonBehavior::ParameterList)> response,
-                          ::std::function<void(::std::exception_ptr)> ex = nullptr,
-                          ::std::function<void(bool)> sent = nullptr,
-                          const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        return _makeLamdaOutgoing<::RoboCompCommonBehavior::ParameterList>(response, ex, sent, this, &RoboCompCommonBehavior::CommonBehaviorPrx::_iceI_getParameterList, context);
-    }
-
-    void _iceI_getParameterList(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::RoboCompCommonBehavior::ParameterList>>&, const ::Ice::Context&);
-
-    void setParameterList(const ::RoboCompCommonBehavior::ParameterList& iceP_l, const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        _makePromiseOutgoing<void>(true, this, &RoboCompCommonBehavior::CommonBehaviorPrx::_iceI_setParameterList, iceP_l, context).get();
-    }
-
-    template<template<typename> class P = ::std::promise>
-    auto setParameterListAsync(const ::RoboCompCommonBehavior::ParameterList& iceP_l, const ::Ice::Context& context = Ice::noExplicitContext)
-        -> decltype(::std::declval<P<void>>().get_future())
-    {
-        return _makePromiseOutgoing<void, P>(false, this, &RoboCompCommonBehavior::CommonBehaviorPrx::_iceI_setParameterList, iceP_l, context);
-    }
-
-    ::std::function<void()>
-    setParameterListAsync(const ::RoboCompCommonBehavior::ParameterList& iceP_l,
-                          ::std::function<void()> response,
-                          ::std::function<void(::std::exception_ptr)> ex = nullptr,
-                          ::std::function<void(bool)> sent = nullptr,
-                          const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        return _makeLamdaOutgoing<void>(response, ex, sent, this, &RoboCompCommonBehavior::CommonBehaviorPrx::_iceI_setParameterList, iceP_l, context);
-    }
-
-    void _iceI_setParameterList(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>&, const ::RoboCompCommonBehavior::ParameterList&, const ::Ice::Context&);
-
-    void reloadConfig(const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        _makePromiseOutgoing<void>(true, this, &RoboCompCommonBehavior::CommonBehaviorPrx::_iceI_reloadConfig, context).get();
-    }
-
-    template<template<typename> class P = ::std::promise>
-    auto reloadConfigAsync(const ::Ice::Context& context = Ice::noExplicitContext)
-        -> decltype(::std::declval<P<void>>().get_future())
-    {
-        return _makePromiseOutgoing<void, P>(false, this, &RoboCompCommonBehavior::CommonBehaviorPrx::_iceI_reloadConfig, context);
-    }
-
-    ::std::function<void()>
-    reloadConfigAsync(::std::function<void()> response,
-                      ::std::function<void(::std::exception_ptr)> ex = nullptr,
-                      ::std::function<void(bool)> sent = nullptr,
-                      const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        return _makeLamdaOutgoing<void>(response, ex, sent, this, &RoboCompCommonBehavior::CommonBehaviorPrx::_iceI_reloadConfig, context);
-    }
-
-    void _iceI_reloadConfig(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>&, const ::Ice::Context&);
-
-    ::RoboCompCommonBehavior::State getState(const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        return _makePromiseOutgoing<::RoboCompCommonBehavior::State>(true, this, &RoboCompCommonBehavior::CommonBehaviorPrx::_iceI_getState, context).get();
-    }
-
-    template<template<typename> class P = ::std::promise>
-    auto getStateAsync(const ::Ice::Context& context = Ice::noExplicitContext)
-        -> decltype(::std::declval<P<::RoboCompCommonBehavior::State>>().get_future())
-    {
-        return _makePromiseOutgoing<::RoboCompCommonBehavior::State, P>(false, this, &RoboCompCommonBehavior::CommonBehaviorPrx::_iceI_getState, context);
-    }
-
-    ::std::function<void()>
-    getStateAsync(::std::function<void(::RoboCompCommonBehavior::State)> response,
-                  ::std::function<void(::std::exception_ptr)> ex = nullptr,
-                  ::std::function<void(bool)> sent = nullptr,
-                  const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        return _makeLamdaOutgoing<::RoboCompCommonBehavior::State>(response, ex, sent, this, &RoboCompCommonBehavior::CommonBehaviorPrx::_iceI_getState, context);
-    }
-
-    void _iceI_getState(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::RoboCompCommonBehavior::State>>&, const ::Ice::Context&);
 
     static const ::std::string& ice_staticId();
 
@@ -504,29 +504,29 @@ typedef ::std::map< ::std::string, ::RoboCompCommonBehavior::Parameter> Paramete
 namespace RoboCompCommonBehavior
 {
 
+class Callback_CommonBehavior_getParameterList_Base : public virtual ::IceInternal::CallbackBase { };
+typedef ::IceUtil::Handle< Callback_CommonBehavior_getParameterList_Base> Callback_CommonBehavior_getParameterListPtr;
+
 class Callback_CommonBehavior_getPeriod_Base : public virtual ::IceInternal::CallbackBase { };
 typedef ::IceUtil::Handle< Callback_CommonBehavior_getPeriod_Base> Callback_CommonBehavior_getPeriodPtr;
+
+class Callback_CommonBehavior_getState_Base : public virtual ::IceInternal::CallbackBase { };
+typedef ::IceUtil::Handle< Callback_CommonBehavior_getState_Base> Callback_CommonBehavior_getStatePtr;
+
+class Callback_CommonBehavior_killYourSelf_Base : public virtual ::IceInternal::CallbackBase { };
+typedef ::IceUtil::Handle< Callback_CommonBehavior_killYourSelf_Base> Callback_CommonBehavior_killYourSelfPtr;
+
+class Callback_CommonBehavior_reloadConfig_Base : public virtual ::IceInternal::CallbackBase { };
+typedef ::IceUtil::Handle< Callback_CommonBehavior_reloadConfig_Base> Callback_CommonBehavior_reloadConfigPtr;
+
+class Callback_CommonBehavior_setParameterList_Base : public virtual ::IceInternal::CallbackBase { };
+typedef ::IceUtil::Handle< Callback_CommonBehavior_setParameterList_Base> Callback_CommonBehavior_setParameterListPtr;
 
 class Callback_CommonBehavior_setPeriod_Base : public virtual ::IceInternal::CallbackBase { };
 typedef ::IceUtil::Handle< Callback_CommonBehavior_setPeriod_Base> Callback_CommonBehavior_setPeriodPtr;
 
 class Callback_CommonBehavior_timeAwake_Base : public virtual ::IceInternal::CallbackBase { };
 typedef ::IceUtil::Handle< Callback_CommonBehavior_timeAwake_Base> Callback_CommonBehavior_timeAwakePtr;
-
-class Callback_CommonBehavior_killYourSelf_Base : public virtual ::IceInternal::CallbackBase { };
-typedef ::IceUtil::Handle< Callback_CommonBehavior_killYourSelf_Base> Callback_CommonBehavior_killYourSelfPtr;
-
-class Callback_CommonBehavior_getParameterList_Base : public virtual ::IceInternal::CallbackBase { };
-typedef ::IceUtil::Handle< Callback_CommonBehavior_getParameterList_Base> Callback_CommonBehavior_getParameterListPtr;
-
-class Callback_CommonBehavior_setParameterList_Base : public virtual ::IceInternal::CallbackBase { };
-typedef ::IceUtil::Handle< Callback_CommonBehavior_setParameterList_Base> Callback_CommonBehavior_setParameterListPtr;
-
-class Callback_CommonBehavior_reloadConfig_Base : public virtual ::IceInternal::CallbackBase { };
-typedef ::IceUtil::Handle< Callback_CommonBehavior_reloadConfig_Base> Callback_CommonBehavior_reloadConfigPtr;
-
-class Callback_CommonBehavior_getState_Base : public virtual ::IceInternal::CallbackBase { };
-typedef ::IceUtil::Handle< Callback_CommonBehavior_getState_Base> Callback_CommonBehavior_getStatePtr;
 
 }
 
@@ -538,6 +538,44 @@ namespace RoboCompCommonBehavior
 
 class CommonBehavior : public virtual ::Ice::Proxy<CommonBehavior, ::IceProxy::Ice::Object>
 {
+public:
+
+    ::RoboCompCommonBehavior::ParameterList getParameterList(const ::Ice::Context& context = ::Ice::noExplicitContext)
+    {
+        return end_getParameterList(_iceI_begin_getParameterList(context, ::IceInternal::dummyCallback, 0, true));
+    }
+
+    ::Ice::AsyncResultPtr begin_getParameterList(const ::Ice::Context& context = ::Ice::noExplicitContext)
+    {
+        return _iceI_begin_getParameterList(context, ::IceInternal::dummyCallback, 0);
+    }
+
+    ::Ice::AsyncResultPtr begin_getParameterList(const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_getParameterList(::Ice::noExplicitContext, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_getParameterList(const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_getParameterList(context, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_getParameterList(const ::RoboCompCommonBehavior::Callback_CommonBehavior_getParameterListPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_getParameterList(::Ice::noExplicitContext, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_getParameterList(const ::Ice::Context& context, const ::RoboCompCommonBehavior::Callback_CommonBehavior_getParameterListPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_getParameterList(context, del, cookie);
+    }
+
+    ::RoboCompCommonBehavior::ParameterList end_getParameterList(const ::Ice::AsyncResultPtr&);
+
+private:
+
+    ::Ice::AsyncResultPtr _iceI_begin_getParameterList(const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
+
 public:
 
     ::Ice::Int getPeriod(const ::Ice::Context& context = ::Ice::noExplicitContext)
@@ -575,6 +613,158 @@ public:
 private:
 
     ::Ice::AsyncResultPtr _iceI_begin_getPeriod(const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
+
+public:
+
+    ::RoboCompCommonBehavior::State getState(const ::Ice::Context& context = ::Ice::noExplicitContext)
+    {
+        return end_getState(_iceI_begin_getState(context, ::IceInternal::dummyCallback, 0, true));
+    }
+
+    ::Ice::AsyncResultPtr begin_getState(const ::Ice::Context& context = ::Ice::noExplicitContext)
+    {
+        return _iceI_begin_getState(context, ::IceInternal::dummyCallback, 0);
+    }
+
+    ::Ice::AsyncResultPtr begin_getState(const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_getState(::Ice::noExplicitContext, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_getState(const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_getState(context, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_getState(const ::RoboCompCommonBehavior::Callback_CommonBehavior_getStatePtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_getState(::Ice::noExplicitContext, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_getState(const ::Ice::Context& context, const ::RoboCompCommonBehavior::Callback_CommonBehavior_getStatePtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_getState(context, del, cookie);
+    }
+
+    ::RoboCompCommonBehavior::State end_getState(const ::Ice::AsyncResultPtr&);
+
+private:
+
+    ::Ice::AsyncResultPtr _iceI_begin_getState(const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
+
+public:
+
+    void killYourSelf(const ::Ice::Context& context = ::Ice::noExplicitContext)
+    {
+        end_killYourSelf(_iceI_begin_killYourSelf(context, ::IceInternal::dummyCallback, 0, true));
+    }
+
+    ::Ice::AsyncResultPtr begin_killYourSelf(const ::Ice::Context& context = ::Ice::noExplicitContext)
+    {
+        return _iceI_begin_killYourSelf(context, ::IceInternal::dummyCallback, 0);
+    }
+
+    ::Ice::AsyncResultPtr begin_killYourSelf(const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_killYourSelf(::Ice::noExplicitContext, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_killYourSelf(const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_killYourSelf(context, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_killYourSelf(const ::RoboCompCommonBehavior::Callback_CommonBehavior_killYourSelfPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_killYourSelf(::Ice::noExplicitContext, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_killYourSelf(const ::Ice::Context& context, const ::RoboCompCommonBehavior::Callback_CommonBehavior_killYourSelfPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_killYourSelf(context, del, cookie);
+    }
+
+    void end_killYourSelf(const ::Ice::AsyncResultPtr&);
+
+private:
+
+    ::Ice::AsyncResultPtr _iceI_begin_killYourSelf(const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
+
+public:
+
+    void reloadConfig(const ::Ice::Context& context = ::Ice::noExplicitContext)
+    {
+        end_reloadConfig(_iceI_begin_reloadConfig(context, ::IceInternal::dummyCallback, 0, true));
+    }
+
+    ::Ice::AsyncResultPtr begin_reloadConfig(const ::Ice::Context& context = ::Ice::noExplicitContext)
+    {
+        return _iceI_begin_reloadConfig(context, ::IceInternal::dummyCallback, 0);
+    }
+
+    ::Ice::AsyncResultPtr begin_reloadConfig(const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_reloadConfig(::Ice::noExplicitContext, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_reloadConfig(const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_reloadConfig(context, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_reloadConfig(const ::RoboCompCommonBehavior::Callback_CommonBehavior_reloadConfigPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_reloadConfig(::Ice::noExplicitContext, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_reloadConfig(const ::Ice::Context& context, const ::RoboCompCommonBehavior::Callback_CommonBehavior_reloadConfigPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_reloadConfig(context, del, cookie);
+    }
+
+    void end_reloadConfig(const ::Ice::AsyncResultPtr&);
+
+private:
+
+    ::Ice::AsyncResultPtr _iceI_begin_reloadConfig(const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
+
+public:
+
+    void setParameterList(const ::RoboCompCommonBehavior::ParameterList& iceP_l, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    {
+        end_setParameterList(_iceI_begin_setParameterList(iceP_l, context, ::IceInternal::dummyCallback, 0, true));
+    }
+
+    ::Ice::AsyncResultPtr begin_setParameterList(const ::RoboCompCommonBehavior::ParameterList& iceP_l, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    {
+        return _iceI_begin_setParameterList(iceP_l, context, ::IceInternal::dummyCallback, 0);
+    }
+
+    ::Ice::AsyncResultPtr begin_setParameterList(const ::RoboCompCommonBehavior::ParameterList& iceP_l, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_setParameterList(iceP_l, ::Ice::noExplicitContext, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_setParameterList(const ::RoboCompCommonBehavior::ParameterList& iceP_l, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_setParameterList(iceP_l, context, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_setParameterList(const ::RoboCompCommonBehavior::ParameterList& iceP_l, const ::RoboCompCommonBehavior::Callback_CommonBehavior_setParameterListPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_setParameterList(iceP_l, ::Ice::noExplicitContext, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_setParameterList(const ::RoboCompCommonBehavior::ParameterList& iceP_l, const ::Ice::Context& context, const ::RoboCompCommonBehavior::Callback_CommonBehavior_setParameterListPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_setParameterList(iceP_l, context, del, cookie);
+    }
+
+    void end_setParameterList(const ::Ice::AsyncResultPtr&);
+
+private:
+
+    ::Ice::AsyncResultPtr _iceI_begin_setParameterList(const ::RoboCompCommonBehavior::ParameterList&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
 
 public:
 
@@ -654,196 +844,6 @@ private:
 
 public:
 
-    void killYourSelf(const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        end_killYourSelf(_iceI_begin_killYourSelf(context, ::IceInternal::dummyCallback, 0, true));
-    }
-
-    ::Ice::AsyncResultPtr begin_killYourSelf(const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        return _iceI_begin_killYourSelf(context, ::IceInternal::dummyCallback, 0);
-    }
-
-    ::Ice::AsyncResultPtr begin_killYourSelf(const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_killYourSelf(::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_killYourSelf(const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_killYourSelf(context, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_killYourSelf(const ::RoboCompCommonBehavior::Callback_CommonBehavior_killYourSelfPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_killYourSelf(::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_killYourSelf(const ::Ice::Context& context, const ::RoboCompCommonBehavior::Callback_CommonBehavior_killYourSelfPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_killYourSelf(context, del, cookie);
-    }
-
-    void end_killYourSelf(const ::Ice::AsyncResultPtr&);
-
-private:
-
-    ::Ice::AsyncResultPtr _iceI_begin_killYourSelf(const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
-
-public:
-
-    ::RoboCompCommonBehavior::ParameterList getParameterList(const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        return end_getParameterList(_iceI_begin_getParameterList(context, ::IceInternal::dummyCallback, 0, true));
-    }
-
-    ::Ice::AsyncResultPtr begin_getParameterList(const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        return _iceI_begin_getParameterList(context, ::IceInternal::dummyCallback, 0);
-    }
-
-    ::Ice::AsyncResultPtr begin_getParameterList(const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_getParameterList(::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_getParameterList(const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_getParameterList(context, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_getParameterList(const ::RoboCompCommonBehavior::Callback_CommonBehavior_getParameterListPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_getParameterList(::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_getParameterList(const ::Ice::Context& context, const ::RoboCompCommonBehavior::Callback_CommonBehavior_getParameterListPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_getParameterList(context, del, cookie);
-    }
-
-    ::RoboCompCommonBehavior::ParameterList end_getParameterList(const ::Ice::AsyncResultPtr&);
-
-private:
-
-    ::Ice::AsyncResultPtr _iceI_begin_getParameterList(const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
-
-public:
-
-    void setParameterList(const ::RoboCompCommonBehavior::ParameterList& iceP_l, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        end_setParameterList(_iceI_begin_setParameterList(iceP_l, context, ::IceInternal::dummyCallback, 0, true));
-    }
-
-    ::Ice::AsyncResultPtr begin_setParameterList(const ::RoboCompCommonBehavior::ParameterList& iceP_l, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        return _iceI_begin_setParameterList(iceP_l, context, ::IceInternal::dummyCallback, 0);
-    }
-
-    ::Ice::AsyncResultPtr begin_setParameterList(const ::RoboCompCommonBehavior::ParameterList& iceP_l, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_setParameterList(iceP_l, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_setParameterList(const ::RoboCompCommonBehavior::ParameterList& iceP_l, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_setParameterList(iceP_l, context, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_setParameterList(const ::RoboCompCommonBehavior::ParameterList& iceP_l, const ::RoboCompCommonBehavior::Callback_CommonBehavior_setParameterListPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_setParameterList(iceP_l, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_setParameterList(const ::RoboCompCommonBehavior::ParameterList& iceP_l, const ::Ice::Context& context, const ::RoboCompCommonBehavior::Callback_CommonBehavior_setParameterListPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_setParameterList(iceP_l, context, del, cookie);
-    }
-
-    void end_setParameterList(const ::Ice::AsyncResultPtr&);
-
-private:
-
-    ::Ice::AsyncResultPtr _iceI_begin_setParameterList(const ::RoboCompCommonBehavior::ParameterList&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
-
-public:
-
-    void reloadConfig(const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        end_reloadConfig(_iceI_begin_reloadConfig(context, ::IceInternal::dummyCallback, 0, true));
-    }
-
-    ::Ice::AsyncResultPtr begin_reloadConfig(const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        return _iceI_begin_reloadConfig(context, ::IceInternal::dummyCallback, 0);
-    }
-
-    ::Ice::AsyncResultPtr begin_reloadConfig(const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_reloadConfig(::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_reloadConfig(const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_reloadConfig(context, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_reloadConfig(const ::RoboCompCommonBehavior::Callback_CommonBehavior_reloadConfigPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_reloadConfig(::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_reloadConfig(const ::Ice::Context& context, const ::RoboCompCommonBehavior::Callback_CommonBehavior_reloadConfigPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_reloadConfig(context, del, cookie);
-    }
-
-    void end_reloadConfig(const ::Ice::AsyncResultPtr&);
-
-private:
-
-    ::Ice::AsyncResultPtr _iceI_begin_reloadConfig(const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
-
-public:
-
-    ::RoboCompCommonBehavior::State getState(const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        return end_getState(_iceI_begin_getState(context, ::IceInternal::dummyCallback, 0, true));
-    }
-
-    ::Ice::AsyncResultPtr begin_getState(const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        return _iceI_begin_getState(context, ::IceInternal::dummyCallback, 0);
-    }
-
-    ::Ice::AsyncResultPtr begin_getState(const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_getState(::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_getState(const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_getState(context, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_getState(const ::RoboCompCommonBehavior::Callback_CommonBehavior_getStatePtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_getState(::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_getState(const ::Ice::Context& context, const ::RoboCompCommonBehavior::Callback_CommonBehavior_getStatePtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_getState(context, del, cookie);
-    }
-
-    ::RoboCompCommonBehavior::State end_getState(const ::Ice::AsyncResultPtr&);
-
-private:
-
-    ::Ice::AsyncResultPtr _iceI_begin_getState(const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
-
-public:
-
     static const ::std::string& ice_staticId();
 
 protected:
@@ -873,29 +873,29 @@ public:
 
     static const ::std::string& ice_staticId();
 
+    virtual ::RoboCompCommonBehavior::ParameterList getParameterList(const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
+    bool _iceD_getParameterList(::IceInternal::Incoming&, const ::Ice::Current&);
+
     virtual ::Ice::Int getPeriod(const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
     bool _iceD_getPeriod(::IceInternal::Incoming&, const ::Ice::Current&);
+
+    virtual ::RoboCompCommonBehavior::State getState(const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
+    bool _iceD_getState(::IceInternal::Incoming&, const ::Ice::Current&);
+
+    virtual void killYourSelf(const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
+    bool _iceD_killYourSelf(::IceInternal::Incoming&, const ::Ice::Current&);
+
+    virtual void reloadConfig(const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
+    bool _iceD_reloadConfig(::IceInternal::Incoming&, const ::Ice::Current&);
+
+    virtual void setParameterList(const ::RoboCompCommonBehavior::ParameterList&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
+    bool _iceD_setParameterList(::IceInternal::Incoming&, const ::Ice::Current&);
 
     virtual void setPeriod(::Ice::Int, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
     bool _iceD_setPeriod(::IceInternal::Incoming&, const ::Ice::Current&);
 
     virtual ::Ice::Int timeAwake(const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
     bool _iceD_timeAwake(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    virtual void killYourSelf(const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
-    bool _iceD_killYourSelf(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    virtual ::RoboCompCommonBehavior::ParameterList getParameterList(const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
-    bool _iceD_getParameterList(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    virtual void setParameterList(const ::RoboCompCommonBehavior::ParameterList&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
-    bool _iceD_setParameterList(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    virtual void reloadConfig(const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
-    bool _iceD_reloadConfig(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    virtual ::RoboCompCommonBehavior::State getState(const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
-    bool _iceD_getState(::IceInternal::Incoming&, const ::Ice::Current&);
 
     virtual bool _iceDispatch(::IceInternal::Incoming&, const ::Ice::Current&);
 
@@ -964,6 +964,110 @@ struct StreamReader< ::RoboCompCommonBehavior::Parameter, S>
 
 namespace RoboCompCommonBehavior
 {
+
+template<class T>
+class CallbackNC_CommonBehavior_getParameterList : public Callback_CommonBehavior_getParameterList_Base, public ::IceInternal::TwowayCallbackNC<T>
+{
+public:
+
+    typedef IceUtil::Handle<T> TPtr;
+
+    typedef void (T::*Exception)(const ::Ice::Exception&);
+    typedef void (T::*Sent)(bool);
+    typedef void (T::*Response)(const ::RoboCompCommonBehavior::ParameterList&);
+
+    CallbackNC_CommonBehavior_getParameterList(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::TwowayCallbackNC<T>(obj, cb != 0, excb, sentcb), _response(cb)
+    {
+    }
+
+    virtual void completed(const ::Ice::AsyncResultPtr& result) const
+    {
+        ::RoboCompCommonBehavior::CommonBehaviorPrx proxy = ::RoboCompCommonBehavior::CommonBehaviorPrx::uncheckedCast(result->getProxy());
+        ::RoboCompCommonBehavior::ParameterList ret;
+        try
+        {
+            ret = proxy->end_getParameterList(result);
+        }
+        catch(const ::Ice::Exception& ex)
+        {
+            ::IceInternal::CallbackNC<T>::exception(result, ex);
+            return;
+        }
+        if(_response)
+        {
+            (::IceInternal::CallbackNC<T>::_callback.get()->*_response)(ret);
+        }
+    }
+
+private:
+
+    Response _response;
+};
+
+template<class T> Callback_CommonBehavior_getParameterListPtr
+newCallback_CommonBehavior_getParameterList(const IceUtil::Handle<T>& instance, void (T::*cb)(const ::RoboCompCommonBehavior::ParameterList&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_CommonBehavior_getParameterList<T>(instance, cb, excb, sentcb);
+}
+
+template<class T> Callback_CommonBehavior_getParameterListPtr
+newCallback_CommonBehavior_getParameterList(T* instance, void (T::*cb)(const ::RoboCompCommonBehavior::ParameterList&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_CommonBehavior_getParameterList<T>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT>
+class Callback_CommonBehavior_getParameterList : public Callback_CommonBehavior_getParameterList_Base, public ::IceInternal::TwowayCallback<T, CT>
+{
+public:
+
+    typedef IceUtil::Handle<T> TPtr;
+
+    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
+    typedef void (T::*Sent)(bool , const CT&);
+    typedef void (T::*Response)(const ::RoboCompCommonBehavior::ParameterList&, const CT&);
+
+    Callback_CommonBehavior_getParameterList(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::TwowayCallback<T, CT>(obj, cb != 0, excb, sentcb), _response(cb)
+    {
+    }
+
+    virtual void completed(const ::Ice::AsyncResultPtr& result) const
+    {
+        ::RoboCompCommonBehavior::CommonBehaviorPrx proxy = ::RoboCompCommonBehavior::CommonBehaviorPrx::uncheckedCast(result->getProxy());
+        ::RoboCompCommonBehavior::ParameterList ret;
+        try
+        {
+            ret = proxy->end_getParameterList(result);
+        }
+        catch(const ::Ice::Exception& ex)
+        {
+            ::IceInternal::Callback<T, CT>::exception(result, ex);
+            return;
+        }
+        if(_response)
+        {
+            (::IceInternal::Callback<T, CT>::_callback.get()->*_response)(ret, CT::dynamicCast(result->getCookie()));
+        }
+    }
+
+private:
+
+    Response _response;
+};
+
+template<class T, typename CT> Callback_CommonBehavior_getParameterListPtr
+newCallback_CommonBehavior_getParameterList(const IceUtil::Handle<T>& instance, void (T::*cb)(const ::RoboCompCommonBehavior::ParameterList&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_CommonBehavior_getParameterList<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_CommonBehavior_getParameterListPtr
+newCallback_CommonBehavior_getParameterList(T* instance, void (T::*cb)(const ::RoboCompCommonBehavior::ParameterList&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_CommonBehavior_getParameterList<T, CT>(instance, cb, excb, sentcb);
+}
 
 template<class T>
 class CallbackNC_CommonBehavior_getPeriod : public Callback_CommonBehavior_getPeriod_Base, public ::IceInternal::TwowayCallbackNC<T>
@@ -1067,6 +1171,356 @@ template<class T, typename CT> Callback_CommonBehavior_getPeriodPtr
 newCallback_CommonBehavior_getPeriod(T* instance, void (T::*cb)(::Ice::Int, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
 {
     return new Callback_CommonBehavior_getPeriod<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T>
+class CallbackNC_CommonBehavior_getState : public Callback_CommonBehavior_getState_Base, public ::IceInternal::TwowayCallbackNC<T>
+{
+public:
+
+    typedef IceUtil::Handle<T> TPtr;
+
+    typedef void (T::*Exception)(const ::Ice::Exception&);
+    typedef void (T::*Sent)(bool);
+    typedef void (T::*Response)(::RoboCompCommonBehavior::State);
+
+    CallbackNC_CommonBehavior_getState(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::TwowayCallbackNC<T>(obj, cb != 0, excb, sentcb), _response(cb)
+    {
+    }
+
+    virtual void completed(const ::Ice::AsyncResultPtr& result) const
+    {
+        ::RoboCompCommonBehavior::CommonBehaviorPrx proxy = ::RoboCompCommonBehavior::CommonBehaviorPrx::uncheckedCast(result->getProxy());
+        ::RoboCompCommonBehavior::State ret;
+        try
+        {
+            ret = proxy->end_getState(result);
+        }
+        catch(const ::Ice::Exception& ex)
+        {
+            ::IceInternal::CallbackNC<T>::exception(result, ex);
+            return;
+        }
+        if(_response)
+        {
+            (::IceInternal::CallbackNC<T>::_callback.get()->*_response)(ret);
+        }
+    }
+
+private:
+
+    Response _response;
+};
+
+template<class T> Callback_CommonBehavior_getStatePtr
+newCallback_CommonBehavior_getState(const IceUtil::Handle<T>& instance, void (T::*cb)(::RoboCompCommonBehavior::State), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_CommonBehavior_getState<T>(instance, cb, excb, sentcb);
+}
+
+template<class T> Callback_CommonBehavior_getStatePtr
+newCallback_CommonBehavior_getState(T* instance, void (T::*cb)(::RoboCompCommonBehavior::State), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_CommonBehavior_getState<T>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT>
+class Callback_CommonBehavior_getState : public Callback_CommonBehavior_getState_Base, public ::IceInternal::TwowayCallback<T, CT>
+{
+public:
+
+    typedef IceUtil::Handle<T> TPtr;
+
+    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
+    typedef void (T::*Sent)(bool , const CT&);
+    typedef void (T::*Response)(::RoboCompCommonBehavior::State, const CT&);
+
+    Callback_CommonBehavior_getState(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::TwowayCallback<T, CT>(obj, cb != 0, excb, sentcb), _response(cb)
+    {
+    }
+
+    virtual void completed(const ::Ice::AsyncResultPtr& result) const
+    {
+        ::RoboCompCommonBehavior::CommonBehaviorPrx proxy = ::RoboCompCommonBehavior::CommonBehaviorPrx::uncheckedCast(result->getProxy());
+        ::RoboCompCommonBehavior::State ret;
+        try
+        {
+            ret = proxy->end_getState(result);
+        }
+        catch(const ::Ice::Exception& ex)
+        {
+            ::IceInternal::Callback<T, CT>::exception(result, ex);
+            return;
+        }
+        if(_response)
+        {
+            (::IceInternal::Callback<T, CT>::_callback.get()->*_response)(ret, CT::dynamicCast(result->getCookie()));
+        }
+    }
+
+private:
+
+    Response _response;
+};
+
+template<class T, typename CT> Callback_CommonBehavior_getStatePtr
+newCallback_CommonBehavior_getState(const IceUtil::Handle<T>& instance, void (T::*cb)(::RoboCompCommonBehavior::State, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_CommonBehavior_getState<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_CommonBehavior_getStatePtr
+newCallback_CommonBehavior_getState(T* instance, void (T::*cb)(::RoboCompCommonBehavior::State, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_CommonBehavior_getState<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T>
+class CallbackNC_CommonBehavior_killYourSelf : public Callback_CommonBehavior_killYourSelf_Base, public ::IceInternal::OnewayCallbackNC<T>
+{
+public:
+
+    typedef IceUtil::Handle<T> TPtr;
+
+    typedef void (T::*Exception)(const ::Ice::Exception&);
+    typedef void (T::*Sent)(bool);
+    typedef void (T::*Response)();
+
+    CallbackNC_CommonBehavior_killYourSelf(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::OnewayCallbackNC<T>(obj, cb, excb, sentcb)
+    {
+    }
+};
+
+template<class T> Callback_CommonBehavior_killYourSelfPtr
+newCallback_CommonBehavior_killYourSelf(const IceUtil::Handle<T>& instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_CommonBehavior_killYourSelf<T>(instance, cb, excb, sentcb);
+}
+
+template<class T> Callback_CommonBehavior_killYourSelfPtr
+newCallback_CommonBehavior_killYourSelf(const IceUtil::Handle<T>& instance, void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_CommonBehavior_killYourSelf<T>(instance, 0, excb, sentcb);
+}
+
+template<class T> Callback_CommonBehavior_killYourSelfPtr
+newCallback_CommonBehavior_killYourSelf(T* instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_CommonBehavior_killYourSelf<T>(instance, cb, excb, sentcb);
+}
+
+template<class T> Callback_CommonBehavior_killYourSelfPtr
+newCallback_CommonBehavior_killYourSelf(T* instance, void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_CommonBehavior_killYourSelf<T>(instance, 0, excb, sentcb);
+}
+
+template<class T, typename CT>
+class Callback_CommonBehavior_killYourSelf : public Callback_CommonBehavior_killYourSelf_Base, public ::IceInternal::OnewayCallback<T, CT>
+{
+public:
+
+    typedef IceUtil::Handle<T> TPtr;
+
+    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
+    typedef void (T::*Sent)(bool , const CT&);
+    typedef void (T::*Response)(const CT&);
+
+    Callback_CommonBehavior_killYourSelf(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::OnewayCallback<T, CT>(obj, cb, excb, sentcb)
+    {
+    }
+};
+
+template<class T, typename CT> Callback_CommonBehavior_killYourSelfPtr
+newCallback_CommonBehavior_killYourSelf(const IceUtil::Handle<T>& instance, void (T::*cb)(const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_CommonBehavior_killYourSelf<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_CommonBehavior_killYourSelfPtr
+newCallback_CommonBehavior_killYourSelf(const IceUtil::Handle<T>& instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_CommonBehavior_killYourSelf<T, CT>(instance, 0, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_CommonBehavior_killYourSelfPtr
+newCallback_CommonBehavior_killYourSelf(T* instance, void (T::*cb)(const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_CommonBehavior_killYourSelf<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_CommonBehavior_killYourSelfPtr
+newCallback_CommonBehavior_killYourSelf(T* instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_CommonBehavior_killYourSelf<T, CT>(instance, 0, excb, sentcb);
+}
+
+template<class T>
+class CallbackNC_CommonBehavior_reloadConfig : public Callback_CommonBehavior_reloadConfig_Base, public ::IceInternal::OnewayCallbackNC<T>
+{
+public:
+
+    typedef IceUtil::Handle<T> TPtr;
+
+    typedef void (T::*Exception)(const ::Ice::Exception&);
+    typedef void (T::*Sent)(bool);
+    typedef void (T::*Response)();
+
+    CallbackNC_CommonBehavior_reloadConfig(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::OnewayCallbackNC<T>(obj, cb, excb, sentcb)
+    {
+    }
+};
+
+template<class T> Callback_CommonBehavior_reloadConfigPtr
+newCallback_CommonBehavior_reloadConfig(const IceUtil::Handle<T>& instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_CommonBehavior_reloadConfig<T>(instance, cb, excb, sentcb);
+}
+
+template<class T> Callback_CommonBehavior_reloadConfigPtr
+newCallback_CommonBehavior_reloadConfig(const IceUtil::Handle<T>& instance, void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_CommonBehavior_reloadConfig<T>(instance, 0, excb, sentcb);
+}
+
+template<class T> Callback_CommonBehavior_reloadConfigPtr
+newCallback_CommonBehavior_reloadConfig(T* instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_CommonBehavior_reloadConfig<T>(instance, cb, excb, sentcb);
+}
+
+template<class T> Callback_CommonBehavior_reloadConfigPtr
+newCallback_CommonBehavior_reloadConfig(T* instance, void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_CommonBehavior_reloadConfig<T>(instance, 0, excb, sentcb);
+}
+
+template<class T, typename CT>
+class Callback_CommonBehavior_reloadConfig : public Callback_CommonBehavior_reloadConfig_Base, public ::IceInternal::OnewayCallback<T, CT>
+{
+public:
+
+    typedef IceUtil::Handle<T> TPtr;
+
+    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
+    typedef void (T::*Sent)(bool , const CT&);
+    typedef void (T::*Response)(const CT&);
+
+    Callback_CommonBehavior_reloadConfig(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::OnewayCallback<T, CT>(obj, cb, excb, sentcb)
+    {
+    }
+};
+
+template<class T, typename CT> Callback_CommonBehavior_reloadConfigPtr
+newCallback_CommonBehavior_reloadConfig(const IceUtil::Handle<T>& instance, void (T::*cb)(const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_CommonBehavior_reloadConfig<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_CommonBehavior_reloadConfigPtr
+newCallback_CommonBehavior_reloadConfig(const IceUtil::Handle<T>& instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_CommonBehavior_reloadConfig<T, CT>(instance, 0, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_CommonBehavior_reloadConfigPtr
+newCallback_CommonBehavior_reloadConfig(T* instance, void (T::*cb)(const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_CommonBehavior_reloadConfig<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_CommonBehavior_reloadConfigPtr
+newCallback_CommonBehavior_reloadConfig(T* instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_CommonBehavior_reloadConfig<T, CT>(instance, 0, excb, sentcb);
+}
+
+template<class T>
+class CallbackNC_CommonBehavior_setParameterList : public Callback_CommonBehavior_setParameterList_Base, public ::IceInternal::OnewayCallbackNC<T>
+{
+public:
+
+    typedef IceUtil::Handle<T> TPtr;
+
+    typedef void (T::*Exception)(const ::Ice::Exception&);
+    typedef void (T::*Sent)(bool);
+    typedef void (T::*Response)();
+
+    CallbackNC_CommonBehavior_setParameterList(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::OnewayCallbackNC<T>(obj, cb, excb, sentcb)
+    {
+    }
+};
+
+template<class T> Callback_CommonBehavior_setParameterListPtr
+newCallback_CommonBehavior_setParameterList(const IceUtil::Handle<T>& instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_CommonBehavior_setParameterList<T>(instance, cb, excb, sentcb);
+}
+
+template<class T> Callback_CommonBehavior_setParameterListPtr
+newCallback_CommonBehavior_setParameterList(const IceUtil::Handle<T>& instance, void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_CommonBehavior_setParameterList<T>(instance, 0, excb, sentcb);
+}
+
+template<class T> Callback_CommonBehavior_setParameterListPtr
+newCallback_CommonBehavior_setParameterList(T* instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_CommonBehavior_setParameterList<T>(instance, cb, excb, sentcb);
+}
+
+template<class T> Callback_CommonBehavior_setParameterListPtr
+newCallback_CommonBehavior_setParameterList(T* instance, void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_CommonBehavior_setParameterList<T>(instance, 0, excb, sentcb);
+}
+
+template<class T, typename CT>
+class Callback_CommonBehavior_setParameterList : public Callback_CommonBehavior_setParameterList_Base, public ::IceInternal::OnewayCallback<T, CT>
+{
+public:
+
+    typedef IceUtil::Handle<T> TPtr;
+
+    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
+    typedef void (T::*Sent)(bool , const CT&);
+    typedef void (T::*Response)(const CT&);
+
+    Callback_CommonBehavior_setParameterList(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::OnewayCallback<T, CT>(obj, cb, excb, sentcb)
+    {
+    }
+};
+
+template<class T, typename CT> Callback_CommonBehavior_setParameterListPtr
+newCallback_CommonBehavior_setParameterList(const IceUtil::Handle<T>& instance, void (T::*cb)(const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_CommonBehavior_setParameterList<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_CommonBehavior_setParameterListPtr
+newCallback_CommonBehavior_setParameterList(const IceUtil::Handle<T>& instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_CommonBehavior_setParameterList<T, CT>(instance, 0, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_CommonBehavior_setParameterListPtr
+newCallback_CommonBehavior_setParameterList(T* instance, void (T::*cb)(const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_CommonBehavior_setParameterList<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_CommonBehavior_setParameterListPtr
+newCallback_CommonBehavior_setParameterList(T* instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_CommonBehavior_setParameterList<T, CT>(instance, 0, excb, sentcb);
 }
 
 template<class T>
@@ -1253,460 +1707,6 @@ template<class T, typename CT> Callback_CommonBehavior_timeAwakePtr
 newCallback_CommonBehavior_timeAwake(T* instance, void (T::*cb)(::Ice::Int, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
 {
     return new Callback_CommonBehavior_timeAwake<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T>
-class CallbackNC_CommonBehavior_killYourSelf : public Callback_CommonBehavior_killYourSelf_Base, public ::IceInternal::OnewayCallbackNC<T>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception&);
-    typedef void (T::*Sent)(bool);
-    typedef void (T::*Response)();
-
-    CallbackNC_CommonBehavior_killYourSelf(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::OnewayCallbackNC<T>(obj, cb, excb, sentcb)
-    {
-    }
-};
-
-template<class T> Callback_CommonBehavior_killYourSelfPtr
-newCallback_CommonBehavior_killYourSelf(const IceUtil::Handle<T>& instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_CommonBehavior_killYourSelf<T>(instance, cb, excb, sentcb);
-}
-
-template<class T> Callback_CommonBehavior_killYourSelfPtr
-newCallback_CommonBehavior_killYourSelf(const IceUtil::Handle<T>& instance, void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_CommonBehavior_killYourSelf<T>(instance, 0, excb, sentcb);
-}
-
-template<class T> Callback_CommonBehavior_killYourSelfPtr
-newCallback_CommonBehavior_killYourSelf(T* instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_CommonBehavior_killYourSelf<T>(instance, cb, excb, sentcb);
-}
-
-template<class T> Callback_CommonBehavior_killYourSelfPtr
-newCallback_CommonBehavior_killYourSelf(T* instance, void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_CommonBehavior_killYourSelf<T>(instance, 0, excb, sentcb);
-}
-
-template<class T, typename CT>
-class Callback_CommonBehavior_killYourSelf : public Callback_CommonBehavior_killYourSelf_Base, public ::IceInternal::OnewayCallback<T, CT>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
-    typedef void (T::*Sent)(bool , const CT&);
-    typedef void (T::*Response)(const CT&);
-
-    Callback_CommonBehavior_killYourSelf(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::OnewayCallback<T, CT>(obj, cb, excb, sentcb)
-    {
-    }
-};
-
-template<class T, typename CT> Callback_CommonBehavior_killYourSelfPtr
-newCallback_CommonBehavior_killYourSelf(const IceUtil::Handle<T>& instance, void (T::*cb)(const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_CommonBehavior_killYourSelf<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT> Callback_CommonBehavior_killYourSelfPtr
-newCallback_CommonBehavior_killYourSelf(const IceUtil::Handle<T>& instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_CommonBehavior_killYourSelf<T, CT>(instance, 0, excb, sentcb);
-}
-
-template<class T, typename CT> Callback_CommonBehavior_killYourSelfPtr
-newCallback_CommonBehavior_killYourSelf(T* instance, void (T::*cb)(const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_CommonBehavior_killYourSelf<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT> Callback_CommonBehavior_killYourSelfPtr
-newCallback_CommonBehavior_killYourSelf(T* instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_CommonBehavior_killYourSelf<T, CT>(instance, 0, excb, sentcb);
-}
-
-template<class T>
-class CallbackNC_CommonBehavior_getParameterList : public Callback_CommonBehavior_getParameterList_Base, public ::IceInternal::TwowayCallbackNC<T>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception&);
-    typedef void (T::*Sent)(bool);
-    typedef void (T::*Response)(const ::RoboCompCommonBehavior::ParameterList&);
-
-    CallbackNC_CommonBehavior_getParameterList(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallbackNC<T>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::RoboCompCommonBehavior::CommonBehaviorPrx proxy = ::RoboCompCommonBehavior::CommonBehaviorPrx::uncheckedCast(result->getProxy());
-        ::RoboCompCommonBehavior::ParameterList ret;
-        try
-        {
-            ret = proxy->end_getParameterList(result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::CallbackNC<T>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::CallbackNC<T>::_callback.get()->*_response)(ret);
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T> Callback_CommonBehavior_getParameterListPtr
-newCallback_CommonBehavior_getParameterList(const IceUtil::Handle<T>& instance, void (T::*cb)(const ::RoboCompCommonBehavior::ParameterList&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_CommonBehavior_getParameterList<T>(instance, cb, excb, sentcb);
-}
-
-template<class T> Callback_CommonBehavior_getParameterListPtr
-newCallback_CommonBehavior_getParameterList(T* instance, void (T::*cb)(const ::RoboCompCommonBehavior::ParameterList&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_CommonBehavior_getParameterList<T>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT>
-class Callback_CommonBehavior_getParameterList : public Callback_CommonBehavior_getParameterList_Base, public ::IceInternal::TwowayCallback<T, CT>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
-    typedef void (T::*Sent)(bool , const CT&);
-    typedef void (T::*Response)(const ::RoboCompCommonBehavior::ParameterList&, const CT&);
-
-    Callback_CommonBehavior_getParameterList(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallback<T, CT>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::RoboCompCommonBehavior::CommonBehaviorPrx proxy = ::RoboCompCommonBehavior::CommonBehaviorPrx::uncheckedCast(result->getProxy());
-        ::RoboCompCommonBehavior::ParameterList ret;
-        try
-        {
-            ret = proxy->end_getParameterList(result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::Callback<T, CT>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::Callback<T, CT>::_callback.get()->*_response)(ret, CT::dynamicCast(result->getCookie()));
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T, typename CT> Callback_CommonBehavior_getParameterListPtr
-newCallback_CommonBehavior_getParameterList(const IceUtil::Handle<T>& instance, void (T::*cb)(const ::RoboCompCommonBehavior::ParameterList&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_CommonBehavior_getParameterList<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT> Callback_CommonBehavior_getParameterListPtr
-newCallback_CommonBehavior_getParameterList(T* instance, void (T::*cb)(const ::RoboCompCommonBehavior::ParameterList&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_CommonBehavior_getParameterList<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T>
-class CallbackNC_CommonBehavior_setParameterList : public Callback_CommonBehavior_setParameterList_Base, public ::IceInternal::OnewayCallbackNC<T>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception&);
-    typedef void (T::*Sent)(bool);
-    typedef void (T::*Response)();
-
-    CallbackNC_CommonBehavior_setParameterList(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::OnewayCallbackNC<T>(obj, cb, excb, sentcb)
-    {
-    }
-};
-
-template<class T> Callback_CommonBehavior_setParameterListPtr
-newCallback_CommonBehavior_setParameterList(const IceUtil::Handle<T>& instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_CommonBehavior_setParameterList<T>(instance, cb, excb, sentcb);
-}
-
-template<class T> Callback_CommonBehavior_setParameterListPtr
-newCallback_CommonBehavior_setParameterList(const IceUtil::Handle<T>& instance, void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_CommonBehavior_setParameterList<T>(instance, 0, excb, sentcb);
-}
-
-template<class T> Callback_CommonBehavior_setParameterListPtr
-newCallback_CommonBehavior_setParameterList(T* instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_CommonBehavior_setParameterList<T>(instance, cb, excb, sentcb);
-}
-
-template<class T> Callback_CommonBehavior_setParameterListPtr
-newCallback_CommonBehavior_setParameterList(T* instance, void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_CommonBehavior_setParameterList<T>(instance, 0, excb, sentcb);
-}
-
-template<class T, typename CT>
-class Callback_CommonBehavior_setParameterList : public Callback_CommonBehavior_setParameterList_Base, public ::IceInternal::OnewayCallback<T, CT>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
-    typedef void (T::*Sent)(bool , const CT&);
-    typedef void (T::*Response)(const CT&);
-
-    Callback_CommonBehavior_setParameterList(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::OnewayCallback<T, CT>(obj, cb, excb, sentcb)
-    {
-    }
-};
-
-template<class T, typename CT> Callback_CommonBehavior_setParameterListPtr
-newCallback_CommonBehavior_setParameterList(const IceUtil::Handle<T>& instance, void (T::*cb)(const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_CommonBehavior_setParameterList<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT> Callback_CommonBehavior_setParameterListPtr
-newCallback_CommonBehavior_setParameterList(const IceUtil::Handle<T>& instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_CommonBehavior_setParameterList<T, CT>(instance, 0, excb, sentcb);
-}
-
-template<class T, typename CT> Callback_CommonBehavior_setParameterListPtr
-newCallback_CommonBehavior_setParameterList(T* instance, void (T::*cb)(const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_CommonBehavior_setParameterList<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT> Callback_CommonBehavior_setParameterListPtr
-newCallback_CommonBehavior_setParameterList(T* instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_CommonBehavior_setParameterList<T, CT>(instance, 0, excb, sentcb);
-}
-
-template<class T>
-class CallbackNC_CommonBehavior_reloadConfig : public Callback_CommonBehavior_reloadConfig_Base, public ::IceInternal::OnewayCallbackNC<T>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception&);
-    typedef void (T::*Sent)(bool);
-    typedef void (T::*Response)();
-
-    CallbackNC_CommonBehavior_reloadConfig(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::OnewayCallbackNC<T>(obj, cb, excb, sentcb)
-    {
-    }
-};
-
-template<class T> Callback_CommonBehavior_reloadConfigPtr
-newCallback_CommonBehavior_reloadConfig(const IceUtil::Handle<T>& instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_CommonBehavior_reloadConfig<T>(instance, cb, excb, sentcb);
-}
-
-template<class T> Callback_CommonBehavior_reloadConfigPtr
-newCallback_CommonBehavior_reloadConfig(const IceUtil::Handle<T>& instance, void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_CommonBehavior_reloadConfig<T>(instance, 0, excb, sentcb);
-}
-
-template<class T> Callback_CommonBehavior_reloadConfigPtr
-newCallback_CommonBehavior_reloadConfig(T* instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_CommonBehavior_reloadConfig<T>(instance, cb, excb, sentcb);
-}
-
-template<class T> Callback_CommonBehavior_reloadConfigPtr
-newCallback_CommonBehavior_reloadConfig(T* instance, void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_CommonBehavior_reloadConfig<T>(instance, 0, excb, sentcb);
-}
-
-template<class T, typename CT>
-class Callback_CommonBehavior_reloadConfig : public Callback_CommonBehavior_reloadConfig_Base, public ::IceInternal::OnewayCallback<T, CT>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
-    typedef void (T::*Sent)(bool , const CT&);
-    typedef void (T::*Response)(const CT&);
-
-    Callback_CommonBehavior_reloadConfig(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::OnewayCallback<T, CT>(obj, cb, excb, sentcb)
-    {
-    }
-};
-
-template<class T, typename CT> Callback_CommonBehavior_reloadConfigPtr
-newCallback_CommonBehavior_reloadConfig(const IceUtil::Handle<T>& instance, void (T::*cb)(const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_CommonBehavior_reloadConfig<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT> Callback_CommonBehavior_reloadConfigPtr
-newCallback_CommonBehavior_reloadConfig(const IceUtil::Handle<T>& instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_CommonBehavior_reloadConfig<T, CT>(instance, 0, excb, sentcb);
-}
-
-template<class T, typename CT> Callback_CommonBehavior_reloadConfigPtr
-newCallback_CommonBehavior_reloadConfig(T* instance, void (T::*cb)(const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_CommonBehavior_reloadConfig<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT> Callback_CommonBehavior_reloadConfigPtr
-newCallback_CommonBehavior_reloadConfig(T* instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_CommonBehavior_reloadConfig<T, CT>(instance, 0, excb, sentcb);
-}
-
-template<class T>
-class CallbackNC_CommonBehavior_getState : public Callback_CommonBehavior_getState_Base, public ::IceInternal::TwowayCallbackNC<T>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception&);
-    typedef void (T::*Sent)(bool);
-    typedef void (T::*Response)(::RoboCompCommonBehavior::State);
-
-    CallbackNC_CommonBehavior_getState(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallbackNC<T>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::RoboCompCommonBehavior::CommonBehaviorPrx proxy = ::RoboCompCommonBehavior::CommonBehaviorPrx::uncheckedCast(result->getProxy());
-        ::RoboCompCommonBehavior::State ret;
-        try
-        {
-            ret = proxy->end_getState(result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::CallbackNC<T>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::CallbackNC<T>::_callback.get()->*_response)(ret);
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T> Callback_CommonBehavior_getStatePtr
-newCallback_CommonBehavior_getState(const IceUtil::Handle<T>& instance, void (T::*cb)(::RoboCompCommonBehavior::State), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_CommonBehavior_getState<T>(instance, cb, excb, sentcb);
-}
-
-template<class T> Callback_CommonBehavior_getStatePtr
-newCallback_CommonBehavior_getState(T* instance, void (T::*cb)(::RoboCompCommonBehavior::State), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_CommonBehavior_getState<T>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT>
-class Callback_CommonBehavior_getState : public Callback_CommonBehavior_getState_Base, public ::IceInternal::TwowayCallback<T, CT>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
-    typedef void (T::*Sent)(bool , const CT&);
-    typedef void (T::*Response)(::RoboCompCommonBehavior::State, const CT&);
-
-    Callback_CommonBehavior_getState(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallback<T, CT>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::RoboCompCommonBehavior::CommonBehaviorPrx proxy = ::RoboCompCommonBehavior::CommonBehaviorPrx::uncheckedCast(result->getProxy());
-        ::RoboCompCommonBehavior::State ret;
-        try
-        {
-            ret = proxy->end_getState(result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::Callback<T, CT>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::Callback<T, CT>::_callback.get()->*_response)(ret, CT::dynamicCast(result->getCookie()));
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T, typename CT> Callback_CommonBehavior_getStatePtr
-newCallback_CommonBehavior_getState(const IceUtil::Handle<T>& instance, void (T::*cb)(::RoboCompCommonBehavior::State, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_CommonBehavior_getState<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT> Callback_CommonBehavior_getStatePtr
-newCallback_CommonBehavior_getState(T* instance, void (T::*cb)(::RoboCompCommonBehavior::State, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_CommonBehavior_getState<T, CT>(instance, cb, excb, sentcb);
 }
 
 }

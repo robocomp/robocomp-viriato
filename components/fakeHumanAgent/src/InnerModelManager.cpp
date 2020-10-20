@@ -82,35 +82,33 @@ const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_ops[] =
     "removeNode",
     "setAttribute",
     "setPlane",
-    "setPlaneTexture",
     "setPointCloudData",
     "setPose",
     "setPoseFromParent",
     "setScale",
     "transform"
 };
-const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_addTransform_name = "addTransform";
+const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_addAttribute_name = "addAttribute";
 const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_addJoint_name = "addJoint";
 const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_addMesh_name = "addMesh";
 const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_addPlane_name = "addPlane";
+const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_addTransform_name = "addTransform";
+const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_collide_name = "collide";
 const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_getAllNodeInformation_name = "getAllNodeInformation";
-const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_setPose_name = "setPose";
-const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_setPoseFromParent_name = "setPoseFromParent";
+const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_getAttribute_name = "getAttribute";
 const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_getPose_name = "getPose";
 const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_getPoseFromParent_name = "getPoseFromParent";
-const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_setPlane_name = "setPlane";
-const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_setPlaneTexture_name = "setPlaneTexture";
-const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_transform_name = "transform";
 const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_getTransformationMatrix_name = "getTransformationMatrix";
-const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_setScale_name = "setScale";
-const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_addAttribute_name = "addAttribute";
-const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_removeAttribute_name = "removeAttribute";
-const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_setAttribute_name = "setAttribute";
-const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_getAttribute_name = "getAttribute";
-const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_removeNode_name = "removeNode";
 const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_moveNode_name = "moveNode";
-const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_collide_name = "collide";
+const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_removeAttribute_name = "removeAttribute";
+const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_removeNode_name = "removeNode";
+const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_setAttribute_name = "setAttribute";
+const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_setPlane_name = "setPlane";
 const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_setPointCloudData_name = "setPointCloudData";
+const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_setPose_name = "setPose";
+const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_setPoseFromParent_name = "setPoseFromParent";
+const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_setScale_name = "setScale";
+const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_transform_name = "transform";
 
 }
 
@@ -151,17 +149,17 @@ RoboCompInnerModelManager::InnerModelManager::ice_staticId()
 }
 
 bool
-RoboCompInnerModelManager::InnerModelManager::_iceD_addTransform(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+RoboCompInnerModelManager::InnerModelManager::_iceD_addAttribute(::IceInternal::Incoming& inS, const ::Ice::Current& current)
 {
     _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
     auto istr = inS.startReadParams();
-    ::std::string iceP_item;
-    ::std::string iceP_engine;
-    ::std::string iceP_base;
-    ::RoboCompInnerModelManager::Pose3D iceP_pose;
-    istr->readAll(iceP_item, iceP_engine, iceP_base, iceP_pose);
+    ::std::string iceP_idNode;
+    ::std::string iceP_name;
+    ::std::string iceP_type;
+    ::std::string iceP_value;
+    istr->readAll(iceP_idNode, iceP_name, iceP_type, iceP_value);
     inS.endReadParams();
-    bool ret = this->addTransform(::std::move(iceP_item), ::std::move(iceP_engine), ::std::move(iceP_base), ::std::move(iceP_pose), current);
+    bool ret = this->addAttribute(::std::move(iceP_idNode), ::std::move(iceP_name), ::std::move(iceP_type), ::std::move(iceP_value), current);
     auto ostr = inS.startWriteParams();
     ostr->writeAll(ret);
     inS.endWriteParams();
@@ -220,6 +218,40 @@ RoboCompInnerModelManager::InnerModelManager::_iceD_addPlane(::IceInternal::Inco
 }
 
 bool
+RoboCompInnerModelManager::InnerModelManager::_iceD_addTransform(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
+    auto istr = inS.startReadParams();
+    ::std::string iceP_item;
+    ::std::string iceP_engine;
+    ::std::string iceP_base;
+    ::RoboCompInnerModelManager::Pose3D iceP_pose;
+    istr->readAll(iceP_item, iceP_engine, iceP_base, iceP_pose);
+    inS.endReadParams();
+    bool ret = this->addTransform(::std::move(iceP_item), ::std::move(iceP_engine), ::std::move(iceP_base), ::std::move(iceP_pose), current);
+    auto ostr = inS.startWriteParams();
+    ostr->writeAll(ret);
+    inS.endWriteParams();
+    return true;
+}
+
+bool
+RoboCompInnerModelManager::InnerModelManager::_iceD_collide(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
+    auto istr = inS.startReadParams();
+    ::std::string iceP_a;
+    ::std::string iceP_b;
+    istr->readAll(iceP_a, iceP_b);
+    inS.endReadParams();
+    bool ret = this->collide(::std::move(iceP_a), ::std::move(iceP_b), current);
+    auto ostr = inS.startWriteParams();
+    ostr->writeAll(ret);
+    inS.endWriteParams();
+    return true;
+}
+
+bool
 RoboCompInnerModelManager::InnerModelManager::_iceD_getAllNodeInformation(::IceInternal::Incoming& inS, const ::Ice::Current& current)
 {
     _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
@@ -233,34 +265,19 @@ RoboCompInnerModelManager::InnerModelManager::_iceD_getAllNodeInformation(::IceI
 }
 
 bool
-RoboCompInnerModelManager::InnerModelManager::_iceD_setPose(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+RoboCompInnerModelManager::InnerModelManager::_iceD_getAttribute(::IceInternal::Incoming& inS, const ::Ice::Current& current)
 {
     _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
     auto istr = inS.startReadParams();
-    ::std::string iceP_base;
-    ::std::string iceP_item;
-    ::RoboCompInnerModelManager::Pose3D iceP_pose;
-    istr->readAll(iceP_base, iceP_item, iceP_pose);
+    ::std::string iceP_idNode;
+    ::std::string iceP_name;
+    istr->readAll(iceP_idNode, iceP_name);
     inS.endReadParams();
-    bool ret = this->setPose(::std::move(iceP_base), ::std::move(iceP_item), ::std::move(iceP_pose), current);
+    ::std::string iceP_type;
+    ::std::string iceP_value;
+    bool ret = this->getAttribute(::std::move(iceP_idNode), ::std::move(iceP_name), iceP_type, iceP_value, current);
     auto ostr = inS.startWriteParams();
-    ostr->writeAll(ret);
-    inS.endWriteParams();
-    return true;
-}
-
-bool
-RoboCompInnerModelManager::InnerModelManager::_iceD_setPoseFromParent(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
-    auto istr = inS.startReadParams();
-    ::std::string iceP_item;
-    ::RoboCompInnerModelManager::Pose3D iceP_pose;
-    istr->readAll(iceP_item, iceP_pose);
-    inS.endReadParams();
-    bool ret = this->setPoseFromParent(::std::move(iceP_item), ::std::move(iceP_pose), current);
-    auto ostr = inS.startWriteParams();
-    ostr->writeAll(ret);
+    ostr->writeAll(iceP_type, iceP_value, ret);
     inS.endWriteParams();
     return true;
 }
@@ -299,56 +316,6 @@ RoboCompInnerModelManager::InnerModelManager::_iceD_getPoseFromParent(::IceInter
 }
 
 bool
-RoboCompInnerModelManager::InnerModelManager::_iceD_setPlane(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
-    auto istr = inS.startReadParams();
-    ::std::string iceP_item;
-    ::RoboCompInnerModelManager::Plane3D iceP_plane;
-    istr->readAll(iceP_item, iceP_plane);
-    inS.endReadParams();
-    bool ret = this->setPlane(::std::move(iceP_item), ::std::move(iceP_plane), current);
-    auto ostr = inS.startWriteParams();
-    ostr->writeAll(ret);
-    inS.endWriteParams();
-    return true;
-}
-
-bool
-RoboCompInnerModelManager::InnerModelManager::_iceD_setPlaneTexture(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
-    auto istr = inS.startReadParams();
-    ::std::string iceP_item;
-    ::std::string iceP_texure;
-    istr->readAll(iceP_item, iceP_texure);
-    inS.endReadParams();
-    bool ret = this->setPlaneTexture(::std::move(iceP_item), ::std::move(iceP_texure), current);
-    auto ostr = inS.startWriteParams();
-    ostr->writeAll(ret);
-    inS.endWriteParams();
-    return true;
-}
-
-bool
-RoboCompInnerModelManager::InnerModelManager::_iceD_transform(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
-    auto istr = inS.startReadParams();
-    ::std::string iceP_base;
-    ::std::string iceP_item;
-    ::RoboCompInnerModelManager::coord3D iceP_coordInItem;
-    istr->readAll(iceP_base, iceP_item, iceP_coordInItem);
-    inS.endReadParams();
-    ::RoboCompInnerModelManager::coord3D iceP_coordInBase;
-    bool ret = this->transform(::std::move(iceP_base), ::std::move(iceP_item), ::std::move(iceP_coordInItem), iceP_coordInBase, current);
-    auto ostr = inS.startWriteParams();
-    ostr->writeAll(iceP_coordInBase, ret);
-    inS.endWriteParams();
-    return true;
-}
-
-bool
 RoboCompInnerModelManager::InnerModelManager::_iceD_getTransformationMatrix(::IceInternal::Incoming& inS, const ::Ice::Current& current)
 {
     _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
@@ -365,35 +332,15 @@ RoboCompInnerModelManager::InnerModelManager::_iceD_getTransformationMatrix(::Ic
 }
 
 bool
-RoboCompInnerModelManager::InnerModelManager::_iceD_setScale(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+RoboCompInnerModelManager::InnerModelManager::_iceD_moveNode(::IceInternal::Incoming& inS, const ::Ice::Current& current)
 {
     _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
     auto istr = inS.startReadParams();
-    ::std::string iceP_item;
-    float iceP_scaleX;
-    float iceP_scaleY;
-    float iceP_scaleZ;
-    istr->readAll(iceP_item, iceP_scaleX, iceP_scaleY, iceP_scaleZ);
+    ::std::string iceP_src;
+    ::std::string iceP_dst;
+    istr->readAll(iceP_src, iceP_dst);
     inS.endReadParams();
-    bool ret = this->setScale(::std::move(iceP_item), iceP_scaleX, iceP_scaleY, iceP_scaleZ, current);
-    auto ostr = inS.startWriteParams();
-    ostr->writeAll(ret);
-    inS.endWriteParams();
-    return true;
-}
-
-bool
-RoboCompInnerModelManager::InnerModelManager::_iceD_addAttribute(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
-    auto istr = inS.startReadParams();
-    ::std::string iceP_idNode;
-    ::std::string iceP_name;
-    ::std::string iceP_type;
-    ::std::string iceP_value;
-    istr->readAll(iceP_idNode, iceP_name, iceP_type, iceP_value);
-    inS.endReadParams();
-    bool ret = this->addAttribute(::std::move(iceP_idNode), ::std::move(iceP_name), ::std::move(iceP_type), ::std::move(iceP_value), current);
+    bool ret = this->moveNode(::std::move(iceP_src), ::std::move(iceP_dst), current);
     auto ostr = inS.startWriteParams();
     ostr->writeAll(ret);
     inS.endWriteParams();
@@ -410,6 +357,21 @@ RoboCompInnerModelManager::InnerModelManager::_iceD_removeAttribute(::IceInterna
     istr->readAll(iceP_idNode, iceP_name);
     inS.endReadParams();
     bool ret = this->removeAttribute(::std::move(iceP_idNode), ::std::move(iceP_name), current);
+    auto ostr = inS.startWriteParams();
+    ostr->writeAll(ret);
+    inS.endWriteParams();
+    return true;
+}
+
+bool
+RoboCompInnerModelManager::InnerModelManager::_iceD_removeNode(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
+    auto istr = inS.startReadParams();
+    ::std::string iceP_item;
+    istr->readAll(iceP_item);
+    inS.endReadParams();
+    bool ret = this->removeNode(::std::move(iceP_item), current);
     auto ostr = inS.startWriteParams();
     ostr->writeAll(ret);
     inS.endWriteParams();
@@ -435,64 +397,15 @@ RoboCompInnerModelManager::InnerModelManager::_iceD_setAttribute(::IceInternal::
 }
 
 bool
-RoboCompInnerModelManager::InnerModelManager::_iceD_getAttribute(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
-    auto istr = inS.startReadParams();
-    ::std::string iceP_idNode;
-    ::std::string iceP_name;
-    istr->readAll(iceP_idNode, iceP_name);
-    inS.endReadParams();
-    ::std::string iceP_type;
-    ::std::string iceP_value;
-    bool ret = this->getAttribute(::std::move(iceP_idNode), ::std::move(iceP_name), iceP_type, iceP_value, current);
-    auto ostr = inS.startWriteParams();
-    ostr->writeAll(iceP_type, iceP_value, ret);
-    inS.endWriteParams();
-    return true;
-}
-
-bool
-RoboCompInnerModelManager::InnerModelManager::_iceD_removeNode(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+RoboCompInnerModelManager::InnerModelManager::_iceD_setPlane(::IceInternal::Incoming& inS, const ::Ice::Current& current)
 {
     _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
     auto istr = inS.startReadParams();
     ::std::string iceP_item;
-    istr->readAll(iceP_item);
+    ::RoboCompInnerModelManager::Plane3D iceP_plane;
+    istr->readAll(iceP_item, iceP_plane);
     inS.endReadParams();
-    bool ret = this->removeNode(::std::move(iceP_item), current);
-    auto ostr = inS.startWriteParams();
-    ostr->writeAll(ret);
-    inS.endWriteParams();
-    return true;
-}
-
-bool
-RoboCompInnerModelManager::InnerModelManager::_iceD_moveNode(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
-    auto istr = inS.startReadParams();
-    ::std::string iceP_src;
-    ::std::string iceP_dst;
-    istr->readAll(iceP_src, iceP_dst);
-    inS.endReadParams();
-    bool ret = this->moveNode(::std::move(iceP_src), ::std::move(iceP_dst), current);
-    auto ostr = inS.startWriteParams();
-    ostr->writeAll(ret);
-    inS.endWriteParams();
-    return true;
-}
-
-bool
-RoboCompInnerModelManager::InnerModelManager::_iceD_collide(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
-    auto istr = inS.startReadParams();
-    ::std::string iceP_a;
-    ::std::string iceP_b;
-    istr->readAll(iceP_a, iceP_b);
-    inS.endReadParams();
-    bool ret = this->collide(::std::move(iceP_a), ::std::move(iceP_b), current);
+    bool ret = this->setPlane(::std::move(iceP_item), ::std::move(iceP_plane), current);
     auto ostr = inS.startWriteParams();
     ostr->writeAll(ret);
     inS.endWriteParams();
@@ -514,9 +427,78 @@ RoboCompInnerModelManager::InnerModelManager::_iceD_setPointCloudData(::IceInter
 }
 
 bool
+RoboCompInnerModelManager::InnerModelManager::_iceD_setPose(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
+    auto istr = inS.startReadParams();
+    ::std::string iceP_base;
+    ::std::string iceP_item;
+    ::RoboCompInnerModelManager::Pose3D iceP_pose;
+    istr->readAll(iceP_base, iceP_item, iceP_pose);
+    inS.endReadParams();
+    bool ret = this->setPose(::std::move(iceP_base), ::std::move(iceP_item), ::std::move(iceP_pose), current);
+    auto ostr = inS.startWriteParams();
+    ostr->writeAll(ret);
+    inS.endWriteParams();
+    return true;
+}
+
+bool
+RoboCompInnerModelManager::InnerModelManager::_iceD_setPoseFromParent(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
+    auto istr = inS.startReadParams();
+    ::std::string iceP_item;
+    ::RoboCompInnerModelManager::Pose3D iceP_pose;
+    istr->readAll(iceP_item, iceP_pose);
+    inS.endReadParams();
+    bool ret = this->setPoseFromParent(::std::move(iceP_item), ::std::move(iceP_pose), current);
+    auto ostr = inS.startWriteParams();
+    ostr->writeAll(ret);
+    inS.endWriteParams();
+    return true;
+}
+
+bool
+RoboCompInnerModelManager::InnerModelManager::_iceD_setScale(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
+    auto istr = inS.startReadParams();
+    ::std::string iceP_item;
+    float iceP_scaleX;
+    float iceP_scaleY;
+    float iceP_scaleZ;
+    istr->readAll(iceP_item, iceP_scaleX, iceP_scaleY, iceP_scaleZ);
+    inS.endReadParams();
+    bool ret = this->setScale(::std::move(iceP_item), iceP_scaleX, iceP_scaleY, iceP_scaleZ, current);
+    auto ostr = inS.startWriteParams();
+    ostr->writeAll(ret);
+    inS.endWriteParams();
+    return true;
+}
+
+bool
+RoboCompInnerModelManager::InnerModelManager::_iceD_transform(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
+    auto istr = inS.startReadParams();
+    ::std::string iceP_base;
+    ::std::string iceP_item;
+    ::RoboCompInnerModelManager::coord3D iceP_coordInItem;
+    istr->readAll(iceP_base, iceP_item, iceP_coordInItem);
+    inS.endReadParams();
+    ::RoboCompInnerModelManager::coord3D iceP_coordInBase;
+    bool ret = this->transform(::std::move(iceP_base), ::std::move(iceP_item), ::std::move(iceP_coordInItem), iceP_coordInBase, current);
+    auto ostr = inS.startWriteParams();
+    ostr->writeAll(iceP_coordInBase, ret);
+    inS.endWriteParams();
+    return true;
+}
+
+bool
 RoboCompInnerModelManager::InnerModelManager::_iceDispatch(::IceInternal::Incoming& in, const ::Ice::Current& current)
 {
-    ::std::pair<const ::std::string*, const ::std::string*> r = ::std::equal_range(iceC_RoboCompInnerModelManager_InnerModelManager_ops, iceC_RoboCompInnerModelManager_InnerModelManager_ops + 26, current.operation);
+    ::std::pair<const ::std::string*, const ::std::string*> r = ::std::equal_range(iceC_RoboCompInnerModelManager_InnerModelManager_ops, iceC_RoboCompInnerModelManager_InnerModelManager_ops + 25, current.operation);
     if(r.first == r.second)
     {
         throw ::Ice::OperationNotExistException(__FILE__, __LINE__, current.id, current.facet, current.operation);
@@ -606,25 +588,21 @@ RoboCompInnerModelManager::InnerModelManager::_iceDispatch(::IceInternal::Incomi
         }
         case 20:
         {
-            return _iceD_setPlaneTexture(in, current);
+            return _iceD_setPointCloudData(in, current);
         }
         case 21:
         {
-            return _iceD_setPointCloudData(in, current);
+            return _iceD_setPose(in, current);
         }
         case 22:
         {
-            return _iceD_setPose(in, current);
+            return _iceD_setPoseFromParent(in, current);
         }
         case 23:
         {
-            return _iceD_setPoseFromParent(in, current);
-        }
-        case 24:
-        {
             return _iceD_setScale(in, current);
         }
-        case 25:
+        case 24:
         {
             return _iceD_transform(in, current);
         }
@@ -637,13 +615,13 @@ RoboCompInnerModelManager::InnerModelManager::_iceDispatch(::IceInternal::Incomi
 }
 
 void
-RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_addTransform(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<bool>>& outAsync, const ::std::string& iceP_item, const ::std::string& iceP_engine, const ::std::string& iceP_base, const ::RoboCompInnerModelManager::Pose3D& iceP_pose, const ::Ice::Context& context)
+RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_addAttribute(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<bool>>& outAsync, const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::std::string& iceP_type, const ::std::string& iceP_value, const ::Ice::Context& context)
 {
-    _checkTwowayOnly(iceC_RoboCompInnerModelManager_InnerModelManager_addTransform_name);
-    outAsync->invoke(iceC_RoboCompInnerModelManager_InnerModelManager_addTransform_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
+    _checkTwowayOnly(iceC_RoboCompInnerModelManager_InnerModelManager_addAttribute_name);
+    outAsync->invoke(iceC_RoboCompInnerModelManager_InnerModelManager_addAttribute_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
         [&](::Ice::OutputStream* ostr)
         {
-            ostr->writeAll(iceP_item, iceP_engine, iceP_base, iceP_pose);
+            ostr->writeAll(iceP_idNode, iceP_name, iceP_type, iceP_value);
         },
         [](const ::Ice::UserException& ex)
         {
@@ -737,6 +715,43 @@ RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_addPlane(const ::std::sha
 }
 
 void
+RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_addTransform(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<bool>>& outAsync, const ::std::string& iceP_item, const ::std::string& iceP_engine, const ::std::string& iceP_base, const ::RoboCompInnerModelManager::Pose3D& iceP_pose, const ::Ice::Context& context)
+{
+    _checkTwowayOnly(iceC_RoboCompInnerModelManager_InnerModelManager_addTransform_name);
+    outAsync->invoke(iceC_RoboCompInnerModelManager_InnerModelManager_addTransform_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
+        [&](::Ice::OutputStream* ostr)
+        {
+            ostr->writeAll(iceP_item, iceP_engine, iceP_base, iceP_pose);
+        },
+        [](const ::Ice::UserException& ex)
+        {
+            try
+            {
+                ex.ice_throw();
+            }
+            catch(const ::RoboCompInnerModelManager::InnerModelManagerError&)
+            {
+                throw;
+            }
+            catch(const ::Ice::UserException&)
+            {
+            }
+        });
+}
+
+void
+RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_collide(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<bool>>& outAsync, const ::std::string& iceP_a, const ::std::string& iceP_b, const ::Ice::Context& context)
+{
+    _checkTwowayOnly(iceC_RoboCompInnerModelManager_InnerModelManager_collide_name);
+    outAsync->invoke(iceC_RoboCompInnerModelManager_InnerModelManager_collide_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
+        [&](::Ice::OutputStream* ostr)
+        {
+            ostr->writeAll(iceP_a, iceP_b);
+        },
+        nullptr);
+}
+
+void
 RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_getAllNodeInformation(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::RoboCompInnerModelManager::NodeInformationSequence>>& outAsync, const ::Ice::Context& context)
 {
     _checkTwowayOnly(iceC_RoboCompInnerModelManager_InnerModelManager_getAllNodeInformation_name);
@@ -759,13 +774,13 @@ RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_getAllNodeInformation(con
 }
 
 void
-RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_setPose(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<bool>>& outAsync, const ::std::string& iceP_base, const ::std::string& iceP_item, const ::RoboCompInnerModelManager::Pose3D& iceP_pose, const ::Ice::Context& context)
+RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_getAttribute(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::RoboCompInnerModelManager::InnerModelManager::GetAttributeResult>>& outAsync, const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::Ice::Context& context)
 {
-    _checkTwowayOnly(iceC_RoboCompInnerModelManager_InnerModelManager_setPose_name);
-    outAsync->invoke(iceC_RoboCompInnerModelManager_InnerModelManager_setPose_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
+    _checkTwowayOnly(iceC_RoboCompInnerModelManager_InnerModelManager_getAttribute_name);
+    outAsync->invoke(iceC_RoboCompInnerModelManager_InnerModelManager_getAttribute_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
         [&](::Ice::OutputStream* ostr)
         {
-            ostr->writeAll(iceP_base, iceP_item, iceP_pose);
+            ostr->writeAll(iceP_idNode, iceP_name);
         },
         [](const ::Ice::UserException& ex)
         {
@@ -780,31 +795,12 @@ RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_setPose(const ::std::shar
             catch(const ::Ice::UserException&)
             {
             }
-        });
-}
-
-void
-RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_setPoseFromParent(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<bool>>& outAsync, const ::std::string& iceP_item, const ::RoboCompInnerModelManager::Pose3D& iceP_pose, const ::Ice::Context& context)
-{
-    _checkTwowayOnly(iceC_RoboCompInnerModelManager_InnerModelManager_setPoseFromParent_name);
-    outAsync->invoke(iceC_RoboCompInnerModelManager_InnerModelManager_setPoseFromParent_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
-        [&](::Ice::OutputStream* ostr)
-        {
-            ostr->writeAll(iceP_item, iceP_pose);
         },
-        [](const ::Ice::UserException& ex)
+        [](::Ice::InputStream* istr)
         {
-            try
-            {
-                ex.ice_throw();
-            }
-            catch(const ::RoboCompInnerModelManager::InnerModelManagerError&)
-            {
-                throw;
-            }
-            catch(const ::Ice::UserException&)
-            {
-            }
+            ::RoboCompInnerModelManager::InnerModelManager::GetAttributeResult v;
+            istr->readAll(v.type, v.value, v.returnValue);
+            return v;
         });
 }
 
@@ -871,6 +867,131 @@ RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_getPoseFromParent(const :
 }
 
 void
+RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_getTransformationMatrix(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::RoboCompInnerModelManager::Matrix>>& outAsync, const ::std::string& iceP_base, const ::std::string& iceP_item, const ::Ice::Context& context)
+{
+    _checkTwowayOnly(iceC_RoboCompInnerModelManager_InnerModelManager_getTransformationMatrix_name);
+    outAsync->invoke(iceC_RoboCompInnerModelManager_InnerModelManager_getTransformationMatrix_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
+        [&](::Ice::OutputStream* ostr)
+        {
+            ostr->writeAll(iceP_base, iceP_item);
+        },
+        [](const ::Ice::UserException& ex)
+        {
+            try
+            {
+                ex.ice_throw();
+            }
+            catch(const ::RoboCompInnerModelManager::InnerModelManagerError&)
+            {
+                throw;
+            }
+            catch(const ::Ice::UserException&)
+            {
+            }
+        });
+}
+
+void
+RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_moveNode(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<bool>>& outAsync, const ::std::string& iceP_src, const ::std::string& iceP_dst, const ::Ice::Context& context)
+{
+    _checkTwowayOnly(iceC_RoboCompInnerModelManager_InnerModelManager_moveNode_name);
+    outAsync->invoke(iceC_RoboCompInnerModelManager_InnerModelManager_moveNode_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
+        [&](::Ice::OutputStream* ostr)
+        {
+            ostr->writeAll(iceP_src, iceP_dst);
+        },
+        [](const ::Ice::UserException& ex)
+        {
+            try
+            {
+                ex.ice_throw();
+            }
+            catch(const ::RoboCompInnerModelManager::InnerModelManagerError&)
+            {
+                throw;
+            }
+            catch(const ::Ice::UserException&)
+            {
+            }
+        });
+}
+
+void
+RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_removeAttribute(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<bool>>& outAsync, const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::Ice::Context& context)
+{
+    _checkTwowayOnly(iceC_RoboCompInnerModelManager_InnerModelManager_removeAttribute_name);
+    outAsync->invoke(iceC_RoboCompInnerModelManager_InnerModelManager_removeAttribute_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
+        [&](::Ice::OutputStream* ostr)
+        {
+            ostr->writeAll(iceP_idNode, iceP_name);
+        },
+        [](const ::Ice::UserException& ex)
+        {
+            try
+            {
+                ex.ice_throw();
+            }
+            catch(const ::RoboCompInnerModelManager::InnerModelManagerError&)
+            {
+                throw;
+            }
+            catch(const ::Ice::UserException&)
+            {
+            }
+        });
+}
+
+void
+RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_removeNode(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<bool>>& outAsync, const ::std::string& iceP_item, const ::Ice::Context& context)
+{
+    _checkTwowayOnly(iceC_RoboCompInnerModelManager_InnerModelManager_removeNode_name);
+    outAsync->invoke(iceC_RoboCompInnerModelManager_InnerModelManager_removeNode_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
+        [&](::Ice::OutputStream* ostr)
+        {
+            ostr->writeAll(iceP_item);
+        },
+        [](const ::Ice::UserException& ex)
+        {
+            try
+            {
+                ex.ice_throw();
+            }
+            catch(const ::RoboCompInnerModelManager::InnerModelManagerError&)
+            {
+                throw;
+            }
+            catch(const ::Ice::UserException&)
+            {
+            }
+        });
+}
+
+void
+RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_setAttribute(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<bool>>& outAsync, const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::std::string& iceP_type, const ::std::string& iceP_value, const ::Ice::Context& context)
+{
+    _checkTwowayOnly(iceC_RoboCompInnerModelManager_InnerModelManager_setAttribute_name);
+    outAsync->invoke(iceC_RoboCompInnerModelManager_InnerModelManager_setAttribute_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
+        [&](::Ice::OutputStream* ostr)
+        {
+            ostr->writeAll(iceP_idNode, iceP_name, iceP_type, iceP_value);
+        },
+        [](const ::Ice::UserException& ex)
+        {
+            try
+            {
+                ex.ice_throw();
+            }
+            catch(const ::RoboCompInnerModelManager::InnerModelManagerError&)
+            {
+                throw;
+            }
+            catch(const ::Ice::UserException&)
+            {
+            }
+        });
+}
+
+void
 RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_setPlane(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<bool>>& outAsync, const ::std::string& iceP_item, const ::RoboCompInnerModelManager::Plane3D& iceP_plane, const ::Ice::Context& context)
 {
     _checkTwowayOnly(iceC_RoboCompInnerModelManager_InnerModelManager_setPlane_name);
@@ -896,13 +1017,74 @@ RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_setPlane(const ::std::sha
 }
 
 void
-RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_setPlaneTexture(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<bool>>& outAsync, const ::std::string& iceP_item, const ::std::string& iceP_texure, const ::Ice::Context& context)
+RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_setPointCloudData(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>& outAsync, const ::std::string& iceP_id, const ::RoboCompInnerModelManager::PointCloudVector& iceP_cloud, const ::Ice::Context& context)
 {
-    _checkTwowayOnly(iceC_RoboCompInnerModelManager_InnerModelManager_setPlaneTexture_name);
-    outAsync->invoke(iceC_RoboCompInnerModelManager_InnerModelManager_setPlaneTexture_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
+    outAsync->invoke(iceC_RoboCompInnerModelManager_InnerModelManager_setPointCloudData_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
         [&](::Ice::OutputStream* ostr)
         {
-            ostr->writeAll(iceP_item, iceP_texure);
+            ostr->writeAll(iceP_id, iceP_cloud);
+        },
+        nullptr);
+}
+
+void
+RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_setPose(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<bool>>& outAsync, const ::std::string& iceP_base, const ::std::string& iceP_item, const ::RoboCompInnerModelManager::Pose3D& iceP_pose, const ::Ice::Context& context)
+{
+    _checkTwowayOnly(iceC_RoboCompInnerModelManager_InnerModelManager_setPose_name);
+    outAsync->invoke(iceC_RoboCompInnerModelManager_InnerModelManager_setPose_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
+        [&](::Ice::OutputStream* ostr)
+        {
+            ostr->writeAll(iceP_base, iceP_item, iceP_pose);
+        },
+        [](const ::Ice::UserException& ex)
+        {
+            try
+            {
+                ex.ice_throw();
+            }
+            catch(const ::RoboCompInnerModelManager::InnerModelManagerError&)
+            {
+                throw;
+            }
+            catch(const ::Ice::UserException&)
+            {
+            }
+        });
+}
+
+void
+RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_setPoseFromParent(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<bool>>& outAsync, const ::std::string& iceP_item, const ::RoboCompInnerModelManager::Pose3D& iceP_pose, const ::Ice::Context& context)
+{
+    _checkTwowayOnly(iceC_RoboCompInnerModelManager_InnerModelManager_setPoseFromParent_name);
+    outAsync->invoke(iceC_RoboCompInnerModelManager_InnerModelManager_setPoseFromParent_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
+        [&](::Ice::OutputStream* ostr)
+        {
+            ostr->writeAll(iceP_item, iceP_pose);
+        },
+        [](const ::Ice::UserException& ex)
+        {
+            try
+            {
+                ex.ice_throw();
+            }
+            catch(const ::RoboCompInnerModelManager::InnerModelManagerError&)
+            {
+                throw;
+            }
+            catch(const ::Ice::UserException&)
+            {
+            }
+        });
+}
+
+void
+RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_setScale(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<bool>>& outAsync, const ::std::string& iceP_item, float iceP_scaleX, float iceP_scaleY, float iceP_scaleZ, const ::Ice::Context& context)
+{
+    _checkTwowayOnly(iceC_RoboCompInnerModelManager_InnerModelManager_setScale_name);
+    outAsync->invoke(iceC_RoboCompInnerModelManager_InnerModelManager_setScale_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
+        [&](::Ice::OutputStream* ostr)
+        {
+            ostr->writeAll(iceP_item, iceP_scaleX, iceP_scaleY, iceP_scaleZ);
         },
         [](const ::Ice::UserException& ex)
         {
@@ -951,248 +1133,6 @@ RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_transform(const ::std::sh
         });
 }
 
-void
-RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_getTransformationMatrix(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::RoboCompInnerModelManager::Matrix>>& outAsync, const ::std::string& iceP_base, const ::std::string& iceP_item, const ::Ice::Context& context)
-{
-    _checkTwowayOnly(iceC_RoboCompInnerModelManager_InnerModelManager_getTransformationMatrix_name);
-    outAsync->invoke(iceC_RoboCompInnerModelManager_InnerModelManager_getTransformationMatrix_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
-        [&](::Ice::OutputStream* ostr)
-        {
-            ostr->writeAll(iceP_base, iceP_item);
-        },
-        [](const ::Ice::UserException& ex)
-        {
-            try
-            {
-                ex.ice_throw();
-            }
-            catch(const ::RoboCompInnerModelManager::InnerModelManagerError&)
-            {
-                throw;
-            }
-            catch(const ::Ice::UserException&)
-            {
-            }
-        });
-}
-
-void
-RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_setScale(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<bool>>& outAsync, const ::std::string& iceP_item, float iceP_scaleX, float iceP_scaleY, float iceP_scaleZ, const ::Ice::Context& context)
-{
-    _checkTwowayOnly(iceC_RoboCompInnerModelManager_InnerModelManager_setScale_name);
-    outAsync->invoke(iceC_RoboCompInnerModelManager_InnerModelManager_setScale_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
-        [&](::Ice::OutputStream* ostr)
-        {
-            ostr->writeAll(iceP_item, iceP_scaleX, iceP_scaleY, iceP_scaleZ);
-        },
-        [](const ::Ice::UserException& ex)
-        {
-            try
-            {
-                ex.ice_throw();
-            }
-            catch(const ::RoboCompInnerModelManager::InnerModelManagerError&)
-            {
-                throw;
-            }
-            catch(const ::Ice::UserException&)
-            {
-            }
-        });
-}
-
-void
-RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_addAttribute(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<bool>>& outAsync, const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::std::string& iceP_type, const ::std::string& iceP_value, const ::Ice::Context& context)
-{
-    _checkTwowayOnly(iceC_RoboCompInnerModelManager_InnerModelManager_addAttribute_name);
-    outAsync->invoke(iceC_RoboCompInnerModelManager_InnerModelManager_addAttribute_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
-        [&](::Ice::OutputStream* ostr)
-        {
-            ostr->writeAll(iceP_idNode, iceP_name, iceP_type, iceP_value);
-        },
-        [](const ::Ice::UserException& ex)
-        {
-            try
-            {
-                ex.ice_throw();
-            }
-            catch(const ::RoboCompInnerModelManager::InnerModelManagerError&)
-            {
-                throw;
-            }
-            catch(const ::Ice::UserException&)
-            {
-            }
-        });
-}
-
-void
-RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_removeAttribute(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<bool>>& outAsync, const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::Ice::Context& context)
-{
-    _checkTwowayOnly(iceC_RoboCompInnerModelManager_InnerModelManager_removeAttribute_name);
-    outAsync->invoke(iceC_RoboCompInnerModelManager_InnerModelManager_removeAttribute_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
-        [&](::Ice::OutputStream* ostr)
-        {
-            ostr->writeAll(iceP_idNode, iceP_name);
-        },
-        [](const ::Ice::UserException& ex)
-        {
-            try
-            {
-                ex.ice_throw();
-            }
-            catch(const ::RoboCompInnerModelManager::InnerModelManagerError&)
-            {
-                throw;
-            }
-            catch(const ::Ice::UserException&)
-            {
-            }
-        });
-}
-
-void
-RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_setAttribute(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<bool>>& outAsync, const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::std::string& iceP_type, const ::std::string& iceP_value, const ::Ice::Context& context)
-{
-    _checkTwowayOnly(iceC_RoboCompInnerModelManager_InnerModelManager_setAttribute_name);
-    outAsync->invoke(iceC_RoboCompInnerModelManager_InnerModelManager_setAttribute_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
-        [&](::Ice::OutputStream* ostr)
-        {
-            ostr->writeAll(iceP_idNode, iceP_name, iceP_type, iceP_value);
-        },
-        [](const ::Ice::UserException& ex)
-        {
-            try
-            {
-                ex.ice_throw();
-            }
-            catch(const ::RoboCompInnerModelManager::InnerModelManagerError&)
-            {
-                throw;
-            }
-            catch(const ::Ice::UserException&)
-            {
-            }
-        });
-}
-
-void
-RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_getAttribute(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::RoboCompInnerModelManager::InnerModelManager::GetAttributeResult>>& outAsync, const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::Ice::Context& context)
-{
-    _checkTwowayOnly(iceC_RoboCompInnerModelManager_InnerModelManager_getAttribute_name);
-    outAsync->invoke(iceC_RoboCompInnerModelManager_InnerModelManager_getAttribute_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
-        [&](::Ice::OutputStream* ostr)
-        {
-            ostr->writeAll(iceP_idNode, iceP_name);
-        },
-        [](const ::Ice::UserException& ex)
-        {
-            try
-            {
-                ex.ice_throw();
-            }
-            catch(const ::RoboCompInnerModelManager::InnerModelManagerError&)
-            {
-                throw;
-            }
-            catch(const ::Ice::UserException&)
-            {
-            }
-        },
-        [](::Ice::InputStream* istr)
-        {
-            ::RoboCompInnerModelManager::InnerModelManager::GetAttributeResult v;
-            istr->readAll(v.type, v.value, v.returnValue);
-            return v;
-        });
-}
-
-void
-RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_removeNode(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<bool>>& outAsync, const ::std::string& iceP_item, const ::Ice::Context& context)
-{
-    _checkTwowayOnly(iceC_RoboCompInnerModelManager_InnerModelManager_removeNode_name);
-    outAsync->invoke(iceC_RoboCompInnerModelManager_InnerModelManager_removeNode_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
-        [&](::Ice::OutputStream* ostr)
-        {
-            ostr->writeAll(iceP_item);
-        },
-        [](const ::Ice::UserException& ex)
-        {
-            try
-            {
-                ex.ice_throw();
-            }
-            catch(const ::RoboCompInnerModelManager::InnerModelManagerError&)
-            {
-                throw;
-            }
-            catch(const ::Ice::UserException&)
-            {
-            }
-        });
-}
-
-void
-RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_moveNode(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<bool>>& outAsync, const ::std::string& iceP_src, const ::std::string& iceP_dst, const ::Ice::Context& context)
-{
-    _checkTwowayOnly(iceC_RoboCompInnerModelManager_InnerModelManager_moveNode_name);
-    outAsync->invoke(iceC_RoboCompInnerModelManager_InnerModelManager_moveNode_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
-        [&](::Ice::OutputStream* ostr)
-        {
-            ostr->writeAll(iceP_src, iceP_dst);
-        },
-        [](const ::Ice::UserException& ex)
-        {
-            try
-            {
-                ex.ice_throw();
-            }
-            catch(const ::RoboCompInnerModelManager::InnerModelManagerError&)
-            {
-                throw;
-            }
-            catch(const ::Ice::UserException&)
-            {
-            }
-        });
-}
-
-void
-RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_collide(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<bool>>& outAsync, const ::std::string& iceP_a, const ::std::string& iceP_b, const ::Ice::Context& context)
-{
-    _checkTwowayOnly(iceC_RoboCompInnerModelManager_InnerModelManager_collide_name);
-    outAsync->invoke(iceC_RoboCompInnerModelManager_InnerModelManager_collide_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
-        [&](::Ice::OutputStream* ostr)
-        {
-            ostr->writeAll(iceP_a, iceP_b);
-        },
-        [](const ::Ice::UserException& ex)
-        {
-            try
-            {
-                ex.ice_throw();
-            }
-            catch(const ::RoboCompInnerModelManager::InnerModelManagerError&)
-            {
-                throw;
-            }
-            catch(const ::Ice::UserException&)
-            {
-            }
-        });
-}
-
-void
-RoboCompInnerModelManager::InnerModelManagerPrx::_iceI_setPointCloudData(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>& outAsync, const ::std::string& iceP_id, const ::RoboCompInnerModelManager::PointCloudVector& iceP_cloud, const ::Ice::Context& context)
-{
-    outAsync->invoke(iceC_RoboCompInnerModelManager_InnerModelManager_setPointCloudData_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
-        [&](::Ice::OutputStream* ostr)
-        {
-            ostr->writeAll(iceP_id, iceP_cloud);
-        },
-        nullptr);
-}
-
 ::std::shared_ptr<::Ice::ObjectPrx>
 RoboCompInnerModelManager::InnerModelManagerPrx::_newInstance() const
 {
@@ -1214,7 +1154,7 @@ namespace Ice
 namespace
 {
 
-const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_addTransform_name = "addTransform";
+const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_addAttribute_name = "addAttribute";
 
 const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_addJoint_name = "addJoint";
 
@@ -1222,41 +1162,39 @@ const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_addMesh_nam
 
 const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_addPlane_name = "addPlane";
 
+const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_addTransform_name = "addTransform";
+
+const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_collide_name = "collide";
+
 const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_getAllNodeInformation_name = "getAllNodeInformation";
 
-const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_setPose_name = "setPose";
-
-const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_setPoseFromParent_name = "setPoseFromParent";
+const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_getAttribute_name = "getAttribute";
 
 const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_getPose_name = "getPose";
 
 const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_getPoseFromParent_name = "getPoseFromParent";
 
-const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_setPlane_name = "setPlane";
-
-const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_setPlaneTexture_name = "setPlaneTexture";
-
-const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_transform_name = "transform";
-
 const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_getTransformationMatrix_name = "getTransformationMatrix";
-
-const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_setScale_name = "setScale";
-
-const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_addAttribute_name = "addAttribute";
-
-const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_removeAttribute_name = "removeAttribute";
-
-const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_setAttribute_name = "setAttribute";
-
-const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_getAttribute_name = "getAttribute";
-
-const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_removeNode_name = "removeNode";
 
 const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_moveNode_name = "moveNode";
 
-const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_collide_name = "collide";
+const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_removeAttribute_name = "removeAttribute";
+
+const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_removeNode_name = "removeNode";
+
+const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_setAttribute_name = "setAttribute";
+
+const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_setPlane_name = "setPlane";
 
 const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_setPointCloudData_name = "setPointCloudData";
+
+const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_setPose_name = "setPose";
+
+const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_setPoseFromParent_name = "setPoseFromParent";
+
+const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_setScale_name = "setScale";
+
+const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_transform_name = "transform";
 
 }
 
@@ -1330,20 +1268,20 @@ void
 }
 
 ::Ice::AsyncResultPtr
-IceProxy::RoboCompInnerModelManager::InnerModelManager::_iceI_begin_addTransform(const ::std::string& iceP_item, const ::std::string& iceP_engine, const ::std::string& iceP_base, const ::RoboCompInnerModelManager::Pose3D& iceP_pose, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
+IceProxy::RoboCompInnerModelManager::InnerModelManager::_iceI_begin_addAttribute(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::std::string& iceP_type, const ::std::string& iceP_value, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
 {
-    _checkTwowayOnly(iceC_RoboCompInnerModelManager_InnerModelManager_addTransform_name, sync);
-    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompInnerModelManager_InnerModelManager_addTransform_name, del, cookie, sync);
+    _checkTwowayOnly(iceC_RoboCompInnerModelManager_InnerModelManager_addAttribute_name, sync);
+    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompInnerModelManager_InnerModelManager_addAttribute_name, del, cookie, sync);
     try
     {
-        result->prepare(iceC_RoboCompInnerModelManager_InnerModelManager_addTransform_name, ::Ice::Normal, context);
+        result->prepare(iceC_RoboCompInnerModelManager_InnerModelManager_addAttribute_name, ::Ice::Normal, context);
         ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
-        ostr->write(iceP_item);
-        ostr->write(iceP_engine);
-        ostr->write(iceP_base);
-        ostr->write(iceP_pose);
+        ostr->write(iceP_idNode);
+        ostr->write(iceP_name);
+        ostr->write(iceP_type);
+        ostr->write(iceP_value);
         result->endWriteParams();
-        result->invoke(iceC_RoboCompInnerModelManager_InnerModelManager_addTransform_name);
+        result->invoke(iceC_RoboCompInnerModelManager_InnerModelManager_addAttribute_name);
     }
     catch(const ::Ice::Exception& ex)
     {
@@ -1353,9 +1291,9 @@ IceProxy::RoboCompInnerModelManager::InnerModelManager::_iceI_begin_addTransform
 }
 
 bool
-IceProxy::RoboCompInnerModelManager::InnerModelManager::end_addTransform(const ::Ice::AsyncResultPtr& result)
+IceProxy::RoboCompInnerModelManager::InnerModelManager::end_addAttribute(const ::Ice::AsyncResultPtr& result)
 {
-    ::Ice::AsyncResult::_check(result, this, iceC_RoboCompInnerModelManager_InnerModelManager_addTransform_name);
+    ::Ice::AsyncResult::_check(result, this, iceC_RoboCompInnerModelManager_InnerModelManager_addAttribute_name);
     bool ret;
     if(!result->_waitForResponse())
     {
@@ -1523,6 +1461,98 @@ IceProxy::RoboCompInnerModelManager::InnerModelManager::end_addPlane(const ::Ice
 }
 
 ::Ice::AsyncResultPtr
+IceProxy::RoboCompInnerModelManager::InnerModelManager::_iceI_begin_addTransform(const ::std::string& iceP_item, const ::std::string& iceP_engine, const ::std::string& iceP_base, const ::RoboCompInnerModelManager::Pose3D& iceP_pose, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
+{
+    _checkTwowayOnly(iceC_RoboCompInnerModelManager_InnerModelManager_addTransform_name, sync);
+    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompInnerModelManager_InnerModelManager_addTransform_name, del, cookie, sync);
+    try
+    {
+        result->prepare(iceC_RoboCompInnerModelManager_InnerModelManager_addTransform_name, ::Ice::Normal, context);
+        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
+        ostr->write(iceP_item);
+        ostr->write(iceP_engine);
+        ostr->write(iceP_base);
+        ostr->write(iceP_pose);
+        result->endWriteParams();
+        result->invoke(iceC_RoboCompInnerModelManager_InnerModelManager_addTransform_name);
+    }
+    catch(const ::Ice::Exception& ex)
+    {
+        result->abort(ex);
+    }
+    return result;
+}
+
+bool
+IceProxy::RoboCompInnerModelManager::InnerModelManager::end_addTransform(const ::Ice::AsyncResultPtr& result)
+{
+    ::Ice::AsyncResult::_check(result, this, iceC_RoboCompInnerModelManager_InnerModelManager_addTransform_name);
+    bool ret;
+    if(!result->_waitForResponse())
+    {
+        try
+        {
+            result->_throwUserException();
+        }
+        catch(const ::RoboCompInnerModelManager::InnerModelManagerError&)
+        {
+            throw;
+        }
+        catch(const ::Ice::UserException& ex)
+        {
+            throw ::Ice::UnknownUserException(__FILE__, __LINE__, ex.ice_id());
+        }
+    }
+    ::Ice::InputStream* istr = result->_startReadParams();
+    istr->read(ret);
+    result->_endReadParams();
+    return ret;
+}
+
+::Ice::AsyncResultPtr
+IceProxy::RoboCompInnerModelManager::InnerModelManager::_iceI_begin_collide(const ::std::string& iceP_a, const ::std::string& iceP_b, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
+{
+    _checkTwowayOnly(iceC_RoboCompInnerModelManager_InnerModelManager_collide_name, sync);
+    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompInnerModelManager_InnerModelManager_collide_name, del, cookie, sync);
+    try
+    {
+        result->prepare(iceC_RoboCompInnerModelManager_InnerModelManager_collide_name, ::Ice::Normal, context);
+        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
+        ostr->write(iceP_a);
+        ostr->write(iceP_b);
+        result->endWriteParams();
+        result->invoke(iceC_RoboCompInnerModelManager_InnerModelManager_collide_name);
+    }
+    catch(const ::Ice::Exception& ex)
+    {
+        result->abort(ex);
+    }
+    return result;
+}
+
+bool
+IceProxy::RoboCompInnerModelManager::InnerModelManager::end_collide(const ::Ice::AsyncResultPtr& result)
+{
+    ::Ice::AsyncResult::_check(result, this, iceC_RoboCompInnerModelManager_InnerModelManager_collide_name);
+    bool ret;
+    if(!result->_waitForResponse())
+    {
+        try
+        {
+            result->_throwUserException();
+        }
+        catch(const ::Ice::UserException& ex)
+        {
+            throw ::Ice::UnknownUserException(__FILE__, __LINE__, ex.ice_id());
+        }
+    }
+    ::Ice::InputStream* istr = result->_startReadParams();
+    istr->read(ret);
+    result->_endReadParams();
+    return ret;
+}
+
+::Ice::AsyncResultPtr
 IceProxy::RoboCompInnerModelManager::InnerModelManager::_iceI_begin_getAllNodeInformation(const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
 {
     _checkTwowayOnly(iceC_RoboCompInnerModelManager_InnerModelManager_getAllNodeInformation_name, sync);
@@ -1565,19 +1595,18 @@ IceProxy::RoboCompInnerModelManager::InnerModelManager::end_getAllNodeInformatio
 }
 
 ::Ice::AsyncResultPtr
-IceProxy::RoboCompInnerModelManager::InnerModelManager::_iceI_begin_setPose(const ::std::string& iceP_base, const ::std::string& iceP_item, const ::RoboCompInnerModelManager::Pose3D& iceP_pose, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
+IceProxy::RoboCompInnerModelManager::InnerModelManager::_iceI_begin_getAttribute(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
 {
-    _checkTwowayOnly(iceC_RoboCompInnerModelManager_InnerModelManager_setPose_name, sync);
-    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompInnerModelManager_InnerModelManager_setPose_name, del, cookie, sync);
+    _checkTwowayOnly(iceC_RoboCompInnerModelManager_InnerModelManager_getAttribute_name, sync);
+    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompInnerModelManager_InnerModelManager_getAttribute_name, del, cookie, sync);
     try
     {
-        result->prepare(iceC_RoboCompInnerModelManager_InnerModelManager_setPose_name, ::Ice::Normal, context);
+        result->prepare(iceC_RoboCompInnerModelManager_InnerModelManager_getAttribute_name, ::Ice::Normal, context);
         ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
-        ostr->write(iceP_base);
-        ostr->write(iceP_item);
-        ostr->write(iceP_pose);
+        ostr->write(iceP_idNode);
+        ostr->write(iceP_name);
         result->endWriteParams();
-        result->invoke(iceC_RoboCompInnerModelManager_InnerModelManager_setPose_name);
+        result->invoke(iceC_RoboCompInnerModelManager_InnerModelManager_getAttribute_name);
     }
     catch(const ::Ice::Exception& ex)
     {
@@ -1587,9 +1616,9 @@ IceProxy::RoboCompInnerModelManager::InnerModelManager::_iceI_begin_setPose(cons
 }
 
 bool
-IceProxy::RoboCompInnerModelManager::InnerModelManager::end_setPose(const ::Ice::AsyncResultPtr& result)
+IceProxy::RoboCompInnerModelManager::InnerModelManager::end_getAttribute(::std::string& iceP_type, ::std::string& iceP_value, const ::Ice::AsyncResultPtr& result)
 {
-    ::Ice::AsyncResult::_check(result, this, iceC_RoboCompInnerModelManager_InnerModelManager_setPose_name);
+    ::Ice::AsyncResult::_check(result, this, iceC_RoboCompInnerModelManager_InnerModelManager_getAttribute_name);
     bool ret;
     if(!result->_waitForResponse())
     {
@@ -1607,53 +1636,8 @@ IceProxy::RoboCompInnerModelManager::InnerModelManager::end_setPose(const ::Ice:
         }
     }
     ::Ice::InputStream* istr = result->_startReadParams();
-    istr->read(ret);
-    result->_endReadParams();
-    return ret;
-}
-
-::Ice::AsyncResultPtr
-IceProxy::RoboCompInnerModelManager::InnerModelManager::_iceI_begin_setPoseFromParent(const ::std::string& iceP_item, const ::RoboCompInnerModelManager::Pose3D& iceP_pose, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
-{
-    _checkTwowayOnly(iceC_RoboCompInnerModelManager_InnerModelManager_setPoseFromParent_name, sync);
-    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompInnerModelManager_InnerModelManager_setPoseFromParent_name, del, cookie, sync);
-    try
-    {
-        result->prepare(iceC_RoboCompInnerModelManager_InnerModelManager_setPoseFromParent_name, ::Ice::Normal, context);
-        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
-        ostr->write(iceP_item);
-        ostr->write(iceP_pose);
-        result->endWriteParams();
-        result->invoke(iceC_RoboCompInnerModelManager_InnerModelManager_setPoseFromParent_name);
-    }
-    catch(const ::Ice::Exception& ex)
-    {
-        result->abort(ex);
-    }
-    return result;
-}
-
-bool
-IceProxy::RoboCompInnerModelManager::InnerModelManager::end_setPoseFromParent(const ::Ice::AsyncResultPtr& result)
-{
-    ::Ice::AsyncResult::_check(result, this, iceC_RoboCompInnerModelManager_InnerModelManager_setPoseFromParent_name);
-    bool ret;
-    if(!result->_waitForResponse())
-    {
-        try
-        {
-            result->_throwUserException();
-        }
-        catch(const ::RoboCompInnerModelManager::InnerModelManagerError&)
-        {
-            throw;
-        }
-        catch(const ::Ice::UserException& ex)
-        {
-            throw ::Ice::UnknownUserException(__FILE__, __LINE__, ex.ice_id());
-        }
-    }
-    ::Ice::InputStream* istr = result->_startReadParams();
+    istr->read(iceP_type);
+    istr->read(iceP_value);
     istr->read(ret);
     result->_endReadParams();
     return ret;
@@ -1755,149 +1739,6 @@ IceProxy::RoboCompInnerModelManager::InnerModelManager::end_getPoseFromParent(::
 }
 
 ::Ice::AsyncResultPtr
-IceProxy::RoboCompInnerModelManager::InnerModelManager::_iceI_begin_setPlane(const ::std::string& iceP_item, const ::RoboCompInnerModelManager::Plane3D& iceP_plane, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
-{
-    _checkTwowayOnly(iceC_RoboCompInnerModelManager_InnerModelManager_setPlane_name, sync);
-    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompInnerModelManager_InnerModelManager_setPlane_name, del, cookie, sync);
-    try
-    {
-        result->prepare(iceC_RoboCompInnerModelManager_InnerModelManager_setPlane_name, ::Ice::Normal, context);
-        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
-        ostr->write(iceP_item);
-        ostr->write(iceP_plane);
-        result->endWriteParams();
-        result->invoke(iceC_RoboCompInnerModelManager_InnerModelManager_setPlane_name);
-    }
-    catch(const ::Ice::Exception& ex)
-    {
-        result->abort(ex);
-    }
-    return result;
-}
-
-bool
-IceProxy::RoboCompInnerModelManager::InnerModelManager::end_setPlane(const ::Ice::AsyncResultPtr& result)
-{
-    ::Ice::AsyncResult::_check(result, this, iceC_RoboCompInnerModelManager_InnerModelManager_setPlane_name);
-    bool ret;
-    if(!result->_waitForResponse())
-    {
-        try
-        {
-            result->_throwUserException();
-        }
-        catch(const ::RoboCompInnerModelManager::InnerModelManagerError&)
-        {
-            throw;
-        }
-        catch(const ::Ice::UserException& ex)
-        {
-            throw ::Ice::UnknownUserException(__FILE__, __LINE__, ex.ice_id());
-        }
-    }
-    ::Ice::InputStream* istr = result->_startReadParams();
-    istr->read(ret);
-    result->_endReadParams();
-    return ret;
-}
-
-::Ice::AsyncResultPtr
-IceProxy::RoboCompInnerModelManager::InnerModelManager::_iceI_begin_setPlaneTexture(const ::std::string& iceP_item, const ::std::string& iceP_texure, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
-{
-    _checkTwowayOnly(iceC_RoboCompInnerModelManager_InnerModelManager_setPlaneTexture_name, sync);
-    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompInnerModelManager_InnerModelManager_setPlaneTexture_name, del, cookie, sync);
-    try
-    {
-        result->prepare(iceC_RoboCompInnerModelManager_InnerModelManager_setPlaneTexture_name, ::Ice::Normal, context);
-        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
-        ostr->write(iceP_item);
-        ostr->write(iceP_texure);
-        result->endWriteParams();
-        result->invoke(iceC_RoboCompInnerModelManager_InnerModelManager_setPlaneTexture_name);
-    }
-    catch(const ::Ice::Exception& ex)
-    {
-        result->abort(ex);
-    }
-    return result;
-}
-
-bool
-IceProxy::RoboCompInnerModelManager::InnerModelManager::end_setPlaneTexture(const ::Ice::AsyncResultPtr& result)
-{
-    ::Ice::AsyncResult::_check(result, this, iceC_RoboCompInnerModelManager_InnerModelManager_setPlaneTexture_name);
-    bool ret;
-    if(!result->_waitForResponse())
-    {
-        try
-        {
-            result->_throwUserException();
-        }
-        catch(const ::RoboCompInnerModelManager::InnerModelManagerError&)
-        {
-            throw;
-        }
-        catch(const ::Ice::UserException& ex)
-        {
-            throw ::Ice::UnknownUserException(__FILE__, __LINE__, ex.ice_id());
-        }
-    }
-    ::Ice::InputStream* istr = result->_startReadParams();
-    istr->read(ret);
-    result->_endReadParams();
-    return ret;
-}
-
-::Ice::AsyncResultPtr
-IceProxy::RoboCompInnerModelManager::InnerModelManager::_iceI_begin_transform(const ::std::string& iceP_base, const ::std::string& iceP_item, const ::RoboCompInnerModelManager::coord3D& iceP_coordInItem, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
-{
-    _checkTwowayOnly(iceC_RoboCompInnerModelManager_InnerModelManager_transform_name, sync);
-    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompInnerModelManager_InnerModelManager_transform_name, del, cookie, sync);
-    try
-    {
-        result->prepare(iceC_RoboCompInnerModelManager_InnerModelManager_transform_name, ::Ice::Normal, context);
-        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
-        ostr->write(iceP_base);
-        ostr->write(iceP_item);
-        ostr->write(iceP_coordInItem);
-        result->endWriteParams();
-        result->invoke(iceC_RoboCompInnerModelManager_InnerModelManager_transform_name);
-    }
-    catch(const ::Ice::Exception& ex)
-    {
-        result->abort(ex);
-    }
-    return result;
-}
-
-bool
-IceProxy::RoboCompInnerModelManager::InnerModelManager::end_transform(::RoboCompInnerModelManager::coord3D& iceP_coordInBase, const ::Ice::AsyncResultPtr& result)
-{
-    ::Ice::AsyncResult::_check(result, this, iceC_RoboCompInnerModelManager_InnerModelManager_transform_name);
-    bool ret;
-    if(!result->_waitForResponse())
-    {
-        try
-        {
-            result->_throwUserException();
-        }
-        catch(const ::RoboCompInnerModelManager::InnerModelManagerError&)
-        {
-            throw;
-        }
-        catch(const ::Ice::UserException& ex)
-        {
-            throw ::Ice::UnknownUserException(__FILE__, __LINE__, ex.ice_id());
-        }
-    }
-    ::Ice::InputStream* istr = result->_startReadParams();
-    istr->read(iceP_coordInBase);
-    istr->read(ret);
-    result->_endReadParams();
-    return ret;
-}
-
-::Ice::AsyncResultPtr
 IceProxy::RoboCompInnerModelManager::InnerModelManager::_iceI_begin_getTransformationMatrix(const ::std::string& iceP_base, const ::std::string& iceP_item, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
 {
     _checkTwowayOnly(iceC_RoboCompInnerModelManager_InnerModelManager_getTransformationMatrix_name, sync);
@@ -1945,20 +1786,18 @@ IceProxy::RoboCompInnerModelManager::InnerModelManager::end_getTransformationMat
 }
 
 ::Ice::AsyncResultPtr
-IceProxy::RoboCompInnerModelManager::InnerModelManager::_iceI_begin_setScale(const ::std::string& iceP_item, ::Ice::Float iceP_scaleX, ::Ice::Float iceP_scaleY, ::Ice::Float iceP_scaleZ, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
+IceProxy::RoboCompInnerModelManager::InnerModelManager::_iceI_begin_moveNode(const ::std::string& iceP_src, const ::std::string& iceP_dst, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
 {
-    _checkTwowayOnly(iceC_RoboCompInnerModelManager_InnerModelManager_setScale_name, sync);
-    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompInnerModelManager_InnerModelManager_setScale_name, del, cookie, sync);
+    _checkTwowayOnly(iceC_RoboCompInnerModelManager_InnerModelManager_moveNode_name, sync);
+    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompInnerModelManager_InnerModelManager_moveNode_name, del, cookie, sync);
     try
     {
-        result->prepare(iceC_RoboCompInnerModelManager_InnerModelManager_setScale_name, ::Ice::Normal, context);
+        result->prepare(iceC_RoboCompInnerModelManager_InnerModelManager_moveNode_name, ::Ice::Normal, context);
         ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
-        ostr->write(iceP_item);
-        ostr->write(iceP_scaleX);
-        ostr->write(iceP_scaleY);
-        ostr->write(iceP_scaleZ);
+        ostr->write(iceP_src);
+        ostr->write(iceP_dst);
         result->endWriteParams();
-        result->invoke(iceC_RoboCompInnerModelManager_InnerModelManager_setScale_name);
+        result->invoke(iceC_RoboCompInnerModelManager_InnerModelManager_moveNode_name);
     }
     catch(const ::Ice::Exception& ex)
     {
@@ -1968,58 +1807,9 @@ IceProxy::RoboCompInnerModelManager::InnerModelManager::_iceI_begin_setScale(con
 }
 
 bool
-IceProxy::RoboCompInnerModelManager::InnerModelManager::end_setScale(const ::Ice::AsyncResultPtr& result)
+IceProxy::RoboCompInnerModelManager::InnerModelManager::end_moveNode(const ::Ice::AsyncResultPtr& result)
 {
-    ::Ice::AsyncResult::_check(result, this, iceC_RoboCompInnerModelManager_InnerModelManager_setScale_name);
-    bool ret;
-    if(!result->_waitForResponse())
-    {
-        try
-        {
-            result->_throwUserException();
-        }
-        catch(const ::RoboCompInnerModelManager::InnerModelManagerError&)
-        {
-            throw;
-        }
-        catch(const ::Ice::UserException& ex)
-        {
-            throw ::Ice::UnknownUserException(__FILE__, __LINE__, ex.ice_id());
-        }
-    }
-    ::Ice::InputStream* istr = result->_startReadParams();
-    istr->read(ret);
-    result->_endReadParams();
-    return ret;
-}
-
-::Ice::AsyncResultPtr
-IceProxy::RoboCompInnerModelManager::InnerModelManager::_iceI_begin_addAttribute(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::std::string& iceP_type, const ::std::string& iceP_value, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
-{
-    _checkTwowayOnly(iceC_RoboCompInnerModelManager_InnerModelManager_addAttribute_name, sync);
-    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompInnerModelManager_InnerModelManager_addAttribute_name, del, cookie, sync);
-    try
-    {
-        result->prepare(iceC_RoboCompInnerModelManager_InnerModelManager_addAttribute_name, ::Ice::Normal, context);
-        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
-        ostr->write(iceP_idNode);
-        ostr->write(iceP_name);
-        ostr->write(iceP_type);
-        ostr->write(iceP_value);
-        result->endWriteParams();
-        result->invoke(iceC_RoboCompInnerModelManager_InnerModelManager_addAttribute_name);
-    }
-    catch(const ::Ice::Exception& ex)
-    {
-        result->abort(ex);
-    }
-    return result;
-}
-
-bool
-IceProxy::RoboCompInnerModelManager::InnerModelManager::end_addAttribute(const ::Ice::AsyncResultPtr& result)
-{
-    ::Ice::AsyncResult::_check(result, this, iceC_RoboCompInnerModelManager_InnerModelManager_addAttribute_name);
+    ::Ice::AsyncResult::_check(result, this, iceC_RoboCompInnerModelManager_InnerModelManager_moveNode_name);
     bool ret;
     if(!result->_waitForResponse())
     {
@@ -2067,6 +1857,52 @@ bool
 IceProxy::RoboCompInnerModelManager::InnerModelManager::end_removeAttribute(const ::Ice::AsyncResultPtr& result)
 {
     ::Ice::AsyncResult::_check(result, this, iceC_RoboCompInnerModelManager_InnerModelManager_removeAttribute_name);
+    bool ret;
+    if(!result->_waitForResponse())
+    {
+        try
+        {
+            result->_throwUserException();
+        }
+        catch(const ::RoboCompInnerModelManager::InnerModelManagerError&)
+        {
+            throw;
+        }
+        catch(const ::Ice::UserException& ex)
+        {
+            throw ::Ice::UnknownUserException(__FILE__, __LINE__, ex.ice_id());
+        }
+    }
+    ::Ice::InputStream* istr = result->_startReadParams();
+    istr->read(ret);
+    result->_endReadParams();
+    return ret;
+}
+
+::Ice::AsyncResultPtr
+IceProxy::RoboCompInnerModelManager::InnerModelManager::_iceI_begin_removeNode(const ::std::string& iceP_item, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
+{
+    _checkTwowayOnly(iceC_RoboCompInnerModelManager_InnerModelManager_removeNode_name, sync);
+    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompInnerModelManager_InnerModelManager_removeNode_name, del, cookie, sync);
+    try
+    {
+        result->prepare(iceC_RoboCompInnerModelManager_InnerModelManager_removeNode_name, ::Ice::Normal, context);
+        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
+        ostr->write(iceP_item);
+        result->endWriteParams();
+        result->invoke(iceC_RoboCompInnerModelManager_InnerModelManager_removeNode_name);
+    }
+    catch(const ::Ice::Exception& ex)
+    {
+        result->abort(ex);
+    }
+    return result;
+}
+
+bool
+IceProxy::RoboCompInnerModelManager::InnerModelManager::end_removeNode(const ::Ice::AsyncResultPtr& result)
+{
+    ::Ice::AsyncResult::_check(result, this, iceC_RoboCompInnerModelManager_InnerModelManager_removeNode_name);
     bool ret;
     if(!result->_waitForResponse())
     {
@@ -2139,66 +1975,18 @@ IceProxy::RoboCompInnerModelManager::InnerModelManager::end_setAttribute(const :
 }
 
 ::Ice::AsyncResultPtr
-IceProxy::RoboCompInnerModelManager::InnerModelManager::_iceI_begin_getAttribute(const ::std::string& iceP_idNode, const ::std::string& iceP_name, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
+IceProxy::RoboCompInnerModelManager::InnerModelManager::_iceI_begin_setPlane(const ::std::string& iceP_item, const ::RoboCompInnerModelManager::Plane3D& iceP_plane, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
 {
-    _checkTwowayOnly(iceC_RoboCompInnerModelManager_InnerModelManager_getAttribute_name, sync);
-    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompInnerModelManager_InnerModelManager_getAttribute_name, del, cookie, sync);
+    _checkTwowayOnly(iceC_RoboCompInnerModelManager_InnerModelManager_setPlane_name, sync);
+    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompInnerModelManager_InnerModelManager_setPlane_name, del, cookie, sync);
     try
     {
-        result->prepare(iceC_RoboCompInnerModelManager_InnerModelManager_getAttribute_name, ::Ice::Normal, context);
-        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
-        ostr->write(iceP_idNode);
-        ostr->write(iceP_name);
-        result->endWriteParams();
-        result->invoke(iceC_RoboCompInnerModelManager_InnerModelManager_getAttribute_name);
-    }
-    catch(const ::Ice::Exception& ex)
-    {
-        result->abort(ex);
-    }
-    return result;
-}
-
-bool
-IceProxy::RoboCompInnerModelManager::InnerModelManager::end_getAttribute(::std::string& iceP_type, ::std::string& iceP_value, const ::Ice::AsyncResultPtr& result)
-{
-    ::Ice::AsyncResult::_check(result, this, iceC_RoboCompInnerModelManager_InnerModelManager_getAttribute_name);
-    bool ret;
-    if(!result->_waitForResponse())
-    {
-        try
-        {
-            result->_throwUserException();
-        }
-        catch(const ::RoboCompInnerModelManager::InnerModelManagerError&)
-        {
-            throw;
-        }
-        catch(const ::Ice::UserException& ex)
-        {
-            throw ::Ice::UnknownUserException(__FILE__, __LINE__, ex.ice_id());
-        }
-    }
-    ::Ice::InputStream* istr = result->_startReadParams();
-    istr->read(iceP_type);
-    istr->read(iceP_value);
-    istr->read(ret);
-    result->_endReadParams();
-    return ret;
-}
-
-::Ice::AsyncResultPtr
-IceProxy::RoboCompInnerModelManager::InnerModelManager::_iceI_begin_removeNode(const ::std::string& iceP_item, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
-{
-    _checkTwowayOnly(iceC_RoboCompInnerModelManager_InnerModelManager_removeNode_name, sync);
-    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompInnerModelManager_InnerModelManager_removeNode_name, del, cookie, sync);
-    try
-    {
-        result->prepare(iceC_RoboCompInnerModelManager_InnerModelManager_removeNode_name, ::Ice::Normal, context);
+        result->prepare(iceC_RoboCompInnerModelManager_InnerModelManager_setPlane_name, ::Ice::Normal, context);
         ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
         ostr->write(iceP_item);
+        ostr->write(iceP_plane);
         result->endWriteParams();
-        result->invoke(iceC_RoboCompInnerModelManager_InnerModelManager_removeNode_name);
+        result->invoke(iceC_RoboCompInnerModelManager_InnerModelManager_setPlane_name);
     }
     catch(const ::Ice::Exception& ex)
     {
@@ -2208,103 +1996,9 @@ IceProxy::RoboCompInnerModelManager::InnerModelManager::_iceI_begin_removeNode(c
 }
 
 bool
-IceProxy::RoboCompInnerModelManager::InnerModelManager::end_removeNode(const ::Ice::AsyncResultPtr& result)
+IceProxy::RoboCompInnerModelManager::InnerModelManager::end_setPlane(const ::Ice::AsyncResultPtr& result)
 {
-    ::Ice::AsyncResult::_check(result, this, iceC_RoboCompInnerModelManager_InnerModelManager_removeNode_name);
-    bool ret;
-    if(!result->_waitForResponse())
-    {
-        try
-        {
-            result->_throwUserException();
-        }
-        catch(const ::RoboCompInnerModelManager::InnerModelManagerError&)
-        {
-            throw;
-        }
-        catch(const ::Ice::UserException& ex)
-        {
-            throw ::Ice::UnknownUserException(__FILE__, __LINE__, ex.ice_id());
-        }
-    }
-    ::Ice::InputStream* istr = result->_startReadParams();
-    istr->read(ret);
-    result->_endReadParams();
-    return ret;
-}
-
-::Ice::AsyncResultPtr
-IceProxy::RoboCompInnerModelManager::InnerModelManager::_iceI_begin_moveNode(const ::std::string& iceP_src, const ::std::string& iceP_dst, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
-{
-    _checkTwowayOnly(iceC_RoboCompInnerModelManager_InnerModelManager_moveNode_name, sync);
-    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompInnerModelManager_InnerModelManager_moveNode_name, del, cookie, sync);
-    try
-    {
-        result->prepare(iceC_RoboCompInnerModelManager_InnerModelManager_moveNode_name, ::Ice::Normal, context);
-        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
-        ostr->write(iceP_src);
-        ostr->write(iceP_dst);
-        result->endWriteParams();
-        result->invoke(iceC_RoboCompInnerModelManager_InnerModelManager_moveNode_name);
-    }
-    catch(const ::Ice::Exception& ex)
-    {
-        result->abort(ex);
-    }
-    return result;
-}
-
-bool
-IceProxy::RoboCompInnerModelManager::InnerModelManager::end_moveNode(const ::Ice::AsyncResultPtr& result)
-{
-    ::Ice::AsyncResult::_check(result, this, iceC_RoboCompInnerModelManager_InnerModelManager_moveNode_name);
-    bool ret;
-    if(!result->_waitForResponse())
-    {
-        try
-        {
-            result->_throwUserException();
-        }
-        catch(const ::RoboCompInnerModelManager::InnerModelManagerError&)
-        {
-            throw;
-        }
-        catch(const ::Ice::UserException& ex)
-        {
-            throw ::Ice::UnknownUserException(__FILE__, __LINE__, ex.ice_id());
-        }
-    }
-    ::Ice::InputStream* istr = result->_startReadParams();
-    istr->read(ret);
-    result->_endReadParams();
-    return ret;
-}
-
-::Ice::AsyncResultPtr
-IceProxy::RoboCompInnerModelManager::InnerModelManager::_iceI_begin_collide(const ::std::string& iceP_a, const ::std::string& iceP_b, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
-{
-    _checkTwowayOnly(iceC_RoboCompInnerModelManager_InnerModelManager_collide_name, sync);
-    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompInnerModelManager_InnerModelManager_collide_name, del, cookie, sync);
-    try
-    {
-        result->prepare(iceC_RoboCompInnerModelManager_InnerModelManager_collide_name, ::Ice::Normal, context);
-        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
-        ostr->write(iceP_a);
-        ostr->write(iceP_b);
-        result->endWriteParams();
-        result->invoke(iceC_RoboCompInnerModelManager_InnerModelManager_collide_name);
-    }
-    catch(const ::Ice::Exception& ex)
-    {
-        result->abort(ex);
-    }
-    return result;
-}
-
-bool
-IceProxy::RoboCompInnerModelManager::InnerModelManager::end_collide(const ::Ice::AsyncResultPtr& result)
-{
-    ::Ice::AsyncResult::_check(result, this, iceC_RoboCompInnerModelManager_InnerModelManager_collide_name);
+    ::Ice::AsyncResult::_check(result, this, iceC_RoboCompInnerModelManager_InnerModelManager_setPlane_name);
     bool ret;
     if(!result->_waitForResponse())
     {
@@ -2351,6 +2045,199 @@ void
 IceProxy::RoboCompInnerModelManager::InnerModelManager::end_setPointCloudData(const ::Ice::AsyncResultPtr& result)
 {
     _end(result, iceC_RoboCompInnerModelManager_InnerModelManager_setPointCloudData_name);
+}
+
+::Ice::AsyncResultPtr
+IceProxy::RoboCompInnerModelManager::InnerModelManager::_iceI_begin_setPose(const ::std::string& iceP_base, const ::std::string& iceP_item, const ::RoboCompInnerModelManager::Pose3D& iceP_pose, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
+{
+    _checkTwowayOnly(iceC_RoboCompInnerModelManager_InnerModelManager_setPose_name, sync);
+    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompInnerModelManager_InnerModelManager_setPose_name, del, cookie, sync);
+    try
+    {
+        result->prepare(iceC_RoboCompInnerModelManager_InnerModelManager_setPose_name, ::Ice::Normal, context);
+        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
+        ostr->write(iceP_base);
+        ostr->write(iceP_item);
+        ostr->write(iceP_pose);
+        result->endWriteParams();
+        result->invoke(iceC_RoboCompInnerModelManager_InnerModelManager_setPose_name);
+    }
+    catch(const ::Ice::Exception& ex)
+    {
+        result->abort(ex);
+    }
+    return result;
+}
+
+bool
+IceProxy::RoboCompInnerModelManager::InnerModelManager::end_setPose(const ::Ice::AsyncResultPtr& result)
+{
+    ::Ice::AsyncResult::_check(result, this, iceC_RoboCompInnerModelManager_InnerModelManager_setPose_name);
+    bool ret;
+    if(!result->_waitForResponse())
+    {
+        try
+        {
+            result->_throwUserException();
+        }
+        catch(const ::RoboCompInnerModelManager::InnerModelManagerError&)
+        {
+            throw;
+        }
+        catch(const ::Ice::UserException& ex)
+        {
+            throw ::Ice::UnknownUserException(__FILE__, __LINE__, ex.ice_id());
+        }
+    }
+    ::Ice::InputStream* istr = result->_startReadParams();
+    istr->read(ret);
+    result->_endReadParams();
+    return ret;
+}
+
+::Ice::AsyncResultPtr
+IceProxy::RoboCompInnerModelManager::InnerModelManager::_iceI_begin_setPoseFromParent(const ::std::string& iceP_item, const ::RoboCompInnerModelManager::Pose3D& iceP_pose, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
+{
+    _checkTwowayOnly(iceC_RoboCompInnerModelManager_InnerModelManager_setPoseFromParent_name, sync);
+    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompInnerModelManager_InnerModelManager_setPoseFromParent_name, del, cookie, sync);
+    try
+    {
+        result->prepare(iceC_RoboCompInnerModelManager_InnerModelManager_setPoseFromParent_name, ::Ice::Normal, context);
+        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
+        ostr->write(iceP_item);
+        ostr->write(iceP_pose);
+        result->endWriteParams();
+        result->invoke(iceC_RoboCompInnerModelManager_InnerModelManager_setPoseFromParent_name);
+    }
+    catch(const ::Ice::Exception& ex)
+    {
+        result->abort(ex);
+    }
+    return result;
+}
+
+bool
+IceProxy::RoboCompInnerModelManager::InnerModelManager::end_setPoseFromParent(const ::Ice::AsyncResultPtr& result)
+{
+    ::Ice::AsyncResult::_check(result, this, iceC_RoboCompInnerModelManager_InnerModelManager_setPoseFromParent_name);
+    bool ret;
+    if(!result->_waitForResponse())
+    {
+        try
+        {
+            result->_throwUserException();
+        }
+        catch(const ::RoboCompInnerModelManager::InnerModelManagerError&)
+        {
+            throw;
+        }
+        catch(const ::Ice::UserException& ex)
+        {
+            throw ::Ice::UnknownUserException(__FILE__, __LINE__, ex.ice_id());
+        }
+    }
+    ::Ice::InputStream* istr = result->_startReadParams();
+    istr->read(ret);
+    result->_endReadParams();
+    return ret;
+}
+
+::Ice::AsyncResultPtr
+IceProxy::RoboCompInnerModelManager::InnerModelManager::_iceI_begin_setScale(const ::std::string& iceP_item, ::Ice::Float iceP_scaleX, ::Ice::Float iceP_scaleY, ::Ice::Float iceP_scaleZ, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
+{
+    _checkTwowayOnly(iceC_RoboCompInnerModelManager_InnerModelManager_setScale_name, sync);
+    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompInnerModelManager_InnerModelManager_setScale_name, del, cookie, sync);
+    try
+    {
+        result->prepare(iceC_RoboCompInnerModelManager_InnerModelManager_setScale_name, ::Ice::Normal, context);
+        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
+        ostr->write(iceP_item);
+        ostr->write(iceP_scaleX);
+        ostr->write(iceP_scaleY);
+        ostr->write(iceP_scaleZ);
+        result->endWriteParams();
+        result->invoke(iceC_RoboCompInnerModelManager_InnerModelManager_setScale_name);
+    }
+    catch(const ::Ice::Exception& ex)
+    {
+        result->abort(ex);
+    }
+    return result;
+}
+
+bool
+IceProxy::RoboCompInnerModelManager::InnerModelManager::end_setScale(const ::Ice::AsyncResultPtr& result)
+{
+    ::Ice::AsyncResult::_check(result, this, iceC_RoboCompInnerModelManager_InnerModelManager_setScale_name);
+    bool ret;
+    if(!result->_waitForResponse())
+    {
+        try
+        {
+            result->_throwUserException();
+        }
+        catch(const ::RoboCompInnerModelManager::InnerModelManagerError&)
+        {
+            throw;
+        }
+        catch(const ::Ice::UserException& ex)
+        {
+            throw ::Ice::UnknownUserException(__FILE__, __LINE__, ex.ice_id());
+        }
+    }
+    ::Ice::InputStream* istr = result->_startReadParams();
+    istr->read(ret);
+    result->_endReadParams();
+    return ret;
+}
+
+::Ice::AsyncResultPtr
+IceProxy::RoboCompInnerModelManager::InnerModelManager::_iceI_begin_transform(const ::std::string& iceP_base, const ::std::string& iceP_item, const ::RoboCompInnerModelManager::coord3D& iceP_coordInItem, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
+{
+    _checkTwowayOnly(iceC_RoboCompInnerModelManager_InnerModelManager_transform_name, sync);
+    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompInnerModelManager_InnerModelManager_transform_name, del, cookie, sync);
+    try
+    {
+        result->prepare(iceC_RoboCompInnerModelManager_InnerModelManager_transform_name, ::Ice::Normal, context);
+        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
+        ostr->write(iceP_base);
+        ostr->write(iceP_item);
+        ostr->write(iceP_coordInItem);
+        result->endWriteParams();
+        result->invoke(iceC_RoboCompInnerModelManager_InnerModelManager_transform_name);
+    }
+    catch(const ::Ice::Exception& ex)
+    {
+        result->abort(ex);
+    }
+    return result;
+}
+
+bool
+IceProxy::RoboCompInnerModelManager::InnerModelManager::end_transform(::RoboCompInnerModelManager::coord3D& iceP_coordInBase, const ::Ice::AsyncResultPtr& result)
+{
+    ::Ice::AsyncResult::_check(result, this, iceC_RoboCompInnerModelManager_InnerModelManager_transform_name);
+    bool ret;
+    if(!result->_waitForResponse())
+    {
+        try
+        {
+            result->_throwUserException();
+        }
+        catch(const ::RoboCompInnerModelManager::InnerModelManagerError&)
+        {
+            throw;
+        }
+        catch(const ::Ice::UserException& ex)
+        {
+            throw ::Ice::UnknownUserException(__FILE__, __LINE__, ex.ice_id());
+        }
+    }
+    ::Ice::InputStream* istr = result->_startReadParams();
+    istr->read(iceP_coordInBase);
+    istr->read(ret);
+    result->_endReadParams();
+    return ret;
 }
 
 ::IceProxy::Ice::Object*
@@ -2412,20 +2299,20 @@ RoboCompInnerModelManager::InnerModelManager::ice_staticId()
 }
 
 bool
-RoboCompInnerModelManager::InnerModelManager::_iceD_addTransform(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+RoboCompInnerModelManager::InnerModelManager::_iceD_addAttribute(::IceInternal::Incoming& inS, const ::Ice::Current& current)
 {
     _iceCheckMode(::Ice::Normal, current.mode);
     ::Ice::InputStream* istr = inS.startReadParams();
-    ::std::string iceP_item;
-    ::std::string iceP_engine;
-    ::std::string iceP_base;
-    ::RoboCompInnerModelManager::Pose3D iceP_pose;
-    istr->read(iceP_item);
-    istr->read(iceP_engine);
-    istr->read(iceP_base);
-    istr->read(iceP_pose);
+    ::std::string iceP_idNode;
+    ::std::string iceP_name;
+    ::std::string iceP_type;
+    ::std::string iceP_value;
+    istr->read(iceP_idNode);
+    istr->read(iceP_name);
+    istr->read(iceP_type);
+    istr->read(iceP_value);
     inS.endReadParams();
-    bool ret = this->addTransform(iceP_item, iceP_engine, iceP_base, iceP_pose, current);
+    bool ret = this->addAttribute(iceP_idNode, iceP_name, iceP_type, iceP_value, current);
     ::Ice::OutputStream* ostr = inS.startWriteParams();
     ostr->write(ret);
     inS.endWriteParams();
@@ -2490,6 +2377,44 @@ RoboCompInnerModelManager::InnerModelManager::_iceD_addPlane(::IceInternal::Inco
 }
 
 bool
+RoboCompInnerModelManager::InnerModelManager::_iceD_addTransform(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::Normal, current.mode);
+    ::Ice::InputStream* istr = inS.startReadParams();
+    ::std::string iceP_item;
+    ::std::string iceP_engine;
+    ::std::string iceP_base;
+    ::RoboCompInnerModelManager::Pose3D iceP_pose;
+    istr->read(iceP_item);
+    istr->read(iceP_engine);
+    istr->read(iceP_base);
+    istr->read(iceP_pose);
+    inS.endReadParams();
+    bool ret = this->addTransform(iceP_item, iceP_engine, iceP_base, iceP_pose, current);
+    ::Ice::OutputStream* ostr = inS.startWriteParams();
+    ostr->write(ret);
+    inS.endWriteParams();
+    return true;
+}
+
+bool
+RoboCompInnerModelManager::InnerModelManager::_iceD_collide(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::Normal, current.mode);
+    ::Ice::InputStream* istr = inS.startReadParams();
+    ::std::string iceP_a;
+    ::std::string iceP_b;
+    istr->read(iceP_a);
+    istr->read(iceP_b);
+    inS.endReadParams();
+    bool ret = this->collide(iceP_a, iceP_b, current);
+    ::Ice::OutputStream* ostr = inS.startWriteParams();
+    ostr->write(ret);
+    inS.endWriteParams();
+    return true;
+}
+
+bool
 RoboCompInnerModelManager::InnerModelManager::_iceD_getAllNodeInformation(::IceInternal::Incoming& inS, const ::Ice::Current& current)
 {
     _iceCheckMode(::Ice::Normal, current.mode);
@@ -2503,36 +2428,21 @@ RoboCompInnerModelManager::InnerModelManager::_iceD_getAllNodeInformation(::IceI
 }
 
 bool
-RoboCompInnerModelManager::InnerModelManager::_iceD_setPose(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+RoboCompInnerModelManager::InnerModelManager::_iceD_getAttribute(::IceInternal::Incoming& inS, const ::Ice::Current& current)
 {
     _iceCheckMode(::Ice::Normal, current.mode);
     ::Ice::InputStream* istr = inS.startReadParams();
-    ::std::string iceP_base;
-    ::std::string iceP_item;
-    ::RoboCompInnerModelManager::Pose3D iceP_pose;
-    istr->read(iceP_base);
-    istr->read(iceP_item);
-    istr->read(iceP_pose);
+    ::std::string iceP_idNode;
+    ::std::string iceP_name;
+    istr->read(iceP_idNode);
+    istr->read(iceP_name);
     inS.endReadParams();
-    bool ret = this->setPose(iceP_base, iceP_item, iceP_pose, current);
+    ::std::string iceP_type;
+    ::std::string iceP_value;
+    bool ret = this->getAttribute(iceP_idNode, iceP_name, iceP_type, iceP_value, current);
     ::Ice::OutputStream* ostr = inS.startWriteParams();
-    ostr->write(ret);
-    inS.endWriteParams();
-    return true;
-}
-
-bool
-RoboCompInnerModelManager::InnerModelManager::_iceD_setPoseFromParent(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::Normal, current.mode);
-    ::Ice::InputStream* istr = inS.startReadParams();
-    ::std::string iceP_item;
-    ::RoboCompInnerModelManager::Pose3D iceP_pose;
-    istr->read(iceP_item);
-    istr->read(iceP_pose);
-    inS.endReadParams();
-    bool ret = this->setPoseFromParent(iceP_item, iceP_pose, current);
-    ::Ice::OutputStream* ostr = inS.startWriteParams();
+    ostr->write(iceP_type);
+    ostr->write(iceP_value);
     ostr->write(ret);
     inS.endWriteParams();
     return true;
@@ -2575,61 +2485,6 @@ RoboCompInnerModelManager::InnerModelManager::_iceD_getPoseFromParent(::IceInter
 }
 
 bool
-RoboCompInnerModelManager::InnerModelManager::_iceD_setPlane(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::Normal, current.mode);
-    ::Ice::InputStream* istr = inS.startReadParams();
-    ::std::string iceP_item;
-    ::RoboCompInnerModelManager::Plane3D iceP_plane;
-    istr->read(iceP_item);
-    istr->read(iceP_plane);
-    inS.endReadParams();
-    bool ret = this->setPlane(iceP_item, iceP_plane, current);
-    ::Ice::OutputStream* ostr = inS.startWriteParams();
-    ostr->write(ret);
-    inS.endWriteParams();
-    return true;
-}
-
-bool
-RoboCompInnerModelManager::InnerModelManager::_iceD_setPlaneTexture(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::Normal, current.mode);
-    ::Ice::InputStream* istr = inS.startReadParams();
-    ::std::string iceP_item;
-    ::std::string iceP_texure;
-    istr->read(iceP_item);
-    istr->read(iceP_texure);
-    inS.endReadParams();
-    bool ret = this->setPlaneTexture(iceP_item, iceP_texure, current);
-    ::Ice::OutputStream* ostr = inS.startWriteParams();
-    ostr->write(ret);
-    inS.endWriteParams();
-    return true;
-}
-
-bool
-RoboCompInnerModelManager::InnerModelManager::_iceD_transform(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::Normal, current.mode);
-    ::Ice::InputStream* istr = inS.startReadParams();
-    ::std::string iceP_base;
-    ::std::string iceP_item;
-    ::RoboCompInnerModelManager::coord3D iceP_coordInItem;
-    istr->read(iceP_base);
-    istr->read(iceP_item);
-    istr->read(iceP_coordInItem);
-    inS.endReadParams();
-    ::RoboCompInnerModelManager::coord3D iceP_coordInBase;
-    bool ret = this->transform(iceP_base, iceP_item, iceP_coordInItem, iceP_coordInBase, current);
-    ::Ice::OutputStream* ostr = inS.startWriteParams();
-    ostr->write(iceP_coordInBase);
-    ostr->write(ret);
-    inS.endWriteParams();
-    return true;
-}
-
-bool
 RoboCompInnerModelManager::InnerModelManager::_iceD_getTransformationMatrix(::IceInternal::Incoming& inS, const ::Ice::Current& current)
 {
     _iceCheckMode(::Ice::Normal, current.mode);
@@ -2647,41 +2502,16 @@ RoboCompInnerModelManager::InnerModelManager::_iceD_getTransformationMatrix(::Ic
 }
 
 bool
-RoboCompInnerModelManager::InnerModelManager::_iceD_setScale(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+RoboCompInnerModelManager::InnerModelManager::_iceD_moveNode(::IceInternal::Incoming& inS, const ::Ice::Current& current)
 {
     _iceCheckMode(::Ice::Normal, current.mode);
     ::Ice::InputStream* istr = inS.startReadParams();
-    ::std::string iceP_item;
-    ::Ice::Float iceP_scaleX;
-    ::Ice::Float iceP_scaleY;
-    ::Ice::Float iceP_scaleZ;
-    istr->read(iceP_item);
-    istr->read(iceP_scaleX);
-    istr->read(iceP_scaleY);
-    istr->read(iceP_scaleZ);
+    ::std::string iceP_src;
+    ::std::string iceP_dst;
+    istr->read(iceP_src);
+    istr->read(iceP_dst);
     inS.endReadParams();
-    bool ret = this->setScale(iceP_item, iceP_scaleX, iceP_scaleY, iceP_scaleZ, current);
-    ::Ice::OutputStream* ostr = inS.startWriteParams();
-    ostr->write(ret);
-    inS.endWriteParams();
-    return true;
-}
-
-bool
-RoboCompInnerModelManager::InnerModelManager::_iceD_addAttribute(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::Normal, current.mode);
-    ::Ice::InputStream* istr = inS.startReadParams();
-    ::std::string iceP_idNode;
-    ::std::string iceP_name;
-    ::std::string iceP_type;
-    ::std::string iceP_value;
-    istr->read(iceP_idNode);
-    istr->read(iceP_name);
-    istr->read(iceP_type);
-    istr->read(iceP_value);
-    inS.endReadParams();
-    bool ret = this->addAttribute(iceP_idNode, iceP_name, iceP_type, iceP_value, current);
+    bool ret = this->moveNode(iceP_src, iceP_dst, current);
     ::Ice::OutputStream* ostr = inS.startWriteParams();
     ostr->write(ret);
     inS.endWriteParams();
@@ -2699,6 +2529,21 @@ RoboCompInnerModelManager::InnerModelManager::_iceD_removeAttribute(::IceInterna
     istr->read(iceP_name);
     inS.endReadParams();
     bool ret = this->removeAttribute(iceP_idNode, iceP_name, current);
+    ::Ice::OutputStream* ostr = inS.startWriteParams();
+    ostr->write(ret);
+    inS.endWriteParams();
+    return true;
+}
+
+bool
+RoboCompInnerModelManager::InnerModelManager::_iceD_removeNode(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::Normal, current.mode);
+    ::Ice::InputStream* istr = inS.startReadParams();
+    ::std::string iceP_item;
+    istr->read(iceP_item);
+    inS.endReadParams();
+    bool ret = this->removeNode(iceP_item, current);
     ::Ice::OutputStream* ostr = inS.startWriteParams();
     ostr->write(ret);
     inS.endWriteParams();
@@ -2727,69 +2572,16 @@ RoboCompInnerModelManager::InnerModelManager::_iceD_setAttribute(::IceInternal::
 }
 
 bool
-RoboCompInnerModelManager::InnerModelManager::_iceD_getAttribute(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::Normal, current.mode);
-    ::Ice::InputStream* istr = inS.startReadParams();
-    ::std::string iceP_idNode;
-    ::std::string iceP_name;
-    istr->read(iceP_idNode);
-    istr->read(iceP_name);
-    inS.endReadParams();
-    ::std::string iceP_type;
-    ::std::string iceP_value;
-    bool ret = this->getAttribute(iceP_idNode, iceP_name, iceP_type, iceP_value, current);
-    ::Ice::OutputStream* ostr = inS.startWriteParams();
-    ostr->write(iceP_type);
-    ostr->write(iceP_value);
-    ostr->write(ret);
-    inS.endWriteParams();
-    return true;
-}
-
-bool
-RoboCompInnerModelManager::InnerModelManager::_iceD_removeNode(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+RoboCompInnerModelManager::InnerModelManager::_iceD_setPlane(::IceInternal::Incoming& inS, const ::Ice::Current& current)
 {
     _iceCheckMode(::Ice::Normal, current.mode);
     ::Ice::InputStream* istr = inS.startReadParams();
     ::std::string iceP_item;
+    ::RoboCompInnerModelManager::Plane3D iceP_plane;
     istr->read(iceP_item);
+    istr->read(iceP_plane);
     inS.endReadParams();
-    bool ret = this->removeNode(iceP_item, current);
-    ::Ice::OutputStream* ostr = inS.startWriteParams();
-    ostr->write(ret);
-    inS.endWriteParams();
-    return true;
-}
-
-bool
-RoboCompInnerModelManager::InnerModelManager::_iceD_moveNode(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::Normal, current.mode);
-    ::Ice::InputStream* istr = inS.startReadParams();
-    ::std::string iceP_src;
-    ::std::string iceP_dst;
-    istr->read(iceP_src);
-    istr->read(iceP_dst);
-    inS.endReadParams();
-    bool ret = this->moveNode(iceP_src, iceP_dst, current);
-    ::Ice::OutputStream* ostr = inS.startWriteParams();
-    ostr->write(ret);
-    inS.endWriteParams();
-    return true;
-}
-
-bool
-RoboCompInnerModelManager::InnerModelManager::_iceD_collide(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::Normal, current.mode);
-    ::Ice::InputStream* istr = inS.startReadParams();
-    ::std::string iceP_a;
-    ::std::string iceP_b;
-    istr->read(iceP_a);
-    istr->read(iceP_b);
-    inS.endReadParams();
-    bool ret = this->collide(iceP_a, iceP_b, current);
+    bool ret = this->setPlane(iceP_item, iceP_plane, current);
     ::Ice::OutputStream* ostr = inS.startWriteParams();
     ostr->write(ret);
     inS.endWriteParams();
@@ -2808,6 +2600,84 @@ RoboCompInnerModelManager::InnerModelManager::_iceD_setPointCloudData(::IceInter
     inS.endReadParams();
     this->setPointCloudData(iceP_id, iceP_cloud, current);
     inS.writeEmptyParams();
+    return true;
+}
+
+bool
+RoboCompInnerModelManager::InnerModelManager::_iceD_setPose(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::Normal, current.mode);
+    ::Ice::InputStream* istr = inS.startReadParams();
+    ::std::string iceP_base;
+    ::std::string iceP_item;
+    ::RoboCompInnerModelManager::Pose3D iceP_pose;
+    istr->read(iceP_base);
+    istr->read(iceP_item);
+    istr->read(iceP_pose);
+    inS.endReadParams();
+    bool ret = this->setPose(iceP_base, iceP_item, iceP_pose, current);
+    ::Ice::OutputStream* ostr = inS.startWriteParams();
+    ostr->write(ret);
+    inS.endWriteParams();
+    return true;
+}
+
+bool
+RoboCompInnerModelManager::InnerModelManager::_iceD_setPoseFromParent(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::Normal, current.mode);
+    ::Ice::InputStream* istr = inS.startReadParams();
+    ::std::string iceP_item;
+    ::RoboCompInnerModelManager::Pose3D iceP_pose;
+    istr->read(iceP_item);
+    istr->read(iceP_pose);
+    inS.endReadParams();
+    bool ret = this->setPoseFromParent(iceP_item, iceP_pose, current);
+    ::Ice::OutputStream* ostr = inS.startWriteParams();
+    ostr->write(ret);
+    inS.endWriteParams();
+    return true;
+}
+
+bool
+RoboCompInnerModelManager::InnerModelManager::_iceD_setScale(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::Normal, current.mode);
+    ::Ice::InputStream* istr = inS.startReadParams();
+    ::std::string iceP_item;
+    ::Ice::Float iceP_scaleX;
+    ::Ice::Float iceP_scaleY;
+    ::Ice::Float iceP_scaleZ;
+    istr->read(iceP_item);
+    istr->read(iceP_scaleX);
+    istr->read(iceP_scaleY);
+    istr->read(iceP_scaleZ);
+    inS.endReadParams();
+    bool ret = this->setScale(iceP_item, iceP_scaleX, iceP_scaleY, iceP_scaleZ, current);
+    ::Ice::OutputStream* ostr = inS.startWriteParams();
+    ostr->write(ret);
+    inS.endWriteParams();
+    return true;
+}
+
+bool
+RoboCompInnerModelManager::InnerModelManager::_iceD_transform(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::Normal, current.mode);
+    ::Ice::InputStream* istr = inS.startReadParams();
+    ::std::string iceP_base;
+    ::std::string iceP_item;
+    ::RoboCompInnerModelManager::coord3D iceP_coordInItem;
+    istr->read(iceP_base);
+    istr->read(iceP_item);
+    istr->read(iceP_coordInItem);
+    inS.endReadParams();
+    ::RoboCompInnerModelManager::coord3D iceP_coordInBase;
+    bool ret = this->transform(iceP_base, iceP_item, iceP_coordInItem, iceP_coordInBase, current);
+    ::Ice::OutputStream* ostr = inS.startWriteParams();
+    ostr->write(iceP_coordInBase);
+    ostr->write(ret);
+    inS.endWriteParams();
     return true;
 }
 
@@ -2835,7 +2705,6 @@ const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_all[] =
     "removeNode",
     "setAttribute",
     "setPlane",
-    "setPlaneTexture",
     "setPointCloudData",
     "setPose",
     "setPoseFromParent",
@@ -2848,7 +2717,7 @@ const ::std::string iceC_RoboCompInnerModelManager_InnerModelManager_all[] =
 bool
 RoboCompInnerModelManager::InnerModelManager::_iceDispatch(::IceInternal::Incoming& in, const ::Ice::Current& current)
 {
-    ::std::pair<const ::std::string*, const ::std::string*> r = ::std::equal_range(iceC_RoboCompInnerModelManager_InnerModelManager_all, iceC_RoboCompInnerModelManager_InnerModelManager_all + 26, current.operation);
+    ::std::pair<const ::std::string*, const ::std::string*> r = ::std::equal_range(iceC_RoboCompInnerModelManager_InnerModelManager_all, iceC_RoboCompInnerModelManager_InnerModelManager_all + 25, current.operation);
     if(r.first == r.second)
     {
         throw ::Ice::OperationNotExistException(__FILE__, __LINE__, current.id, current.facet, current.operation);
@@ -2938,25 +2807,21 @@ RoboCompInnerModelManager::InnerModelManager::_iceDispatch(::IceInternal::Incomi
         }
         case 20:
         {
-            return _iceD_setPlaneTexture(in, current);
+            return _iceD_setPointCloudData(in, current);
         }
         case 21:
         {
-            return _iceD_setPointCloudData(in, current);
+            return _iceD_setPose(in, current);
         }
         case 22:
         {
-            return _iceD_setPose(in, current);
+            return _iceD_setPoseFromParent(in, current);
         }
         case 23:
         {
-            return _iceD_setPoseFromParent(in, current);
-        }
-        case 24:
-        {
             return _iceD_setScale(in, current);
         }
-        case 25:
+        case 24:
         {
             return _iceD_transform(in, current);
         }

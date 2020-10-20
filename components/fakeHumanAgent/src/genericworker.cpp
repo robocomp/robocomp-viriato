@@ -1,5 +1,5 @@
 /*
- *    Copyright (C)2020 by YOUR NAME HERE
+ *    Copyright (C) 2020 by YOUR NAME HERE
  *
  *    This file is part of RoboComp
  *
@@ -20,19 +20,14 @@
 /**
 * \brief Default constructor
 */
-GenericWorker::GenericWorker(MapPrx& mprx) :
-#ifdef USE_QTGUI
-Ui_guiDlg()
-#else
-QObject()
-#endif
-
+GenericWorker::GenericWorker(MapPrx& mprx) : Ui_guiDlg()
 {
 
-	agmexecutive_proxy = (*(AGMExecutivePrx*)mprx["AGMExecutiveProxy"]);
-	innermodelmanager_proxy = (*(InnerModelManagerPrx*)mprx["InnerModelManagerProxy"]);
+	agmexecutive_proxy = (*(RoboCompAGMExecutive::AGMExecutivePrx*)mprx["AGMExecutiveProxy"]);
+	innermodelmanager_proxy = (*(RoboCompInnerModelManager::InnerModelManagerPrx*)mprx["InnerModelManagerProxy"]);
 
 	mutex = new QMutex(QMutex::Recursive);
+
 
 	#ifdef USE_QTGUI
 		setupUi(this);
@@ -100,7 +95,6 @@ RoboCompPlanning::Action GenericWorker::createAction(std::string s)
 	return ret;
 }
 
-
 bool GenericWorker::activate(const BehaviorParameters &prs)
 {
 	printf("Worker::activate\n");
@@ -122,13 +116,13 @@ bool GenericWorker::deactivate()
 	return active;
 }
 
-bool GenericWorker::setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated)
+bool GenericWorker::setParametersAndPossibleActivation(const RoboCompAGMCommonBehavior::ParameterMap &prs, bool &reactivated)
 {
 	// We didn't reactivate the component
 	reactivated = false;
 
 	// Update parameters
-	for (ParameterMap::const_iterator it=prs.begin(); it!=prs.end(); it++)
+	for (RoboCompAGMCommonBehavior::ParameterMap::const_iterator it=prs.begin(); it!=prs.end(); it++)
 	{
 		params[it->first] = it->second;
 	}

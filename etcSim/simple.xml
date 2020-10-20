@@ -71,10 +71,10 @@
  </node>
 
  <node alias="storm" endpoint="IceStorm/TopicManager:default -h localhost -p 9999">
-  <workingDir path="/home/robocomp/robocomp/components/robocomp-shelly/etc/" />
-  <upCommand command="rcremote localhost IS /home/robocomp/robocomp/components/robocomp-shelly/etc/ rcnode" />
+  <workingDir path="/home/robocomp/robocomp/components/robocomp-viriato/etc/" />
+  <upCommand command="rcremote localhost IS /home/robocomp/robocomp/components/robocomp-viriato/etc/ rcnode" />
   <downCommand command="killall -9 icebox" />
-  <configFile path="/home/robocomp/robocomp/components/robocomp-shelly/etc/ursus.conf" />
+  <configFile path="/home/robocomp/robocomp/components/robocomp-viriato/etc/ursus.conf" />
   <xpos value="58.22150957623" />
   <ypos value="-115.512538117" />
   <radius value="10.0" />

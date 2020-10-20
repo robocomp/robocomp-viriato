@@ -74,12 +74,12 @@ const ::std::string iceC_RoboCompAGMCommonBehavior_AGMCommonBehavior_ops[] =
 };
 const ::std::string iceC_RoboCompAGMCommonBehavior_AGMCommonBehavior_activateAgent_name = "activateAgent";
 const ::std::string iceC_RoboCompAGMCommonBehavior_AGMCommonBehavior_deactivateAgent_name = "deactivateAgent";
-const ::std::string iceC_RoboCompAGMCommonBehavior_AGMCommonBehavior_getAgentState_name = "getAgentState";
 const ::std::string iceC_RoboCompAGMCommonBehavior_AGMCommonBehavior_getAgentParameters_name = "getAgentParameters";
-const ::std::string iceC_RoboCompAGMCommonBehavior_AGMCommonBehavior_setAgentParameters_name = "setAgentParameters";
+const ::std::string iceC_RoboCompAGMCommonBehavior_AGMCommonBehavior_getAgentState_name = "getAgentState";
 const ::std::string iceC_RoboCompAGMCommonBehavior_AGMCommonBehavior_killAgent_name = "killAgent";
-const ::std::string iceC_RoboCompAGMCommonBehavior_AGMCommonBehavior_uptimeAgent_name = "uptimeAgent";
 const ::std::string iceC_RoboCompAGMCommonBehavior_AGMCommonBehavior_reloadConfigAgent_name = "reloadConfigAgent";
+const ::std::string iceC_RoboCompAGMCommonBehavior_AGMCommonBehavior_setAgentParameters_name = "setAgentParameters";
+const ::std::string iceC_RoboCompAGMCommonBehavior_AGMCommonBehavior_uptimeAgent_name = "uptimeAgent";
 
 }
 
@@ -136,6 +136,18 @@ RoboCompAGMCommonBehavior::AGMCommonBehavior::_iceD_deactivateAgent(::IceInterna
 }
 
 bool
+RoboCompAGMCommonBehavior::AGMCommonBehavior::_iceD_getAgentParameters(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
+    inS.readEmptyParams();
+    ::RoboCompAGMCommonBehavior::ParameterMap ret = this->getAgentParameters(current);
+    auto ostr = inS.startWriteParams();
+    ostr->writeAll(ret);
+    inS.endWriteParams();
+    return true;
+}
+
+bool
 RoboCompAGMCommonBehavior::AGMCommonBehavior::_iceD_getAgentState(::IceInternal::Incoming& inS, const ::Ice::Current& current)
 {
     _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
@@ -148,11 +160,21 @@ RoboCompAGMCommonBehavior::AGMCommonBehavior::_iceD_getAgentState(::IceInternal:
 }
 
 bool
-RoboCompAGMCommonBehavior::AGMCommonBehavior::_iceD_getAgentParameters(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+RoboCompAGMCommonBehavior::AGMCommonBehavior::_iceD_killAgent(::IceInternal::Incoming& inS, const ::Ice::Current& current)
 {
     _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
     inS.readEmptyParams();
-    ::RoboCompAGMCommonBehavior::ParameterMap ret = this->getAgentParameters(current);
+    this->killAgent(current);
+    inS.writeEmptyParams();
+    return true;
+}
+
+bool
+RoboCompAGMCommonBehavior::AGMCommonBehavior::_iceD_reloadConfigAgent(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
+    inS.readEmptyParams();
+    bool ret = this->reloadConfigAgent(current);
     auto ostr = inS.startWriteParams();
     ostr->writeAll(ret);
     inS.endWriteParams();
@@ -175,33 +197,11 @@ RoboCompAGMCommonBehavior::AGMCommonBehavior::_iceD_setAgentParameters(::IceInte
 }
 
 bool
-RoboCompAGMCommonBehavior::AGMCommonBehavior::_iceD_killAgent(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
-    inS.readEmptyParams();
-    this->killAgent(current);
-    inS.writeEmptyParams();
-    return true;
-}
-
-bool
 RoboCompAGMCommonBehavior::AGMCommonBehavior::_iceD_uptimeAgent(::IceInternal::Incoming& inS, const ::Ice::Current& current)
 {
     _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
     inS.readEmptyParams();
     int ret = this->uptimeAgent(current);
-    auto ostr = inS.startWriteParams();
-    ostr->writeAll(ret);
-    inS.endWriteParams();
-    return true;
-}
-
-bool
-RoboCompAGMCommonBehavior::AGMCommonBehavior::_iceD_reloadConfigAgent(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
-    inS.readEmptyParams();
-    bool ret = this->reloadConfigAgent(current);
     auto ostr = inS.startWriteParams();
     ostr->writeAll(ret);
     inS.endWriteParams();
@@ -297,6 +297,15 @@ RoboCompAGMCommonBehavior::AGMCommonBehaviorPrx::_iceI_deactivateAgent(const ::s
 }
 
 void
+RoboCompAGMCommonBehavior::AGMCommonBehaviorPrx::_iceI_getAgentParameters(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::RoboCompAGMCommonBehavior::ParameterMap>>& outAsync, const ::Ice::Context& context)
+{
+    _checkTwowayOnly(iceC_RoboCompAGMCommonBehavior_AGMCommonBehavior_getAgentParameters_name);
+    outAsync->invoke(iceC_RoboCompAGMCommonBehavior_AGMCommonBehavior_getAgentParameters_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
+        nullptr,
+        nullptr);
+}
+
+void
 RoboCompAGMCommonBehavior::AGMCommonBehaviorPrx::_iceI_getAgentState(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::RoboCompAGMCommonBehavior::StateStruct>>& outAsync, const ::Ice::Context& context)
 {
     _checkTwowayOnly(iceC_RoboCompAGMCommonBehavior_AGMCommonBehavior_getAgentState_name);
@@ -306,10 +315,18 @@ RoboCompAGMCommonBehavior::AGMCommonBehaviorPrx::_iceI_getAgentState(const ::std
 }
 
 void
-RoboCompAGMCommonBehavior::AGMCommonBehaviorPrx::_iceI_getAgentParameters(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::RoboCompAGMCommonBehavior::ParameterMap>>& outAsync, const ::Ice::Context& context)
+RoboCompAGMCommonBehavior::AGMCommonBehaviorPrx::_iceI_killAgent(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>& outAsync, const ::Ice::Context& context)
 {
-    _checkTwowayOnly(iceC_RoboCompAGMCommonBehavior_AGMCommonBehavior_getAgentParameters_name);
-    outAsync->invoke(iceC_RoboCompAGMCommonBehavior_AGMCommonBehavior_getAgentParameters_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
+    outAsync->invoke(iceC_RoboCompAGMCommonBehavior_AGMCommonBehavior_killAgent_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
+        nullptr,
+        nullptr);
+}
+
+void
+RoboCompAGMCommonBehavior::AGMCommonBehaviorPrx::_iceI_reloadConfigAgent(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<bool>>& outAsync, const ::Ice::Context& context)
+{
+    _checkTwowayOnly(iceC_RoboCompAGMCommonBehavior_AGMCommonBehavior_reloadConfigAgent_name);
+    outAsync->invoke(iceC_RoboCompAGMCommonBehavior_AGMCommonBehavior_reloadConfigAgent_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
         nullptr,
         nullptr);
 }
@@ -327,27 +344,10 @@ RoboCompAGMCommonBehavior::AGMCommonBehaviorPrx::_iceI_setAgentParameters(const 
 }
 
 void
-RoboCompAGMCommonBehavior::AGMCommonBehaviorPrx::_iceI_killAgent(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>& outAsync, const ::Ice::Context& context)
-{
-    outAsync->invoke(iceC_RoboCompAGMCommonBehavior_AGMCommonBehavior_killAgent_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
-        nullptr,
-        nullptr);
-}
-
-void
 RoboCompAGMCommonBehavior::AGMCommonBehaviorPrx::_iceI_uptimeAgent(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<int>>& outAsync, const ::Ice::Context& context)
 {
     _checkTwowayOnly(iceC_RoboCompAGMCommonBehavior_AGMCommonBehavior_uptimeAgent_name);
     outAsync->invoke(iceC_RoboCompAGMCommonBehavior_AGMCommonBehavior_uptimeAgent_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
-        nullptr,
-        nullptr);
-}
-
-void
-RoboCompAGMCommonBehavior::AGMCommonBehaviorPrx::_iceI_reloadConfigAgent(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<bool>>& outAsync, const ::Ice::Context& context)
-{
-    _checkTwowayOnly(iceC_RoboCompAGMCommonBehavior_AGMCommonBehavior_reloadConfigAgent_name);
-    outAsync->invoke(iceC_RoboCompAGMCommonBehavior_AGMCommonBehavior_reloadConfigAgent_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
         nullptr,
         nullptr);
 }
@@ -377,17 +377,17 @@ const ::std::string iceC_RoboCompAGMCommonBehavior_AGMCommonBehavior_activateAge
 
 const ::std::string iceC_RoboCompAGMCommonBehavior_AGMCommonBehavior_deactivateAgent_name = "deactivateAgent";
 
-const ::std::string iceC_RoboCompAGMCommonBehavior_AGMCommonBehavior_getAgentState_name = "getAgentState";
-
 const ::std::string iceC_RoboCompAGMCommonBehavior_AGMCommonBehavior_getAgentParameters_name = "getAgentParameters";
 
-const ::std::string iceC_RoboCompAGMCommonBehavior_AGMCommonBehavior_setAgentParameters_name = "setAgentParameters";
+const ::std::string iceC_RoboCompAGMCommonBehavior_AGMCommonBehavior_getAgentState_name = "getAgentState";
 
 const ::std::string iceC_RoboCompAGMCommonBehavior_AGMCommonBehavior_killAgent_name = "killAgent";
 
-const ::std::string iceC_RoboCompAGMCommonBehavior_AGMCommonBehavior_uptimeAgent_name = "uptimeAgent";
-
 const ::std::string iceC_RoboCompAGMCommonBehavior_AGMCommonBehavior_reloadConfigAgent_name = "reloadConfigAgent";
+
+const ::std::string iceC_RoboCompAGMCommonBehavior_AGMCommonBehavior_setAgentParameters_name = "setAgentParameters";
+
+const ::std::string iceC_RoboCompAGMCommonBehavior_AGMCommonBehavior_uptimeAgent_name = "uptimeAgent";
 
 }
 ::IceProxy::Ice::Object* ::IceProxy::RoboCompAGMCommonBehavior::upCast(::IceProxy::RoboCompAGMCommonBehavior::AGMCommonBehavior* p) { return p; }
@@ -491,6 +491,46 @@ IceProxy::RoboCompAGMCommonBehavior::AGMCommonBehavior::end_deactivateAgent(cons
 }
 
 ::Ice::AsyncResultPtr
+IceProxy::RoboCompAGMCommonBehavior::AGMCommonBehavior::_iceI_begin_getAgentParameters(const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
+{
+    _checkTwowayOnly(iceC_RoboCompAGMCommonBehavior_AGMCommonBehavior_getAgentParameters_name, sync);
+    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompAGMCommonBehavior_AGMCommonBehavior_getAgentParameters_name, del, cookie, sync);
+    try
+    {
+        result->prepare(iceC_RoboCompAGMCommonBehavior_AGMCommonBehavior_getAgentParameters_name, ::Ice::Normal, context);
+        result->writeEmptyParams();
+        result->invoke(iceC_RoboCompAGMCommonBehavior_AGMCommonBehavior_getAgentParameters_name);
+    }
+    catch(const ::Ice::Exception& ex)
+    {
+        result->abort(ex);
+    }
+    return result;
+}
+
+::RoboCompAGMCommonBehavior::ParameterMap
+IceProxy::RoboCompAGMCommonBehavior::AGMCommonBehavior::end_getAgentParameters(const ::Ice::AsyncResultPtr& result)
+{
+    ::Ice::AsyncResult::_check(result, this, iceC_RoboCompAGMCommonBehavior_AGMCommonBehavior_getAgentParameters_name);
+    ::RoboCompAGMCommonBehavior::ParameterMap ret;
+    if(!result->_waitForResponse())
+    {
+        try
+        {
+            result->_throwUserException();
+        }
+        catch(const ::Ice::UserException& ex)
+        {
+            throw ::Ice::UnknownUserException(__FILE__, __LINE__, ex.ice_id());
+        }
+    }
+    ::Ice::InputStream* istr = result->_startReadParams();
+    istr->read(ret);
+    result->_endReadParams();
+    return ret;
+}
+
+::Ice::AsyncResultPtr
 IceProxy::RoboCompAGMCommonBehavior::AGMCommonBehavior::_iceI_begin_getAgentState(const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
 {
     _checkTwowayOnly(iceC_RoboCompAGMCommonBehavior_AGMCommonBehavior_getAgentState_name, sync);
@@ -531,15 +571,14 @@ IceProxy::RoboCompAGMCommonBehavior::AGMCommonBehavior::end_getAgentState(const 
 }
 
 ::Ice::AsyncResultPtr
-IceProxy::RoboCompAGMCommonBehavior::AGMCommonBehavior::_iceI_begin_getAgentParameters(const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
+IceProxy::RoboCompAGMCommonBehavior::AGMCommonBehavior::_iceI_begin_killAgent(const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
 {
-    _checkTwowayOnly(iceC_RoboCompAGMCommonBehavior_AGMCommonBehavior_getAgentParameters_name, sync);
-    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompAGMCommonBehavior_AGMCommonBehavior_getAgentParameters_name, del, cookie, sync);
+    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompAGMCommonBehavior_AGMCommonBehavior_killAgent_name, del, cookie, sync);
     try
     {
-        result->prepare(iceC_RoboCompAGMCommonBehavior_AGMCommonBehavior_getAgentParameters_name, ::Ice::Normal, context);
+        result->prepare(iceC_RoboCompAGMCommonBehavior_AGMCommonBehavior_killAgent_name, ::Ice::Normal, context);
         result->writeEmptyParams();
-        result->invoke(iceC_RoboCompAGMCommonBehavior_AGMCommonBehavior_getAgentParameters_name);
+        result->invoke(iceC_RoboCompAGMCommonBehavior_AGMCommonBehavior_killAgent_name);
     }
     catch(const ::Ice::Exception& ex)
     {
@@ -548,11 +587,35 @@ IceProxy::RoboCompAGMCommonBehavior::AGMCommonBehavior::_iceI_begin_getAgentPara
     return result;
 }
 
-::RoboCompAGMCommonBehavior::ParameterMap
-IceProxy::RoboCompAGMCommonBehavior::AGMCommonBehavior::end_getAgentParameters(const ::Ice::AsyncResultPtr& result)
+void
+IceProxy::RoboCompAGMCommonBehavior::AGMCommonBehavior::end_killAgent(const ::Ice::AsyncResultPtr& result)
 {
-    ::Ice::AsyncResult::_check(result, this, iceC_RoboCompAGMCommonBehavior_AGMCommonBehavior_getAgentParameters_name);
-    ::RoboCompAGMCommonBehavior::ParameterMap ret;
+    _end(result, iceC_RoboCompAGMCommonBehavior_AGMCommonBehavior_killAgent_name);
+}
+
+::Ice::AsyncResultPtr
+IceProxy::RoboCompAGMCommonBehavior::AGMCommonBehavior::_iceI_begin_reloadConfigAgent(const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
+{
+    _checkTwowayOnly(iceC_RoboCompAGMCommonBehavior_AGMCommonBehavior_reloadConfigAgent_name, sync);
+    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompAGMCommonBehavior_AGMCommonBehavior_reloadConfigAgent_name, del, cookie, sync);
+    try
+    {
+        result->prepare(iceC_RoboCompAGMCommonBehavior_AGMCommonBehavior_reloadConfigAgent_name, ::Ice::Normal, context);
+        result->writeEmptyParams();
+        result->invoke(iceC_RoboCompAGMCommonBehavior_AGMCommonBehavior_reloadConfigAgent_name);
+    }
+    catch(const ::Ice::Exception& ex)
+    {
+        result->abort(ex);
+    }
+    return result;
+}
+
+bool
+IceProxy::RoboCompAGMCommonBehavior::AGMCommonBehavior::end_reloadConfigAgent(const ::Ice::AsyncResultPtr& result)
+{
+    ::Ice::AsyncResult::_check(result, this, iceC_RoboCompAGMCommonBehavior_AGMCommonBehavior_reloadConfigAgent_name);
+    bool ret;
     if(!result->_waitForResponse())
     {
         try
@@ -613,29 +676,6 @@ IceProxy::RoboCompAGMCommonBehavior::AGMCommonBehavior::end_setAgentParameters(c
 }
 
 ::Ice::AsyncResultPtr
-IceProxy::RoboCompAGMCommonBehavior::AGMCommonBehavior::_iceI_begin_killAgent(const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
-{
-    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompAGMCommonBehavior_AGMCommonBehavior_killAgent_name, del, cookie, sync);
-    try
-    {
-        result->prepare(iceC_RoboCompAGMCommonBehavior_AGMCommonBehavior_killAgent_name, ::Ice::Normal, context);
-        result->writeEmptyParams();
-        result->invoke(iceC_RoboCompAGMCommonBehavior_AGMCommonBehavior_killAgent_name);
-    }
-    catch(const ::Ice::Exception& ex)
-    {
-        result->abort(ex);
-    }
-    return result;
-}
-
-void
-IceProxy::RoboCompAGMCommonBehavior::AGMCommonBehavior::end_killAgent(const ::Ice::AsyncResultPtr& result)
-{
-    _end(result, iceC_RoboCompAGMCommonBehavior_AGMCommonBehavior_killAgent_name);
-}
-
-::Ice::AsyncResultPtr
 IceProxy::RoboCompAGMCommonBehavior::AGMCommonBehavior::_iceI_begin_uptimeAgent(const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
 {
     _checkTwowayOnly(iceC_RoboCompAGMCommonBehavior_AGMCommonBehavior_uptimeAgent_name, sync);
@@ -658,46 +698,6 @@ IceProxy::RoboCompAGMCommonBehavior::AGMCommonBehavior::end_uptimeAgent(const ::
 {
     ::Ice::AsyncResult::_check(result, this, iceC_RoboCompAGMCommonBehavior_AGMCommonBehavior_uptimeAgent_name);
     ::Ice::Int ret;
-    if(!result->_waitForResponse())
-    {
-        try
-        {
-            result->_throwUserException();
-        }
-        catch(const ::Ice::UserException& ex)
-        {
-            throw ::Ice::UnknownUserException(__FILE__, __LINE__, ex.ice_id());
-        }
-    }
-    ::Ice::InputStream* istr = result->_startReadParams();
-    istr->read(ret);
-    result->_endReadParams();
-    return ret;
-}
-
-::Ice::AsyncResultPtr
-IceProxy::RoboCompAGMCommonBehavior::AGMCommonBehavior::_iceI_begin_reloadConfigAgent(const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
-{
-    _checkTwowayOnly(iceC_RoboCompAGMCommonBehavior_AGMCommonBehavior_reloadConfigAgent_name, sync);
-    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompAGMCommonBehavior_AGMCommonBehavior_reloadConfigAgent_name, del, cookie, sync);
-    try
-    {
-        result->prepare(iceC_RoboCompAGMCommonBehavior_AGMCommonBehavior_reloadConfigAgent_name, ::Ice::Normal, context);
-        result->writeEmptyParams();
-        result->invoke(iceC_RoboCompAGMCommonBehavior_AGMCommonBehavior_reloadConfigAgent_name);
-    }
-    catch(const ::Ice::Exception& ex)
-    {
-        result->abort(ex);
-    }
-    return result;
-}
-
-bool
-IceProxy::RoboCompAGMCommonBehavior::AGMCommonBehavior::end_reloadConfigAgent(const ::Ice::AsyncResultPtr& result)
-{
-    ::Ice::AsyncResult::_check(result, this, iceC_RoboCompAGMCommonBehavior_AGMCommonBehavior_reloadConfigAgent_name);
-    bool ret;
     if(!result->_waitForResponse())
     {
         try
@@ -801,6 +801,18 @@ RoboCompAGMCommonBehavior::AGMCommonBehavior::_iceD_deactivateAgent(::IceInterna
 }
 
 bool
+RoboCompAGMCommonBehavior::AGMCommonBehavior::_iceD_getAgentParameters(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::Normal, current.mode);
+    inS.readEmptyParams();
+    ::RoboCompAGMCommonBehavior::ParameterMap ret = this->getAgentParameters(current);
+    ::Ice::OutputStream* ostr = inS.startWriteParams();
+    ostr->write(ret);
+    inS.endWriteParams();
+    return true;
+}
+
+bool
 RoboCompAGMCommonBehavior::AGMCommonBehavior::_iceD_getAgentState(::IceInternal::Incoming& inS, const ::Ice::Current& current)
 {
     _iceCheckMode(::Ice::Normal, current.mode);
@@ -813,11 +825,21 @@ RoboCompAGMCommonBehavior::AGMCommonBehavior::_iceD_getAgentState(::IceInternal:
 }
 
 bool
-RoboCompAGMCommonBehavior::AGMCommonBehavior::_iceD_getAgentParameters(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+RoboCompAGMCommonBehavior::AGMCommonBehavior::_iceD_killAgent(::IceInternal::Incoming& inS, const ::Ice::Current& current)
 {
     _iceCheckMode(::Ice::Normal, current.mode);
     inS.readEmptyParams();
-    ::RoboCompAGMCommonBehavior::ParameterMap ret = this->getAgentParameters(current);
+    this->killAgent(current);
+    inS.writeEmptyParams();
+    return true;
+}
+
+bool
+RoboCompAGMCommonBehavior::AGMCommonBehavior::_iceD_reloadConfigAgent(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::Normal, current.mode);
+    inS.readEmptyParams();
+    bool ret = this->reloadConfigAgent(current);
     ::Ice::OutputStream* ostr = inS.startWriteParams();
     ostr->write(ret);
     inS.endWriteParams();
@@ -840,33 +862,11 @@ RoboCompAGMCommonBehavior::AGMCommonBehavior::_iceD_setAgentParameters(::IceInte
 }
 
 bool
-RoboCompAGMCommonBehavior::AGMCommonBehavior::_iceD_killAgent(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::Normal, current.mode);
-    inS.readEmptyParams();
-    this->killAgent(current);
-    inS.writeEmptyParams();
-    return true;
-}
-
-bool
 RoboCompAGMCommonBehavior::AGMCommonBehavior::_iceD_uptimeAgent(::IceInternal::Incoming& inS, const ::Ice::Current& current)
 {
     _iceCheckMode(::Ice::Normal, current.mode);
     inS.readEmptyParams();
     ::Ice::Int ret = this->uptimeAgent(current);
-    ::Ice::OutputStream* ostr = inS.startWriteParams();
-    ostr->write(ret);
-    inS.endWriteParams();
-    return true;
-}
-
-bool
-RoboCompAGMCommonBehavior::AGMCommonBehavior::_iceD_reloadConfigAgent(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::Normal, current.mode);
-    inS.readEmptyParams();
-    bool ret = this->reloadConfigAgent(current);
     ::Ice::OutputStream* ostr = inS.startWriteParams();
     ostr->write(ret);
     inS.endWriteParams();

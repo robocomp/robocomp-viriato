@@ -87,20 +87,16 @@
 #include <Planning.h>
 
 
-// User includes here
-
-// Namespaces
-using namespace std;
-using namespace RoboCompCommonBehavior;
 
 class fakeHumanAgent : public RoboComp::Application
 {
 public:
-	fakeHumanAgent (QString prfx) { prefix = prfx.toStdString(); }
+	fakeHumanAgent (QString prfx, bool startup_check) { prefix = prfx.toStdString(); this->startup_check_flag=startup_check; }
 private:
 	void initialize();
 	std::string prefix;
 	MapPrx mprx;
+	bool startup_check_flag = false;
 
 public:
 	virtual int run(int, char*[]);
@@ -136,12 +132,11 @@ int ::fakeHumanAgent::run(int argc, char* argv[])
 
 	int status=EXIT_SUCCESS;
 
-	AGMExecutivePrx agmexecutive_proxy;
-	InnerModelManagerPrx innermodelmanager_proxy;
+	RoboCompAGMExecutive::AGMExecutivePrx agmexecutive_proxy;
+	RoboCompInnerModelManager::InnerModelManagerPrx innermodelmanager_proxy;
 
 	string proxy, tmp;
 	initialize();
-
 
 	try
 	{
@@ -149,7 +144,7 @@ int ::fakeHumanAgent::run(int argc, char* argv[])
 		{
 			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy AGMExecutiveProxy\n";
 		}
-		agmexecutive_proxy = AGMExecutivePrx::uncheckedCast( communicator()->stringToProxy( proxy ) );
+		agmexecutive_proxy = RoboCompAGMExecutive::AGMExecutivePrx::uncheckedCast( communicator()->stringToProxy( proxy ) );
 	}
 	catch(const Ice::Exception& ex)
 	{
@@ -166,7 +161,7 @@ int ::fakeHumanAgent::run(int argc, char* argv[])
 		{
 			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy InnerModelManagerProxy\n";
 		}
-		innermodelmanager_proxy = InnerModelManagerPrx::uncheckedCast( communicator()->stringToProxy( proxy ) );
+		innermodelmanager_proxy = RoboCompInnerModelManager::InnerModelManagerPrx::uncheckedCast( communicator()->stringToProxy( proxy ) );
 	}
 	catch(const Ice::Exception& ex)
 	{
@@ -176,6 +171,7 @@ int ::fakeHumanAgent::run(int argc, char* argv[])
 	rInfo("InnerModelManagerProxy initialized Ok!");
 
 	mprx["InnerModelManagerProxy"] = (::IceProxy::Ice::Object*)(&innermodelmanager_proxy);//Remote server proxy creation example
+
 	IceStorm::TopicManagerPrx topicManager;
 	try
 	{
@@ -183,11 +179,11 @@ int ::fakeHumanAgent::run(int argc, char* argv[])
 	}
 	catch (const Ice::Exception &ex)
 	{
-		cout << "[" << PROGRAM_NAME << "]: Exception: STORM not running: " << ex << endl;
+		cout << "[" << PROGRAM_NAME << "]: Exception: 'rcnode' not running: " << ex << endl;
 		return EXIT_FAILURE;
 	}
 
-	SpecificWorker *worker = new SpecificWorker(mprx);
+	SpecificWorker *worker = new SpecificWorker(mprx, startup_check_flag);
 	//Monitor thread
 	SpecificMonitor *monitor = new SpecificMonitor(worker,communicator());
 	QObject::connect(monitor, SIGNAL(kill()), &a, SLOT(quit()));
@@ -237,11 +233,10 @@ int ::fakeHumanAgent::run(int argc, char* argv[])
 			adapterAGMCommonBehavior->add(agmcommonbehavior, Ice::stringToIdentity("agmcommonbehavior"));
 			adapterAGMCommonBehavior->activate();
 			cout << "[" << PROGRAM_NAME << "]: AGMCommonBehavior adapter created in port " << tmp << endl;
-			}
-			catch (const IceStorm::TopicExists&){
-				cout << "[" << PROGRAM_NAME << "]: ERROR creating or activating adapter for AGMCommonBehavior\n";
-			}
-
+		}
+		catch (const IceStorm::TopicExists&){
+			cout << "[" << PROGRAM_NAME << "]: ERROR creating or activating adapter for AGMCommonBehavior\n";
+		}
 
 
 		// Server adapter creation and publication
@@ -254,7 +249,7 @@ int ::fakeHumanAgent::run(int argc, char* argv[])
 				cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy AGMExecutiveTopicProxy";
 			}
 			Ice::ObjectAdapterPtr AGMExecutiveTopic_adapter = communicator()->createObjectAdapterWithEndpoints("agmexecutivetopic", tmp);
-			AGMExecutiveTopicPtr agmexecutivetopicI_ =  new AGMExecutiveTopicI(worker);
+			RoboCompAGMExecutiveTopic::AGMExecutiveTopicPtr agmexecutivetopicI_ =  new AGMExecutiveTopicI(worker);
 			Ice::ObjectPrx agmexecutivetopic = AGMExecutiveTopic_adapter->addWithUUID(agmexecutivetopicI_)->ice_oneway();
 			if(!agmexecutivetopic_topic)
 			{
@@ -290,6 +285,7 @@ int ::fakeHumanAgent::run(int argc, char* argv[])
 			//Error. Topic does not exist
 		}
 
+
 		// Server adapter creation and publication
 		cout << SERVER_FULL_NAME " started" << endl;
 
@@ -309,8 +305,9 @@ int ::fakeHumanAgent::run(int argc, char* argv[])
 		}
 		catch(const Ice::Exception& ex)
 		{
-			std::cout << "ERROR Unsubscribing topic: agmexecutivetopic " <<std::endl;
+			std::cout << "ERROR Unsubscribing topic: agmexecutivetopic " << ex.what()<<std::endl;
 		}
+
 
 		status = EXIT_SUCCESS;
 	}
@@ -339,36 +336,53 @@ int main(int argc, char* argv[])
 	string arg;
 
 	// Set config file
-	std::string configFile = "config";
+	QString configFile("etc/config");
+	bool startup_check_flag = false;
+	QString prefix("");
 	if (argc > 1)
 	{
-		std::string initIC("--Ice.Config=");
-		size_t pos = std::string(argv[1]).find(initIC);
-		if (pos == 0)
+	    QString initIC = QString("--Ice.Config=");
+	    for (int i = 1; i < argc; ++i)
 		{
-			configFile = std::string(argv[1]+initIC.size());
-		}
-		else
-		{
-			configFile = std::string(argv[1]);
-		}
-	}
+		    arg = argv[i];
+            if (arg.find(initIC.toStdString(), 0) == 0)
+            {
+                configFile = QString::fromStdString(arg).remove(0, initIC.size());
+            }
+            else
+            {
+                configFile = QString::fromStdString(argv[1]);
+            }
+        }
 
-	// Search in argument list for --prefix= argument (if exist)
-	QString prefix("");
-	QString prfx = QString("--prefix=");
-	for (int i = 2; i < argc; ++i)
-	{
-		arg = argv[i];
-		if (arg.find(prfx.toStdString(), 0) == 0)
-		{
-			prefix = QString::fromStdString(arg).remove(0, prfx.size());
-			if (prefix.size()>0)
-				prefix += QString(".");
-			printf("Configuration prefix: <%s>\n", prefix.toStdString().c_str());
-		}
-	}
-	::fakeHumanAgent app(prefix);
+        // Search in argument list for --prefix= argument (if exist)
+        QString prfx = QString("--prefix=");
+        for (int i = 2; i < argc; ++i)
+        {
+            arg = argv[i];
+            if (arg.find(prfx.toStdString(), 0) == 0)
+            {
+                prefix = QString::fromStdString(arg).remove(0, prfx.size());
+                if (prefix.size()>0)
+                    prefix += QString(".");
+                printf("Configuration prefix: <%s>\n", prefix.toStdString().c_str());
+            }
+        }
 
-	return app.main(argc, argv, configFile.c_str());
+        // Search in argument list for --test argument (if exist)
+        QString startup = QString("--startup-check");
+		for (int i = 0; i < argc; ++i)
+		{
+			arg = argv[i];
+			if (arg.find(startup.toStdString(), 0) == 0)
+			{
+				startup_check_flag = true;
+				cout << "Startup check = True"<< endl;
+			}
+		}
+
+	}
+	::fakeHumanAgent app(prefix, startup_check_flag);
+
+	return app.main(argc, argv, configFile.toLocal8Bit().data());
 }

@@ -72,14 +72,14 @@ const ::std::string iceC_RoboCompCommonBehavior_CommonBehavior_ops[] =
     "setPeriod",
     "timeAwake"
 };
+const ::std::string iceC_RoboCompCommonBehavior_CommonBehavior_getParameterList_name = "getParameterList";
 const ::std::string iceC_RoboCompCommonBehavior_CommonBehavior_getPeriod_name = "getPeriod";
+const ::std::string iceC_RoboCompCommonBehavior_CommonBehavior_getState_name = "getState";
+const ::std::string iceC_RoboCompCommonBehavior_CommonBehavior_killYourSelf_name = "killYourSelf";
+const ::std::string iceC_RoboCompCommonBehavior_CommonBehavior_reloadConfig_name = "reloadConfig";
+const ::std::string iceC_RoboCompCommonBehavior_CommonBehavior_setParameterList_name = "setParameterList";
 const ::std::string iceC_RoboCompCommonBehavior_CommonBehavior_setPeriod_name = "setPeriod";
 const ::std::string iceC_RoboCompCommonBehavior_CommonBehavior_timeAwake_name = "timeAwake";
-const ::std::string iceC_RoboCompCommonBehavior_CommonBehavior_killYourSelf_name = "killYourSelf";
-const ::std::string iceC_RoboCompCommonBehavior_CommonBehavior_getParameterList_name = "getParameterList";
-const ::std::string iceC_RoboCompCommonBehavior_CommonBehavior_setParameterList_name = "setParameterList";
-const ::std::string iceC_RoboCompCommonBehavior_CommonBehavior_reloadConfig_name = "reloadConfig";
-const ::std::string iceC_RoboCompCommonBehavior_CommonBehavior_getState_name = "getState";
 
 }
 
@@ -109,6 +109,18 @@ RoboCompCommonBehavior::CommonBehavior::ice_staticId()
 }
 
 bool
+RoboCompCommonBehavior::CommonBehavior::_iceD_getParameterList(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
+    inS.readEmptyParams();
+    ::RoboCompCommonBehavior::ParameterList ret = this->getParameterList(current);
+    auto ostr = inS.startWriteParams();
+    ostr->writeAll(ret);
+    inS.endWriteParams();
+    return true;
+}
+
+bool
 RoboCompCommonBehavior::CommonBehavior::_iceD_getPeriod(::IceInternal::Incoming& inS, const ::Ice::Current& current)
 {
     _iceCheckMode(::Ice::OperationMode::Idempotent, current.mode);
@@ -117,6 +129,51 @@ RoboCompCommonBehavior::CommonBehavior::_iceD_getPeriod(::IceInternal::Incoming&
     auto ostr = inS.startWriteParams();
     ostr->writeAll(ret);
     inS.endWriteParams();
+    return true;
+}
+
+bool
+RoboCompCommonBehavior::CommonBehavior::_iceD_getState(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
+    inS.readEmptyParams();
+    ::RoboCompCommonBehavior::State ret = this->getState(current);
+    auto ostr = inS.startWriteParams();
+    ostr->writeAll(ret);
+    inS.endWriteParams();
+    return true;
+}
+
+bool
+RoboCompCommonBehavior::CommonBehavior::_iceD_killYourSelf(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
+    inS.readEmptyParams();
+    this->killYourSelf(current);
+    inS.writeEmptyParams();
+    return true;
+}
+
+bool
+RoboCompCommonBehavior::CommonBehavior::_iceD_reloadConfig(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
+    inS.readEmptyParams();
+    this->reloadConfig(current);
+    inS.writeEmptyParams();
+    return true;
+}
+
+bool
+RoboCompCommonBehavior::CommonBehavior::_iceD_setParameterList(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
+    auto istr = inS.startReadParams();
+    ::RoboCompCommonBehavior::ParameterList iceP_l;
+    istr->readAll(iceP_l);
+    inS.endReadParams();
+    this->setParameterList(::std::move(iceP_l), current);
+    inS.writeEmptyParams();
     return true;
 }
 
@@ -139,63 +196,6 @@ RoboCompCommonBehavior::CommonBehavior::_iceD_timeAwake(::IceInternal::Incoming&
     _iceCheckMode(::Ice::OperationMode::Idempotent, current.mode);
     inS.readEmptyParams();
     int ret = this->timeAwake(current);
-    auto ostr = inS.startWriteParams();
-    ostr->writeAll(ret);
-    inS.endWriteParams();
-    return true;
-}
-
-bool
-RoboCompCommonBehavior::CommonBehavior::_iceD_killYourSelf(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
-    inS.readEmptyParams();
-    this->killYourSelf(current);
-    inS.writeEmptyParams();
-    return true;
-}
-
-bool
-RoboCompCommonBehavior::CommonBehavior::_iceD_getParameterList(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
-    inS.readEmptyParams();
-    ::RoboCompCommonBehavior::ParameterList ret = this->getParameterList(current);
-    auto ostr = inS.startWriteParams();
-    ostr->writeAll(ret);
-    inS.endWriteParams();
-    return true;
-}
-
-bool
-RoboCompCommonBehavior::CommonBehavior::_iceD_setParameterList(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
-    auto istr = inS.startReadParams();
-    ::RoboCompCommonBehavior::ParameterList iceP_l;
-    istr->readAll(iceP_l);
-    inS.endReadParams();
-    this->setParameterList(::std::move(iceP_l), current);
-    inS.writeEmptyParams();
-    return true;
-}
-
-bool
-RoboCompCommonBehavior::CommonBehavior::_iceD_reloadConfig(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
-    inS.readEmptyParams();
-    this->reloadConfig(current);
-    inS.writeEmptyParams();
-    return true;
-}
-
-bool
-RoboCompCommonBehavior::CommonBehavior::_iceD_getState(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
-    inS.readEmptyParams();
-    ::RoboCompCommonBehavior::State ret = this->getState(current);
     auto ostr = inS.startWriteParams();
     ostr->writeAll(ret);
     inS.endWriteParams();
@@ -270,11 +270,56 @@ RoboCompCommonBehavior::CommonBehavior::_iceDispatch(::IceInternal::Incoming& in
 }
 
 void
+RoboCompCommonBehavior::CommonBehaviorPrx::_iceI_getParameterList(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::RoboCompCommonBehavior::ParameterList>>& outAsync, const ::Ice::Context& context)
+{
+    _checkTwowayOnly(iceC_RoboCompCommonBehavior_CommonBehavior_getParameterList_name);
+    outAsync->invoke(iceC_RoboCompCommonBehavior_CommonBehavior_getParameterList_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
+        nullptr,
+        nullptr);
+}
+
+void
 RoboCompCommonBehavior::CommonBehaviorPrx::_iceI_getPeriod(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<int>>& outAsync, const ::Ice::Context& context)
 {
     _checkTwowayOnly(iceC_RoboCompCommonBehavior_CommonBehavior_getPeriod_name);
     outAsync->invoke(iceC_RoboCompCommonBehavior_CommonBehavior_getPeriod_name, ::Ice::OperationMode::Idempotent, ::Ice::FormatType::DefaultFormat, context,
         nullptr,
+        nullptr);
+}
+
+void
+RoboCompCommonBehavior::CommonBehaviorPrx::_iceI_getState(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::RoboCompCommonBehavior::State>>& outAsync, const ::Ice::Context& context)
+{
+    _checkTwowayOnly(iceC_RoboCompCommonBehavior_CommonBehavior_getState_name);
+    outAsync->invoke(iceC_RoboCompCommonBehavior_CommonBehavior_getState_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
+        nullptr,
+        nullptr);
+}
+
+void
+RoboCompCommonBehavior::CommonBehaviorPrx::_iceI_killYourSelf(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>& outAsync, const ::Ice::Context& context)
+{
+    outAsync->invoke(iceC_RoboCompCommonBehavior_CommonBehavior_killYourSelf_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
+        nullptr,
+        nullptr);
+}
+
+void
+RoboCompCommonBehavior::CommonBehaviorPrx::_iceI_reloadConfig(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>& outAsync, const ::Ice::Context& context)
+{
+    outAsync->invoke(iceC_RoboCompCommonBehavior_CommonBehavior_reloadConfig_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
+        nullptr,
+        nullptr);
+}
+
+void
+RoboCompCommonBehavior::CommonBehaviorPrx::_iceI_setParameterList(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>& outAsync, const ::RoboCompCommonBehavior::ParameterList& iceP_l, const ::Ice::Context& context)
+{
+    outAsync->invoke(iceC_RoboCompCommonBehavior_CommonBehavior_setParameterList_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
+        [&](::Ice::OutputStream* ostr)
+        {
+            ostr->writeAll(iceP_l);
+        },
         nullptr);
 }
 
@@ -294,51 +339,6 @@ RoboCompCommonBehavior::CommonBehaviorPrx::_iceI_timeAwake(const ::std::shared_p
 {
     _checkTwowayOnly(iceC_RoboCompCommonBehavior_CommonBehavior_timeAwake_name);
     outAsync->invoke(iceC_RoboCompCommonBehavior_CommonBehavior_timeAwake_name, ::Ice::OperationMode::Idempotent, ::Ice::FormatType::DefaultFormat, context,
-        nullptr,
-        nullptr);
-}
-
-void
-RoboCompCommonBehavior::CommonBehaviorPrx::_iceI_killYourSelf(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>& outAsync, const ::Ice::Context& context)
-{
-    outAsync->invoke(iceC_RoboCompCommonBehavior_CommonBehavior_killYourSelf_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
-        nullptr,
-        nullptr);
-}
-
-void
-RoboCompCommonBehavior::CommonBehaviorPrx::_iceI_getParameterList(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::RoboCompCommonBehavior::ParameterList>>& outAsync, const ::Ice::Context& context)
-{
-    _checkTwowayOnly(iceC_RoboCompCommonBehavior_CommonBehavior_getParameterList_name);
-    outAsync->invoke(iceC_RoboCompCommonBehavior_CommonBehavior_getParameterList_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
-        nullptr,
-        nullptr);
-}
-
-void
-RoboCompCommonBehavior::CommonBehaviorPrx::_iceI_setParameterList(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>& outAsync, const ::RoboCompCommonBehavior::ParameterList& iceP_l, const ::Ice::Context& context)
-{
-    outAsync->invoke(iceC_RoboCompCommonBehavior_CommonBehavior_setParameterList_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
-        [&](::Ice::OutputStream* ostr)
-        {
-            ostr->writeAll(iceP_l);
-        },
-        nullptr);
-}
-
-void
-RoboCompCommonBehavior::CommonBehaviorPrx::_iceI_reloadConfig(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>& outAsync, const ::Ice::Context& context)
-{
-    outAsync->invoke(iceC_RoboCompCommonBehavior_CommonBehavior_reloadConfig_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
-        nullptr,
-        nullptr);
-}
-
-void
-RoboCompCommonBehavior::CommonBehaviorPrx::_iceI_getState(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::RoboCompCommonBehavior::State>>& outAsync, const ::Ice::Context& context)
-{
-    _checkTwowayOnly(iceC_RoboCompCommonBehavior_CommonBehavior_getState_name);
-    outAsync->invoke(iceC_RoboCompCommonBehavior_CommonBehavior_getState_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
         nullptr,
         nullptr);
 }
@@ -364,21 +364,21 @@ namespace Ice
 namespace
 {
 
+const ::std::string iceC_RoboCompCommonBehavior_CommonBehavior_getParameterList_name = "getParameterList";
+
 const ::std::string iceC_RoboCompCommonBehavior_CommonBehavior_getPeriod_name = "getPeriod";
+
+const ::std::string iceC_RoboCompCommonBehavior_CommonBehavior_getState_name = "getState";
+
+const ::std::string iceC_RoboCompCommonBehavior_CommonBehavior_killYourSelf_name = "killYourSelf";
+
+const ::std::string iceC_RoboCompCommonBehavior_CommonBehavior_reloadConfig_name = "reloadConfig";
+
+const ::std::string iceC_RoboCompCommonBehavior_CommonBehavior_setParameterList_name = "setParameterList";
 
 const ::std::string iceC_RoboCompCommonBehavior_CommonBehavior_setPeriod_name = "setPeriod";
 
 const ::std::string iceC_RoboCompCommonBehavior_CommonBehavior_timeAwake_name = "timeAwake";
-
-const ::std::string iceC_RoboCompCommonBehavior_CommonBehavior_killYourSelf_name = "killYourSelf";
-
-const ::std::string iceC_RoboCompCommonBehavior_CommonBehavior_getParameterList_name = "getParameterList";
-
-const ::std::string iceC_RoboCompCommonBehavior_CommonBehavior_setParameterList_name = "setParameterList";
-
-const ::std::string iceC_RoboCompCommonBehavior_CommonBehavior_reloadConfig_name = "reloadConfig";
-
-const ::std::string iceC_RoboCompCommonBehavior_CommonBehavior_getState_name = "getState";
 
 }
 ::IceProxy::Ice::Object* ::IceProxy::RoboCompCommonBehavior::upCast(::IceProxy::RoboCompCommonBehavior::CommonBehavior* p) { return p; }
@@ -397,6 +397,46 @@ void
         v = new ::IceProxy::RoboCompCommonBehavior::CommonBehavior;
         v->_copyFrom(proxy);
     }
+}
+
+::Ice::AsyncResultPtr
+IceProxy::RoboCompCommonBehavior::CommonBehavior::_iceI_begin_getParameterList(const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
+{
+    _checkTwowayOnly(iceC_RoboCompCommonBehavior_CommonBehavior_getParameterList_name, sync);
+    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompCommonBehavior_CommonBehavior_getParameterList_name, del, cookie, sync);
+    try
+    {
+        result->prepare(iceC_RoboCompCommonBehavior_CommonBehavior_getParameterList_name, ::Ice::Normal, context);
+        result->writeEmptyParams();
+        result->invoke(iceC_RoboCompCommonBehavior_CommonBehavior_getParameterList_name);
+    }
+    catch(const ::Ice::Exception& ex)
+    {
+        result->abort(ex);
+    }
+    return result;
+}
+
+::RoboCompCommonBehavior::ParameterList
+IceProxy::RoboCompCommonBehavior::CommonBehavior::end_getParameterList(const ::Ice::AsyncResultPtr& result)
+{
+    ::Ice::AsyncResult::_check(result, this, iceC_RoboCompCommonBehavior_CommonBehavior_getParameterList_name);
+    ::RoboCompCommonBehavior::ParameterList ret;
+    if(!result->_waitForResponse())
+    {
+        try
+        {
+            result->_throwUserException();
+        }
+        catch(const ::Ice::UserException& ex)
+        {
+            throw ::Ice::UnknownUserException(__FILE__, __LINE__, ex.ice_id());
+        }
+    }
+    ::Ice::InputStream* istr = result->_startReadParams();
+    istr->read(ret);
+    result->_endReadParams();
+    return ret;
 }
 
 ::Ice::AsyncResultPtr
@@ -437,6 +477,117 @@ IceProxy::RoboCompCommonBehavior::CommonBehavior::end_getPeriod(const ::Ice::Asy
     istr->read(ret);
     result->_endReadParams();
     return ret;
+}
+
+::Ice::AsyncResultPtr
+IceProxy::RoboCompCommonBehavior::CommonBehavior::_iceI_begin_getState(const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
+{
+    _checkTwowayOnly(iceC_RoboCompCommonBehavior_CommonBehavior_getState_name, sync);
+    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompCommonBehavior_CommonBehavior_getState_name, del, cookie, sync);
+    try
+    {
+        result->prepare(iceC_RoboCompCommonBehavior_CommonBehavior_getState_name, ::Ice::Normal, context);
+        result->writeEmptyParams();
+        result->invoke(iceC_RoboCompCommonBehavior_CommonBehavior_getState_name);
+    }
+    catch(const ::Ice::Exception& ex)
+    {
+        result->abort(ex);
+    }
+    return result;
+}
+
+::RoboCompCommonBehavior::State
+IceProxy::RoboCompCommonBehavior::CommonBehavior::end_getState(const ::Ice::AsyncResultPtr& result)
+{
+    ::Ice::AsyncResult::_check(result, this, iceC_RoboCompCommonBehavior_CommonBehavior_getState_name);
+    ::RoboCompCommonBehavior::State ret;
+    if(!result->_waitForResponse())
+    {
+        try
+        {
+            result->_throwUserException();
+        }
+        catch(const ::Ice::UserException& ex)
+        {
+            throw ::Ice::UnknownUserException(__FILE__, __LINE__, ex.ice_id());
+        }
+    }
+    ::Ice::InputStream* istr = result->_startReadParams();
+    istr->read(ret);
+    result->_endReadParams();
+    return ret;
+}
+
+::Ice::AsyncResultPtr
+IceProxy::RoboCompCommonBehavior::CommonBehavior::_iceI_begin_killYourSelf(const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
+{
+    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompCommonBehavior_CommonBehavior_killYourSelf_name, del, cookie, sync);
+    try
+    {
+        result->prepare(iceC_RoboCompCommonBehavior_CommonBehavior_killYourSelf_name, ::Ice::Normal, context);
+        result->writeEmptyParams();
+        result->invoke(iceC_RoboCompCommonBehavior_CommonBehavior_killYourSelf_name);
+    }
+    catch(const ::Ice::Exception& ex)
+    {
+        result->abort(ex);
+    }
+    return result;
+}
+
+void
+IceProxy::RoboCompCommonBehavior::CommonBehavior::end_killYourSelf(const ::Ice::AsyncResultPtr& result)
+{
+    _end(result, iceC_RoboCompCommonBehavior_CommonBehavior_killYourSelf_name);
+}
+
+::Ice::AsyncResultPtr
+IceProxy::RoboCompCommonBehavior::CommonBehavior::_iceI_begin_reloadConfig(const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
+{
+    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompCommonBehavior_CommonBehavior_reloadConfig_name, del, cookie, sync);
+    try
+    {
+        result->prepare(iceC_RoboCompCommonBehavior_CommonBehavior_reloadConfig_name, ::Ice::Normal, context);
+        result->writeEmptyParams();
+        result->invoke(iceC_RoboCompCommonBehavior_CommonBehavior_reloadConfig_name);
+    }
+    catch(const ::Ice::Exception& ex)
+    {
+        result->abort(ex);
+    }
+    return result;
+}
+
+void
+IceProxy::RoboCompCommonBehavior::CommonBehavior::end_reloadConfig(const ::Ice::AsyncResultPtr& result)
+{
+    _end(result, iceC_RoboCompCommonBehavior_CommonBehavior_reloadConfig_name);
+}
+
+::Ice::AsyncResultPtr
+IceProxy::RoboCompCommonBehavior::CommonBehavior::_iceI_begin_setParameterList(const ::RoboCompCommonBehavior::ParameterList& iceP_l, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
+{
+    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompCommonBehavior_CommonBehavior_setParameterList_name, del, cookie, sync);
+    try
+    {
+        result->prepare(iceC_RoboCompCommonBehavior_CommonBehavior_setParameterList_name, ::Ice::Normal, context);
+        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
+        ostr->write(iceP_l);
+        result->endWriteParams();
+        result->invoke(iceC_RoboCompCommonBehavior_CommonBehavior_setParameterList_name);
+    }
+    catch(const ::Ice::Exception& ex)
+    {
+        result->abort(ex);
+    }
+    return result;
+}
+
+void
+IceProxy::RoboCompCommonBehavior::CommonBehavior::end_setParameterList(const ::Ice::AsyncResultPtr& result)
+{
+    _end(result, iceC_RoboCompCommonBehavior_CommonBehavior_setParameterList_name);
 }
 
 ::Ice::AsyncResultPtr
@@ -487,157 +638,6 @@ IceProxy::RoboCompCommonBehavior::CommonBehavior::end_timeAwake(const ::Ice::Asy
 {
     ::Ice::AsyncResult::_check(result, this, iceC_RoboCompCommonBehavior_CommonBehavior_timeAwake_name);
     ::Ice::Int ret;
-    if(!result->_waitForResponse())
-    {
-        try
-        {
-            result->_throwUserException();
-        }
-        catch(const ::Ice::UserException& ex)
-        {
-            throw ::Ice::UnknownUserException(__FILE__, __LINE__, ex.ice_id());
-        }
-    }
-    ::Ice::InputStream* istr = result->_startReadParams();
-    istr->read(ret);
-    result->_endReadParams();
-    return ret;
-}
-
-::Ice::AsyncResultPtr
-IceProxy::RoboCompCommonBehavior::CommonBehavior::_iceI_begin_killYourSelf(const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
-{
-    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompCommonBehavior_CommonBehavior_killYourSelf_name, del, cookie, sync);
-    try
-    {
-        result->prepare(iceC_RoboCompCommonBehavior_CommonBehavior_killYourSelf_name, ::Ice::Normal, context);
-        result->writeEmptyParams();
-        result->invoke(iceC_RoboCompCommonBehavior_CommonBehavior_killYourSelf_name);
-    }
-    catch(const ::Ice::Exception& ex)
-    {
-        result->abort(ex);
-    }
-    return result;
-}
-
-void
-IceProxy::RoboCompCommonBehavior::CommonBehavior::end_killYourSelf(const ::Ice::AsyncResultPtr& result)
-{
-    _end(result, iceC_RoboCompCommonBehavior_CommonBehavior_killYourSelf_name);
-}
-
-::Ice::AsyncResultPtr
-IceProxy::RoboCompCommonBehavior::CommonBehavior::_iceI_begin_getParameterList(const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
-{
-    _checkTwowayOnly(iceC_RoboCompCommonBehavior_CommonBehavior_getParameterList_name, sync);
-    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompCommonBehavior_CommonBehavior_getParameterList_name, del, cookie, sync);
-    try
-    {
-        result->prepare(iceC_RoboCompCommonBehavior_CommonBehavior_getParameterList_name, ::Ice::Normal, context);
-        result->writeEmptyParams();
-        result->invoke(iceC_RoboCompCommonBehavior_CommonBehavior_getParameterList_name);
-    }
-    catch(const ::Ice::Exception& ex)
-    {
-        result->abort(ex);
-    }
-    return result;
-}
-
-::RoboCompCommonBehavior::ParameterList
-IceProxy::RoboCompCommonBehavior::CommonBehavior::end_getParameterList(const ::Ice::AsyncResultPtr& result)
-{
-    ::Ice::AsyncResult::_check(result, this, iceC_RoboCompCommonBehavior_CommonBehavior_getParameterList_name);
-    ::RoboCompCommonBehavior::ParameterList ret;
-    if(!result->_waitForResponse())
-    {
-        try
-        {
-            result->_throwUserException();
-        }
-        catch(const ::Ice::UserException& ex)
-        {
-            throw ::Ice::UnknownUserException(__FILE__, __LINE__, ex.ice_id());
-        }
-    }
-    ::Ice::InputStream* istr = result->_startReadParams();
-    istr->read(ret);
-    result->_endReadParams();
-    return ret;
-}
-
-::Ice::AsyncResultPtr
-IceProxy::RoboCompCommonBehavior::CommonBehavior::_iceI_begin_setParameterList(const ::RoboCompCommonBehavior::ParameterList& iceP_l, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
-{
-    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompCommonBehavior_CommonBehavior_setParameterList_name, del, cookie, sync);
-    try
-    {
-        result->prepare(iceC_RoboCompCommonBehavior_CommonBehavior_setParameterList_name, ::Ice::Normal, context);
-        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
-        ostr->write(iceP_l);
-        result->endWriteParams();
-        result->invoke(iceC_RoboCompCommonBehavior_CommonBehavior_setParameterList_name);
-    }
-    catch(const ::Ice::Exception& ex)
-    {
-        result->abort(ex);
-    }
-    return result;
-}
-
-void
-IceProxy::RoboCompCommonBehavior::CommonBehavior::end_setParameterList(const ::Ice::AsyncResultPtr& result)
-{
-    _end(result, iceC_RoboCompCommonBehavior_CommonBehavior_setParameterList_name);
-}
-
-::Ice::AsyncResultPtr
-IceProxy::RoboCompCommonBehavior::CommonBehavior::_iceI_begin_reloadConfig(const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
-{
-    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompCommonBehavior_CommonBehavior_reloadConfig_name, del, cookie, sync);
-    try
-    {
-        result->prepare(iceC_RoboCompCommonBehavior_CommonBehavior_reloadConfig_name, ::Ice::Normal, context);
-        result->writeEmptyParams();
-        result->invoke(iceC_RoboCompCommonBehavior_CommonBehavior_reloadConfig_name);
-    }
-    catch(const ::Ice::Exception& ex)
-    {
-        result->abort(ex);
-    }
-    return result;
-}
-
-void
-IceProxy::RoboCompCommonBehavior::CommonBehavior::end_reloadConfig(const ::Ice::AsyncResultPtr& result)
-{
-    _end(result, iceC_RoboCompCommonBehavior_CommonBehavior_reloadConfig_name);
-}
-
-::Ice::AsyncResultPtr
-IceProxy::RoboCompCommonBehavior::CommonBehavior::_iceI_begin_getState(const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
-{
-    _checkTwowayOnly(iceC_RoboCompCommonBehavior_CommonBehavior_getState_name, sync);
-    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompCommonBehavior_CommonBehavior_getState_name, del, cookie, sync);
-    try
-    {
-        result->prepare(iceC_RoboCompCommonBehavior_CommonBehavior_getState_name, ::Ice::Normal, context);
-        result->writeEmptyParams();
-        result->invoke(iceC_RoboCompCommonBehavior_CommonBehavior_getState_name);
-    }
-    catch(const ::Ice::Exception& ex)
-    {
-        result->abort(ex);
-    }
-    return result;
-}
-
-::RoboCompCommonBehavior::State
-IceProxy::RoboCompCommonBehavior::CommonBehavior::end_getState(const ::Ice::AsyncResultPtr& result)
-{
-    ::Ice::AsyncResult::_check(result, this, iceC_RoboCompCommonBehavior_CommonBehavior_getState_name);
-    ::RoboCompCommonBehavior::State ret;
     if(!result->_waitForResponse())
     {
         try
@@ -714,6 +714,18 @@ RoboCompCommonBehavior::CommonBehavior::ice_staticId()
 }
 
 bool
+RoboCompCommonBehavior::CommonBehavior::_iceD_getParameterList(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::Normal, current.mode);
+    inS.readEmptyParams();
+    ::RoboCompCommonBehavior::ParameterList ret = this->getParameterList(current);
+    ::Ice::OutputStream* ostr = inS.startWriteParams();
+    ostr->write(ret);
+    inS.endWriteParams();
+    return true;
+}
+
+bool
 RoboCompCommonBehavior::CommonBehavior::_iceD_getPeriod(::IceInternal::Incoming& inS, const ::Ice::Current& current)
 {
     _iceCheckMode(::Ice::Idempotent, current.mode);
@@ -722,6 +734,51 @@ RoboCompCommonBehavior::CommonBehavior::_iceD_getPeriod(::IceInternal::Incoming&
     ::Ice::OutputStream* ostr = inS.startWriteParams();
     ostr->write(ret);
     inS.endWriteParams();
+    return true;
+}
+
+bool
+RoboCompCommonBehavior::CommonBehavior::_iceD_getState(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::Normal, current.mode);
+    inS.readEmptyParams();
+    ::RoboCompCommonBehavior::State ret = this->getState(current);
+    ::Ice::OutputStream* ostr = inS.startWriteParams();
+    ostr->write(ret);
+    inS.endWriteParams();
+    return true;
+}
+
+bool
+RoboCompCommonBehavior::CommonBehavior::_iceD_killYourSelf(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::Normal, current.mode);
+    inS.readEmptyParams();
+    this->killYourSelf(current);
+    inS.writeEmptyParams();
+    return true;
+}
+
+bool
+RoboCompCommonBehavior::CommonBehavior::_iceD_reloadConfig(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::Normal, current.mode);
+    inS.readEmptyParams();
+    this->reloadConfig(current);
+    inS.writeEmptyParams();
+    return true;
+}
+
+bool
+RoboCompCommonBehavior::CommonBehavior::_iceD_setParameterList(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::Normal, current.mode);
+    ::Ice::InputStream* istr = inS.startReadParams();
+    ::RoboCompCommonBehavior::ParameterList iceP_l;
+    istr->read(iceP_l);
+    inS.endReadParams();
+    this->setParameterList(iceP_l, current);
+    inS.writeEmptyParams();
     return true;
 }
 
@@ -744,63 +801,6 @@ RoboCompCommonBehavior::CommonBehavior::_iceD_timeAwake(::IceInternal::Incoming&
     _iceCheckMode(::Ice::Idempotent, current.mode);
     inS.readEmptyParams();
     ::Ice::Int ret = this->timeAwake(current);
-    ::Ice::OutputStream* ostr = inS.startWriteParams();
-    ostr->write(ret);
-    inS.endWriteParams();
-    return true;
-}
-
-bool
-RoboCompCommonBehavior::CommonBehavior::_iceD_killYourSelf(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::Normal, current.mode);
-    inS.readEmptyParams();
-    this->killYourSelf(current);
-    inS.writeEmptyParams();
-    return true;
-}
-
-bool
-RoboCompCommonBehavior::CommonBehavior::_iceD_getParameterList(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::Normal, current.mode);
-    inS.readEmptyParams();
-    ::RoboCompCommonBehavior::ParameterList ret = this->getParameterList(current);
-    ::Ice::OutputStream* ostr = inS.startWriteParams();
-    ostr->write(ret);
-    inS.endWriteParams();
-    return true;
-}
-
-bool
-RoboCompCommonBehavior::CommonBehavior::_iceD_setParameterList(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::Normal, current.mode);
-    ::Ice::InputStream* istr = inS.startReadParams();
-    ::RoboCompCommonBehavior::ParameterList iceP_l;
-    istr->read(iceP_l);
-    inS.endReadParams();
-    this->setParameterList(iceP_l, current);
-    inS.writeEmptyParams();
-    return true;
-}
-
-bool
-RoboCompCommonBehavior::CommonBehavior::_iceD_reloadConfig(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::Normal, current.mode);
-    inS.readEmptyParams();
-    this->reloadConfig(current);
-    inS.writeEmptyParams();
-    return true;
-}
-
-bool
-RoboCompCommonBehavior::CommonBehavior::_iceD_getState(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::Normal, current.mode);
-    inS.readEmptyParams();
-    ::RoboCompCommonBehavior::State ret = this->getState(current);
     ::Ice::OutputStream* ostr = inS.startWriteParams();
     ostr->write(ret);
     inS.endWriteParams();

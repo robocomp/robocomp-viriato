@@ -88,21 +88,21 @@ const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_ops[] =
     "symbolsUpdate"
 };
 const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_activate_name = "activate";
+const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_addSelfEdge_name = "addSelfEdge";
+const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_broadcastModel_name = "broadcastModel";
+const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_broadcastPlan_name = "broadcastPlan";
 const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_deactivate_name = "deactivate";
+const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_delSelfEdge_name = "delSelfEdge";
+const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_edgeUpdate_name = "edgeUpdate";
+const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_edgesUpdate_name = "edgesUpdate";
+const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_getData_name = "getData";
+const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_getEdge_name = "getEdge";
+const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_getModel_name = "getModel";
+const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_getNode_name = "getNode";
+const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_setMission_name = "setMission";
 const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_structuralChangeProposal_name = "structuralChangeProposal";
 const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_symbolUpdate_name = "symbolUpdate";
 const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_symbolsUpdate_name = "symbolsUpdate";
-const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_edgeUpdate_name = "edgeUpdate";
-const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_edgesUpdate_name = "edgesUpdate";
-const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_addSelfEdge_name = "addSelfEdge";
-const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_delSelfEdge_name = "delSelfEdge";
-const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_setMission_name = "setMission";
-const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_getModel_name = "getModel";
-const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_getNode_name = "getNode";
-const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_getEdge_name = "getEdge";
-const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_getData_name = "getData";
-const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_broadcastModel_name = "broadcastModel";
-const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_broadcastPlan_name = "broadcastPlan";
 
 }
 
@@ -175,11 +175,158 @@ RoboCompAGMExecutive::AGMExecutive::_iceD_activate(::IceInternal::Incoming& inS,
 }
 
 bool
+RoboCompAGMExecutive::AGMExecutive::_iceD_addSelfEdge(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
+    auto istr = inS.startReadParams();
+    int iceP_nodeid;
+    ::std::string iceP_edgeType;
+    ::RoboCompPlanning::StringDictionary iceP_attributes;
+    istr->readAll(iceP_nodeid, iceP_edgeType, iceP_attributes);
+    inS.endReadParams();
+    this->addSelfEdge(iceP_nodeid, ::std::move(iceP_edgeType), ::std::move(iceP_attributes), current);
+    inS.writeEmptyParams();
+    return true;
+}
+
+bool
+RoboCompAGMExecutive::AGMExecutive::_iceD_broadcastModel(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
+    inS.readEmptyParams();
+    this->broadcastModel(current);
+    inS.writeEmptyParams();
+    return true;
+}
+
+bool
+RoboCompAGMExecutive::AGMExecutive::_iceD_broadcastPlan(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
+    inS.readEmptyParams();
+    this->broadcastPlan(current);
+    inS.writeEmptyParams();
+    return true;
+}
+
+bool
 RoboCompAGMExecutive::AGMExecutive::_iceD_deactivate(::IceInternal::Incoming& inS, const ::Ice::Current& current)
 {
     _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
     inS.readEmptyParams();
     this->deactivate(current);
+    inS.writeEmptyParams();
+    return true;
+}
+
+bool
+RoboCompAGMExecutive::AGMExecutive::_iceD_delSelfEdge(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
+    auto istr = inS.startReadParams();
+    int iceP_nodeid;
+    ::std::string iceP_edgeType;
+    istr->readAll(iceP_nodeid, iceP_edgeType);
+    inS.endReadParams();
+    this->delSelfEdge(iceP_nodeid, ::std::move(iceP_edgeType), current);
+    inS.writeEmptyParams();
+    return true;
+}
+
+bool
+RoboCompAGMExecutive::AGMExecutive::_iceD_edgeUpdate(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
+    auto istr = inS.startReadParams();
+    ::RoboCompAGMWorldModel::Edge iceP_e;
+    istr->readAll(iceP_e);
+    inS.endReadParams();
+    this->edgeUpdate(::std::move(iceP_e), current);
+    inS.writeEmptyParams();
+    return true;
+}
+
+bool
+RoboCompAGMExecutive::AGMExecutive::_iceD_edgesUpdate(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
+    auto istr = inS.startReadParams();
+    ::RoboCompAGMWorldModel::EdgeSequence iceP_es;
+    istr->readAll(iceP_es);
+    inS.endReadParams();
+    this->edgesUpdate(::std::move(iceP_es), current);
+    inS.writeEmptyParams();
+    return true;
+}
+
+bool
+RoboCompAGMExecutive::AGMExecutive::_iceD_getData(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
+    inS.readEmptyParams();
+    ::RoboCompAGMWorldModel::World iceP_world;
+    ::std::string iceP_target;
+    ::RoboCompPlanning::Plan iceP_plan;
+    this->getData(iceP_world, iceP_target, iceP_plan, current);
+    auto ostr = inS.startWriteParams();
+    ostr->writeAll(iceP_world, iceP_target, iceP_plan);
+    inS.endWriteParams();
+    return true;
+}
+
+bool
+RoboCompAGMExecutive::AGMExecutive::_iceD_getEdge(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
+    auto istr = inS.startReadParams();
+    int iceP_srcIdentifier;
+    int iceP_dstIdentifier;
+    ::std::string iceP_label;
+    istr->readAll(iceP_srcIdentifier, iceP_dstIdentifier, iceP_label);
+    inS.endReadParams();
+    ::RoboCompAGMWorldModel::Edge ret = this->getEdge(iceP_srcIdentifier, iceP_dstIdentifier, ::std::move(iceP_label), current);
+    auto ostr = inS.startWriteParams();
+    ostr->writeAll(ret);
+    inS.endWriteParams();
+    return true;
+}
+
+bool
+RoboCompAGMExecutive::AGMExecutive::_iceD_getModel(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
+    inS.readEmptyParams();
+    ::RoboCompAGMWorldModel::World ret = this->getModel(current);
+    auto ostr = inS.startWriteParams();
+    ostr->writeAll(ret);
+    inS.endWriteParams();
+    return true;
+}
+
+bool
+RoboCompAGMExecutive::AGMExecutive::_iceD_getNode(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
+    auto istr = inS.startReadParams();
+    int iceP_identifier;
+    istr->readAll(iceP_identifier);
+    inS.endReadParams();
+    ::RoboCompAGMWorldModel::Node ret = this->getNode(iceP_identifier, current);
+    auto ostr = inS.startWriteParams();
+    ostr->writeAll(ret);
+    inS.endWriteParams();
+    return true;
+}
+
+bool
+RoboCompAGMExecutive::AGMExecutive::_iceD_setMission(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
+    auto istr = inS.startReadParams();
+    ::std::string iceP_path;
+    istr->readAll(iceP_path);
+    inS.endReadParams();
+    this->setMission(::std::move(iceP_path), current);
     inS.writeEmptyParams();
     return true;
 }
@@ -221,153 +368,6 @@ RoboCompAGMExecutive::AGMExecutive::_iceD_symbolsUpdate(::IceInternal::Incoming&
     istr->readAll(iceP_ns);
     inS.endReadParams();
     this->symbolsUpdate(::std::move(iceP_ns), current);
-    inS.writeEmptyParams();
-    return true;
-}
-
-bool
-RoboCompAGMExecutive::AGMExecutive::_iceD_edgeUpdate(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
-    auto istr = inS.startReadParams();
-    ::RoboCompAGMWorldModel::Edge iceP_e;
-    istr->readAll(iceP_e);
-    inS.endReadParams();
-    this->edgeUpdate(::std::move(iceP_e), current);
-    inS.writeEmptyParams();
-    return true;
-}
-
-bool
-RoboCompAGMExecutive::AGMExecutive::_iceD_edgesUpdate(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
-    auto istr = inS.startReadParams();
-    ::RoboCompAGMWorldModel::EdgeSequence iceP_es;
-    istr->readAll(iceP_es);
-    inS.endReadParams();
-    this->edgesUpdate(::std::move(iceP_es), current);
-    inS.writeEmptyParams();
-    return true;
-}
-
-bool
-RoboCompAGMExecutive::AGMExecutive::_iceD_addSelfEdge(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
-    auto istr = inS.startReadParams();
-    int iceP_nodeid;
-    ::std::string iceP_edgeType;
-    ::RoboCompAGMWorldModel::StringDictionary iceP_attributes;
-    istr->readAll(iceP_nodeid, iceP_edgeType, iceP_attributes);
-    inS.endReadParams();
-    this->addSelfEdge(iceP_nodeid, ::std::move(iceP_edgeType), ::std::move(iceP_attributes), current);
-    inS.writeEmptyParams();
-    return true;
-}
-
-bool
-RoboCompAGMExecutive::AGMExecutive::_iceD_delSelfEdge(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
-    auto istr = inS.startReadParams();
-    int iceP_nodeid;
-    ::std::string iceP_edgeType;
-    istr->readAll(iceP_nodeid, iceP_edgeType);
-    inS.endReadParams();
-    this->delSelfEdge(iceP_nodeid, ::std::move(iceP_edgeType), current);
-    inS.writeEmptyParams();
-    return true;
-}
-
-bool
-RoboCompAGMExecutive::AGMExecutive::_iceD_setMission(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
-    auto istr = inS.startReadParams();
-    ::std::string iceP_path;
-    istr->readAll(iceP_path);
-    inS.endReadParams();
-    this->setMission(::std::move(iceP_path), current);
-    inS.writeEmptyParams();
-    return true;
-}
-
-bool
-RoboCompAGMExecutive::AGMExecutive::_iceD_getModel(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
-    inS.readEmptyParams();
-    ::RoboCompAGMWorldModel::World ret = this->getModel(current);
-    auto ostr = inS.startWriteParams();
-    ostr->writeAll(ret);
-    inS.endWriteParams();
-    return true;
-}
-
-bool
-RoboCompAGMExecutive::AGMExecutive::_iceD_getNode(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
-    auto istr = inS.startReadParams();
-    int iceP_identifier;
-    istr->readAll(iceP_identifier);
-    inS.endReadParams();
-    ::RoboCompAGMWorldModel::Node ret = this->getNode(iceP_identifier, current);
-    auto ostr = inS.startWriteParams();
-    ostr->writeAll(ret);
-    inS.endWriteParams();
-    return true;
-}
-
-bool
-RoboCompAGMExecutive::AGMExecutive::_iceD_getEdge(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
-    auto istr = inS.startReadParams();
-    int iceP_srcIdentifier;
-    int iceP_dstIdentifier;
-    ::std::string iceP_label;
-    istr->readAll(iceP_srcIdentifier, iceP_dstIdentifier, iceP_label);
-    inS.endReadParams();
-    ::RoboCompAGMWorldModel::Edge ret = this->getEdge(iceP_srcIdentifier, iceP_dstIdentifier, ::std::move(iceP_label), current);
-    auto ostr = inS.startWriteParams();
-    ostr->writeAll(ret);
-    inS.endWriteParams();
-    return true;
-}
-
-bool
-RoboCompAGMExecutive::AGMExecutive::_iceD_getData(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
-    inS.readEmptyParams();
-    ::RoboCompAGMWorldModel::World iceP_world;
-    ::std::string iceP_target;
-    ::RoboCompPlanning::Plan iceP_plan;
-    this->getData(iceP_world, iceP_target, iceP_plan, current);
-    auto ostr = inS.startWriteParams();
-    ostr->writeAll(iceP_world, iceP_target, iceP_plan);
-    inS.endWriteParams();
-    return true;
-}
-
-bool
-RoboCompAGMExecutive::AGMExecutive::_iceD_broadcastModel(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
-    inS.readEmptyParams();
-    this->broadcastModel(current);
-    inS.writeEmptyParams();
-    return true;
-}
-
-bool
-RoboCompAGMExecutive::AGMExecutive::_iceD_broadcastPlan(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
-    inS.readEmptyParams();
-    this->broadcastPlan(current);
     inS.writeEmptyParams();
     return true;
 }
@@ -480,10 +480,129 @@ RoboCompAGMExecutive::AGMExecutivePrx::_iceI_activate(const ::std::shared_ptr<::
 }
 
 void
+RoboCompAGMExecutive::AGMExecutivePrx::_iceI_addSelfEdge(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>& outAsync, int iceP_nodeid, const ::std::string& iceP_edgeType, const ::RoboCompPlanning::StringDictionary& iceP_attributes, const ::Ice::Context& context)
+{
+    outAsync->invoke(iceC_RoboCompAGMExecutive_AGMExecutive_addSelfEdge_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
+        [&](::Ice::OutputStream* ostr)
+        {
+            ostr->writeAll(iceP_nodeid, iceP_edgeType, iceP_attributes);
+        },
+        nullptr);
+}
+
+void
+RoboCompAGMExecutive::AGMExecutivePrx::_iceI_broadcastModel(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>& outAsync, const ::Ice::Context& context)
+{
+    outAsync->invoke(iceC_RoboCompAGMExecutive_AGMExecutive_broadcastModel_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
+        nullptr,
+        nullptr);
+}
+
+void
+RoboCompAGMExecutive::AGMExecutivePrx::_iceI_broadcastPlan(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>& outAsync, const ::Ice::Context& context)
+{
+    outAsync->invoke(iceC_RoboCompAGMExecutive_AGMExecutive_broadcastPlan_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
+        nullptr,
+        nullptr);
+}
+
+void
 RoboCompAGMExecutive::AGMExecutivePrx::_iceI_deactivate(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>& outAsync, const ::Ice::Context& context)
 {
     outAsync->invoke(iceC_RoboCompAGMExecutive_AGMExecutive_deactivate_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
         nullptr,
+        nullptr);
+}
+
+void
+RoboCompAGMExecutive::AGMExecutivePrx::_iceI_delSelfEdge(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>& outAsync, int iceP_nodeid, const ::std::string& iceP_edgeType, const ::Ice::Context& context)
+{
+    outAsync->invoke(iceC_RoboCompAGMExecutive_AGMExecutive_delSelfEdge_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
+        [&](::Ice::OutputStream* ostr)
+        {
+            ostr->writeAll(iceP_nodeid, iceP_edgeType);
+        },
+        nullptr);
+}
+
+void
+RoboCompAGMExecutive::AGMExecutivePrx::_iceI_edgeUpdate(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>& outAsync, const ::RoboCompAGMWorldModel::Edge& iceP_e, const ::Ice::Context& context)
+{
+    outAsync->invoke(iceC_RoboCompAGMExecutive_AGMExecutive_edgeUpdate_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
+        [&](::Ice::OutputStream* ostr)
+        {
+            ostr->writeAll(iceP_e);
+        },
+        nullptr);
+}
+
+void
+RoboCompAGMExecutive::AGMExecutivePrx::_iceI_edgesUpdate(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>& outAsync, const ::RoboCompAGMWorldModel::EdgeSequence& iceP_es, const ::Ice::Context& context)
+{
+    outAsync->invoke(iceC_RoboCompAGMExecutive_AGMExecutive_edgesUpdate_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
+        [&](::Ice::OutputStream* ostr)
+        {
+            ostr->writeAll(iceP_es);
+        },
+        nullptr);
+}
+
+void
+RoboCompAGMExecutive::AGMExecutivePrx::_iceI_getData(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::RoboCompAGMExecutive::AGMExecutive::GetDataResult>>& outAsync, const ::Ice::Context& context)
+{
+    _checkTwowayOnly(iceC_RoboCompAGMExecutive_AGMExecutive_getData_name);
+    outAsync->invoke(iceC_RoboCompAGMExecutive_AGMExecutive_getData_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
+        nullptr,
+        nullptr,
+        [](::Ice::InputStream* istr)
+        {
+            ::RoboCompAGMExecutive::AGMExecutive::GetDataResult v;
+            istr->readAll(v.world, v.target, v.plan);
+            return v;
+        });
+}
+
+void
+RoboCompAGMExecutive::AGMExecutivePrx::_iceI_getEdge(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::RoboCompAGMWorldModel::Edge>>& outAsync, int iceP_srcIdentifier, int iceP_dstIdentifier, const ::std::string& iceP_label, const ::Ice::Context& context)
+{
+    _checkTwowayOnly(iceC_RoboCompAGMExecutive_AGMExecutive_getEdge_name);
+    outAsync->invoke(iceC_RoboCompAGMExecutive_AGMExecutive_getEdge_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
+        [&](::Ice::OutputStream* ostr)
+        {
+            ostr->writeAll(iceP_srcIdentifier, iceP_dstIdentifier, iceP_label);
+        },
+        nullptr);
+}
+
+void
+RoboCompAGMExecutive::AGMExecutivePrx::_iceI_getModel(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::RoboCompAGMWorldModel::World>>& outAsync, const ::Ice::Context& context)
+{
+    _checkTwowayOnly(iceC_RoboCompAGMExecutive_AGMExecutive_getModel_name);
+    outAsync->invoke(iceC_RoboCompAGMExecutive_AGMExecutive_getModel_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
+        nullptr,
+        nullptr);
+}
+
+void
+RoboCompAGMExecutive::AGMExecutivePrx::_iceI_getNode(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::RoboCompAGMWorldModel::Node>>& outAsync, int iceP_identifier, const ::Ice::Context& context)
+{
+    _checkTwowayOnly(iceC_RoboCompAGMExecutive_AGMExecutive_getNode_name);
+    outAsync->invoke(iceC_RoboCompAGMExecutive_AGMExecutive_getNode_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
+        [&](::Ice::OutputStream* ostr)
+        {
+            ostr->writeAll(iceP_identifier);
+        },
+        nullptr);
+}
+
+void
+RoboCompAGMExecutive::AGMExecutivePrx::_iceI_setMission(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>& outAsync, const ::std::string& iceP_path, const ::Ice::Context& context)
+{
+    outAsync->invoke(iceC_RoboCompAGMExecutive_AGMExecutive_setMission_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
+        [&](::Ice::OutputStream* ostr)
+        {
+            ostr->writeAll(iceP_path);
+        },
         nullptr);
 }
 
@@ -542,125 +661,6 @@ RoboCompAGMExecutive::AGMExecutivePrx::_iceI_symbolsUpdate(const ::std::shared_p
         nullptr);
 }
 
-void
-RoboCompAGMExecutive::AGMExecutivePrx::_iceI_edgeUpdate(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>& outAsync, const ::RoboCompAGMWorldModel::Edge& iceP_e, const ::Ice::Context& context)
-{
-    outAsync->invoke(iceC_RoboCompAGMExecutive_AGMExecutive_edgeUpdate_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
-        [&](::Ice::OutputStream* ostr)
-        {
-            ostr->writeAll(iceP_e);
-        },
-        nullptr);
-}
-
-void
-RoboCompAGMExecutive::AGMExecutivePrx::_iceI_edgesUpdate(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>& outAsync, const ::RoboCompAGMWorldModel::EdgeSequence& iceP_es, const ::Ice::Context& context)
-{
-    outAsync->invoke(iceC_RoboCompAGMExecutive_AGMExecutive_edgesUpdate_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
-        [&](::Ice::OutputStream* ostr)
-        {
-            ostr->writeAll(iceP_es);
-        },
-        nullptr);
-}
-
-void
-RoboCompAGMExecutive::AGMExecutivePrx::_iceI_addSelfEdge(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>& outAsync, int iceP_nodeid, const ::std::string& iceP_edgeType, const ::RoboCompAGMWorldModel::StringDictionary& iceP_attributes, const ::Ice::Context& context)
-{
-    outAsync->invoke(iceC_RoboCompAGMExecutive_AGMExecutive_addSelfEdge_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
-        [&](::Ice::OutputStream* ostr)
-        {
-            ostr->writeAll(iceP_nodeid, iceP_edgeType, iceP_attributes);
-        },
-        nullptr);
-}
-
-void
-RoboCompAGMExecutive::AGMExecutivePrx::_iceI_delSelfEdge(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>& outAsync, int iceP_nodeid, const ::std::string& iceP_edgeType, const ::Ice::Context& context)
-{
-    outAsync->invoke(iceC_RoboCompAGMExecutive_AGMExecutive_delSelfEdge_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
-        [&](::Ice::OutputStream* ostr)
-        {
-            ostr->writeAll(iceP_nodeid, iceP_edgeType);
-        },
-        nullptr);
-}
-
-void
-RoboCompAGMExecutive::AGMExecutivePrx::_iceI_setMission(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>& outAsync, const ::std::string& iceP_path, const ::Ice::Context& context)
-{
-    outAsync->invoke(iceC_RoboCompAGMExecutive_AGMExecutive_setMission_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
-        [&](::Ice::OutputStream* ostr)
-        {
-            ostr->writeAll(iceP_path);
-        },
-        nullptr);
-}
-
-void
-RoboCompAGMExecutive::AGMExecutivePrx::_iceI_getModel(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::RoboCompAGMWorldModel::World>>& outAsync, const ::Ice::Context& context)
-{
-    _checkTwowayOnly(iceC_RoboCompAGMExecutive_AGMExecutive_getModel_name);
-    outAsync->invoke(iceC_RoboCompAGMExecutive_AGMExecutive_getModel_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
-        nullptr,
-        nullptr);
-}
-
-void
-RoboCompAGMExecutive::AGMExecutivePrx::_iceI_getNode(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::RoboCompAGMWorldModel::Node>>& outAsync, int iceP_identifier, const ::Ice::Context& context)
-{
-    _checkTwowayOnly(iceC_RoboCompAGMExecutive_AGMExecutive_getNode_name);
-    outAsync->invoke(iceC_RoboCompAGMExecutive_AGMExecutive_getNode_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
-        [&](::Ice::OutputStream* ostr)
-        {
-            ostr->writeAll(iceP_identifier);
-        },
-        nullptr);
-}
-
-void
-RoboCompAGMExecutive::AGMExecutivePrx::_iceI_getEdge(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::RoboCompAGMWorldModel::Edge>>& outAsync, int iceP_srcIdentifier, int iceP_dstIdentifier, const ::std::string& iceP_label, const ::Ice::Context& context)
-{
-    _checkTwowayOnly(iceC_RoboCompAGMExecutive_AGMExecutive_getEdge_name);
-    outAsync->invoke(iceC_RoboCompAGMExecutive_AGMExecutive_getEdge_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
-        [&](::Ice::OutputStream* ostr)
-        {
-            ostr->writeAll(iceP_srcIdentifier, iceP_dstIdentifier, iceP_label);
-        },
-        nullptr);
-}
-
-void
-RoboCompAGMExecutive::AGMExecutivePrx::_iceI_getData(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::RoboCompAGMExecutive::AGMExecutive::GetDataResult>>& outAsync, const ::Ice::Context& context)
-{
-    _checkTwowayOnly(iceC_RoboCompAGMExecutive_AGMExecutive_getData_name);
-    outAsync->invoke(iceC_RoboCompAGMExecutive_AGMExecutive_getData_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
-        nullptr,
-        nullptr,
-        [](::Ice::InputStream* istr)
-        {
-            ::RoboCompAGMExecutive::AGMExecutive::GetDataResult v;
-            istr->readAll(v.world, v.target, v.plan);
-            return v;
-        });
-}
-
-void
-RoboCompAGMExecutive::AGMExecutivePrx::_iceI_broadcastModel(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>& outAsync, const ::Ice::Context& context)
-{
-    outAsync->invoke(iceC_RoboCompAGMExecutive_AGMExecutive_broadcastModel_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
-        nullptr,
-        nullptr);
-}
-
-void
-RoboCompAGMExecutive::AGMExecutivePrx::_iceI_broadcastPlan(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>& outAsync, const ::Ice::Context& context)
-{
-    outAsync->invoke(iceC_RoboCompAGMExecutive_AGMExecutive_broadcastPlan_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
-        nullptr,
-        nullptr);
-}
-
 ::std::shared_ptr<::Ice::ObjectPrx>
 RoboCompAGMExecutive::AGMExecutivePrx::_newInstance() const
 {
@@ -680,35 +680,35 @@ namespace
 
 const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_activate_name = "activate";
 
+const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_addSelfEdge_name = "addSelfEdge";
+
+const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_broadcastModel_name = "broadcastModel";
+
+const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_broadcastPlan_name = "broadcastPlan";
+
 const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_deactivate_name = "deactivate";
+
+const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_delSelfEdge_name = "delSelfEdge";
+
+const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_edgeUpdate_name = "edgeUpdate";
+
+const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_edgesUpdate_name = "edgesUpdate";
+
+const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_getData_name = "getData";
+
+const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_getEdge_name = "getEdge";
+
+const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_getModel_name = "getModel";
+
+const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_getNode_name = "getNode";
+
+const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_setMission_name = "setMission";
 
 const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_structuralChangeProposal_name = "structuralChangeProposal";
 
 const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_symbolUpdate_name = "symbolUpdate";
 
 const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_symbolsUpdate_name = "symbolsUpdate";
-
-const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_edgeUpdate_name = "edgeUpdate";
-
-const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_edgesUpdate_name = "edgesUpdate";
-
-const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_addSelfEdge_name = "addSelfEdge";
-
-const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_delSelfEdge_name = "delSelfEdge";
-
-const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_setMission_name = "setMission";
-
-const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_getModel_name = "getModel";
-
-const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_getNode_name = "getNode";
-
-const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_getEdge_name = "getEdge";
-
-const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_getData_name = "getData";
-
-const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_broadcastModel_name = "broadcastModel";
-
-const ::std::string iceC_RoboCompAGMExecutive_AGMExecutive_broadcastPlan_name = "broadcastPlan";
 
 }
 
@@ -888,6 +888,79 @@ IceProxy::RoboCompAGMExecutive::AGMExecutive::end_activate(const ::Ice::AsyncRes
 }
 
 ::Ice::AsyncResultPtr
+IceProxy::RoboCompAGMExecutive::AGMExecutive::_iceI_begin_addSelfEdge(::Ice::Int iceP_nodeid, const ::std::string& iceP_edgeType, const ::RoboCompPlanning::StringDictionary& iceP_attributes, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
+{
+    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompAGMExecutive_AGMExecutive_addSelfEdge_name, del, cookie, sync);
+    try
+    {
+        result->prepare(iceC_RoboCompAGMExecutive_AGMExecutive_addSelfEdge_name, ::Ice::Normal, context);
+        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
+        ostr->write(iceP_nodeid);
+        ostr->write(iceP_edgeType);
+        ostr->write(iceP_attributes);
+        result->endWriteParams();
+        result->invoke(iceC_RoboCompAGMExecutive_AGMExecutive_addSelfEdge_name);
+    }
+    catch(const ::Ice::Exception& ex)
+    {
+        result->abort(ex);
+    }
+    return result;
+}
+
+void
+IceProxy::RoboCompAGMExecutive::AGMExecutive::end_addSelfEdge(const ::Ice::AsyncResultPtr& result)
+{
+    _end(result, iceC_RoboCompAGMExecutive_AGMExecutive_addSelfEdge_name);
+}
+
+::Ice::AsyncResultPtr
+IceProxy::RoboCompAGMExecutive::AGMExecutive::_iceI_begin_broadcastModel(const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
+{
+    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompAGMExecutive_AGMExecutive_broadcastModel_name, del, cookie, sync);
+    try
+    {
+        result->prepare(iceC_RoboCompAGMExecutive_AGMExecutive_broadcastModel_name, ::Ice::Normal, context);
+        result->writeEmptyParams();
+        result->invoke(iceC_RoboCompAGMExecutive_AGMExecutive_broadcastModel_name);
+    }
+    catch(const ::Ice::Exception& ex)
+    {
+        result->abort(ex);
+    }
+    return result;
+}
+
+void
+IceProxy::RoboCompAGMExecutive::AGMExecutive::end_broadcastModel(const ::Ice::AsyncResultPtr& result)
+{
+    _end(result, iceC_RoboCompAGMExecutive_AGMExecutive_broadcastModel_name);
+}
+
+::Ice::AsyncResultPtr
+IceProxy::RoboCompAGMExecutive::AGMExecutive::_iceI_begin_broadcastPlan(const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
+{
+    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompAGMExecutive_AGMExecutive_broadcastPlan_name, del, cookie, sync);
+    try
+    {
+        result->prepare(iceC_RoboCompAGMExecutive_AGMExecutive_broadcastPlan_name, ::Ice::Normal, context);
+        result->writeEmptyParams();
+        result->invoke(iceC_RoboCompAGMExecutive_AGMExecutive_broadcastPlan_name);
+    }
+    catch(const ::Ice::Exception& ex)
+    {
+        result->abort(ex);
+    }
+    return result;
+}
+
+void
+IceProxy::RoboCompAGMExecutive::AGMExecutive::end_broadcastPlan(const ::Ice::AsyncResultPtr& result)
+{
+    _end(result, iceC_RoboCompAGMExecutive_AGMExecutive_broadcastPlan_name);
+}
+
+::Ice::AsyncResultPtr
 IceProxy::RoboCompAGMExecutive::AGMExecutive::_iceI_begin_deactivate(const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
 {
     ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompAGMExecutive_AGMExecutive_deactivate_name, del, cookie, sync);
@@ -908,6 +981,273 @@ void
 IceProxy::RoboCompAGMExecutive::AGMExecutive::end_deactivate(const ::Ice::AsyncResultPtr& result)
 {
     _end(result, iceC_RoboCompAGMExecutive_AGMExecutive_deactivate_name);
+}
+
+::Ice::AsyncResultPtr
+IceProxy::RoboCompAGMExecutive::AGMExecutive::_iceI_begin_delSelfEdge(::Ice::Int iceP_nodeid, const ::std::string& iceP_edgeType, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
+{
+    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompAGMExecutive_AGMExecutive_delSelfEdge_name, del, cookie, sync);
+    try
+    {
+        result->prepare(iceC_RoboCompAGMExecutive_AGMExecutive_delSelfEdge_name, ::Ice::Normal, context);
+        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
+        ostr->write(iceP_nodeid);
+        ostr->write(iceP_edgeType);
+        result->endWriteParams();
+        result->invoke(iceC_RoboCompAGMExecutive_AGMExecutive_delSelfEdge_name);
+    }
+    catch(const ::Ice::Exception& ex)
+    {
+        result->abort(ex);
+    }
+    return result;
+}
+
+void
+IceProxy::RoboCompAGMExecutive::AGMExecutive::end_delSelfEdge(const ::Ice::AsyncResultPtr& result)
+{
+    _end(result, iceC_RoboCompAGMExecutive_AGMExecutive_delSelfEdge_name);
+}
+
+::Ice::AsyncResultPtr
+IceProxy::RoboCompAGMExecutive::AGMExecutive::_iceI_begin_edgeUpdate(const ::RoboCompAGMWorldModel::Edge& iceP_e, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
+{
+    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompAGMExecutive_AGMExecutive_edgeUpdate_name, del, cookie, sync);
+    try
+    {
+        result->prepare(iceC_RoboCompAGMExecutive_AGMExecutive_edgeUpdate_name, ::Ice::Normal, context);
+        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
+        ostr->write(iceP_e);
+        result->endWriteParams();
+        result->invoke(iceC_RoboCompAGMExecutive_AGMExecutive_edgeUpdate_name);
+    }
+    catch(const ::Ice::Exception& ex)
+    {
+        result->abort(ex);
+    }
+    return result;
+}
+
+void
+IceProxy::RoboCompAGMExecutive::AGMExecutive::end_edgeUpdate(const ::Ice::AsyncResultPtr& result)
+{
+    _end(result, iceC_RoboCompAGMExecutive_AGMExecutive_edgeUpdate_name);
+}
+
+::Ice::AsyncResultPtr
+IceProxy::RoboCompAGMExecutive::AGMExecutive::_iceI_begin_edgesUpdate(const ::RoboCompAGMWorldModel::EdgeSequence& iceP_es, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
+{
+    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompAGMExecutive_AGMExecutive_edgesUpdate_name, del, cookie, sync);
+    try
+    {
+        result->prepare(iceC_RoboCompAGMExecutive_AGMExecutive_edgesUpdate_name, ::Ice::Normal, context);
+        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
+        ostr->write(iceP_es);
+        result->endWriteParams();
+        result->invoke(iceC_RoboCompAGMExecutive_AGMExecutive_edgesUpdate_name);
+    }
+    catch(const ::Ice::Exception& ex)
+    {
+        result->abort(ex);
+    }
+    return result;
+}
+
+void
+IceProxy::RoboCompAGMExecutive::AGMExecutive::end_edgesUpdate(const ::Ice::AsyncResultPtr& result)
+{
+    _end(result, iceC_RoboCompAGMExecutive_AGMExecutive_edgesUpdate_name);
+}
+
+::Ice::AsyncResultPtr
+IceProxy::RoboCompAGMExecutive::AGMExecutive::_iceI_begin_getData(const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
+{
+    _checkTwowayOnly(iceC_RoboCompAGMExecutive_AGMExecutive_getData_name, sync);
+    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompAGMExecutive_AGMExecutive_getData_name, del, cookie, sync);
+    try
+    {
+        result->prepare(iceC_RoboCompAGMExecutive_AGMExecutive_getData_name, ::Ice::Normal, context);
+        result->writeEmptyParams();
+        result->invoke(iceC_RoboCompAGMExecutive_AGMExecutive_getData_name);
+    }
+    catch(const ::Ice::Exception& ex)
+    {
+        result->abort(ex);
+    }
+    return result;
+}
+
+void
+IceProxy::RoboCompAGMExecutive::AGMExecutive::end_getData(::RoboCompAGMWorldModel::World& iceP_world, ::std::string& iceP_target, ::RoboCompPlanning::Plan& iceP_plan, const ::Ice::AsyncResultPtr& result)
+{
+    ::Ice::AsyncResult::_check(result, this, iceC_RoboCompAGMExecutive_AGMExecutive_getData_name);
+    if(!result->_waitForResponse())
+    {
+        try
+        {
+            result->_throwUserException();
+        }
+        catch(const ::Ice::UserException& ex)
+        {
+            throw ::Ice::UnknownUserException(__FILE__, __LINE__, ex.ice_id());
+        }
+    }
+    ::Ice::InputStream* istr = result->_startReadParams();
+    istr->read(iceP_world);
+    istr->read(iceP_target);
+    istr->read(iceP_plan);
+    result->_endReadParams();
+}
+
+::Ice::AsyncResultPtr
+IceProxy::RoboCompAGMExecutive::AGMExecutive::_iceI_begin_getEdge(::Ice::Int iceP_srcIdentifier, ::Ice::Int iceP_dstIdentifier, const ::std::string& iceP_label, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
+{
+    _checkTwowayOnly(iceC_RoboCompAGMExecutive_AGMExecutive_getEdge_name, sync);
+    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompAGMExecutive_AGMExecutive_getEdge_name, del, cookie, sync);
+    try
+    {
+        result->prepare(iceC_RoboCompAGMExecutive_AGMExecutive_getEdge_name, ::Ice::Normal, context);
+        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
+        ostr->write(iceP_srcIdentifier);
+        ostr->write(iceP_dstIdentifier);
+        ostr->write(iceP_label);
+        result->endWriteParams();
+        result->invoke(iceC_RoboCompAGMExecutive_AGMExecutive_getEdge_name);
+    }
+    catch(const ::Ice::Exception& ex)
+    {
+        result->abort(ex);
+    }
+    return result;
+}
+
+::RoboCompAGMWorldModel::Edge
+IceProxy::RoboCompAGMExecutive::AGMExecutive::end_getEdge(const ::Ice::AsyncResultPtr& result)
+{
+    ::Ice::AsyncResult::_check(result, this, iceC_RoboCompAGMExecutive_AGMExecutive_getEdge_name);
+    ::RoboCompAGMWorldModel::Edge ret;
+    if(!result->_waitForResponse())
+    {
+        try
+        {
+            result->_throwUserException();
+        }
+        catch(const ::Ice::UserException& ex)
+        {
+            throw ::Ice::UnknownUserException(__FILE__, __LINE__, ex.ice_id());
+        }
+    }
+    ::Ice::InputStream* istr = result->_startReadParams();
+    istr->read(ret);
+    result->_endReadParams();
+    return ret;
+}
+
+::Ice::AsyncResultPtr
+IceProxy::RoboCompAGMExecutive::AGMExecutive::_iceI_begin_getModel(const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
+{
+    _checkTwowayOnly(iceC_RoboCompAGMExecutive_AGMExecutive_getModel_name, sync);
+    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompAGMExecutive_AGMExecutive_getModel_name, del, cookie, sync);
+    try
+    {
+        result->prepare(iceC_RoboCompAGMExecutive_AGMExecutive_getModel_name, ::Ice::Normal, context);
+        result->writeEmptyParams();
+        result->invoke(iceC_RoboCompAGMExecutive_AGMExecutive_getModel_name);
+    }
+    catch(const ::Ice::Exception& ex)
+    {
+        result->abort(ex);
+    }
+    return result;
+}
+
+::RoboCompAGMWorldModel::World
+IceProxy::RoboCompAGMExecutive::AGMExecutive::end_getModel(const ::Ice::AsyncResultPtr& result)
+{
+    ::Ice::AsyncResult::_check(result, this, iceC_RoboCompAGMExecutive_AGMExecutive_getModel_name);
+    ::RoboCompAGMWorldModel::World ret;
+    if(!result->_waitForResponse())
+    {
+        try
+        {
+            result->_throwUserException();
+        }
+        catch(const ::Ice::UserException& ex)
+        {
+            throw ::Ice::UnknownUserException(__FILE__, __LINE__, ex.ice_id());
+        }
+    }
+    ::Ice::InputStream* istr = result->_startReadParams();
+    istr->read(ret);
+    result->_endReadParams();
+    return ret;
+}
+
+::Ice::AsyncResultPtr
+IceProxy::RoboCompAGMExecutive::AGMExecutive::_iceI_begin_getNode(::Ice::Int iceP_identifier, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
+{
+    _checkTwowayOnly(iceC_RoboCompAGMExecutive_AGMExecutive_getNode_name, sync);
+    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompAGMExecutive_AGMExecutive_getNode_name, del, cookie, sync);
+    try
+    {
+        result->prepare(iceC_RoboCompAGMExecutive_AGMExecutive_getNode_name, ::Ice::Normal, context);
+        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
+        ostr->write(iceP_identifier);
+        result->endWriteParams();
+        result->invoke(iceC_RoboCompAGMExecutive_AGMExecutive_getNode_name);
+    }
+    catch(const ::Ice::Exception& ex)
+    {
+        result->abort(ex);
+    }
+    return result;
+}
+
+::RoboCompAGMWorldModel::Node
+IceProxy::RoboCompAGMExecutive::AGMExecutive::end_getNode(const ::Ice::AsyncResultPtr& result)
+{
+    ::Ice::AsyncResult::_check(result, this, iceC_RoboCompAGMExecutive_AGMExecutive_getNode_name);
+    ::RoboCompAGMWorldModel::Node ret;
+    if(!result->_waitForResponse())
+    {
+        try
+        {
+            result->_throwUserException();
+        }
+        catch(const ::Ice::UserException& ex)
+        {
+            throw ::Ice::UnknownUserException(__FILE__, __LINE__, ex.ice_id());
+        }
+    }
+    ::Ice::InputStream* istr = result->_startReadParams();
+    istr->read(ret);
+    result->_endReadParams();
+    return ret;
+}
+
+::Ice::AsyncResultPtr
+IceProxy::RoboCompAGMExecutive::AGMExecutive::_iceI_begin_setMission(const ::std::string& iceP_path, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
+{
+    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompAGMExecutive_AGMExecutive_setMission_name, del, cookie, sync);
+    try
+    {
+        result->prepare(iceC_RoboCompAGMExecutive_AGMExecutive_setMission_name, ::Ice::Normal, context);
+        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
+        ostr->write(iceP_path);
+        result->endWriteParams();
+        result->invoke(iceC_RoboCompAGMExecutive_AGMExecutive_setMission_name);
+    }
+    catch(const ::Ice::Exception& ex)
+    {
+        result->abort(ex);
+    }
+    return result;
+}
+
+void
+IceProxy::RoboCompAGMExecutive::AGMExecutive::end_setMission(const ::Ice::AsyncResultPtr& result)
+{
+    _end(result, iceC_RoboCompAGMExecutive_AGMExecutive_setMission_name);
 }
 
 ::Ice::AsyncResultPtr
@@ -1012,346 +1352,6 @@ IceProxy::RoboCompAGMExecutive::AGMExecutive::end_symbolsUpdate(const ::Ice::Asy
     _end(result, iceC_RoboCompAGMExecutive_AGMExecutive_symbolsUpdate_name);
 }
 
-::Ice::AsyncResultPtr
-IceProxy::RoboCompAGMExecutive::AGMExecutive::_iceI_begin_edgeUpdate(const ::RoboCompAGMWorldModel::Edge& iceP_e, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
-{
-    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompAGMExecutive_AGMExecutive_edgeUpdate_name, del, cookie, sync);
-    try
-    {
-        result->prepare(iceC_RoboCompAGMExecutive_AGMExecutive_edgeUpdate_name, ::Ice::Normal, context);
-        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
-        ostr->write(iceP_e);
-        result->endWriteParams();
-        result->invoke(iceC_RoboCompAGMExecutive_AGMExecutive_edgeUpdate_name);
-    }
-    catch(const ::Ice::Exception& ex)
-    {
-        result->abort(ex);
-    }
-    return result;
-}
-
-void
-IceProxy::RoboCompAGMExecutive::AGMExecutive::end_edgeUpdate(const ::Ice::AsyncResultPtr& result)
-{
-    _end(result, iceC_RoboCompAGMExecutive_AGMExecutive_edgeUpdate_name);
-}
-
-::Ice::AsyncResultPtr
-IceProxy::RoboCompAGMExecutive::AGMExecutive::_iceI_begin_edgesUpdate(const ::RoboCompAGMWorldModel::EdgeSequence& iceP_es, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
-{
-    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompAGMExecutive_AGMExecutive_edgesUpdate_name, del, cookie, sync);
-    try
-    {
-        result->prepare(iceC_RoboCompAGMExecutive_AGMExecutive_edgesUpdate_name, ::Ice::Normal, context);
-        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
-        ostr->write(iceP_es);
-        result->endWriteParams();
-        result->invoke(iceC_RoboCompAGMExecutive_AGMExecutive_edgesUpdate_name);
-    }
-    catch(const ::Ice::Exception& ex)
-    {
-        result->abort(ex);
-    }
-    return result;
-}
-
-void
-IceProxy::RoboCompAGMExecutive::AGMExecutive::end_edgesUpdate(const ::Ice::AsyncResultPtr& result)
-{
-    _end(result, iceC_RoboCompAGMExecutive_AGMExecutive_edgesUpdate_name);
-}
-
-::Ice::AsyncResultPtr
-IceProxy::RoboCompAGMExecutive::AGMExecutive::_iceI_begin_addSelfEdge(::Ice::Int iceP_nodeid, const ::std::string& iceP_edgeType, const ::RoboCompAGMWorldModel::StringDictionary& iceP_attributes, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
-{
-    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompAGMExecutive_AGMExecutive_addSelfEdge_name, del, cookie, sync);
-    try
-    {
-        result->prepare(iceC_RoboCompAGMExecutive_AGMExecutive_addSelfEdge_name, ::Ice::Normal, context);
-        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
-        ostr->write(iceP_nodeid);
-        ostr->write(iceP_edgeType);
-        ostr->write(iceP_attributes);
-        result->endWriteParams();
-        result->invoke(iceC_RoboCompAGMExecutive_AGMExecutive_addSelfEdge_name);
-    }
-    catch(const ::Ice::Exception& ex)
-    {
-        result->abort(ex);
-    }
-    return result;
-}
-
-void
-IceProxy::RoboCompAGMExecutive::AGMExecutive::end_addSelfEdge(const ::Ice::AsyncResultPtr& result)
-{
-    _end(result, iceC_RoboCompAGMExecutive_AGMExecutive_addSelfEdge_name);
-}
-
-::Ice::AsyncResultPtr
-IceProxy::RoboCompAGMExecutive::AGMExecutive::_iceI_begin_delSelfEdge(::Ice::Int iceP_nodeid, const ::std::string& iceP_edgeType, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
-{
-    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompAGMExecutive_AGMExecutive_delSelfEdge_name, del, cookie, sync);
-    try
-    {
-        result->prepare(iceC_RoboCompAGMExecutive_AGMExecutive_delSelfEdge_name, ::Ice::Normal, context);
-        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
-        ostr->write(iceP_nodeid);
-        ostr->write(iceP_edgeType);
-        result->endWriteParams();
-        result->invoke(iceC_RoboCompAGMExecutive_AGMExecutive_delSelfEdge_name);
-    }
-    catch(const ::Ice::Exception& ex)
-    {
-        result->abort(ex);
-    }
-    return result;
-}
-
-void
-IceProxy::RoboCompAGMExecutive::AGMExecutive::end_delSelfEdge(const ::Ice::AsyncResultPtr& result)
-{
-    _end(result, iceC_RoboCompAGMExecutive_AGMExecutive_delSelfEdge_name);
-}
-
-::Ice::AsyncResultPtr
-IceProxy::RoboCompAGMExecutive::AGMExecutive::_iceI_begin_setMission(const ::std::string& iceP_path, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
-{
-    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompAGMExecutive_AGMExecutive_setMission_name, del, cookie, sync);
-    try
-    {
-        result->prepare(iceC_RoboCompAGMExecutive_AGMExecutive_setMission_name, ::Ice::Normal, context);
-        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
-        ostr->write(iceP_path);
-        result->endWriteParams();
-        result->invoke(iceC_RoboCompAGMExecutive_AGMExecutive_setMission_name);
-    }
-    catch(const ::Ice::Exception& ex)
-    {
-        result->abort(ex);
-    }
-    return result;
-}
-
-void
-IceProxy::RoboCompAGMExecutive::AGMExecutive::end_setMission(const ::Ice::AsyncResultPtr& result)
-{
-    _end(result, iceC_RoboCompAGMExecutive_AGMExecutive_setMission_name);
-}
-
-::Ice::AsyncResultPtr
-IceProxy::RoboCompAGMExecutive::AGMExecutive::_iceI_begin_getModel(const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
-{
-    _checkTwowayOnly(iceC_RoboCompAGMExecutive_AGMExecutive_getModel_name, sync);
-    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompAGMExecutive_AGMExecutive_getModel_name, del, cookie, sync);
-    try
-    {
-        result->prepare(iceC_RoboCompAGMExecutive_AGMExecutive_getModel_name, ::Ice::Normal, context);
-        result->writeEmptyParams();
-        result->invoke(iceC_RoboCompAGMExecutive_AGMExecutive_getModel_name);
-    }
-    catch(const ::Ice::Exception& ex)
-    {
-        result->abort(ex);
-    }
-    return result;
-}
-
-::RoboCompAGMWorldModel::World
-IceProxy::RoboCompAGMExecutive::AGMExecutive::end_getModel(const ::Ice::AsyncResultPtr& result)
-{
-    ::Ice::AsyncResult::_check(result, this, iceC_RoboCompAGMExecutive_AGMExecutive_getModel_name);
-    ::RoboCompAGMWorldModel::World ret;
-    if(!result->_waitForResponse())
-    {
-        try
-        {
-            result->_throwUserException();
-        }
-        catch(const ::Ice::UserException& ex)
-        {
-            throw ::Ice::UnknownUserException(__FILE__, __LINE__, ex.ice_id());
-        }
-    }
-    ::Ice::InputStream* istr = result->_startReadParams();
-    istr->read(ret);
-    result->_endReadParams();
-    return ret;
-}
-
-::Ice::AsyncResultPtr
-IceProxy::RoboCompAGMExecutive::AGMExecutive::_iceI_begin_getNode(::Ice::Int iceP_identifier, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
-{
-    _checkTwowayOnly(iceC_RoboCompAGMExecutive_AGMExecutive_getNode_name, sync);
-    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompAGMExecutive_AGMExecutive_getNode_name, del, cookie, sync);
-    try
-    {
-        result->prepare(iceC_RoboCompAGMExecutive_AGMExecutive_getNode_name, ::Ice::Normal, context);
-        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
-        ostr->write(iceP_identifier);
-        result->endWriteParams();
-        result->invoke(iceC_RoboCompAGMExecutive_AGMExecutive_getNode_name);
-    }
-    catch(const ::Ice::Exception& ex)
-    {
-        result->abort(ex);
-    }
-    return result;
-}
-
-::RoboCompAGMWorldModel::Node
-IceProxy::RoboCompAGMExecutive::AGMExecutive::end_getNode(const ::Ice::AsyncResultPtr& result)
-{
-    ::Ice::AsyncResult::_check(result, this, iceC_RoboCompAGMExecutive_AGMExecutive_getNode_name);
-    ::RoboCompAGMWorldModel::Node ret;
-    if(!result->_waitForResponse())
-    {
-        try
-        {
-            result->_throwUserException();
-        }
-        catch(const ::Ice::UserException& ex)
-        {
-            throw ::Ice::UnknownUserException(__FILE__, __LINE__, ex.ice_id());
-        }
-    }
-    ::Ice::InputStream* istr = result->_startReadParams();
-    istr->read(ret);
-    result->_endReadParams();
-    return ret;
-}
-
-::Ice::AsyncResultPtr
-IceProxy::RoboCompAGMExecutive::AGMExecutive::_iceI_begin_getEdge(::Ice::Int iceP_srcIdentifier, ::Ice::Int iceP_dstIdentifier, const ::std::string& iceP_label, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
-{
-    _checkTwowayOnly(iceC_RoboCompAGMExecutive_AGMExecutive_getEdge_name, sync);
-    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompAGMExecutive_AGMExecutive_getEdge_name, del, cookie, sync);
-    try
-    {
-        result->prepare(iceC_RoboCompAGMExecutive_AGMExecutive_getEdge_name, ::Ice::Normal, context);
-        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
-        ostr->write(iceP_srcIdentifier);
-        ostr->write(iceP_dstIdentifier);
-        ostr->write(iceP_label);
-        result->endWriteParams();
-        result->invoke(iceC_RoboCompAGMExecutive_AGMExecutive_getEdge_name);
-    }
-    catch(const ::Ice::Exception& ex)
-    {
-        result->abort(ex);
-    }
-    return result;
-}
-
-::RoboCompAGMWorldModel::Edge
-IceProxy::RoboCompAGMExecutive::AGMExecutive::end_getEdge(const ::Ice::AsyncResultPtr& result)
-{
-    ::Ice::AsyncResult::_check(result, this, iceC_RoboCompAGMExecutive_AGMExecutive_getEdge_name);
-    ::RoboCompAGMWorldModel::Edge ret;
-    if(!result->_waitForResponse())
-    {
-        try
-        {
-            result->_throwUserException();
-        }
-        catch(const ::Ice::UserException& ex)
-        {
-            throw ::Ice::UnknownUserException(__FILE__, __LINE__, ex.ice_id());
-        }
-    }
-    ::Ice::InputStream* istr = result->_startReadParams();
-    istr->read(ret);
-    result->_endReadParams();
-    return ret;
-}
-
-::Ice::AsyncResultPtr
-IceProxy::RoboCompAGMExecutive::AGMExecutive::_iceI_begin_getData(const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
-{
-    _checkTwowayOnly(iceC_RoboCompAGMExecutive_AGMExecutive_getData_name, sync);
-    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompAGMExecutive_AGMExecutive_getData_name, del, cookie, sync);
-    try
-    {
-        result->prepare(iceC_RoboCompAGMExecutive_AGMExecutive_getData_name, ::Ice::Normal, context);
-        result->writeEmptyParams();
-        result->invoke(iceC_RoboCompAGMExecutive_AGMExecutive_getData_name);
-    }
-    catch(const ::Ice::Exception& ex)
-    {
-        result->abort(ex);
-    }
-    return result;
-}
-
-void
-IceProxy::RoboCompAGMExecutive::AGMExecutive::end_getData(::RoboCompAGMWorldModel::World& iceP_world, ::std::string& iceP_target, ::RoboCompPlanning::Plan& iceP_plan, const ::Ice::AsyncResultPtr& result)
-{
-    ::Ice::AsyncResult::_check(result, this, iceC_RoboCompAGMExecutive_AGMExecutive_getData_name);
-    if(!result->_waitForResponse())
-    {
-        try
-        {
-            result->_throwUserException();
-        }
-        catch(const ::Ice::UserException& ex)
-        {
-            throw ::Ice::UnknownUserException(__FILE__, __LINE__, ex.ice_id());
-        }
-    }
-    ::Ice::InputStream* istr = result->_startReadParams();
-    istr->read(iceP_world);
-    istr->read(iceP_target);
-    istr->read(iceP_plan);
-    result->_endReadParams();
-}
-
-::Ice::AsyncResultPtr
-IceProxy::RoboCompAGMExecutive::AGMExecutive::_iceI_begin_broadcastModel(const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
-{
-    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompAGMExecutive_AGMExecutive_broadcastModel_name, del, cookie, sync);
-    try
-    {
-        result->prepare(iceC_RoboCompAGMExecutive_AGMExecutive_broadcastModel_name, ::Ice::Normal, context);
-        result->writeEmptyParams();
-        result->invoke(iceC_RoboCompAGMExecutive_AGMExecutive_broadcastModel_name);
-    }
-    catch(const ::Ice::Exception& ex)
-    {
-        result->abort(ex);
-    }
-    return result;
-}
-
-void
-IceProxy::RoboCompAGMExecutive::AGMExecutive::end_broadcastModel(const ::Ice::AsyncResultPtr& result)
-{
-    _end(result, iceC_RoboCompAGMExecutive_AGMExecutive_broadcastModel_name);
-}
-
-::Ice::AsyncResultPtr
-IceProxy::RoboCompAGMExecutive::AGMExecutive::_iceI_begin_broadcastPlan(const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
-{
-    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompAGMExecutive_AGMExecutive_broadcastPlan_name, del, cookie, sync);
-    try
-    {
-        result->prepare(iceC_RoboCompAGMExecutive_AGMExecutive_broadcastPlan_name, ::Ice::Normal, context);
-        result->writeEmptyParams();
-        result->invoke(iceC_RoboCompAGMExecutive_AGMExecutive_broadcastPlan_name);
-    }
-    catch(const ::Ice::Exception& ex)
-    {
-        result->abort(ex);
-    }
-    return result;
-}
-
-void
-IceProxy::RoboCompAGMExecutive::AGMExecutive::end_broadcastPlan(const ::Ice::AsyncResultPtr& result)
-{
-    _end(result, iceC_RoboCompAGMExecutive_AGMExecutive_broadcastPlan_name);
-}
-
 ::IceProxy::Ice::Object*
 IceProxy::RoboCompAGMExecutive::AGMExecutive::_newInstance() const
 {
@@ -1421,11 +1421,165 @@ RoboCompAGMExecutive::AGMExecutive::_iceD_activate(::IceInternal::Incoming& inS,
 }
 
 bool
+RoboCompAGMExecutive::AGMExecutive::_iceD_addSelfEdge(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::Normal, current.mode);
+    ::Ice::InputStream* istr = inS.startReadParams();
+    ::Ice::Int iceP_nodeid;
+    ::std::string iceP_edgeType;
+    ::RoboCompPlanning::StringDictionary iceP_attributes;
+    istr->read(iceP_nodeid);
+    istr->read(iceP_edgeType);
+    istr->read(iceP_attributes);
+    inS.endReadParams();
+    this->addSelfEdge(iceP_nodeid, iceP_edgeType, iceP_attributes, current);
+    inS.writeEmptyParams();
+    return true;
+}
+
+bool
+RoboCompAGMExecutive::AGMExecutive::_iceD_broadcastModel(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::Normal, current.mode);
+    inS.readEmptyParams();
+    this->broadcastModel(current);
+    inS.writeEmptyParams();
+    return true;
+}
+
+bool
+RoboCompAGMExecutive::AGMExecutive::_iceD_broadcastPlan(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::Normal, current.mode);
+    inS.readEmptyParams();
+    this->broadcastPlan(current);
+    inS.writeEmptyParams();
+    return true;
+}
+
+bool
 RoboCompAGMExecutive::AGMExecutive::_iceD_deactivate(::IceInternal::Incoming& inS, const ::Ice::Current& current)
 {
     _iceCheckMode(::Ice::Normal, current.mode);
     inS.readEmptyParams();
     this->deactivate(current);
+    inS.writeEmptyParams();
+    return true;
+}
+
+bool
+RoboCompAGMExecutive::AGMExecutive::_iceD_delSelfEdge(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::Normal, current.mode);
+    ::Ice::InputStream* istr = inS.startReadParams();
+    ::Ice::Int iceP_nodeid;
+    ::std::string iceP_edgeType;
+    istr->read(iceP_nodeid);
+    istr->read(iceP_edgeType);
+    inS.endReadParams();
+    this->delSelfEdge(iceP_nodeid, iceP_edgeType, current);
+    inS.writeEmptyParams();
+    return true;
+}
+
+bool
+RoboCompAGMExecutive::AGMExecutive::_iceD_edgeUpdate(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::Normal, current.mode);
+    ::Ice::InputStream* istr = inS.startReadParams();
+    ::RoboCompAGMWorldModel::Edge iceP_e;
+    istr->read(iceP_e);
+    inS.endReadParams();
+    this->edgeUpdate(iceP_e, current);
+    inS.writeEmptyParams();
+    return true;
+}
+
+bool
+RoboCompAGMExecutive::AGMExecutive::_iceD_edgesUpdate(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::Normal, current.mode);
+    ::Ice::InputStream* istr = inS.startReadParams();
+    ::RoboCompAGMWorldModel::EdgeSequence iceP_es;
+    istr->read(iceP_es);
+    inS.endReadParams();
+    this->edgesUpdate(iceP_es, current);
+    inS.writeEmptyParams();
+    return true;
+}
+
+bool
+RoboCompAGMExecutive::AGMExecutive::_iceD_getData(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::Normal, current.mode);
+    inS.readEmptyParams();
+    ::RoboCompAGMWorldModel::World iceP_world;
+    ::std::string iceP_target;
+    ::RoboCompPlanning::Plan iceP_plan;
+    this->getData(iceP_world, iceP_target, iceP_plan, current);
+    ::Ice::OutputStream* ostr = inS.startWriteParams();
+    ostr->write(iceP_world);
+    ostr->write(iceP_target);
+    ostr->write(iceP_plan);
+    inS.endWriteParams();
+    return true;
+}
+
+bool
+RoboCompAGMExecutive::AGMExecutive::_iceD_getEdge(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::Normal, current.mode);
+    ::Ice::InputStream* istr = inS.startReadParams();
+    ::Ice::Int iceP_srcIdentifier;
+    ::Ice::Int iceP_dstIdentifier;
+    ::std::string iceP_label;
+    istr->read(iceP_srcIdentifier);
+    istr->read(iceP_dstIdentifier);
+    istr->read(iceP_label);
+    inS.endReadParams();
+    ::RoboCompAGMWorldModel::Edge ret = this->getEdge(iceP_srcIdentifier, iceP_dstIdentifier, iceP_label, current);
+    ::Ice::OutputStream* ostr = inS.startWriteParams();
+    ostr->write(ret);
+    inS.endWriteParams();
+    return true;
+}
+
+bool
+RoboCompAGMExecutive::AGMExecutive::_iceD_getModel(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::Normal, current.mode);
+    inS.readEmptyParams();
+    ::RoboCompAGMWorldModel::World ret = this->getModel(current);
+    ::Ice::OutputStream* ostr = inS.startWriteParams();
+    ostr->write(ret);
+    inS.endWriteParams();
+    return true;
+}
+
+bool
+RoboCompAGMExecutive::AGMExecutive::_iceD_getNode(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::Normal, current.mode);
+    ::Ice::InputStream* istr = inS.startReadParams();
+    ::Ice::Int iceP_identifier;
+    istr->read(iceP_identifier);
+    inS.endReadParams();
+    ::RoboCompAGMWorldModel::Node ret = this->getNode(iceP_identifier, current);
+    ::Ice::OutputStream* ostr = inS.startWriteParams();
+    ostr->write(ret);
+    inS.endWriteParams();
+    return true;
+}
+
+bool
+RoboCompAGMExecutive::AGMExecutive::_iceD_setMission(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::Normal, current.mode);
+    ::Ice::InputStream* istr = inS.startReadParams();
+    ::std::string iceP_path;
+    istr->read(iceP_path);
+    inS.endReadParams();
+    this->setMission(iceP_path, current);
     inS.writeEmptyParams();
     return true;
 }
@@ -1469,160 +1623,6 @@ RoboCompAGMExecutive::AGMExecutive::_iceD_symbolsUpdate(::IceInternal::Incoming&
     istr->read(iceP_ns);
     inS.endReadParams();
     this->symbolsUpdate(iceP_ns, current);
-    inS.writeEmptyParams();
-    return true;
-}
-
-bool
-RoboCompAGMExecutive::AGMExecutive::_iceD_edgeUpdate(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::Normal, current.mode);
-    ::Ice::InputStream* istr = inS.startReadParams();
-    ::RoboCompAGMWorldModel::Edge iceP_e;
-    istr->read(iceP_e);
-    inS.endReadParams();
-    this->edgeUpdate(iceP_e, current);
-    inS.writeEmptyParams();
-    return true;
-}
-
-bool
-RoboCompAGMExecutive::AGMExecutive::_iceD_edgesUpdate(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::Normal, current.mode);
-    ::Ice::InputStream* istr = inS.startReadParams();
-    ::RoboCompAGMWorldModel::EdgeSequence iceP_es;
-    istr->read(iceP_es);
-    inS.endReadParams();
-    this->edgesUpdate(iceP_es, current);
-    inS.writeEmptyParams();
-    return true;
-}
-
-bool
-RoboCompAGMExecutive::AGMExecutive::_iceD_addSelfEdge(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::Normal, current.mode);
-    ::Ice::InputStream* istr = inS.startReadParams();
-    ::Ice::Int iceP_nodeid;
-    ::std::string iceP_edgeType;
-    ::RoboCompAGMWorldModel::StringDictionary iceP_attributes;
-    istr->read(iceP_nodeid);
-    istr->read(iceP_edgeType);
-    istr->read(iceP_attributes);
-    inS.endReadParams();
-    this->addSelfEdge(iceP_nodeid, iceP_edgeType, iceP_attributes, current);
-    inS.writeEmptyParams();
-    return true;
-}
-
-bool
-RoboCompAGMExecutive::AGMExecutive::_iceD_delSelfEdge(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::Normal, current.mode);
-    ::Ice::InputStream* istr = inS.startReadParams();
-    ::Ice::Int iceP_nodeid;
-    ::std::string iceP_edgeType;
-    istr->read(iceP_nodeid);
-    istr->read(iceP_edgeType);
-    inS.endReadParams();
-    this->delSelfEdge(iceP_nodeid, iceP_edgeType, current);
-    inS.writeEmptyParams();
-    return true;
-}
-
-bool
-RoboCompAGMExecutive::AGMExecutive::_iceD_setMission(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::Normal, current.mode);
-    ::Ice::InputStream* istr = inS.startReadParams();
-    ::std::string iceP_path;
-    istr->read(iceP_path);
-    inS.endReadParams();
-    this->setMission(iceP_path, current);
-    inS.writeEmptyParams();
-    return true;
-}
-
-bool
-RoboCompAGMExecutive::AGMExecutive::_iceD_getModel(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::Normal, current.mode);
-    inS.readEmptyParams();
-    ::RoboCompAGMWorldModel::World ret = this->getModel(current);
-    ::Ice::OutputStream* ostr = inS.startWriteParams();
-    ostr->write(ret);
-    inS.endWriteParams();
-    return true;
-}
-
-bool
-RoboCompAGMExecutive::AGMExecutive::_iceD_getNode(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::Normal, current.mode);
-    ::Ice::InputStream* istr = inS.startReadParams();
-    ::Ice::Int iceP_identifier;
-    istr->read(iceP_identifier);
-    inS.endReadParams();
-    ::RoboCompAGMWorldModel::Node ret = this->getNode(iceP_identifier, current);
-    ::Ice::OutputStream* ostr = inS.startWriteParams();
-    ostr->write(ret);
-    inS.endWriteParams();
-    return true;
-}
-
-bool
-RoboCompAGMExecutive::AGMExecutive::_iceD_getEdge(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::Normal, current.mode);
-    ::Ice::InputStream* istr = inS.startReadParams();
-    ::Ice::Int iceP_srcIdentifier;
-    ::Ice::Int iceP_dstIdentifier;
-    ::std::string iceP_label;
-    istr->read(iceP_srcIdentifier);
-    istr->read(iceP_dstIdentifier);
-    istr->read(iceP_label);
-    inS.endReadParams();
-    ::RoboCompAGMWorldModel::Edge ret = this->getEdge(iceP_srcIdentifier, iceP_dstIdentifier, iceP_label, current);
-    ::Ice::OutputStream* ostr = inS.startWriteParams();
-    ostr->write(ret);
-    inS.endWriteParams();
-    return true;
-}
-
-bool
-RoboCompAGMExecutive::AGMExecutive::_iceD_getData(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::Normal, current.mode);
-    inS.readEmptyParams();
-    ::RoboCompAGMWorldModel::World iceP_world;
-    ::std::string iceP_target;
-    ::RoboCompPlanning::Plan iceP_plan;
-    this->getData(iceP_world, iceP_target, iceP_plan, current);
-    ::Ice::OutputStream* ostr = inS.startWriteParams();
-    ostr->write(iceP_world);
-    ostr->write(iceP_target);
-    ostr->write(iceP_plan);
-    inS.endWriteParams();
-    return true;
-}
-
-bool
-RoboCompAGMExecutive::AGMExecutive::_iceD_broadcastModel(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::Normal, current.mode);
-    inS.readEmptyParams();
-    this->broadcastModel(current);
-    inS.writeEmptyParams();
-    return true;
-}
-
-bool
-RoboCompAGMExecutive::AGMExecutive::_iceD_broadcastPlan(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::Normal, current.mode);
-    inS.readEmptyParams();
-    this->broadcastPlan(current);
     inS.writeEmptyParams();
     return true;
 }

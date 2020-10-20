@@ -102,12 +102,12 @@ using StringDictionary = ::std::map<::std::string, ::std::string>;
 
 struct Action
 {
-    ::RoboCompPlanning::StringVector symbols;
     ::std::string name;
+    ::RoboCompPlanning::StringVector symbols;
 
-    std::tuple<const ::RoboCompPlanning::StringVector&, const ::std::string&> ice_tuple() const
+    std::tuple<const ::std::string&, const ::RoboCompPlanning::StringVector&> ice_tuple() const
     {
-        return std::tie(symbols, name);
+        return std::tie(name, symbols);
     }
 };
 
@@ -166,15 +166,6 @@ public:
 
     static const ::std::string& ice_staticId();
 
-    struct GetSolutionResult
-    {
-        bool returnValue;
-        ::RoboCompPlanning::Plan solution;
-    };
-
-    virtual bool getSolution(::std::string, ::std::string, ::RoboCompPlanning::Plan&, const ::Ice::Current&) = 0;
-    bool _iceD_getSolution(::IceInternal::Incoming&, const ::Ice::Current&);
-
     struct GetNextActionResult
     {
         bool returnValue;
@@ -183,6 +174,15 @@ public:
 
     virtual bool getNextAction(::std::string, ::RoboCompPlanning::Plan&, const ::Ice::Current&) = 0;
     bool _iceD_getNextAction(::IceInternal::Incoming&, const ::Ice::Current&);
+
+    struct GetSolutionResult
+    {
+        bool returnValue;
+        ::RoboCompPlanning::Plan solution;
+    };
+
+    virtual bool getSolution(::std::string, ::std::string, ::RoboCompPlanning::Plan&, const ::Ice::Current&) = 0;
+    bool _iceD_getSolution(::IceInternal::Incoming&, const ::Ice::Current&);
 
     virtual bool _iceDispatch(::IceInternal::Incoming&, const ::Ice::Current&) override;
 };
@@ -252,36 +252,6 @@ class PlanningPrx : public virtual ::Ice::Proxy<PlanningPrx, ::Ice::ObjectPrx>
 {
 public:
 
-    bool getSolution(const ::std::string& iceP_Domain, const ::std::string& iceP_Problem, ::RoboCompPlanning::Plan& iceP_solution, const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        auto result = _makePromiseOutgoing<::RoboCompPlanning::Planning::GetSolutionResult>(true, this, &RoboCompPlanning::PlanningPrx::_iceI_getSolution, iceP_Domain, iceP_Problem, context).get();
-        iceP_solution = ::std::move(result.solution);
-        return result.returnValue;
-    }
-
-    template<template<typename> class P = ::std::promise>
-    auto getSolutionAsync(const ::std::string& iceP_Domain, const ::std::string& iceP_Problem, const ::Ice::Context& context = Ice::noExplicitContext)
-        -> decltype(::std::declval<P<::RoboCompPlanning::Planning::GetSolutionResult>>().get_future())
-    {
-        return _makePromiseOutgoing<::RoboCompPlanning::Planning::GetSolutionResult, P>(false, this, &RoboCompPlanning::PlanningPrx::_iceI_getSolution, iceP_Domain, iceP_Problem, context);
-    }
-
-    ::std::function<void()>
-    getSolutionAsync(const ::std::string& iceP_Domain, const ::std::string& iceP_Problem,
-                     ::std::function<void(bool, ::RoboCompPlanning::Plan)> response,
-                     ::std::function<void(::std::exception_ptr)> ex = nullptr,
-                     ::std::function<void(bool)> sent = nullptr,
-                     const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        auto responseCb = [response](::RoboCompPlanning::Planning::GetSolutionResult&& result)
-        {
-            response(result.returnValue, ::std::move(result.solution));
-        };
-        return _makeLamdaOutgoing<::RoboCompPlanning::Planning::GetSolutionResult>(responseCb, ex, sent, this, &RoboCompPlanning::PlanningPrx::_iceI_getSolution, iceP_Domain, iceP_Problem, context);
-    }
-
-    void _iceI_getSolution(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::RoboCompPlanning::Planning::GetSolutionResult>>&, const ::std::string&, const ::std::string&, const ::Ice::Context&);
-
     bool getNextAction(const ::std::string& iceP_Problem, ::RoboCompPlanning::Plan& iceP_solution, const ::Ice::Context& context = Ice::noExplicitContext)
     {
         auto result = _makePromiseOutgoing<::RoboCompPlanning::Planning::GetNextActionResult>(true, this, &RoboCompPlanning::PlanningPrx::_iceI_getNextAction, iceP_Problem, context).get();
@@ -311,6 +281,36 @@ public:
     }
 
     void _iceI_getNextAction(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::RoboCompPlanning::Planning::GetNextActionResult>>&, const ::std::string&, const ::Ice::Context&);
+
+    bool getSolution(const ::std::string& iceP_Domain, const ::std::string& iceP_Problem, ::RoboCompPlanning::Plan& iceP_solution, const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        auto result = _makePromiseOutgoing<::RoboCompPlanning::Planning::GetSolutionResult>(true, this, &RoboCompPlanning::PlanningPrx::_iceI_getSolution, iceP_Domain, iceP_Problem, context).get();
+        iceP_solution = ::std::move(result.solution);
+        return result.returnValue;
+    }
+
+    template<template<typename> class P = ::std::promise>
+    auto getSolutionAsync(const ::std::string& iceP_Domain, const ::std::string& iceP_Problem, const ::Ice::Context& context = Ice::noExplicitContext)
+        -> decltype(::std::declval<P<::RoboCompPlanning::Planning::GetSolutionResult>>().get_future())
+    {
+        return _makePromiseOutgoing<::RoboCompPlanning::Planning::GetSolutionResult, P>(false, this, &RoboCompPlanning::PlanningPrx::_iceI_getSolution, iceP_Domain, iceP_Problem, context);
+    }
+
+    ::std::function<void()>
+    getSolutionAsync(const ::std::string& iceP_Domain, const ::std::string& iceP_Problem,
+                     ::std::function<void(bool, ::RoboCompPlanning::Plan)> response,
+                     ::std::function<void(::std::exception_ptr)> ex = nullptr,
+                     ::std::function<void(bool)> sent = nullptr,
+                     const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        auto responseCb = [response](::RoboCompPlanning::Planning::GetSolutionResult&& result)
+        {
+            response(result.returnValue, ::std::move(result.solution));
+        };
+        return _makeLamdaOutgoing<::RoboCompPlanning::Planning::GetSolutionResult>(responseCb, ex, sent, this, &RoboCompPlanning::PlanningPrx::_iceI_getSolution, iceP_Domain, iceP_Problem, context);
+    }
+
+    void _iceI_getSolution(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::RoboCompPlanning::Planning::GetSolutionResult>>&, const ::std::string&, const ::std::string&, const ::Ice::Context&);
 
     static const ::std::string& ice_staticId();
 
@@ -387,7 +387,7 @@ struct StreamReader<::RoboCompPlanning::Action, S>
 {
     static void read(S* istr, ::RoboCompPlanning::Action& v)
     {
-        istr->readAll(v.symbols, v.name);
+        istr->readAll(v.name, v.symbols);
     }
 };
 
@@ -505,8 +505,8 @@ typedef ::std::map< ::std::string, ::std::string> StringDictionary;
 
 struct Action
 {
-    ::RoboCompPlanning::StringVector symbols;
     ::std::string name;
+    ::RoboCompPlanning::StringVector symbols;
 };
 
 typedef ::std::vector< ::RoboCompPlanning::Action> ActionSequence;
@@ -525,11 +525,11 @@ namespace RoboCompPlanning
 class Callback_PlanReceiver_setPlan_Base : public virtual ::IceInternal::CallbackBase { };
 typedef ::IceUtil::Handle< Callback_PlanReceiver_setPlan_Base> Callback_PlanReceiver_setPlanPtr;
 
-class Callback_Planning_getSolution_Base : public virtual ::IceInternal::CallbackBase { };
-typedef ::IceUtil::Handle< Callback_Planning_getSolution_Base> Callback_Planning_getSolutionPtr;
-
 class Callback_Planning_getNextAction_Base : public virtual ::IceInternal::CallbackBase { };
 typedef ::IceUtil::Handle< Callback_Planning_getNextAction_Base> Callback_Planning_getNextActionPtr;
+
+class Callback_Planning_getSolution_Base : public virtual ::IceInternal::CallbackBase { };
+typedef ::IceUtil::Handle< Callback_Planning_getSolution_Base> Callback_Planning_getSolutionPtr;
 
 class Callback_PeleaAgent_stateChanged_Base : public virtual ::IceInternal::CallbackBase { };
 typedef ::IceUtil::Handle< Callback_PeleaAgent_stateChanged_Base> Callback_PeleaAgent_stateChangedPtr;
@@ -595,44 +595,6 @@ class Planning : public virtual ::Ice::Proxy<Planning, ::IceProxy::Ice::Object>
 {
 public:
 
-    bool getSolution(const ::std::string& iceP_Domain, const ::std::string& iceP_Problem, ::RoboCompPlanning::Plan& iceP_solution, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        return end_getSolution(iceP_solution, _iceI_begin_getSolution(iceP_Domain, iceP_Problem, context, ::IceInternal::dummyCallback, 0, true));
-    }
-
-    ::Ice::AsyncResultPtr begin_getSolution(const ::std::string& iceP_Domain, const ::std::string& iceP_Problem, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        return _iceI_begin_getSolution(iceP_Domain, iceP_Problem, context, ::IceInternal::dummyCallback, 0);
-    }
-
-    ::Ice::AsyncResultPtr begin_getSolution(const ::std::string& iceP_Domain, const ::std::string& iceP_Problem, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_getSolution(iceP_Domain, iceP_Problem, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_getSolution(const ::std::string& iceP_Domain, const ::std::string& iceP_Problem, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_getSolution(iceP_Domain, iceP_Problem, context, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_getSolution(const ::std::string& iceP_Domain, const ::std::string& iceP_Problem, const ::RoboCompPlanning::Callback_Planning_getSolutionPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_getSolution(iceP_Domain, iceP_Problem, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_getSolution(const ::std::string& iceP_Domain, const ::std::string& iceP_Problem, const ::Ice::Context& context, const ::RoboCompPlanning::Callback_Planning_getSolutionPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_getSolution(iceP_Domain, iceP_Problem, context, del, cookie);
-    }
-
-    bool end_getSolution(::RoboCompPlanning::Plan& iceP_solution, const ::Ice::AsyncResultPtr&);
-
-private:
-
-    ::Ice::AsyncResultPtr _iceI_begin_getSolution(const ::std::string&, const ::std::string&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
-
-public:
-
     bool getNextAction(const ::std::string& iceP_Problem, ::RoboCompPlanning::Plan& iceP_solution, const ::Ice::Context& context = ::Ice::noExplicitContext)
     {
         return end_getNextAction(iceP_solution, _iceI_begin_getNextAction(iceP_Problem, context, ::IceInternal::dummyCallback, 0, true));
@@ -668,6 +630,44 @@ public:
 private:
 
     ::Ice::AsyncResultPtr _iceI_begin_getNextAction(const ::std::string&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
+
+public:
+
+    bool getSolution(const ::std::string& iceP_Domain, const ::std::string& iceP_Problem, ::RoboCompPlanning::Plan& iceP_solution, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    {
+        return end_getSolution(iceP_solution, _iceI_begin_getSolution(iceP_Domain, iceP_Problem, context, ::IceInternal::dummyCallback, 0, true));
+    }
+
+    ::Ice::AsyncResultPtr begin_getSolution(const ::std::string& iceP_Domain, const ::std::string& iceP_Problem, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    {
+        return _iceI_begin_getSolution(iceP_Domain, iceP_Problem, context, ::IceInternal::dummyCallback, 0);
+    }
+
+    ::Ice::AsyncResultPtr begin_getSolution(const ::std::string& iceP_Domain, const ::std::string& iceP_Problem, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_getSolution(iceP_Domain, iceP_Problem, ::Ice::noExplicitContext, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_getSolution(const ::std::string& iceP_Domain, const ::std::string& iceP_Problem, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_getSolution(iceP_Domain, iceP_Problem, context, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_getSolution(const ::std::string& iceP_Domain, const ::std::string& iceP_Problem, const ::RoboCompPlanning::Callback_Planning_getSolutionPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_getSolution(iceP_Domain, iceP_Problem, ::Ice::noExplicitContext, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_getSolution(const ::std::string& iceP_Domain, const ::std::string& iceP_Problem, const ::Ice::Context& context, const ::RoboCompPlanning::Callback_Planning_getSolutionPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_getSolution(iceP_Domain, iceP_Problem, context, del, cookie);
+    }
+
+    bool end_getSolution(::RoboCompPlanning::Plan& iceP_solution, const ::Ice::AsyncResultPtr&);
+
+private:
+
+    ::Ice::AsyncResultPtr _iceI_begin_getSolution(const ::std::string&, const ::std::string&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
 
 public:
 
@@ -785,11 +785,11 @@ public:
 
     static const ::std::string& ice_staticId();
 
-    virtual bool getSolution(const ::std::string&, const ::std::string&, ::RoboCompPlanning::Plan&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
-    bool _iceD_getSolution(::IceInternal::Incoming&, const ::Ice::Current&);
-
     virtual bool getNextAction(const ::std::string&, ::RoboCompPlanning::Plan&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
     bool _iceD_getNextAction(::IceInternal::Incoming&, const ::Ice::Current&);
+
+    virtual bool getSolution(const ::std::string&, const ::std::string&, ::RoboCompPlanning::Plan&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
+    bool _iceD_getSolution(::IceInternal::Incoming&, const ::Ice::Current&);
 
     virtual bool _iceDispatch(::IceInternal::Incoming&, const ::Ice::Current&);
 
@@ -887,8 +887,8 @@ struct StreamWriter< ::RoboCompPlanning::Action, S>
 {
     static void write(S* ostr, const ::RoboCompPlanning::Action& v)
     {
-        ostr->write(v.symbols);
         ostr->write(v.name);
+        ostr->write(v.symbols);
     }
 };
 
@@ -897,8 +897,8 @@ struct StreamReader< ::RoboCompPlanning::Action, S>
 {
     static void read(S* istr, ::RoboCompPlanning::Action& v)
     {
-        istr->read(v.symbols);
         istr->read(v.name);
+        istr->read(v.symbols);
     }
 };
 
@@ -1018,112 +1018,6 @@ newCallback_PlanReceiver_setPlan(T* instance, void (T::*excb)(const ::Ice::Excep
 }
 
 template<class T>
-class CallbackNC_Planning_getSolution : public Callback_Planning_getSolution_Base, public ::IceInternal::TwowayCallbackNC<T>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception&);
-    typedef void (T::*Sent)(bool);
-    typedef void (T::*Response)(bool, const ::RoboCompPlanning::Plan&);
-
-    CallbackNC_Planning_getSolution(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallbackNC<T>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::RoboCompPlanning::PlanningPrx proxy = ::RoboCompPlanning::PlanningPrx::uncheckedCast(result->getProxy());
-        ::RoboCompPlanning::Plan iceP_solution;
-        bool ret;
-        try
-        {
-            ret = proxy->end_getSolution(iceP_solution, result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::CallbackNC<T>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::CallbackNC<T>::_callback.get()->*_response)(ret, iceP_solution);
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T> Callback_Planning_getSolutionPtr
-newCallback_Planning_getSolution(const IceUtil::Handle<T>& instance, void (T::*cb)(bool, const ::RoboCompPlanning::Plan&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_Planning_getSolution<T>(instance, cb, excb, sentcb);
-}
-
-template<class T> Callback_Planning_getSolutionPtr
-newCallback_Planning_getSolution(T* instance, void (T::*cb)(bool, const ::RoboCompPlanning::Plan&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_Planning_getSolution<T>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT>
-class Callback_Planning_getSolution : public Callback_Planning_getSolution_Base, public ::IceInternal::TwowayCallback<T, CT>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
-    typedef void (T::*Sent)(bool , const CT&);
-    typedef void (T::*Response)(bool, const ::RoboCompPlanning::Plan&, const CT&);
-
-    Callback_Planning_getSolution(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallback<T, CT>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::RoboCompPlanning::PlanningPrx proxy = ::RoboCompPlanning::PlanningPrx::uncheckedCast(result->getProxy());
-        ::RoboCompPlanning::Plan iceP_solution;
-        bool ret;
-        try
-        {
-            ret = proxy->end_getSolution(iceP_solution, result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::Callback<T, CT>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::Callback<T, CT>::_callback.get()->*_response)(ret, iceP_solution, CT::dynamicCast(result->getCookie()));
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T, typename CT> Callback_Planning_getSolutionPtr
-newCallback_Planning_getSolution(const IceUtil::Handle<T>& instance, void (T::*cb)(bool, const ::RoboCompPlanning::Plan&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_Planning_getSolution<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT> Callback_Planning_getSolutionPtr
-newCallback_Planning_getSolution(T* instance, void (T::*cb)(bool, const ::RoboCompPlanning::Plan&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_Planning_getSolution<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T>
 class CallbackNC_Planning_getNextAction : public Callback_Planning_getNextAction_Base, public ::IceInternal::TwowayCallbackNC<T>
 {
 public:
@@ -1227,6 +1121,112 @@ template<class T, typename CT> Callback_Planning_getNextActionPtr
 newCallback_Planning_getNextAction(T* instance, void (T::*cb)(bool, const ::RoboCompPlanning::Plan&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
 {
     return new Callback_Planning_getNextAction<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T>
+class CallbackNC_Planning_getSolution : public Callback_Planning_getSolution_Base, public ::IceInternal::TwowayCallbackNC<T>
+{
+public:
+
+    typedef IceUtil::Handle<T> TPtr;
+
+    typedef void (T::*Exception)(const ::Ice::Exception&);
+    typedef void (T::*Sent)(bool);
+    typedef void (T::*Response)(bool, const ::RoboCompPlanning::Plan&);
+
+    CallbackNC_Planning_getSolution(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::TwowayCallbackNC<T>(obj, cb != 0, excb, sentcb), _response(cb)
+    {
+    }
+
+    virtual void completed(const ::Ice::AsyncResultPtr& result) const
+    {
+        ::RoboCompPlanning::PlanningPrx proxy = ::RoboCompPlanning::PlanningPrx::uncheckedCast(result->getProxy());
+        ::RoboCompPlanning::Plan iceP_solution;
+        bool ret;
+        try
+        {
+            ret = proxy->end_getSolution(iceP_solution, result);
+        }
+        catch(const ::Ice::Exception& ex)
+        {
+            ::IceInternal::CallbackNC<T>::exception(result, ex);
+            return;
+        }
+        if(_response)
+        {
+            (::IceInternal::CallbackNC<T>::_callback.get()->*_response)(ret, iceP_solution);
+        }
+    }
+
+private:
+
+    Response _response;
+};
+
+template<class T> Callback_Planning_getSolutionPtr
+newCallback_Planning_getSolution(const IceUtil::Handle<T>& instance, void (T::*cb)(bool, const ::RoboCompPlanning::Plan&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_Planning_getSolution<T>(instance, cb, excb, sentcb);
+}
+
+template<class T> Callback_Planning_getSolutionPtr
+newCallback_Planning_getSolution(T* instance, void (T::*cb)(bool, const ::RoboCompPlanning::Plan&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_Planning_getSolution<T>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT>
+class Callback_Planning_getSolution : public Callback_Planning_getSolution_Base, public ::IceInternal::TwowayCallback<T, CT>
+{
+public:
+
+    typedef IceUtil::Handle<T> TPtr;
+
+    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
+    typedef void (T::*Sent)(bool , const CT&);
+    typedef void (T::*Response)(bool, const ::RoboCompPlanning::Plan&, const CT&);
+
+    Callback_Planning_getSolution(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::TwowayCallback<T, CT>(obj, cb != 0, excb, sentcb), _response(cb)
+    {
+    }
+
+    virtual void completed(const ::Ice::AsyncResultPtr& result) const
+    {
+        ::RoboCompPlanning::PlanningPrx proxy = ::RoboCompPlanning::PlanningPrx::uncheckedCast(result->getProxy());
+        ::RoboCompPlanning::Plan iceP_solution;
+        bool ret;
+        try
+        {
+            ret = proxy->end_getSolution(iceP_solution, result);
+        }
+        catch(const ::Ice::Exception& ex)
+        {
+            ::IceInternal::Callback<T, CT>::exception(result, ex);
+            return;
+        }
+        if(_response)
+        {
+            (::IceInternal::Callback<T, CT>::_callback.get()->*_response)(ret, iceP_solution, CT::dynamicCast(result->getCookie()));
+        }
+    }
+
+private:
+
+    Response _response;
+};
+
+template<class T, typename CT> Callback_Planning_getSolutionPtr
+newCallback_Planning_getSolution(const IceUtil::Handle<T>& instance, void (T::*cb)(bool, const ::RoboCompPlanning::Plan&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_Planning_getSolution<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_Planning_getSolutionPtr
+newCallback_Planning_getSolution(T* instance, void (T::*cb)(bool, const ::RoboCompPlanning::Plan&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_Planning_getSolution<T, CT>(instance, cb, excb, sentcb);
 }
 
 template<class T>

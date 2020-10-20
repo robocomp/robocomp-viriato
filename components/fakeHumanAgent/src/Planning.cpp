@@ -84,8 +84,8 @@ const ::std::string iceC_RoboCompPlanning_Planning_ops[] =
     "ice_isA",
     "ice_ping"
 };
-const ::std::string iceC_RoboCompPlanning_Planning_getSolution_name = "getSolution";
 const ::std::string iceC_RoboCompPlanning_Planning_getNextAction_name = "getNextAction";
+const ::std::string iceC_RoboCompPlanning_Planning_getSolution_name = "getSolution";
 
 const ::std::string iceC_RoboCompPlanning_PeleaAgent_ids[2] =
 {
@@ -218,6 +218,22 @@ RoboCompPlanning::Planning::ice_staticId()
 }
 
 bool
+RoboCompPlanning::Planning::_iceD_getNextAction(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
+    auto istr = inS.startReadParams();
+    ::std::string iceP_Problem;
+    istr->readAll(iceP_Problem);
+    inS.endReadParams();
+    ::RoboCompPlanning::Plan iceP_solution;
+    bool ret = this->getNextAction(::std::move(iceP_Problem), iceP_solution, current);
+    auto ostr = inS.startWriteParams();
+    ostr->writeAll(iceP_solution, ret);
+    inS.endWriteParams();
+    return true;
+}
+
+bool
 RoboCompPlanning::Planning::_iceD_getSolution(::IceInternal::Incoming& inS, const ::Ice::Current& current)
 {
     _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
@@ -228,22 +244,6 @@ RoboCompPlanning::Planning::_iceD_getSolution(::IceInternal::Incoming& inS, cons
     inS.endReadParams();
     ::RoboCompPlanning::Plan iceP_solution;
     bool ret = this->getSolution(::std::move(iceP_Domain), ::std::move(iceP_Problem), iceP_solution, current);
-    auto ostr = inS.startWriteParams();
-    ostr->writeAll(iceP_solution, ret);
-    inS.endWriteParams();
-    return true;
-}
-
-bool
-RoboCompPlanning::Planning::_iceD_getNextAction(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
-    auto istr = inS.startReadParams();
-    ::std::string iceP_Problem;
-    istr->readAll(iceP_Problem);
-    inS.endReadParams();
-    ::RoboCompPlanning::Plan iceP_solution;
-    bool ret = this->getNextAction(::std::move(iceP_Problem), iceP_solution, current);
     auto ostr = inS.startWriteParams();
     ostr->writeAll(iceP_solution, ret);
     inS.endWriteParams();
@@ -394,37 +394,6 @@ RoboCompPlanning::PlanReceiverPrx::ice_staticId()
 }
 
 void
-RoboCompPlanning::PlanningPrx::_iceI_getSolution(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::RoboCompPlanning::Planning::GetSolutionResult>>& outAsync, const ::std::string& iceP_Domain, const ::std::string& iceP_Problem, const ::Ice::Context& context)
-{
-    _checkTwowayOnly(iceC_RoboCompPlanning_Planning_getSolution_name);
-    outAsync->invoke(iceC_RoboCompPlanning_Planning_getSolution_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
-        [&](::Ice::OutputStream* ostr)
-        {
-            ostr->writeAll(iceP_Domain, iceP_Problem);
-        },
-        [](const ::Ice::UserException& ex)
-        {
-            try
-            {
-                ex.ice_throw();
-            }
-            catch(const ::RoboCompPlanning::ServerException&)
-            {
-                throw;
-            }
-            catch(const ::Ice::UserException&)
-            {
-            }
-        },
-        [](::Ice::InputStream* istr)
-        {
-            ::RoboCompPlanning::Planning::GetSolutionResult v;
-            istr->readAll(v.solution, v.returnValue);
-            return v;
-        });
-}
-
-void
 RoboCompPlanning::PlanningPrx::_iceI_getNextAction(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::RoboCompPlanning::Planning::GetNextActionResult>>& outAsync, const ::std::string& iceP_Problem, const ::Ice::Context& context)
 {
     _checkTwowayOnly(iceC_RoboCompPlanning_Planning_getNextAction_name);
@@ -450,6 +419,37 @@ RoboCompPlanning::PlanningPrx::_iceI_getNextAction(const ::std::shared_ptr<::Ice
         [](::Ice::InputStream* istr)
         {
             ::RoboCompPlanning::Planning::GetNextActionResult v;
+            istr->readAll(v.solution, v.returnValue);
+            return v;
+        });
+}
+
+void
+RoboCompPlanning::PlanningPrx::_iceI_getSolution(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::RoboCompPlanning::Planning::GetSolutionResult>>& outAsync, const ::std::string& iceP_Domain, const ::std::string& iceP_Problem, const ::Ice::Context& context)
+{
+    _checkTwowayOnly(iceC_RoboCompPlanning_Planning_getSolution_name);
+    outAsync->invoke(iceC_RoboCompPlanning_Planning_getSolution_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
+        [&](::Ice::OutputStream* ostr)
+        {
+            ostr->writeAll(iceP_Domain, iceP_Problem);
+        },
+        [](const ::Ice::UserException& ex)
+        {
+            try
+            {
+                ex.ice_throw();
+            }
+            catch(const ::RoboCompPlanning::ServerException&)
+            {
+                throw;
+            }
+            catch(const ::Ice::UserException&)
+            {
+            }
+        },
+        [](::Ice::InputStream* istr)
+        {
+            ::RoboCompPlanning::Planning::GetSolutionResult v;
             istr->readAll(v.solution, v.returnValue);
             return v;
         });
@@ -501,9 +501,9 @@ namespace
 
 const ::std::string iceC_RoboCompPlanning_PlanReceiver_setPlan_name = "setPlan";
 
-const ::std::string iceC_RoboCompPlanning_Planning_getSolution_name = "getSolution";
-
 const ::std::string iceC_RoboCompPlanning_Planning_getNextAction_name = "getNextAction";
+
+const ::std::string iceC_RoboCompPlanning_Planning_getSolution_name = "getSolution";
 
 const ::std::string iceC_RoboCompPlanning_PeleaAgent_stateChanged_name = "stateChanged";
 
@@ -632,18 +632,17 @@ void
 }
 
 ::Ice::AsyncResultPtr
-IceProxy::RoboCompPlanning::Planning::_iceI_begin_getSolution(const ::std::string& iceP_Domain, const ::std::string& iceP_Problem, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
+IceProxy::RoboCompPlanning::Planning::_iceI_begin_getNextAction(const ::std::string& iceP_Problem, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
 {
-    _checkTwowayOnly(iceC_RoboCompPlanning_Planning_getSolution_name, sync);
-    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompPlanning_Planning_getSolution_name, del, cookie, sync);
+    _checkTwowayOnly(iceC_RoboCompPlanning_Planning_getNextAction_name, sync);
+    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompPlanning_Planning_getNextAction_name, del, cookie, sync);
     try
     {
-        result->prepare(iceC_RoboCompPlanning_Planning_getSolution_name, ::Ice::Normal, context);
+        result->prepare(iceC_RoboCompPlanning_Planning_getNextAction_name, ::Ice::Normal, context);
         ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
-        ostr->write(iceP_Domain);
         ostr->write(iceP_Problem);
         result->endWriteParams();
-        result->invoke(iceC_RoboCompPlanning_Planning_getSolution_name);
+        result->invoke(iceC_RoboCompPlanning_Planning_getNextAction_name);
     }
     catch(const ::Ice::Exception& ex)
     {
@@ -653,9 +652,9 @@ IceProxy::RoboCompPlanning::Planning::_iceI_begin_getSolution(const ::std::strin
 }
 
 bool
-IceProxy::RoboCompPlanning::Planning::end_getSolution(::RoboCompPlanning::Plan& iceP_solution, const ::Ice::AsyncResultPtr& result)
+IceProxy::RoboCompPlanning::Planning::end_getNextAction(::RoboCompPlanning::Plan& iceP_solution, const ::Ice::AsyncResultPtr& result)
 {
-    ::Ice::AsyncResult::_check(result, this, iceC_RoboCompPlanning_Planning_getSolution_name);
+    ::Ice::AsyncResult::_check(result, this, iceC_RoboCompPlanning_Planning_getNextAction_name);
     bool ret;
     if(!result->_waitForResponse())
     {
@@ -680,17 +679,18 @@ IceProxy::RoboCompPlanning::Planning::end_getSolution(::RoboCompPlanning::Plan& 
 }
 
 ::Ice::AsyncResultPtr
-IceProxy::RoboCompPlanning::Planning::_iceI_begin_getNextAction(const ::std::string& iceP_Problem, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
+IceProxy::RoboCompPlanning::Planning::_iceI_begin_getSolution(const ::std::string& iceP_Domain, const ::std::string& iceP_Problem, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
 {
-    _checkTwowayOnly(iceC_RoboCompPlanning_Planning_getNextAction_name, sync);
-    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompPlanning_Planning_getNextAction_name, del, cookie, sync);
+    _checkTwowayOnly(iceC_RoboCompPlanning_Planning_getSolution_name, sync);
+    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompPlanning_Planning_getSolution_name, del, cookie, sync);
     try
     {
-        result->prepare(iceC_RoboCompPlanning_Planning_getNextAction_name, ::Ice::Normal, context);
+        result->prepare(iceC_RoboCompPlanning_Planning_getSolution_name, ::Ice::Normal, context);
         ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
+        ostr->write(iceP_Domain);
         ostr->write(iceP_Problem);
         result->endWriteParams();
-        result->invoke(iceC_RoboCompPlanning_Planning_getNextAction_name);
+        result->invoke(iceC_RoboCompPlanning_Planning_getSolution_name);
     }
     catch(const ::Ice::Exception& ex)
     {
@@ -700,9 +700,9 @@ IceProxy::RoboCompPlanning::Planning::_iceI_begin_getNextAction(const ::std::str
 }
 
 bool
-IceProxy::RoboCompPlanning::Planning::end_getNextAction(::RoboCompPlanning::Plan& iceP_solution, const ::Ice::AsyncResultPtr& result)
+IceProxy::RoboCompPlanning::Planning::end_getSolution(::RoboCompPlanning::Plan& iceP_solution, const ::Ice::AsyncResultPtr& result)
 {
-    ::Ice::AsyncResult::_check(result, this, iceC_RoboCompPlanning_Planning_getNextAction_name);
+    ::Ice::AsyncResult::_check(result, this, iceC_RoboCompPlanning_Planning_getSolution_name);
     bool ret;
     if(!result->_waitForResponse())
     {
@@ -976,6 +976,23 @@ RoboCompPlanning::Planning::ice_staticId()
 }
 
 bool
+RoboCompPlanning::Planning::_iceD_getNextAction(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::Normal, current.mode);
+    ::Ice::InputStream* istr = inS.startReadParams();
+    ::std::string iceP_Problem;
+    istr->read(iceP_Problem);
+    inS.endReadParams();
+    ::RoboCompPlanning::Plan iceP_solution;
+    bool ret = this->getNextAction(iceP_Problem, iceP_solution, current);
+    ::Ice::OutputStream* ostr = inS.startWriteParams();
+    ostr->write(iceP_solution);
+    ostr->write(ret);
+    inS.endWriteParams();
+    return true;
+}
+
+bool
 RoboCompPlanning::Planning::_iceD_getSolution(::IceInternal::Incoming& inS, const ::Ice::Current& current)
 {
     _iceCheckMode(::Ice::Normal, current.mode);
@@ -987,23 +1004,6 @@ RoboCompPlanning::Planning::_iceD_getSolution(::IceInternal::Incoming& inS, cons
     inS.endReadParams();
     ::RoboCompPlanning::Plan iceP_solution;
     bool ret = this->getSolution(iceP_Domain, iceP_Problem, iceP_solution, current);
-    ::Ice::OutputStream* ostr = inS.startWriteParams();
-    ostr->write(iceP_solution);
-    ostr->write(ret);
-    inS.endWriteParams();
-    return true;
-}
-
-bool
-RoboCompPlanning::Planning::_iceD_getNextAction(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::Normal, current.mode);
-    ::Ice::InputStream* istr = inS.startReadParams();
-    ::std::string iceP_Problem;
-    istr->read(iceP_Problem);
-    inS.endReadParams();
-    ::RoboCompPlanning::Plan iceP_solution;
-    bool ret = this->getNextAction(iceP_Problem, iceP_solution, current);
     ::Ice::OutputStream* ostr = inS.startWriteParams();
     ostr->write(iceP_solution);
     ostr->write(ret);
