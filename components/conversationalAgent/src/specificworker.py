@@ -25,7 +25,7 @@ from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
-#AGM related imports
+# AGM related imports
 import AGMModelConversion
 from AGGL import *
 
@@ -54,6 +54,7 @@ try:
 except:
     print("Can't import speech_recognition or pyaudio or wave")
 
+
 # If RoboComp was compiled with Python bindings you can use InnerModel in Python
 # sys.path.append('/opt/robocomp/lib')
 # import librobocomp_qmat
@@ -68,18 +69,18 @@ class OpenChatbotUI(QDialog):
         self.ui = Ui_interactionWindow()
         self.ui.setupUi(self)
         self.setModal(True)
-        #proc = Process(target=self.compute, args=())
-        #proc.start()
+        # proc = Process(target=self.compute, args=())
+        # proc.start()
 
         self.interactionUI = False
         self.bot_message = ""
 
-        #self.ui.textbox.setFocus()
+        # self.ui.textbox.setFocus()
         self.ui.send.clicked.connect(self.send_message)
         self.ui.rasa_server.clicked.connect(self.rasa_server_button_click())
         self.ui.action_server.clicked.connect(self.action_server_button_click())
 
-        #text formatting
+        # text formatting
         self.ui.textbox.setStyleSheet("font-weight: bold; font-size: 18pt; font-family: Times New Roman, Times, serif;")
         self.ui.display.setStyleSheet("font-size: 12pt; font-family: Times New Roman, Times, serif;")
 
@@ -96,17 +97,18 @@ class OpenChatbotUI(QDialog):
     # Send post request to Rasa server
     def send_message(self):
         if self.ui.textbox.text() != '':
-            self.ui.display.append("<span style= color:blue; font-size:14pt >Person: </span>"+ self.ui.textbox.text() + "\n")
+            self.ui.display.append(
+                "<span style= color:blue; font-size:14pt >Person: </span>" + self.ui.textbox.text() + "\n")
             msg = self.ui.textbox.text()
             self.ui.textbox.clear()
             r = requests.post('http://localhost:5002/webhooks/rest/webhook', json={"sender": "Person", "message": msg})
             for i in r.json():
                 bot_message = i['text']
-                self.ui.display.append("<span style= color:blue; font-size:14pt >Robot: </span>" + bot_message + "\n")#f"{i['text']}""
+                self.ui.display.append(
+                    "<span style= color:blue; font-size:14pt >Robot: </span>" + bot_message + "\n")  # f"{i['text']}""
                 self.bot_message = bot_message
         else:
             return
-        
 
     def rasa_server_button_click(self):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -119,7 +121,6 @@ class OpenChatbotUI(QDialog):
             proc = Process(target=self.start_rasa_server, args=())
             proc.start()
 
-
     def action_server_button_click(self):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         result = sock.connect_ex(('localhost', 5055))
@@ -131,21 +132,18 @@ class OpenChatbotUI(QDialog):
             proc = Process(target=self.start_action_server, args=())
             proc.start()
 
-
     def start_rasa_server(self):
         try:
-            os.system("cd chatbot; gnome-terminal -e 'rasa run -m models --endpoints endpoints.yml --port 5002 --credentials credentials.yml --enable-api'")
+            os.system(
+                "cd chatbot; gnome-terminal -e 'rasa run -m models --endpoints endpoints.yml --port 5002 --credentials credentials.yml --enable-api'")
         except:
             print("Cannot start Rasa Server")
-
 
     def start_action_server(self):
         try:
             os.system("cd chatbot;gnome-terminal -e 'rasa run actions'")
         except:
             print("Cannot start Actions Server")
-
-
 
     def rasa_server_button_color(self):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -155,7 +153,6 @@ class OpenChatbotUI(QDialog):
         else:
             self.ui.rasa_server.setStyleSheet("background-color: red")
 
-
     def action_server_button_color(self):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         result = sock.connect_ex(('localhost', 5055))
@@ -164,14 +161,12 @@ class OpenChatbotUI(QDialog):
         else:
             self.ui.action_server.setStyleSheet("background-color: red")
 
-
-    #Calling functions to change button colours together
+    # Calling functions to change button colours together
     def button_colors(self):
         self.rasa_server_button_color()
         self.action_server_button_color()
 
-
-    #Text to speech implementation
+    # Text to speech implementation
     def _say_with_festival(self, text):
         shellcommand = "echo \"%s\" | iconv -f utf-8 -t iso-8859-1 | padsp festival --tts --language english" % text
         print('Order: ' + text)
@@ -180,14 +175,12 @@ class OpenChatbotUI(QDialog):
             print("install festivale using the below command")
             print("sudo apt-get install festival festvox-kallpc16k")
 
-
     def listen_button_press(self):
         print("speak")
         speak_text = self.bot_message
         self._say_with_festival(speak_text)
 
-
-    #Speech to text implementation
+    # Speech to text implementation
     def speak_button_press(self):
         try:
             p = pyaudio.PyAudio()
@@ -246,7 +239,6 @@ class OpenChatbotUI(QDialog):
             print("error ")
 
 
-
 class OpenRasaUI(QDialog):
     def __init__(self, parent=None):
         QDialog.__init__(self, parent)
@@ -254,7 +246,6 @@ class OpenRasaUI(QDialog):
         self.ui = Ui_rasaWindow()
         self.ui.setupUi(self)
         self.setModal(True)
-
 
         self.ui.action_server.clicked.connect(self.action_server_button_click_rasaUI)
         self.ui.rasa_train.clicked.connect(self.rasa_train_button_click)
@@ -273,7 +264,6 @@ class OpenRasaUI(QDialog):
             proc = Process(target=self.start_action_server, args=())
             proc.start()
 
-
     def start_action_server(self):
         try:
             os.system("cd chatbot;gnome-terminal -e 'rasa run actions'")
@@ -288,11 +278,10 @@ class OpenRasaUI(QDialog):
         else:
             self.ui.action_server.setStyleSheet("background-color: red")
 
-
-    #Button to train a new Rasa model
+    # Button to train a new Rasa model
     def rasa_train_button_click(self):
         proc = Process(target=self.start_rasa_train, args=())
-        proc.start() 
+        proc.start()
 
     def start_rasa_train(self):
         try:
@@ -300,11 +289,10 @@ class OpenRasaUI(QDialog):
         except:
             print("Cannot train model, check for errors in rasa files")
 
-
-    #Button to start an interactive session to create new stories by simulating conversations
+    # Button to start an interactive session to create new stories by simulating conversations
     def rasa_interactive_button_click(self):
         proc = Process(target=self.start_rasa_interactive, args=())
-        proc.start() 
+        proc.start()
 
     def start_rasa_interactive(self):
         try:
@@ -312,11 +300,10 @@ class OpenRasaUI(QDialog):
         except:
             print("Cannot start interactive learning session")
 
-
-    #Button to start Rasa shell for testing
+    # Button to start Rasa shell for testing
     def rasa_shell_button_click(self):
         proc = Process(target=self.start_rasa_shell, args=())
-        proc.start() 
+        proc.start()
 
     def start_rasa_shell(self):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -332,19 +319,16 @@ class OpenRasaUI(QDialog):
         except:
             print("Cannot start rasa shell")
 
-
-    #Button to visualize Rasa Stories
+    # Button to visualize Rasa Stories
     def rasa_visualize_button_click(self):
         proc = Process(target=self.start_rasa_visualize, args=())
-        proc.start() 
+        proc.start()
 
     def start_rasa_visualize(self):
         try:
             os.system("cd chatbot;gnome-terminal -e 'rasa visualize'")
         except:
             print("Cannot visualize Rasa Stories")
-
-
 
 
 class SpecificWorker(GenericWorker):
@@ -360,16 +344,14 @@ class SpecificWorker(GenericWorker):
         self.situation = ''
         self.human_id = ''
         self.robot_id = ''
-        self.human_gender = ''
-        self.link = ''
         self.action = 'none'
         self.change_attributes = {"rasa": ""}
         self.ui_lock = False
         self.restart = False
-        
+
         self.eraseFiles()
 
-        #UI Connection
+        # UI Connection
         self.ui.rasa_server.clicked.connect(self.rasa_server_button_click)
         self.ui.action_server.clicked.connect(self.action_server_button_click)
         self.ui.rasa_dialog.clicked.connect(self.openRasaDialog)
@@ -378,18 +360,16 @@ class SpecificWorker(GenericWorker):
         self.interaction = OpenChatbotUI(self)
         self.rasaDialog = OpenRasaUI(self)
 
-
-
     def __del__(self):
         print('SpecificWorker destructor')
 
         return True
 
-    #Open Rasa dialog box
+    # Open Rasa dialog box
     def openRasaDialog(self):
         self.rasaDialog.show()
 
-    #Initialize AGM
+    # Initialize AGM
     def AGMinit(self):
         self.worldModel = AGMGraph()
         try:
@@ -401,8 +381,7 @@ class SpecificWorker(GenericWorker):
             print("The executive is probably not running, waiting for first AGM model publication...")
         src = self.worldModel
 
-
-    #Function to update dsr when we have made changes to AGM local model
+    # Function to update dsr when we have made changes to AGM local model
     def updatingDSR(self):
         try:
             newModel = AGMModelConversion.fromInternalToIce(self.worldModel)
@@ -411,38 +390,35 @@ class SpecificWorker(GenericWorker):
             self.worldModel = AGMModelConversion.fromIceToInternal_model(w)
             print("AGM successfully updated")
         except:
-            print("Exception moving in AGM") 
+            print("Exception moving in AGM")
 
+            # Function to erase and initialize rasa_conversation Json file
 
-    #Function to erase and initialize rasa_conversation Json file
     def eraseFiles(self):
         sample = self.change_attributes
-        json_object = json.dumps(sample, indent = 4)
+        json_object = json.dumps(sample, indent=4)
         with open('chatbot/rasa_conversation.json', 'w') as outfile:
             outfile.write(json_object)
-    
-    #Function to write to file
-    def writeToFile(self,id,situation):
+
+    # Function to write to file
+    def writeToFile(self, id, situation):
         self.AGMinit()
         try:
             src = self.worldModel
             person_attributes = src.getNode(id).attributes
             attributes = {}
-            attributes['imGender'] = person_attributes['imGender']
             attributes['imSituation'] = situation
-            self.human_gender = person_attributes['imGender']
 
-            json_object = json.dumps(attributes, indent = 4)
-            with open("chatbot/person_attributes.json", "w") as outfile: 
+            json_object = json.dumps(attributes, indent=4)
+            with open("chatbot/person_attributes.json", "w") as outfile:
                 outfile.write(json_object)
         except:
             print("Could not write to file person_attributes.json")
         return
 
-
-    #Function to read from file
+    # Function to read from file
     def readFromFile(self):
-        with open('chatbot/rasa_conversation.json', 'r') as openfile: 
+        with open('chatbot/rasa_conversation.json', 'r') as openfile:
             attrs = json.load(openfile)
             if attrs["rasa"] == self.change_attributes["rasa"]:
                 return False
@@ -451,14 +427,14 @@ class SpecificWorker(GenericWorker):
                 self.change_attributes = attrs
                 return True
 
-    #Function to update AGM Graph locally and globally
+    # Function to update AGM Graph locally and globally
     def updateGraph(self):
         flag = self.readFromFile()
         if flag:
             attrs = self.change_attributes
             try:
                 model = self.worldModel
-                model.addEdge(self.human_id, self.robot_id, self.link, attrs)
+                model.addEdge(self.human_id, self.robot_id, "interacting", attrs)
                 self.updatingDSR()
             except:
                 print("Could not change attributes of link")
@@ -469,14 +445,14 @@ class SpecificWorker(GenericWorker):
         else:
             return
 
-
-    #Function to stop chatbot and close interaction dialog box when user says OK to move
+    # Function to stop chatbot and close interaction dialog box when user says OK to move
     def stopChatbot(self):
         self.interaction.interactionUI = False
         self.interaction.ui.display.clear()
-        #self.interaction.ui.textbox.clear()
+        # self.interaction.ui.textbox.clear()
         self.interaction.hide()
-        r = requests.post('http://localhost:5002/conversations/default/tracker/events', json=[{"event": "restart"}, {"event": "followup","name": "action_listen"}])
+        r = requests.post('http://localhost:5002/conversations/default/tracker/events',
+                          json=[{"event": "restart"}, {"event": "followup", "name": "action_listen"}])
         self.ui_lock = True
         self.change_attributes = {"rasa": ""}
         self.eraseFiles()
@@ -494,30 +470,30 @@ class SpecificWorker(GenericWorker):
             self.situation = ''
             self.human_id = ''
             self.robot_id = ''
-            self.human_gender = ''
-            self.link = ''
             self.change_attributes = {}
+            model = self.worldModel
+            model.removeEdge(self.human_id, self.robot_id, "interacting")
+            self.updatingDSR()
             return
 
-    #Function to start chatbot and initialize conversation
+    # Function to start chatbot and initialize conversation
     def startChatbot(self):
         self.interaction.show()
         r = requests.post('http://localhost:5002/webhooks/rest/webhook', json={"sender": "Person", "message": "start"})
         for i in r.json():
             bot_message = i['text']
-            self.interaction.ui.display.append("<span style= color:blue; font-size:14pt >Robot: </span>" + bot_message + "\n")#f"{i['text']}""
+            self.interaction.ui.display.append(
+                "<span style= color:blue; font-size:14pt >Robot: </span>" + bot_message + "\n")  # f"{i['text']}""
             self.interaction.bot_message = bot_message
         print("Chatbot started successfully!!!")
         return
 
-
-    #Function to keep interaction ui active even if user tries to close it to force the user to reply
+    # Function to keep interaction ui active even if user tries to close it to force the user to reply
     def keepUiActive(self):
         if self.interaction.interactionUI == True:
             if self.interaction.isVisible() == False:
                 self.interaction.show()
         return
-
 
     def rasa_server_button_click(self):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -535,7 +511,6 @@ class SpecificWorker(GenericWorker):
             else:
                 return
 
-
     def action_server_button_click(self):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         result = sock.connect_ex(('localhost', 5055))
@@ -552,26 +527,23 @@ class SpecificWorker(GenericWorker):
             else:
                 return
 
-
     def start_rasa_server(self):
         try:
-            os.system("cd chatbot;gnome-terminal -e 'rasa run -m models --endpoints endpoints.yml --port 5002 --credentials credentials.yml --enable-api'")
+            os.system(
+                "cd chatbot;gnome-terminal -e 'rasa run -m models --endpoints endpoints.yml --port 5002 --credentials credentials.yml --enable-api'")
         except:
             print("Cannot start Rasa Server")
 
-
     def start_action_server(self):
         try:
-            os.system("cd chatbot;gnome-terminal -e 'rasa run actions'")
+            os.system("gnome-terminal -e 'rasa run actions'")
         except:
             print("Cannot start Actions Server")
 
-
-    #Button to kill both Rasa and Action server
+    # Button to kill both Rasa and Action server
     def kill_all_server(self):
         os.system("fuser -k 5002/tcp")
         os.system("fuser -k 5055/tcp")
-
 
     def rasa_server_button_color(self):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -581,7 +553,6 @@ class SpecificWorker(GenericWorker):
         else:
             self.ui.rasa_server.setStyleSheet("background-color: red")
 
-
     def action_server_button_color(self):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         result = sock.connect_ex(('localhost', 5055))
@@ -589,9 +560,6 @@ class SpecificWorker(GenericWorker):
             self.ui.action_server.setStyleSheet("background-color: green")
         else:
             self.ui.action_server.setStyleSheet("background-color: red")
-    
-
-
 
     @QtCore.Slot()
     def compute(self):
@@ -600,91 +568,83 @@ class SpecificWorker(GenericWorker):
         self.interaction.button_colors()
         self.rasaDialog.action_server_button_color()
         self.keepUiActive()
-        #self.restartChatbot()
+        # self.restartChatbot()
         if self.interaction.interactionUI == True:
             self.updateGraph()
 
         return True
 
-
-
     #
     # SUBSCRIPTION to edgeUpdated method from AGMExecutiveTopic interface
     #
     def setParams(self, params):
-        
+
         return True
+
     def AGMExecutiveTopic_edgeUpdated(self, modification):
         #
-        #subscribesToCODE
+        # subscribesToCODE
         #
         pass
-
 
     #
     # SUBSCRIPTION to edgesUpdated method from AGMExecutiveTopic interface
     #
     def AGMExecutiveTopic_edgesUpdated(self, modifications):
         #
-        #subscribesToCODE
+        # subscribesToCODE
         #
         pass
-
 
     #
     # SUBSCRIPTION to selfEdgeAdded method from AGMExecutiveTopic interface
     #
     def AGMExecutiveTopic_selfEdgeAdded(self, nodeid, edgeType, attributes):
         #
-        #subscribesToCODE
+        # subscribesToCODE
         #
         pass
-
 
     #
     # SUBSCRIPTION to selfEdgeDeleted method from AGMExecutiveTopic interface
     #
     def AGMExecutiveTopic_selfEdgeDeleted(self, nodeid, edgeType):
         #
-        #subscribesToCODE
+        # subscribesToCODE
         #
         pass
-
 
     #
     # SUBSCRIPTION to structuralChange method from AGMExecutiveTopic interface
     #
     def AGMExecutiveTopic_structuralChange(self, w):
         self.mutex.lock()
-        #print("before")
-        #print(type(self.worldModel), type(w))
+        # print("before")
+        # print(type(self.worldModel), type(w))
         self.worldModel = AGMModelConversion.fromIceToInternal_model(w)
-        #print("after")
-        #print(type(self.worldModel), type(w))
-        #print(self.worldModel)
+        # print("after")
+        # print(type(self.worldModel), type(w))
+        # print(self.worldModel)
         # fromIceToInternal(w, worldModel)
         self.mutex.unlock()
-
 
     #
     # SUBSCRIPTION to symbolUpdated method from AGMExecutiveTopic interface
     #
     def AGMExecutiveTopic_symbolUpdated(self, modification):
         #
-        #subscribesToCODE
+        # subscribesToCODE
         #
         pass
-
 
     #
     # SUBSCRIPTION to symbolsUpdated method from AGMExecutiveTopic interface
     #
     def AGMExecutiveTopic_symbolsUpdated(self, modifications):
         #
-        #subscribesToCODE
+        # subscribesToCODE
         #
         pass
-
 
     # =============== Methods for Component Implements ==================
     # ===================================================================
@@ -693,80 +653,113 @@ class SpecificWorker(GenericWorker):
     # activateAgent
     #
 
-    #Function that will recieve parameters from mission and will activate agent
+    # Function that will recieve parameters from mission and will activate agent
     def AGMCommonBehavior_activateAgent(self, prs):
         print("------------------------parameters recieved------------------------")
         ret = bool()
         self.action = prs['action'].value
         if not self.ui_lock:
             if prs['action'].value != 'none':
-                
-                if self.interaction.interactionUI == False:
+
+                if not self.interaction.interactionUI:
                     print("--------------Planning to start UI-------------------------")
-                    if prs['action'].value == 'path_blocked':
-                        if self.interaction.isVisible() == False:
+
+                    if self.action == 'takeTheAttention':
+                        print('---takeTheAttention---')
+                        if not self.interaction.isVisible():
+                            self.interaction.interactionUI = True
+                            self.situation = 'four'
+                            self.human_id = prs['p'].value
+                            self.robot_id = prs['robot'].value
+                            self.writeToFile(prs['p'].value, self.situation)
+                            self.startChatbot()
+
+                    elif self.action == 'askForIndividualPermission':
+                        print('---askForIndividualPermission---')
+
+                        if not self.interaction.isVisible():
                             self.interaction.interactionUI = True
                             self.situation = 'one'
-                            self.link = "block"
-                            self.human_id = prs['human'].value
+                            self.human_id = prs['p'].value
                             self.robot_id = prs['robot'].value
-                            self.writeToFile(prs['human'].value, self.situation)
+                            self.writeToFile(prs['p'].value, self.situation)
                             self.startChatbot()
-                    
-                    elif prs['action'].value == 'path_softBlocked':
-                        if self.interaction.isVisible() == False:
+
+                    elif self.action == 'askForGroupalPermission':
+                        print('---askForGroupalPermission---')
+
+                        if not self.interaction.isVisible():
                             self.interaction.interactionUI = True
                             self.situation = 'two'
-                            self.link = "softBlock"
-                            self.human_id = prs['human'].value
+                            self.human_id = prs['p'].value
                             self.robot_id = prs['robot'].value
                             self.writeToFile(self.situation)
                             self.startChatbot()
-                    
-                    elif prs['action'].value == 'path_affordanceBlock':
-                        if self.interaction.isVisible() == False:
+
+                    elif self.action == 'path_affordanceBlock':
+                        if not self.interaction.isVisible():
                             self.interaction.interactionUI = True
                             self.situation = 'three'
-                            self.link = "affordanceBlock"
-                            self.human_id = prs['human'].value
+                            self.human_id = prs['p'].value
                             self.robot_id = prs['robot'].value
-                            self.writeToFile(prs['human'].value, self.situation)
+                            self.writeToFile(prs['p'].value, self.situation)
                             self.startChatbot()
 
-                    else:
-                        print("Wrong Plan Recieved")
 
-                else:        
-
-                    if prs['action'].value == 'path_blocked':
-                        if self.interaction.isVisible() == False:
-                            self.interaction.show()  
-                    
-                    elif prs['action'].value == 'path_softBlocked':
-                        if self.interaction.isVisible() == False:
-                            self.interaction.show()
-                    
-                    elif prs['action'].value == 'path_affordanceBlock':
-                        if self.interaction.isVisible() == False:
-                            self.interaction.show() 
 
                     else:
                         print("Wrong Plan Recieved")
+
+                else:
+                    if not self.interaction.isVisible():
+                        self.interaction.show()
+
+                    # if prs['action'].value == 'takeTheAttention':
+                    #     if self.interaction.isVisible() == False:
+                    #         self.interaction.show()
+                    #
+                    # elif prs['action'].value == 'path_is_blocking':
+                    #     if self.situation == 'four':
+                    #         flag_near = False
+                    #         for link in self.worldModel.links:
+                    #             if link.linkType == "is_near":
+                    #                 flag_near = True
+                    #         if flag_near == False:
+                    #             self.interaction.interactionUI = False
+                    #             # self.interaction.ui.display.clear()
+                    #             # self.interaction.ui.textbox.clear()
+                    #             self.interaction.hide()
+                    #             r = requests.post('http://localhost:5002/conversations/default/tracker/events',
+                    #                               json=[{"event": "restart"},
+                    #                                     {"event": "followup", "name": "action_listen"}])
+                    #             print(r)
+                    #             print("Conversation cleared")
+                    #             self.AGMCommonBehavior_activateAgent(prs)
+                    #     else:
+                    #         if self.interaction.isVisible() == False:
+                    #             self.interaction.show()
+                    #
+                    # elif prs['action'].value == 'path_affordanceBlock':
+                    #     if self.interaction.isVisible() == False:
+                    #         self.interaction.show()
+                    #
+                    # else:
+                    #     print("Wrong Plan Recieved")
 
             else:
-                if self.interaction.interactionUI == False:
+                if not self.interaction.interactionUI:
                     return
 
                 else:
                     self.interaction.interactionUI = False
-                    #self.interaction.ui.display.clear()
-                    #self.interaction.ui.textbox.clear()
+                    # self.interaction.ui.display.clear()
+                    # self.interaction.ui.textbox.clear()
                     self.interaction.hide()
-                    r = requests.post('http://localhost:5002/conversations/default/tracker/events', json=[{"event": "restart"}, {"event": "followup","name": "action_listen"}])
+                    r = requests.post('http://localhost:5002/conversations/default/tracker/events',
+                                      json=[{"event": "restart"}, {"event": "followup", "name": "action_listen"}])
                     print(r)
                     print("Conversation cleared")
         return ret
-
 
     #
     # deactivateAgent
@@ -777,7 +770,6 @@ class SpecificWorker(GenericWorker):
         # implementCODE
         #
         return ret
-
 
     #
     # getAgentParameters
@@ -793,7 +785,6 @@ class SpecificWorker(GenericWorker):
         #
         return ret
 
-
     #
     # getAgentState
     #
@@ -803,7 +794,6 @@ class SpecificWorker(GenericWorker):
         # implementCODE
         #
         return ret
-
 
     #
     # killAgent
@@ -815,7 +805,6 @@ class SpecificWorker(GenericWorker):
         #
         pass
 
-
     #
     # reloadConfigAgent
     #
@@ -826,7 +815,6 @@ class SpecificWorker(GenericWorker):
         #
         return ret
 
-
     #
     # setAgentParameters
     #
@@ -836,7 +824,6 @@ class SpecificWorker(GenericWorker):
         # implementCODE
         #
         return ret
-
 
     #
     # uptimeAgent
@@ -851,8 +838,6 @@ class SpecificWorker(GenericWorker):
     # ===================================================================
     # ===================================================================
 
-
-
     def updatingDSR(self):
         try:
             newModel = AGMModelConversion.fromInternalToIce(self.worldModel)
@@ -862,4 +847,3 @@ class SpecificWorker(GenericWorker):
             print("AGM successfully updated")
         except:
             print("Exception moving in AGM")
-
