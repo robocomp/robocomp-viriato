@@ -1,3 +1,5 @@
+version: "2.0"
+
 intents:
   - greet
   - accept
@@ -9,9 +11,9 @@ intents:
 
 
 actions:
-  # Common 
+  # Common
   - utter_greet
-  - utter_thanks 
+  - utter_thanks
   # Situation 1
   - utter_move_sit_1
   - utter_repeat_sit_1
@@ -58,7 +60,7 @@ slots:
     - three
     - four
 
-templates:
+responses:
 
   utter_greet:
   - text: "Hello"
@@ -91,7 +93,7 @@ templates:
 
   utter_frustated_sit_1:
   - text: "Let's not waste each other's time, please step aside just for a moment, please."
-  - text: "I wouldn't want to waste anyone's time, but I really need to pass, please step aside" 
+  - text: "I wouldn't want to waste anyone's time, but I really need to pass, please step aside"
 
   utter_handle_chitchat_sit_1:
   - text: "Time is of essence for both of us, lets not waste it in chitchat. Can you please move aside and let me pass?"
@@ -134,7 +136,7 @@ templates:
   - text: "Excuse me, could I get past you?"
   - text: "Would you kindly move to one side for a moment?"
   - text: "If I may interrupt you, I'd appreciate if you let me by."
-  
+
   utter_repeat_sit_3:
   - text: "I said could you step aside for a moment and let me pass?"
   - text: "What I said was, could I get past you?"
@@ -178,3 +180,6 @@ templates:
   - text: "Please turn around, I am talking with you!"
   - text: "Time is of essence, lets not waste it. Please turn around."
 
+session_config:
+  session_expiration_time: 60
+  carry_over_slots_to_new_session: true

@@ -285,7 +285,7 @@ class OpenRasaUI(QDialog):
 
     def start_rasa_train(self):
         try:
-            os.system("cd chatbot;gnome-terminal -e 'rasa train'")
+            os.system("cd chatbot;gnome-terminal -e 'rasa train --num-threads -1'")
         except:
             print("Cannot train model, check for errors in rasa files")
 
@@ -434,7 +434,7 @@ class SpecificWorker(GenericWorker):
             attrs = self.change_attributes
             try:
                 model = self.worldModel
-                model.addEdge(self.human_id, self.robot_id, "interacting", attrs)
+                model.addEdge(self.robot_id, self.human_id,  "interacting", attrs)
                 self.updatingDSR()
             except:
                 print("Could not change attributes of link")
@@ -490,8 +490,8 @@ class SpecificWorker(GenericWorker):
 
     # Function to keep interaction ui active even if user tries to close it to force the user to reply
     def keepUiActive(self):
-        if self.interaction.interactionUI == True:
-            if self.interaction.isVisible() == False:
+        if self.interaction.interactionUI:
+            if not self.interaction.isVisible():
                 self.interaction.show()
         return
 
@@ -536,7 +536,7 @@ class SpecificWorker(GenericWorker):
 
     def start_action_server(self):
         try:
-            os.system("gnome-terminal -e 'rasa run actions'")
+            os.system("cd chatbot;gnome-terminal -e 'rasa run actions'")
         except:
             print("Cannot start Actions Server")
 
@@ -687,13 +687,12 @@ class SpecificWorker(GenericWorker):
 
                     elif self.action == 'askForGroupalPermission':
                         print('---askForGroupalPermission---')
-
                         if not self.interaction.isVisible():
                             self.interaction.interactionUI = True
                             self.situation = 'two'
                             self.human_id = prs['p'].value
                             self.robot_id = prs['robot'].value
-                            self.writeToFile(self.situation)
+                            self.writeToFile(prs['p'].value, self.situation)
                             self.startChatbot()
 
                     elif self.action == 'path_affordanceBlock':

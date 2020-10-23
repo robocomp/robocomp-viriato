@@ -1,0 +1,860 @@
+version: "2.0"
+stories:
+- story: happy path situation 2
+  steps:
+  - intent: start
+  - action: action_link_talking
+  - action: utter_greet
+  - action: action_set_situation
+  - slot_was_set:
+    - situation: two
+  - action: action_link_waiting
+  - intent: greet
+  - action: action_link_talking
+  - action: utter_move_sit_2
+  - action: action_link_waiting
+  - intent: accept
+  - action: action_link_talking
+  - action: utter_thanks
+  - action: action_stop_chatbot
+- story: sad path 1 situation 2
+  steps:
+  - intent: start
+  - action: action_link_talking
+  - action: utter_greet
+  - action: action_set_situation
+  - slot_was_set:
+    - situation: two
+  - action: action_link_waiting
+  - intent: greet
+  - action: action_link_talking
+  - action: utter_move_sit_2
+  - action: action_link_waiting
+  - intent: reject
+  - action: action_link_talking
+  - action: utter_again_sit_2
+  - action: action_link_waiting
+  - intent: accept
+  - action: action_link_talking
+  - action: utter_thanks
+  - action: action_stop_chatbot
+- story: sad path 2 situation 2
+  steps:
+  - intent: start
+  - action: action_link_talking
+  - action: utter_greet
+  - action: action_set_situation
+  - slot_was_set:
+    - situation: two
+  - action: action_link_waiting
+  - intent: greet
+  - action: action_link_talking
+  - action: utter_move_sit_2
+  - action: action_link_waiting
+  - intent: reject
+  - action: action_link_talking
+  - action: utter_again_sit_2
+  - action: action_link_waiting
+  - intent: reject
+  - action: action_link_talking
+  - action: utter_frustated_sit_2
+  - action: action_link_waiting
+  - intent: accept
+  - action: action_link_talking
+  - action: utter_thanks
+  - action: action_stop_chatbot
+- story: sad path 3 situation 2
+  steps:
+  - intent: start
+  - action: action_link_talking
+  - action: utter_greet
+  - action: action_set_situation
+  - slot_was_set:
+    - situation: two
+  - action: action_link_waiting
+  - intent: greet
+  - action: action_link_talking
+  - action: utter_move_sit_2
+  - action: action_link_waiting
+  - intent: reject
+  - action: action_link_talking
+  - action: utter_again_sit_2
+  - action: action_link_waiting
+  - intent: reject
+  - action: action_link_talking
+  - action: utter_frustated_sit_2
+  - action: action_link_waiting
+  - intent: reject
+  - action: action_link_talking
+  - action: utter_frustated_sit_2
+  - action: action_link_waiting
+  - intent: accept
+  - action: action_link_talking
+  - action: utter_thanks
+  - action: action_stop_chatbot
+- story: sad path 4 situation 2
+  steps:
+  - intent: start
+  - action: action_link_talking
+  - action: utter_greet
+  - action: action_set_situation
+  - slot_was_set:
+    - situation: two
+  - action: action_link_waiting
+  - intent: greet
+  - action: action_link_talking
+  - action: utter_move_sit_2
+  - action: action_link_waiting
+  - intent: reject
+  - action: action_link_talking
+  - action: utter_again_sit_2
+  - action: action_link_waiting
+  - intent: reject
+  - action: action_link_talking
+  - action: utter_frustated_sit_2
+  - action: action_link_waiting
+  - intent: reject
+  - action: action_link_talking
+  - action: utter_frustated_sit_2
+  - action: action_link_waiting
+  - intent: reject
+  - action: action_link_talking
+  - action: utter_frustated_sit_2
+  - action: action_link_waiting
+  - intent: accept
+  - action: action_link_talking
+  - action: utter_thanks
+  - action: action_stop_chatbot
+- story: repeat path 1 situation 2
+  steps:
+  - intent: start
+  - action: action_link_talking
+  - action: utter_greet
+  - action: action_set_situation
+  - slot_was_set:
+    - situation: two
+  - action: action_link_waiting
+  - intent: greet
+  - action: action_link_talking
+  - action: utter_move_sit_2
+  - action: action_link_waiting
+  - intent: repeat
+  - action: action_link_talking
+  - action: utter_repeat_sit_2
+  - action: action_link_waiting
+  - intent: accept
+  - action: action_link_talking
+  - action: utter_thanks
+  - action: action_stop_chatbot
+- story: repeat path 2 situation 2
+  steps:
+  - intent: start
+  - action: action_link_talking
+  - action: utter_greet
+  - action: action_set_situation
+  - slot_was_set:
+    - situation: two
+  - action: action_link_waiting
+  - intent: greet
+  - action: action_link_talking
+  - action: utter_move_sit_2
+  - action: action_link_waiting
+  - intent: repeat
+  - action: action_link_talking
+  - action: utter_repeat_sit_2
+  - action: action_link_waiting
+  - intent: repeat
+  - action: action_link_talking
+  - action: utter_repeat_sit_2
+  - action: action_link_waiting
+  - intent: accept
+  - action: action_link_talking
+  - action: utter_thanks
+  - action: action_stop_chatbot
+- story: repeat path 3 situation 2
+  steps:
+  - intent: start
+  - action: action_link_talking
+  - action: utter_greet
+  - action: action_set_situation
+  - slot_was_set:
+    - situation: two
+  - action: action_link_waiting
+  - intent: greet
+  - action: action_link_talking
+  - action: utter_move_sit_2
+  - action: action_link_waiting
+  - intent: repeat
+  - action: action_link_talking
+  - action: utter_repeat_sit_2
+  - action: action_link_waiting
+  - intent: repeat
+  - action: action_link_talking
+  - action: utter_repeat_sit_2
+  - action: action_link_waiting
+  - intent: repeat
+  - action: action_link_talking
+  - action: utter_repeat_sit_2
+  - action: action_link_waiting
+  - intent: accept
+  - action: action_link_talking
+  - action: utter_thanks
+  - action: action_stop_chatbot
+- story: sad 1 repeat path 1 situation 2
+  steps:
+  - intent: start
+  - action: action_link_talking
+  - action: utter_greet
+  - action: action_set_situation
+  - slot_was_set:
+    - situation: two
+  - action: action_link_waiting
+  - intent: greet
+  - action: action_link_talking
+  - action: utter_move_sit_2
+  - action: action_link_waiting
+  - intent: repeat
+  - action: action_link_talking
+  - action: utter_repeat_sit_2
+  - action: action_link_waiting
+  - intent: reject
+  - action: action_link_talking
+  - action: utter_again_sit_2
+  - action: action_link_waiting
+  - intent: accept
+  - action: action_link_talking
+  - action: utter_thanks
+  - action: action_stop_chatbot
+- story: sad 1 repeat path 2 situation 2
+  steps:
+  - intent: start
+  - action: action_link_talking
+  - action: utter_greet
+  - action: action_set_situation
+  - slot_was_set:
+    - situation: two
+  - action: action_link_waiting
+  - intent: greet
+  - action: action_link_talking
+  - action: utter_move_sit_2
+  - action: action_link_waiting
+  - intent: reject
+  - action: action_link_talking
+  - action: utter_again_sit_2
+  - action: action_link_waiting
+  - intent: repeat
+  - action: action_link_talking
+  - action: utter_repeat_sit_2
+  - action: action_link_waiting
+  - intent: accept
+  - action: action_link_talking
+  - action: utter_thanks
+  - action: action_stop_chatbot
+- story: sad 1 repeat path 3 situation 2
+  steps:
+  - intent: start
+  - action: action_link_talking
+  - action: utter_greet
+  - action: action_set_situation
+  - slot_was_set:
+    - situation: two
+  - action: action_link_waiting
+  - intent: greet
+  - action: action_link_talking
+  - action: utter_move_sit_2
+  - action: action_link_waiting
+  - intent: repeat
+  - action: action_link_talking
+  - action: utter_repeat_sit_2
+  - action: action_link_waiting
+  - intent: reject
+  - action: action_link_talking
+  - action: utter_again_sit_2
+  - action: action_link_waiting
+  - intent: repeat
+  - action: action_link_talking
+  - action: utter_repeat_sit_2
+  - action: action_link_waiting
+  - intent: accept
+  - action: action_link_talking
+  - action: utter_thanks
+  - action: action_stop_chatbot
+- story: happy chitchat path 1 situation 2
+  steps:
+  - intent: start
+  - action: action_link_talking
+  - action: utter_greet
+  - action: action_set_situation
+  - slot_was_set:
+    - situation: two
+  - action: action_link_waiting
+  - intent: greet
+  - action: action_link_talking
+  - action: utter_move_sit_2
+  - action: action_link_waiting
+  - intent: chitchat
+  - action: action_link_talking
+  - action: utter_handle_chitchat_sit_2
+  - action: action_link_waiting
+  - intent: accept
+  - action: action_link_talking
+  - action: utter_thanks
+  - action: action_stop_chatbot
+- story: happy chitchat path 2 situation 2
+  steps:
+  - intent: start
+  - action: action_link_talking
+  - action: utter_greet
+  - action: action_set_situation
+  - slot_was_set:
+    - situation: two
+  - action: action_link_waiting
+  - intent: greet
+  - action: action_link_talking
+  - action: utter_move_sit_2
+  - action: action_link_waiting
+  - intent: chitchat
+  - action: action_link_talking
+  - action: utter_handle_chitchat_sit_2
+  - action: action_link_waiting
+  - intent: chitchat
+  - action: action_link_talking
+  - action: utter_handle_chitchat_sit_2
+  - action: action_link_waiting
+  - intent: accept
+  - action: action_link_talking
+  - action: utter_thanks
+  - action: action_stop_chatbot
+- story: sad 1 chitchat path 1 situation 2
+  steps:
+  - intent: start
+  - action: action_link_talking
+  - action: utter_greet
+  - action: action_set_situation
+  - slot_was_set:
+    - situation: two
+  - action: action_link_waiting
+  - intent: greet
+  - action: action_link_talking
+  - action: utter_move_sit_2
+  - action: action_link_waiting
+  - intent: chitchat
+  - action: action_link_talking
+  - action: utter_handle_chitchat_sit_2
+  - action: action_link_waiting
+  - intent: reject
+  - action: action_link_talking
+  - action: utter_again_sit_2
+  - action: action_link_waiting
+  - intent: accept
+  - action: action_link_talking
+  - action: utter_thanks
+  - action: action_stop_chatbot
+- story: sad 1 chitchat path 2 situation 2
+  steps:
+  - intent: start
+  - action: action_link_talking
+  - action: utter_greet
+  - action: action_set_situation
+  - slot_was_set:
+    - situation: two
+  - action: action_link_waiting
+  - intent: greet
+  - action: action_link_talking
+  - action: utter_move_sit_2
+  - action: action_link_waiting
+  - intent: reject
+  - action: action_link_talking
+  - action: utter_again_sit_2
+  - action: action_link_waiting
+  - intent: chitchat
+  - action: action_link_talking
+  - action: utter_handle_chitchat_sit_2
+  - action: action_link_waiting
+  - intent: accept
+  - action: action_link_talking
+  - action: utter_thanks
+  - action: action_stop_chatbot
+- story: sad 1 chitchat path 3 situation 2
+  steps:
+  - intent: start
+  - action: action_link_talking
+  - action: utter_greet
+  - action: action_set_situation
+  - slot_was_set:
+    - situation: two
+  - action: action_link_waiting
+  - intent: greet
+  - action: action_link_talking
+  - action: utter_move_sit_2
+  - action: action_link_waiting
+  - intent: chitchat
+  - action: action_link_talking
+  - action: utter_handle_chitchat_sit_2
+  - action: action_link_waiting
+  - intent: reject
+  - action: action_link_talking
+  - action: utter_again_sit_2
+  - action: action_link_waiting
+  - intent: chitchat
+  - action: action_link_talking
+  - action: utter_handle_chitchat_sit_2
+  - action: action_link_waiting
+  - intent: accept
+  - action: action_link_talking
+  - action: utter_thanks
+  - action: action_stop_chatbot
+- story: sad 1 chitchat path 4 situation 2
+  steps:
+  - intent: start
+  - action: action_link_talking
+  - action: utter_greet
+  - action: action_set_situation
+  - slot_was_set:
+    - situation: two
+  - action: action_link_waiting
+  - intent: greet
+  - action: action_link_talking
+  - action: utter_move_sit_2
+  - action: action_link_waiting
+  - intent: chitchat
+  - action: action_link_talking
+  - action: utter_handle_chitchat_sit_2
+  - action: action_link_waiting
+  - intent: chitchat
+  - action: action_link_talking
+  - action: utter_handle_chitchat_sit_2
+  - action: action_link_waiting
+  - intent: reject
+  - action: action_link_talking
+  - action: utter_again_sit_2
+  - action: action_link_waiting
+  - intent: accept
+  - action: action_link_talking
+  - action: utter_thanks
+  - action: action_stop_chatbot
+- story: sad 1 chitchat path 5 situation 2
+  steps:
+  - intent: start
+  - action: action_link_talking
+  - action: utter_greet
+  - action: action_set_situation
+  - slot_was_set:
+    - situation: two
+  - action: action_link_waiting
+  - intent: greet
+  - action: action_link_talking
+  - action: utter_move_sit_2
+  - action: action_link_waiting
+  - intent: reject
+  - action: action_link_talking
+  - action: utter_again_sit_2
+  - action: action_link_waiting
+  - intent: chitchat
+  - action: action_link_talking
+  - action: utter_handle_chitchat_sit_2
+  - action: action_link_waiting
+  - intent: chitchat
+  - action: action_link_talking
+  - action: utter_handle_chitchat_sit_2
+  - action: action_link_waiting
+  - intent: accept
+  - action: action_link_talking
+  - action: utter_thanks
+  - action: action_stop_chatbot
+- story: sad 2 chitchat path 1 situation 2
+  steps:
+  - intent: start
+  - action: action_link_talking
+  - action: utter_greet
+  - action: action_set_situation
+  - slot_was_set:
+    - situation: two
+  - action: action_link_waiting
+  - intent: greet
+  - action: action_link_talking
+  - action: utter_move_sit_2
+  - action: action_link_waiting
+  - intent: chitchat
+  - action: action_link_talking
+  - action: utter_handle_chitchat_sit_2
+  - action: action_link_waiting
+  - intent: reject
+  - action: action_link_talking
+  - action: utter_again_sit_2
+  - action: action_link_waiting
+  - intent: reject
+  - action: action_link_talking
+  - action: utter_frustated_sit_2
+  - action: action_link_waiting
+  - intent: accept
+  - action: action_link_talking
+  - action: utter_thanks
+  - action: action_stop_chatbot
+- story: sad 2 chitchat path 2 situation 2
+  steps:
+  - intent: start
+  - action: action_link_talking
+  - action: utter_greet
+  - action: action_set_situation
+  - slot_was_set:
+    - situation: two
+  - action: action_link_waiting
+  - intent: greet
+  - action: action_link_talking
+  - action: utter_move_sit_2
+  - action: action_link_waiting
+  - intent: reject
+  - action: action_link_talking
+  - action: utter_again_sit_2
+  - action: action_link_waiting
+  - intent: reject
+  - action: action_link_talking
+  - action: utter_frustated_sit_2
+  - action: action_link_waiting
+  - intent: chitchat
+  - action: action_link_talking
+  - action: utter_handle_chitchat_sit_2
+  - action: action_link_waiting
+  - intent: accept
+  - action: action_link_talking
+  - action: utter_thanks
+  - action: action_stop_chatbot
+- story: sad 2 chitchat path 3 situation 2
+  steps:
+  - intent: start
+  - action: action_link_talking
+  - action: utter_greet
+  - action: action_set_situation
+  - slot_was_set:
+    - situation: two
+  - action: action_link_waiting
+  - intent: greet
+  - action: action_link_talking
+  - action: utter_move_sit_2
+  - action: action_link_waiting
+  - intent: reject
+  - action: action_link_talking
+  - action: utter_again_sit_2
+  - action: action_link_waiting
+  - intent: chitchat
+  - action: action_link_talking
+  - action: utter_handle_chitchat_sit_2
+  - action: action_link_waiting
+  - intent: reject
+  - action: action_link_talking
+  - action: utter_frustated_sit_2
+  - action: action_link_waiting
+  - intent: accept
+  - action: action_link_talking
+  - action: utter_thanks
+  - action: action_stop_chatbot
+- story: sad 2 chitchat path 4 situation 2
+  steps:
+  - intent: start
+  - action: action_link_talking
+  - action: utter_greet
+  - action: action_set_situation
+  - slot_was_set:
+    - situation: two
+  - action: action_link_waiting
+  - intent: greet
+  - action: action_link_talking
+  - action: utter_move_sit_2
+  - action: action_link_waiting
+  - intent: chitchat
+  - action: action_link_talking
+  - action: utter_handle_chitchat_sit_2
+  - action: action_link_waiting
+  - intent: reject
+  - action: action_link_talking
+  - action: utter_again_sit_2
+  - action: action_link_waiting
+  - intent: chitchat
+  - action: action_link_talking
+  - action: utter_handle_chitchat_sit_2
+  - action: action_link_waiting
+  - intent: reject
+  - action: action_link_talking
+  - action: utter_frustated_sit_2
+  - action: action_link_waiting
+  - intent: accept
+  - action: action_link_talking
+  - action: utter_thanks
+  - action: action_stop_chatbot
+- story: sad 2 chitchat path 5 situation 2
+  steps:
+  - intent: start
+  - action: action_link_talking
+  - action: utter_greet
+  - action: action_set_situation
+  - slot_was_set:
+    - situation: two
+  - action: action_link_waiting
+  - intent: greet
+  - action: action_link_talking
+  - action: utter_move_sit_2
+  - action: action_link_waiting
+  - intent: chitchat
+  - action: action_link_talking
+  - action: utter_handle_chitchat_sit_2
+  - action: action_link_waiting
+  - intent: chitchat
+  - action: action_link_talking
+  - action: utter_handle_chitchat_sit_2
+  - action: action_link_waiting
+  - intent: reject
+  - action: action_link_talking
+  - action: utter_again_sit_2
+  - action: action_link_waiting
+  - intent: reject
+  - action: action_link_talking
+  - action: utter_frustated_sit_2
+  - action: action_link_waiting
+  - intent: accept
+  - action: action_link_talking
+  - action: utter_thanks
+  - action: action_stop_chatbot
+- story: sad 2 chitchat path 6 situation 2
+  steps:
+  - intent: start
+  - action: action_link_talking
+  - action: utter_greet
+  - action: action_set_situation
+  - slot_was_set:
+    - situation: two
+  - action: action_link_waiting
+  - intent: greet
+  - action: action_link_talking
+  - action: utter_move_sit_2
+  - action: action_link_waiting
+  - intent: reject
+  - action: action_link_talking
+  - action: utter_again_sit_2
+  - action: action_link_waiting
+  - intent: reject
+  - action: action_link_talking
+  - action: utter_frustated_sit_2
+  - action: action_link_waiting
+  - intent: chitchat
+  - action: action_link_talking
+  - action: utter_handle_chitchat_sit_2
+  - action: action_link_waiting
+  - intent: chitchat
+  - action: action_link_talking
+  - action: utter_handle_chitchat_sit_2
+  - action: action_link_waiting
+  - intent: accept
+  - action: action_link_talking
+  - action: utter_thanks
+  - action: action_stop_chatbot
+- story: sad 2 chitchat path 7 situation 2
+  steps:
+  - intent: start
+  - action: action_link_talking
+  - action: utter_greet
+  - action: action_set_situation
+  - slot_was_set:
+    - situation: two
+  - action: action_link_waiting
+  - intent: greet
+  - action: action_link_talking
+  - action: utter_move_sit_2
+  - action: action_link_waiting
+  - intent: reject
+  - action: action_link_talking
+  - action: utter_again_sit_2
+  - action: action_link_waiting
+  - intent: chitchat
+  - action: action_link_talking
+  - action: utter_handle_chitchat_sit_2
+  - action: action_link_waiting
+  - intent: reject
+  - action: action_link_talking
+  - action: utter_frustated_sit_2
+  - action: action_link_waiting
+  - intent: chitchat
+  - action: action_link_talking
+  - action: utter_handle_chitchat_sit_2
+  - action: action_link_waiting
+  - intent: accept
+  - action: action_link_talking
+  - action: utter_thanks
+  - action: action_stop_chatbot
+- story: sad 2 chitchat path 8 situation 2
+  steps:
+  - intent: start
+  - action: action_link_talking
+  - action: utter_greet
+  - action: action_set_situation
+  - slot_was_set:
+    - situation: two
+  - action: action_link_waiting
+  - intent: greet
+  - action: action_link_talking
+  - action: utter_move_sit_2
+  - action: action_link_waiting
+  - intent: chitchat
+  - action: action_link_talking
+  - action: utter_handle_chitchat_sit_2
+  - action: action_link_waiting
+  - intent: reject
+  - action: action_link_talking
+  - action: utter_again_sit_2
+  - action: action_link_waiting
+  - intent: reject
+  - action: action_link_talking
+  - action: utter_frustated_sit_2
+  - action: action_link_waiting
+  - intent: chitchat
+  - action: action_link_talking
+  - action: utter_handle_chitchat_sit_2
+  - action: action_link_waiting
+  - intent: accept
+  - action: action_link_talking
+  - action: utter_thanks
+  - action: action_stop_chatbot
+- story: sad 3 chitchat path 1 situation 2
+  steps:
+  - intent: start
+  - action: action_link_talking
+  - action: utter_greet
+  - action: action_set_situation
+  - slot_was_set:
+    - situation: two
+  - action: action_link_waiting
+  - intent: greet
+  - action: action_link_talking
+  - action: utter_move_sit_2
+  - action: action_link_waiting
+  - intent: chitchat
+  - action: action_link_talking
+  - action: utter_handle_chitchat_sit_2
+  - action: action_link_waiting
+  - intent: reject
+  - action: action_link_talking
+  - action: utter_again_sit_2
+  - action: action_link_waiting
+  - intent: reject
+  - action: action_link_talking
+  - action: utter_frustated_sit_2
+  - action: action_link_waiting
+  - intent: reject
+  - action: action_link_talking
+  - action: utter_frustated_sit_2
+  - action: action_link_waiting
+  - intent: accept
+  - action: action_link_talking
+  - action: utter_thanks
+  - action: action_stop_chatbot
+- story: sad 3 chitchat path 2 situation 2
+  steps:
+  - intent: start
+  - action: action_link_talking
+  - action: utter_greet
+  - action: action_set_situation
+  - slot_was_set:
+    - situation: two
+  - action: action_link_waiting
+  - intent: greet
+  - action: action_link_talking
+  - action: utter_move_sit_2
+  - action: action_link_waiting
+  - intent: chitchat
+  - action: action_link_talking
+  - action: utter_handle_chitchat_sit_2
+  - action: action_link_waiting
+  - intent: chitchat
+  - action: action_link_talking
+  - action: utter_handle_chitchat_sit_2
+  - action: action_link_waiting
+  - intent: reject
+  - action: action_link_talking
+  - action: utter_again_sit_2
+  - action: action_link_waiting
+  - intent: reject
+  - action: action_link_talking
+  - action: utter_frustated_sit_2
+  - action: action_link_waiting
+  - intent: reject
+  - action: action_link_talking
+  - action: utter_frustated_sit_2
+  - action: action_link_waiting
+  - intent: accept
+  - action: action_link_talking
+  - action: utter_thanks
+  - action: action_stop_chatbot
+- story: sad 3 chitchat path 3 situation 2
+  steps:
+  - intent: start
+  - action: action_link_talking
+  - action: utter_greet
+  - action: action_set_situation
+  - slot_was_set:
+    - situation: two
+  - action: action_link_waiting
+  - intent: greet
+  - action: action_link_talking
+  - action: utter_move_sit_2
+  - action: action_link_waiting
+  - intent: chitchat
+  - action: action_link_talking
+  - action: utter_handle_chitchat_sit_2
+  - action: action_link_waiting
+  - intent: reject
+  - action: action_link_talking
+  - action: utter_again_sit_2
+  - action: action_link_waiting
+  - intent: chitchat
+  - action: action_link_talking
+  - action: utter_handle_chitchat_sit_2
+  - action: action_link_waiting
+  - intent: reject
+  - action: action_link_talking
+  - action: utter_frustated_sit_2
+  - action: action_link_waiting
+  - intent: reject
+  - action: action_link_talking
+  - action: utter_frustated_sit_2
+  - action: action_link_waiting
+  - intent: accept
+  - action: action_link_talking
+  - action: utter_thanks
+  - action: action_stop_chatbot
+- story: sad 4 chitchat path 1 situation 2
+  steps:
+  - intent: start
+  - action: action_link_talking
+  - action: utter_greet
+  - action: action_set_situation
+  - slot_was_set:
+    - situation: two
+  - action: action_link_waiting
+  - intent: greet
+  - action: action_link_talking
+  - action: utter_move_sit_2
+  - action: action_link_waiting
+  - intent: chitchat
+  - action: action_link_talking
+  - action: utter_handle_chitchat_sit_2
+  - action: action_link_waiting
+  - intent: reject
+  - action: action_link_talking
+  - action: utter_again_sit_2
+  - action: action_link_waiting
+  - intent: reject
+  - action: action_link_talking
+  - action: utter_frustated_sit_2
+  - action: action_link_waiting
+  - intent: reject
+  - action: action_link_talking
+  - action: utter_frustated_sit_2
+  - action: action_link_waiting
+  - intent: reject
+  - action: action_link_talking
+  - action: utter_frustated_sit_2
+  - action: action_link_waiting
+  - intent: accept
+  - action: action_link_talking
+  - action: utter_thanks
+  - action: action_stop_chatbot

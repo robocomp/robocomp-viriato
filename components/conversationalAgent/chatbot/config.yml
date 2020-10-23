@@ -2,15 +2,15 @@
 # https://rasa.com/docs/rasa/nlu/components/
 language: en
 pipeline:
-  - name: nlp_spacy 
-  - name: tokenizer_spacy 
-  - name: intent_featurizer_spacy  
-  - name: intent_classifier_sklearn
+  - name: SpacyNLP 
+  - name: SpacyTokenizer 
+  - name: SpacyFeaturizer  
+  - name: SklearnIntentClassifier
 
 # Configuration for Rasa Core.
 # https://rasa.com/docs/rasa/core/policies/
 policies:
   - name: MemoizationPolicy
-  - name: KerasPolicy
+  - name: TEDPolicy
     epochs: 200
-  - name: MappingPolicy
+  - name: RulePolicy
