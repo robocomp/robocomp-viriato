@@ -14,6 +14,7 @@ actions:
   # Common
   - utter_greet
   - utter_thanks
+  - utter_goodbye
   # Situation 1
   - utter_move_sit_1
   - utter_repeat_sit_1
@@ -67,11 +68,16 @@ responses:
   - text: "Hi! Its a wonderful day!"
 
   utter_thanks:
-  - text: "Thank you very much!!!"
-  - text: "Thanks, I hope you have a nice day!!!"
-  - text: "Thank you for understanding, Good day!!!"
-  - text: "I appreciate it, Have a nice day!!!"
+  - text: "Thank you very much!"
+  - text: "Thanks"
+  - text: "Thank you for understanding"
+  - text: "I appreciate it"
 
+  utter_goodbye:
+  - text: "Have a nice day!"
+  - text: "Have a good day!"
+  - text: "Goodbye"
+  - text: "Bye"
 
 #-------------------------------------------------------------Situation 1-------------------------------------------------------------
 

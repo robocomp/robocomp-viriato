@@ -345,9 +345,13 @@ class SpecificWorker(GenericWorker):
         self.human_id = ''
         self.robot_id = ''
         self.action = 'none'
+        self.previous_action = 'none'
+        self.list_actions = ['takeTheAttention','askForIndividualPermission','askForGroupalPermission']
         self.change_attributes = {"rasa": ""}
         self.ui_lock = False
         self.restart = False
+
+
 
         self.eraseFiles()
 
@@ -402,6 +406,7 @@ class SpecificWorker(GenericWorker):
 
     # Function to write to file
     def writeToFile(self, id, situation):
+        print('write to file', situation)
         self.AGMinit()
         try:
             src = self.worldModel
@@ -447,6 +452,7 @@ class SpecificWorker(GenericWorker):
 
     # Function to stop chatbot and close interaction dialog box when user says OK to move
     def stopChatbot(self):
+        print('Stopping chatbot')
         self.interaction.interactionUI = False
         self.interaction.ui.display.clear()
         # self.interaction.ui.textbox.clear()
@@ -462,22 +468,22 @@ class SpecificWorker(GenericWorker):
         self.ui_lock = False
         print(self.ui_lock)
         print(self.action)
-        if self.action != 'none':
-            print("I am here")
+        if self.action in self.list_actions:
             self.interaction.interactionUI = True
-            self.startChatbot
+            self.startChatbot()
         else:
             self.situation = ''
             self.human_id = ''
             self.robot_id = ''
             self.change_attributes = {}
             model = self.worldModel
-            model.removeEdge(self.human_id, self.robot_id, "interacting")
+            model.removeEdge(self.robot_id, self.human_id, "interacting")
             self.updatingDSR()
             return
 
     # Function to start chatbot and initialize conversation
     def startChatbot(self):
+        print('--- Starting chatbot ---')
         self.interaction.show()
         r = requests.post('http://localhost:5002/webhooks/rest/webhook', json={"sender": "Person", "message": "start"})
         for i in r.json():
@@ -569,6 +575,8 @@ class SpecificWorker(GenericWorker):
         self.rasaDialog.action_server_button_color()
         self.keepUiActive()
         # self.restartChatbot()
+
+        ##FIX THIS --- ONLY UPDATE IF THE SITUATION IS DIFFERENT FROM THE PREVIOUS ONE
         if self.interaction.interactionUI == True:
             self.updateGraph()
 
@@ -655,18 +663,17 @@ class SpecificWorker(GenericWorker):
 
     # Function that will recieve parameters from mission and will activate agent
     def AGMCommonBehavior_activateAgent(self, prs):
-        print("------------------------parameters recieved------------------------")
+        print("parameters recieved ---> ", prs['action'].value)
         ret = bool()
         self.action = prs['action'].value
+
         if not self.ui_lock:
-            if prs['action'].value != 'none':
-
-                if not self.interaction.interactionUI:
+            if self.action in self.list_actions:
+                if (not self.interaction.interactionUI) or (self.previous_action != self.action):
                     print("--------------Planning to start UI-------------------------")
-
                     if self.action == 'takeTheAttention':
                         print('---takeTheAttention---')
-                        if not self.interaction.isVisible():
+                        if (not self.interaction.isVisible()) or (self.previous_action != self.action):
                             self.interaction.interactionUI = True
                             self.situation = 'four'
                             self.human_id = prs['p'].value
@@ -677,7 +684,7 @@ class SpecificWorker(GenericWorker):
                     elif self.action == 'askForIndividualPermission':
                         print('---askForIndividualPermission---')
 
-                        if not self.interaction.isVisible():
+                        if (not self.interaction.isVisible()) or (self.previous_action != self.action):
                             self.interaction.interactionUI = True
                             self.situation = 'one'
                             self.human_id = prs['p'].value
@@ -687,7 +694,7 @@ class SpecificWorker(GenericWorker):
 
                     elif self.action == 'askForGroupalPermission':
                         print('---askForGroupalPermission---')
-                        if not self.interaction.isVisible():
+                        if (not self.interaction.isVisible()) or (self.previous_action != self.action):
                             self.interaction.interactionUI = True
                             self.situation = 'two'
                             self.human_id = prs['p'].value
@@ -696,14 +703,13 @@ class SpecificWorker(GenericWorker):
                             self.startChatbot()
 
                     elif self.action == 'path_affordanceBlock':
-                        if not self.interaction.isVisible():
+                        if (not self.interaction.isVisible()) or (self.previous_action != self.action):
                             self.interaction.interactionUI = True
                             self.situation = 'three'
                             self.human_id = prs['p'].value
                             self.robot_id = prs['robot'].value
                             self.writeToFile(prs['p'].value, self.situation)
                             self.startChatbot()
-
 
 
                     else:
@@ -745,7 +751,7 @@ class SpecificWorker(GenericWorker):
                     # else:
                     #     print("Wrong Plan Recieved")
 
-            else:
+            elif self.interaction == 'none':
                 if not self.interaction.interactionUI:
                     return
 
@@ -758,6 +764,8 @@ class SpecificWorker(GenericWorker):
                                       json=[{"event": "restart"}, {"event": "followup", "name": "action_listen"}])
                     print(r)
                     print("Conversation cleared")
+
+        self.previous_action = self.action
         return ret
 
     #
@@ -836,13 +844,3 @@ class SpecificWorker(GenericWorker):
 
     # ===================================================================
     # ===================================================================
-
-    def updatingDSR(self):
-        try:
-            newModel = AGMModelConversion.fromInternalToIce(self.worldModel)
-            self.agmexecutive_proxy.structuralChangeProposal(newModel, "component_name", "Log_fileName")
-            w = self.agmexecutive_proxy.getModel()
-            self.worldModel = AGMModelConversion.fromIceToInternal_model(w)
-            print("AGM successfully updated")
-        except:
-            print("Exception moving in AGM")

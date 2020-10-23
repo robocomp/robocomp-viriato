@@ -3,11 +3,12 @@ stories:
 - story: sad path 1 situation 4
   steps:
   - intent: start
-  - action: action_link_talking
-  - action: utter_greet
   - action: action_set_situation
   - slot_was_set:
-    - situation: four
+      - situation: four
+  - action: action_link_talking
+  - action: utter_greet
+
   - action: utter_turn_sit_4
   - action: action_link_waiting
   - intent: reject
@@ -21,11 +22,13 @@ stories:
 - story: sad path 2 situation 4
   steps:
   - intent: start
-  - action: action_link_talking
-  - action: utter_greet
   - action: action_set_situation
   - slot_was_set:
-    - situation: four
+      - situation: four
+
+  - action: action_link_talking
+  - action: utter_greet
+
   - action: utter_turn_sit_4
   - action: action_link_waiting
   - intent: reject
@@ -43,11 +46,12 @@ stories:
 - story: sad path 3 situation 4
   steps:
   - intent: start
-  - action: action_link_talking
-  - action: utter_greet
   - action: action_set_situation
   - slot_was_set:
-    - situation: four
+      - situation: four
+  - action: action_link_talking
+  - action: utter_greet
+
   - action: utter_turn_sit_4
   - action: action_link_waiting
   - intent: reject

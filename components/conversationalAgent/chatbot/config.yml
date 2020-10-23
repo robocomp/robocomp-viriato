@@ -13,4 +13,3 @@ policies:
   - name: MemoizationPolicy
   - name: TEDPolicy
     epochs: 200
-  - name: RulePolicy
