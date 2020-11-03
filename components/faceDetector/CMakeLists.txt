@@ -13,6 +13,6 @@ MACRO( WRAP_PYTHON_UI )
       DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/${input_file}.ui
       COMMENT "Generating src/ui_${input_file}.py from src/${input_file}.ui"
     )
-    ADD_CUSTOM_TARGET(ui_${input_file} ALL DEPENDS src/ui_${input_file}.py )
+    ADD_CUSTOM_TARGET(ui_${input_file}${PROJECT_NAME} ALL DEPENDS src/ui_${input_file}.py )
   ENDFOREACH( input_file )
 ENDMACRO( WRAP_PYTHON_UI )
