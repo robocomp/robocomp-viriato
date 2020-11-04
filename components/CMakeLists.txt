@@ -20,5 +20,5 @@ add_subdirectory( roomLocalizationAgent )
 add_subdirectory( socialnavigationGaussian )
 #add_subdirectory( SocialNavigationGUI )
 add_subdirectory( socialRulesAgent )
-add_subdirectory( viriatobase )
+#add_subdirectory( viriatobase )
 
