@@ -37,44 +37,44 @@ screen.keypad(True)
 ROBOCOMP = ''
 
 try:
-	ROBOCOMP = os.environ['ROBOCOMP']
+    ROBOCOMP = os.environ['ROBOCOMP']
 except:
-	print( '$ROBOCOMP environment variable not set, using the default value /opt/robocomp')
-	ROBOCOMP = '/opt/robocomp'
-if len(ROBOCOMP)<1:
-	print ('genericworker.py: ROBOCOMP environment variable not set! Exiting.')
-	sys.exit()
+    print('$ROBOCOMP environment variable not set, using the default value /opt/robocomp')
+    ROBOCOMP = '/opt/robocomp'
+if len(ROBOCOMP) < 1:
+    print('genericworker.py: ROBOCOMP environment variable not set! Exiting.')
+    sys.exit()
 
+preStr = "-I" + ROBOCOMP + "/interfaces/ --all " + ROBOCOMP + "/interfaces/"
 
-preStr = "-I"+ROBOCOMP+"/interfaces/ --all "+ROBOCOMP+"/interfaces/"
-
-
-Ice.loadSlice(preStr+"DifferentialRobot.ice")
+Ice.loadSlice(preStr + "DifferentialRobot.ice")
 from RoboCompOmniRobot import *
 
 
 class SpecificWorker(GenericWorker):
-    def __init__(self, proxy_map):
+    def __init__(self, proxy_map, startup_check=False):
         super(SpecificWorker, self).__init__(proxy_map)
-        self.Period = 1
-        self.timer.start(self.Period)
-
         self.advX = 0
         self.advZ = 0
         self.rot = 0
         screen.addstr(0, 0, 'Connected to robot. Use arrows to control speed, space bar to stop ans ''q'' to exit')
 
-        self.defaultMachine.start()
-        self.destroyed.connect(self.t_compute_to_finalize)
+        if startup_check:
+            self.startup_check()
+        else:
+            self.timer.start(self.Period)
+            self.defaultMachine.start()
+            self.destroyed.connect(self.t_compute_to_finalize)
 
     def __del__(self):
         print('SpecificWorker destructor')
 
     def setParams(self, params):
-     return True
+        return True
 
     tt1 = 2000
     tt2 = 2
+
     @QtCore.Slot()
     def compute(self):
         print('SpecificWorker.compute...')
@@ -87,14 +87,14 @@ class SpecificWorker(GenericWorker):
                 else:
                     self.advZ = self.advZ + 20;
                 screen.addstr(5, 0, 'up: ' + '%.2f' % self.advZ + ' : ' + '%.2f' % self.rot)
-                self.omnirobot_proxy.setSpeedBase(self.advX, self.advZ,self.rot)
+                self.omnirobot_proxy.setSpeedBase(self.advX, self.advZ, self.rot)
             elif key == curses.KEY_DOWN:
                 if self.advZ < -1 * self.tt1:
                     self.advZ = self.advZ
                 else:
                     self.advZ = self.advZ - 20;
                 screen.addstr(5, 0, 'down: ' + '%.2f' % self.advZ + ' : ' + '%.2f' % self.rot)
-                self.omnirobot_proxy.setSpeedBase(self.advX, self.advZ,self.rot)
+                self.omnirobot_proxy.setSpeedBase(self.advX, self.advZ, self.rot)
 
             elif key == curses.KEY_RIGHT:
                 if self.advX > self.tt1:
@@ -102,7 +102,7 @@ class SpecificWorker(GenericWorker):
                 else:
                     self.advX = self.advX + 20;
                 screen.addstr(5, 0, 'up: ' + '%.2f' % self.advX + ' : ' + '%.2f' % self.rot)
-                self.omnirobot_proxy.setSpeedBase(self.advX, self.advZ,self.rot)
+                self.omnirobot_proxy.setSpeedBase(self.advX, self.advZ, self.rot)
             elif key == curses.KEY_LEFT:
                 if self.advX < -1 * self.tt1:
                     self.advX = self.advX
@@ -110,7 +110,7 @@ class SpecificWorker(GenericWorker):
                     self.advX = self.advX - 20;
 
                 screen.addstr(5, 0, 'down: ' + '%.2f' % self.advX + ' : ' + '%.2f' % self.rot)
-                self.omnirobot_proxy.setSpeedBase(self.advX, self.advZ,self.rot)
+                self.omnirobot_proxy.setSpeedBase(self.advX, self.advZ, self.rot)
 
             elif key == curses.KEY_F1:
                 if self.rot < -1 * self.tt2:
@@ -119,7 +119,7 @@ class SpecificWorker(GenericWorker):
                     self.rot = self.rot - 0.1;
 
                 screen.addstr(5, 0, 'left: ' + '%.2f' % self.advZ + ' : ' + '%.2f' % self.rot)
-                self.omnirobot_proxy.setSpeedBase(self.advX, self.advZ,self.rot)
+                self.omnirobot_proxy.setSpeedBase(self.advX, self.advZ, self.rot)
             elif key == curses.KEY_F2:
                 if self.rot > self.tt2:
                     self.rot = self.rot
@@ -127,13 +127,13 @@ class SpecificWorker(GenericWorker):
                     self.rot = self.rot + 0.1;
 
                 screen.addstr(5, 0, 'right: ' + '%.2f' % self.advZ + ' : ' + '%.2f' % self.rot)
-                self.omnirobot_proxy.setSpeedBase(0, self.advZ,self.rot)
+                self.omnirobot_proxy.setSpeedBase(0, self.advZ, self.rot)
             elif key == ord(' '):
                 self.rot = 0
                 self.advZ = 0
                 self.advX = 0
                 screen.addstr(5, 0, 'stop: ' + '%.2f' % self.advZ + ' : ' + '%.2f' % self.rot)
-                self.omnirobot_proxy.setSpeedBase(self.advX, self.advZ,self.rot)
+                self.omnirobot_proxy.setSpeedBase(self.advX, self.advZ, self.rot)
 
             elif key == ord('q'):
                 curses.endwin()
@@ -141,9 +141,8 @@ class SpecificWorker(GenericWorker):
         except Ice.Exception as e:
             curses.endwin()
             traceback.print_exc()
-            print (e)
+            print(e)
         return True
-
 
     # =============== Slots methods for State Machine ===================
     # ===================================================================
@@ -156,7 +155,6 @@ class SpecificWorker(GenericWorker):
         print("Entered state initialize")
         self.t_initialize_to_compute.emit()
         pass
-    
 
     #
     # sm_compute
@@ -166,7 +164,6 @@ class SpecificWorker(GenericWorker):
         print("Entered state compute")
         self.compute()
         pass
-
 
     #
     # sm_finalize
@@ -178,6 +175,3 @@ class SpecificWorker(GenericWorker):
 
     # =================================================================
     # =================================================================
-
-
-

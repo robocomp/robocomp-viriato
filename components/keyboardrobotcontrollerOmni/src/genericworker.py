@@ -31,33 +31,25 @@ except KeyError:
 Ice.loadSlice("-I ./src/ --all ./src/CommonBehavior.ice")
 import RoboCompCommonBehavior
 
-additionalPathStr = ''
-icePaths = ['/opt/robocomp/interfaces']
-try:
-    SLICE_PATH = os.environ['SLICE_PATH'].split(':')
-    for p in SLICE_PATH:
-        icePaths.append(p)
-        additionalPathStr += ' -I' + p + ' '
-    icePaths.append('/opt/robocomp/interfaces')
-except:
-    print('SLICE_PATH environment variable was not exported. Using only the default paths')
-    pass
-
 Ice.loadSlice("-I ./src/ --all ./src/GenericBase.ice")
-from RoboCompGenericBase import *
-
+import RoboCompGenericBase
 Ice.loadSlice("-I ./src/ --all ./src/OmniRobot.ice")
-from RoboCompOmniRobot import *
+import RoboCompOmniRobot
+
+
+
+
 
 
 class GenericWorker(QtCore.QObject):
+
     kill = QtCore.Signal()
-    # Signals for State Machine
+    #Signals for State Machine
     t_initialize_to_compute = QtCore.Signal()
     t_compute_to_compute = QtCore.Signal()
     t_compute_to_finalize = QtCore.Signal()
 
-    # -------------------------
+    #-------------------------
 
     def __init__(self, mprx):
         super(GenericWorker, self).__init__()
@@ -65,21 +57,23 @@ class GenericWorker(QtCore.QObject):
         self.omnirobot_proxy = mprx["OmniRobotProxy"]
 
         self.mutex = QtCore.QMutex(QtCore.QMutex.Recursive)
-        self.Period = 1
+        self.Period = 30
         self.timer = QtCore.QTimer(self)
 
-        # State Machine
-        self.defaultMachine = QtCore.QStateMachine()
+        #State Machine
+        self.defaultMachine= QtCore.QStateMachine()
         self.compute_state = QtCore.QState(self.defaultMachine)
         self.initialize_state = QtCore.QState(self.defaultMachine)
 
         self.finalize_state = QtCore.QFinalState(self.defaultMachine)
 
-        # ------------------
-        # Initialization State machine
+
+        #------------------
+        #Initialization State machine
         self.initialize_state.addTransition(self.t_initialize_to_compute, self.compute_state)
         self.compute_state.addTransition(self.t_compute_to_compute, self.compute_state)
         self.compute_state.addTransition(self.t_compute_to_finalize, self.finalize_state)
+
 
         self.compute_state.entered.connect(self.sm_compute)
         self.initialize_state.entered.connect(self.sm_initialize)
@@ -88,9 +82,9 @@ class GenericWorker(QtCore.QObject):
 
         self.defaultMachine.setInitialState(self.initialize_state)
 
-        # ------------------
+        #------------------
 
-    # Slots funtion State Machine
+    #Slots funtion State Machine
 
     @QtCore.Slot()
     def sm_compute(self):
@@ -107,7 +101,7 @@ class GenericWorker(QtCore.QObject):
         print("Error: lack sm_finalize in Specificworker")
         sys.exit(-1)
 
-    # -------------------------
+    #-------------------------
     @QtCore.Slot()
     def killYourSelf(self):
         rDebug("Killing myself")
