@@ -65,7 +65,11 @@ responses:
 
   utter_greet:
   - text: "Hello"
-  - text: "Hi! Its a wonderful day!"
+  - text: "Hi"
+  - text: "Good morning"
+  - text: "Hey"
+  - text: "Good day"
+
 
   utter_thanks:
   - text: "Thank you very much!"
@@ -107,33 +111,59 @@ responses:
   - text: "I am sure you understand the importance of both of our time, lets not waste it in chitchat. Can you please move aside and let me pass?"
 
 #-------------------------------------------------------------Situation 2-------------------------------------------------------------
-
   utter_move_sit_2:
-  - text: "I'm sorry, but could one of you step aside for a moment?"
+  - text: "I'm sorry, but can I interrupt your conversation so that I can pass?"
   - text: "Excuse me, could I get past you both?"
-  - text: "Would either of you kindly move to one side for a moment?"
+  - text: "Would you kindly wait until I pass by to finish your conversation?"
   - text: "If I may interrupt you, I'd appreciate if you let me by."
 
   utter_repeat_sit_2:
-  - text: "I said could one of you step aside for a moment and let me pass?"
+  - text: "I said could I interrupt your conversation so that I can pass?"
   - text: "What I said was could I get past you both?"
-  - text: "I said could either of you kindly move to one side for a moment?"
+  - text: "I said could you kindly wait until I pass by to finish your conversation?"
 
   utter_frustated_sit_2:
-  - text: "I'm sure you have important matters to discuss, so please could one of you step aside for a moment?"
-  - text: "I wouldn't want to keep you any longer, so please could one of you step aside for a moment?"
-  - text: "Let's not waste each other's time, please could one of you step aside for a moment?"
+  - text: "I'm sure you have important matters to discuss, so please could you briefly interrupt your conversation until I can pass?"
+  - text: "I wouldn't want to keep you any longer, so please could you briefly interrupt your conversation for a moment until I can pass?"
+  - text: "Let's not waste each other's time, please could you briefly break up your conversation until I can pass?"
 
   utter_again_sit_2:
-  - text: "I understand I'm inconveniencing you, but I really need to pass, so please could one of you step aside for a moment?"
-  - text: "I'm sorry to bother you both, but please could one of you step aside for a moment?"
-  - text: "I don't want to disturb you guys, but please could one of you step aside for a moment?"
-  - text: "Please try to understand, I really need to pass so could any of you step aside for a moment?"
+  - text: "I understand I'm inconveniencing you, but I really need to pass, so please could you briefly interrupt your conversation for a moment until I can pass"
+  - text: "I'm sorry to bother you both, but please could I get past you both?"
+  - text: "I don't want to disturb you guys, but please could you  break up your conversation for a moment until I can pass?"
+  - text: "Please try to understand, I really need to pass so could you briefly break up your conversation until I can pass?"
 
   utter_handle_chitchat_sit_2:
-  - text: "Time is of essence for all of us, lets not waste it in chitchat, so please could one of you step aside for a moment?"
-  - text: "Time is of essence for all of us, lets not waste it in small talk so please could either of you kindly move to one side for a moment?"
-  - text: "I am sure you understand the importance of all of our time, lets not waste it in chitchat. Can either of you please move aside and let me pass?"
+  - text: "Time is of essence for all of us, lets not waste it in chitchat, so please could you briefly break up your conversation until I can pass?"
+  - text: "Time is of essence for all of us, lets not waste it in small talk so please could you kindly wait until I pass by to finish your conversation?  It's just a moment"
+  - text: "I am sure you understand the importance of all of our time, lets not waste it in chitchat. Could you kindly wait until I pass by to finish your conversation? It's just a moment"
+
+#  utter_move_sit_2:
+#  - text: "I'm sorry, but could one of you step aside for a moment?"
+#  - text: "Excuse me, could I get past you both?"
+#  - text: "Would either of you kindly move to one side for a moment?"
+#  - text: "If I may interrupt you, I'd appreciate if you let me by."
+#
+#  utter_repeat_sit_2:
+#  - text: "I said could one of you step aside for a moment and let me pass?"
+#  - text: "What I said was could I get past you both?"
+#  - text: "I said could either of you kindly move to one side for a moment?"
+#
+#  utter_frustated_sit_2:
+#  - text: "I'm sure you have important matters to discuss, so please could one of you step aside for a moment?"
+#  - text: "I wouldn't want to keep you any longer, so please could one of you step aside for a moment?"
+#  - text: "Let's not waste each other's time, please could one of you step aside for a moment?"
+#
+#  utter_again_sit_2:
+#  - text: "I understand I'm inconveniencing you, but I really need to pass, so please could one of you step aside for a moment?"
+#  - text: "I'm sorry to bother you both, but please could one of you step aside for a moment?"
+#  - text: "I don't want to disturb you guys, but please could one of you step aside for a moment?"
+#  - text: "Please try to understand, I really need to pass so could any of you step aside for a moment?"
+#
+#  utter_handle_chitchat_sit_2:
+#  - text: "Time is of essence for all of us, lets not waste it in chitchat, so please could one of you step aside for a moment?"
+#  - text: "Time is of essence for all of us, lets not waste it in small talk so please could either of you kindly move to one side for a moment?"
+#  - text: "I am sure you understand the importance of all of our time, lets not waste it in chitchat. Can either of you please move aside and let me pass?"
 
 #-------------------------------------------------------------Situation 3-------------------------------------------------------------
 

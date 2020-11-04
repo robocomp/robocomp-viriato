@@ -11,5 +11,6 @@ pipeline:
 # https://rasa.com/docs/rasa/core/policies/
 policies:
   - name: MemoizationPolicy
+  - name: MappingPolicy
   - name: TEDPolicy
     epochs: 200

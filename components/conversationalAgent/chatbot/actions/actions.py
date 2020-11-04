@@ -95,7 +95,7 @@ class actionStopChatbot(Action):
     return "action_stop_chatbot"
 
   def run(self, dispatcher, tracker, domain):
-    print("action_link_waiting")
+    print("action_stop_chatbot")
     talk_dict = { "rasa" : "stop"}
     json_object = json.dumps(talk_dict, indent = 4) 
     with open("rasa_conversation.json", "w") as outfile: 

@@ -3,14 +3,12 @@ stories:
 - story: happy path male situation 1
   steps:
   - intent: start
+  - action: action_link_talking
+  - action: utter_greet
   - action: action_set_situation
   - slot_was_set:
       - situation: one
-
-  - action: action_link_talking
-  - action: utter_greet
   - action: action_link_waiting
-
   - intent: greet
   - action: action_link_talking
   - action: utter_move_sit_1
@@ -18,15 +16,16 @@ stories:
   - intent: accept
   - action: action_link_talking
   - action: utter_thanks
+  - action: utter_goodbye
   - action: action_stop_chatbot
 - story: sad path 1 male situation 1
   steps:
   - intent: start
+  - action: action_link_talking
+  - action: utter_greet
   - action: action_set_situation
   - slot_was_set:
       - situation: one
-  - action: action_link_talking
-  - action: utter_greet
   - action: action_link_waiting
   - intent: greet
   - action: action_link_talking
@@ -44,11 +43,11 @@ stories:
 - story: sad path 2 male situation 1
   steps:
   - intent: start
+  - action: action_link_talking
+  - action: utter_greet
   - action: action_set_situation
   - slot_was_set:
       - situation: one
-  - action: action_link_talking
-  - action: utter_greet
   - action: action_link_waiting
   - intent: greet
   - action: action_link_talking
@@ -70,11 +69,11 @@ stories:
 - story: sad path 3 male situation 1
   steps:
   - intent: start
+  - action: action_link_talking
+  - action: utter_greet
   - action: action_set_situation
   - slot_was_set:
       - situation: one
-  - action: action_link_talking
-  - action: utter_greet
   - action: action_link_waiting
   - intent: greet
   - action: action_link_talking
@@ -100,11 +99,11 @@ stories:
 - story: sad path 4 male situation 1
   steps:
   - intent: start
+  - action: action_link_talking
+  - action: utter_greet
   - action: action_set_situation
   - slot_was_set:
       - situation: one
-  - action: action_link_talking
-  - action: utter_greet
   - action: action_link_waiting
   - intent: greet
   - action: action_link_talking
@@ -134,11 +133,11 @@ stories:
 - story: repeat path 1 male situation 1
   steps:
   - intent: start
+  - action: action_link_talking
+  - action: utter_greet
   - action: action_set_situation
   - slot_was_set:
       - situation: one
-  - action: action_link_talking
-  - action: utter_greet
   - action: action_link_waiting
   - intent: greet
   - action: action_link_talking
@@ -156,11 +155,11 @@ stories:
 - story: repeat path 2 male situation 1
   steps:
   - intent: start
+  - action: action_link_talking
+  - action: utter_greet
   - action: action_set_situation
   - slot_was_set:
       - situation: one
-  - action: action_link_talking
-  - action: utter_greet
   - action: action_link_waiting
   - intent: greet
   - action: action_link_talking
@@ -182,11 +181,11 @@ stories:
 - story: repeat path 3 male situation 1
   steps:
   - intent: start
+  - action: action_link_talking
+  - action: utter_greet
   - action: action_set_situation
   - slot_was_set:
       - situation: one
-  - action: action_link_talking
-  - action: utter_greet
   - action: action_link_waiting
   - intent: greet
   - action: action_link_talking
@@ -212,11 +211,11 @@ stories:
 - story: sad 1 repeat path 1 male situation 1
   steps:
   - intent: start
+  - action: action_link_talking
+  - action: utter_greet
   - action: action_set_situation
   - slot_was_set:
       - situation: one
-  - action: action_link_talking
-  - action: utter_greet
   - action: action_link_waiting
   - intent: greet
   - action: action_link_talking
@@ -238,11 +237,11 @@ stories:
 - story: sad 1 repeat path 2 male situation 1
   steps:
   - intent: start
+  - action: action_link_talking
+  - action: utter_greet
   - action: action_set_situation
   - slot_was_set:
       - situation: one
-  - action: action_link_talking
-  - action: utter_greet
   - action: action_link_waiting
   - intent: greet
   - action: action_link_talking
@@ -264,11 +263,11 @@ stories:
 - story: sad 1 repeat path 3 male situation 1
   steps:
   - intent: start
+  - action: action_link_talking
+  - action: utter_greet
   - action: action_set_situation
   - slot_was_set:
       - situation: one
-  - action: action_link_talking
-  - action: utter_greet
   - action: action_link_waiting
   - intent: greet
   - action: action_link_talking
@@ -294,13 +293,12 @@ stories:
 - story: happy chitchat path 1 male situation 1
   steps:
   - intent: start
+  - action: action_link_talking
+  - action: utter_greet
   - action: action_set_situation
   - slot_was_set:
       - situation: one
-  - action: action_link_talking
-  - action: utter_greet
   - action: action_link_waiting
-
   - intent: greet
   - action: action_link_talking
   - action: utter_move_sit_1
@@ -317,14 +315,12 @@ stories:
 - story: happy chitchat path 2 male situation 1
   steps:
   - intent: start
+  - action: action_link_talking
+  - action: utter_greet
   - action: action_set_situation
   - slot_was_set:
       - situation: one
-
-  - action: action_link_talking
-  - action: utter_greet
   - action: action_link_waiting
-
   - intent: greet
   - action: action_link_talking
   - action: utter_move_sit_1
@@ -345,11 +341,11 @@ stories:
 - story: sad 1 chitchat path 1 male situation 1
   steps:
   - intent: start
+  - action: action_link_talking
+  - action: utter_greet
   - action: action_set_situation
   - slot_was_set:
       - situation: one
-  - action: action_link_talking
-  - action: utter_greet
   - action: action_link_waiting
   - intent: greet
   - action: action_link_talking
@@ -371,11 +367,11 @@ stories:
 - story: sad 1 chitchat path 2 male situation 1
   steps:
   - intent: start
+  - action: action_link_talking
+  - action: utter_greet
   - action: action_set_situation
   - slot_was_set:
       - situation: one
-  - action: action_link_talking
-  - action: utter_greet
   - action: action_link_waiting
   - intent: greet
   - action: action_link_talking
@@ -397,11 +393,11 @@ stories:
 - story: sad 1 chitchat path 3 male situation 1
   steps:
   - intent: start
+  - action: action_link_talking
+  - action: utter_greet
   - action: action_set_situation
   - slot_was_set:
       - situation: one
-  - action: action_link_talking
-  - action: utter_greet
   - action: action_link_waiting
   - intent: greet
   - action: action_link_talking
@@ -427,11 +423,11 @@ stories:
 - story: sad 1 chitchat path 4 male situation 1
   steps:
   - intent: start
+  - action: action_link_talking
+  - action: utter_greet
   - action: action_set_situation
   - slot_was_set:
       - situation: one
-  - action: action_link_talking
-  - action: utter_greet
   - action: action_link_waiting
   - intent: greet
   - action: action_link_talking
@@ -457,11 +453,11 @@ stories:
 - story: sad 1 chitchat path 5 male situation 1
   steps:
   - intent: start
+  - action: action_link_talking
+  - action: utter_greet
   - action: action_set_situation
   - slot_was_set:
       - situation: one
-  - action: action_link_talking
-  - action: utter_greet
   - action: action_link_waiting
   - intent: greet
   - action: action_link_talking
@@ -487,11 +483,11 @@ stories:
 - story: sad 2 chitchat path 1 male situation 1
   steps:
   - intent: start
+  - action: action_link_talking
+  - action: utter_greet
   - action: action_set_situation
   - slot_was_set:
       - situation: one
-  - action: action_link_talking
-  - action: utter_greet
   - action: action_link_waiting
   - intent: greet
   - action: action_link_talking
@@ -517,11 +513,11 @@ stories:
 - story: sad 2 chitchat path 2 male situation 1
   steps:
   - intent: start
+  - action: action_link_talking
+  - action: utter_greet
   - action: action_set_situation
   - slot_was_set:
       - situation: one
-  - action: action_link_talking
-  - action: utter_greet
   - action: action_link_waiting
   - intent: greet
   - action: action_link_talking
@@ -547,11 +543,11 @@ stories:
 - story: sad 2 chitchat path 3 male situation 1
   steps:
   - intent: start
+  - action: action_link_talking
+  - action: utter_greet
   - action: action_set_situation
   - slot_was_set:
       - situation: one
-  - action: action_link_talking
-  - action: utter_greet
   - action: action_link_waiting
   - intent: greet
   - action: action_link_talking
@@ -577,11 +573,11 @@ stories:
 - story: sad 2 chitchat path 4 male situation 1
   steps:
   - intent: start
+  - action: action_link_talking
+  - action: utter_greet
   - action: action_set_situation
   - slot_was_set:
       - situation: one
-  - action: action_link_talking
-  - action: utter_greet
   - action: action_link_waiting
   - intent: greet
   - action: action_link_talking
@@ -611,11 +607,11 @@ stories:
 - story: sad 2 chitchat path 5 male situation 1
   steps:
   - intent: start
+  - action: action_link_talking
+  - action: utter_greet
   - action: action_set_situation
   - slot_was_set:
       - situation: one
-  - action: action_link_talking
-  - action: utter_greet
   - action: action_link_waiting
   - intent: greet
   - action: action_link_talking
@@ -645,11 +641,11 @@ stories:
 - story: sad 2 chitchat path 6 male situation 1
   steps:
   - intent: start
+  - action: action_link_talking
+  - action: utter_greet
   - action: action_set_situation
   - slot_was_set:
       - situation: one
-  - action: action_link_talking
-  - action: utter_greet
   - action: action_link_waiting
   - intent: greet
   - action: action_link_talking
@@ -679,11 +675,11 @@ stories:
 - story: sad 2 chitchat path 7 male situation 1
   steps:
   - intent: start
+  - action: action_link_talking
+  - action: utter_greet
   - action: action_set_situation
   - slot_was_set:
       - situation: one
-  - action: action_link_talking
-  - action: utter_greet
   - action: action_link_waiting
   - intent: greet
   - action: action_link_talking
@@ -713,11 +709,11 @@ stories:
 - story: sad 2 chitchat path 8 male situation 1
   steps:
   - intent: start
+  - action: action_link_talking
+  - action: utter_greet
   - action: action_set_situation
   - slot_was_set:
       - situation: one
-  - action: action_link_talking
-  - action: utter_greet
   - action: action_link_waiting
   - intent: greet
   - action: action_link_talking
@@ -747,11 +743,11 @@ stories:
 - story: sad 3 chitchat path 1 male situation 1
   steps:
   - intent: start
+  - action: action_link_talking
+  - action: utter_greet
   - action: action_set_situation
   - slot_was_set:
       - situation: one
-  - action: action_link_talking
-  - action: utter_greet
   - action: action_link_waiting
   - intent: greet
   - action: action_link_talking
@@ -781,11 +777,11 @@ stories:
 - story: sad 3 chitchat path 2 male situation 1
   steps:
   - intent: start
+  - action: action_link_talking
+  - action: utter_greet
   - action: action_set_situation
   - slot_was_set:
       - situation: one
-  - action: action_link_talking
-  - action: utter_greet
   - action: action_link_waiting
   - intent: greet
   - action: action_link_talking
@@ -819,11 +815,11 @@ stories:
 - story: sad 3 chitchat path 3 male situation 1
   steps:
   - intent: start
+  - action: action_link_talking
+  - action: utter_greet
   - action: action_set_situation
   - slot_was_set:
       - situation: one
-  - action: action_link_talking
-  - action: utter_greet
   - action: action_link_waiting
   - intent: greet
   - action: action_link_talking
@@ -857,11 +853,11 @@ stories:
 - story: sad 4 chitchat path 1 male situation 1
   steps:
   - intent: start
+  - action: action_link_talking
+  - action: utter_greet
   - action: action_set_situation
   - slot_was_set:
       - situation: one
-  - action: action_link_talking
-  - action: utter_greet
   - action: action_link_waiting
   - intent: greet
   - action: action_link_talking
