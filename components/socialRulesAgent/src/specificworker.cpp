@@ -511,8 +511,36 @@ void SpecificWorker::checkObjectAffordance()
             AGMModelEdge edge = *it;
             if(edge->getLabel() == "interacting")
             {
-                mapIdObjects[imName].interacting = true;
-                break;
+                if(permission_given)
+                {
+                    const std::pair<int32_t, int32_t> symbolPair = edge->getSymbolPair();
+
+                    int32_t personID;
+
+                    if(worldModel->getSymbol(symbolPair.first)->typeString() == "person")
+                        personID = symbolPair.first;
+                    else if (worldModel->getSymbol(symbolPair.second)->typeString() == "person")
+                        personID = symbolPair.second;
+                    else
+                        qDebug()<< "error -- no person interacting with the object";
+
+                    if (personID != personPermission)
+                    {
+                        mapIdObjects[imName].interacting = true;
+                        break;
+                    }
+
+                    else
+                    {
+                        mapIdObjects[imName].interacting = false;
+                        break;
+                    }
+                }
+                else
+                {
+                    mapIdObjects[imName].interacting = true;
+                    break;
+                }
             }
 
             else
@@ -807,7 +835,7 @@ void SpecificWorker::recordData()
         file<< p.x << " " <<p.z<< endl;
     }
     file.close();
-    poserobot.clear();
+//    poserobot.clear();
 
     qDebug()<< "Saving in personpose.txt the human's poses";
     ofstream file2("results/personpose.txt", ofstream::out);
@@ -1154,7 +1182,7 @@ void SpecificWorker::updateAffordancesInGraph()
 
     auto vectorAffordancesInGraph = newModel->getSymbolsByType("affordanceSpace");
 
-    qDebug()<< "Number of personal spaces in graph = " << vectorAffordancesInGraph.size();
+    qDebug()<< "Number of affordances spaces in graph = " << vectorAffordancesInGraph.size();
 
     vector<AGMModelSymbol::SPtr> symbolsToPublish;
 
