@@ -26,5 +26,6 @@ RUN python3 -m spacy download en_core_web_md
 RUN python3 -m spacy link en_core_web_md en
 USER root
 RUN cd /usr/local/include/  && sudo git clone https://github.com/ryanhaining/cppitertools && cd cppitertools && sed -i "1s/.*/cmake_minimum_required(VERSION 3.10)/" CMakeLists.txt && head CMakeLists.txt && cmake . && sudo make install
-RUN cd components && mkdir build && cd build && cmake .. && make
+USER robolab
+RUN cd components && mkdir build && cd build && cmake .. && make 
 
