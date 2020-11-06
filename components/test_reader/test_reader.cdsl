@@ -1,0 +1,13 @@
+
+Component test_reader
+{
+    Communications
+    {
+
+    };
+    
+    language python;
+    options agmagent;
+    statemachine "statemachine.smdsl";
+};
+
