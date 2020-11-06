@@ -72,13 +72,13 @@ const ::std::string iceC_RoboCompAGMExecutiveTopic_AGMExecutiveTopic_ops[] =
     "symbolUpdated",
     "symbolsUpdated"
 };
-const ::std::string iceC_RoboCompAGMExecutiveTopic_AGMExecutiveTopic_structuralChange_name = "structuralChange";
-const ::std::string iceC_RoboCompAGMExecutiveTopic_AGMExecutiveTopic_symbolUpdated_name = "symbolUpdated";
-const ::std::string iceC_RoboCompAGMExecutiveTopic_AGMExecutiveTopic_symbolsUpdated_name = "symbolsUpdated";
 const ::std::string iceC_RoboCompAGMExecutiveTopic_AGMExecutiveTopic_edgeUpdated_name = "edgeUpdated";
 const ::std::string iceC_RoboCompAGMExecutiveTopic_AGMExecutiveTopic_edgesUpdated_name = "edgesUpdated";
 const ::std::string iceC_RoboCompAGMExecutiveTopic_AGMExecutiveTopic_selfEdgeAdded_name = "selfEdgeAdded";
 const ::std::string iceC_RoboCompAGMExecutiveTopic_AGMExecutiveTopic_selfEdgeDeleted_name = "selfEdgeDeleted";
+const ::std::string iceC_RoboCompAGMExecutiveTopic_AGMExecutiveTopic_structuralChange_name = "structuralChange";
+const ::std::string iceC_RoboCompAGMExecutiveTopic_AGMExecutiveTopic_symbolUpdated_name = "symbolUpdated";
+const ::std::string iceC_RoboCompAGMExecutiveTopic_AGMExecutiveTopic_symbolsUpdated_name = "symbolsUpdated";
 
 }
 
@@ -105,45 +105,6 @@ RoboCompAGMExecutiveTopic::AGMExecutiveTopic::ice_staticId()
 {
     static const ::std::string typeId = "::RoboCompAGMExecutiveTopic::AGMExecutiveTopic";
     return typeId;
-}
-
-bool
-RoboCompAGMExecutiveTopic::AGMExecutiveTopic::_iceD_structuralChange(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
-    auto istr = inS.startReadParams();
-    ::RoboCompAGMWorldModel::World iceP_w;
-    istr->readAll(iceP_w);
-    inS.endReadParams();
-    this->structuralChange(::std::move(iceP_w), current);
-    inS.writeEmptyParams();
-    return true;
-}
-
-bool
-RoboCompAGMExecutiveTopic::AGMExecutiveTopic::_iceD_symbolUpdated(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
-    auto istr = inS.startReadParams();
-    ::RoboCompAGMWorldModel::Node iceP_modification;
-    istr->readAll(iceP_modification);
-    inS.endReadParams();
-    this->symbolUpdated(::std::move(iceP_modification), current);
-    inS.writeEmptyParams();
-    return true;
-}
-
-bool
-RoboCompAGMExecutiveTopic::AGMExecutiveTopic::_iceD_symbolsUpdated(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
-    auto istr = inS.startReadParams();
-    ::RoboCompAGMWorldModel::NodeSequence iceP_modifications;
-    istr->readAll(iceP_modifications);
-    inS.endReadParams();
-    this->symbolsUpdated(::std::move(iceP_modifications), current);
-    inS.writeEmptyParams();
-    return true;
 }
 
 bool
@@ -197,6 +158,45 @@ RoboCompAGMExecutiveTopic::AGMExecutiveTopic::_iceD_selfEdgeDeleted(::IceInterna
     istr->readAll(iceP_nodeid, iceP_edgeType);
     inS.endReadParams();
     this->selfEdgeDeleted(iceP_nodeid, ::std::move(iceP_edgeType), current);
+    inS.writeEmptyParams();
+    return true;
+}
+
+bool
+RoboCompAGMExecutiveTopic::AGMExecutiveTopic::_iceD_structuralChange(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
+    auto istr = inS.startReadParams();
+    ::RoboCompAGMWorldModel::World iceP_w;
+    istr->readAll(iceP_w);
+    inS.endReadParams();
+    this->structuralChange(::std::move(iceP_w), current);
+    inS.writeEmptyParams();
+    return true;
+}
+
+bool
+RoboCompAGMExecutiveTopic::AGMExecutiveTopic::_iceD_symbolUpdated(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
+    auto istr = inS.startReadParams();
+    ::RoboCompAGMWorldModel::Node iceP_modification;
+    istr->readAll(iceP_modification);
+    inS.endReadParams();
+    this->symbolUpdated(::std::move(iceP_modification), current);
+    inS.writeEmptyParams();
+    return true;
+}
+
+bool
+RoboCompAGMExecutiveTopic::AGMExecutiveTopic::_iceD_symbolsUpdated(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
+    auto istr = inS.startReadParams();
+    ::RoboCompAGMWorldModel::NodeSequence iceP_modifications;
+    istr->readAll(iceP_modifications);
+    inS.endReadParams();
+    this->symbolsUpdated(::std::move(iceP_modifications), current);
     inS.writeEmptyParams();
     return true;
 }
@@ -265,39 +265,6 @@ RoboCompAGMExecutiveTopic::AGMExecutiveTopic::_iceDispatch(::IceInternal::Incomi
 }
 
 void
-RoboCompAGMExecutiveTopic::AGMExecutiveTopicPrx::_iceI_structuralChange(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>& outAsync, const ::RoboCompAGMWorldModel::World& iceP_w, const ::Ice::Context& context)
-{
-    outAsync->invoke(iceC_RoboCompAGMExecutiveTopic_AGMExecutiveTopic_structuralChange_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
-        [&](::Ice::OutputStream* ostr)
-        {
-            ostr->writeAll(iceP_w);
-        },
-        nullptr);
-}
-
-void
-RoboCompAGMExecutiveTopic::AGMExecutiveTopicPrx::_iceI_symbolUpdated(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>& outAsync, const ::RoboCompAGMWorldModel::Node& iceP_modification, const ::Ice::Context& context)
-{
-    outAsync->invoke(iceC_RoboCompAGMExecutiveTopic_AGMExecutiveTopic_symbolUpdated_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
-        [&](::Ice::OutputStream* ostr)
-        {
-            ostr->writeAll(iceP_modification);
-        },
-        nullptr);
-}
-
-void
-RoboCompAGMExecutiveTopic::AGMExecutiveTopicPrx::_iceI_symbolsUpdated(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>& outAsync, const ::RoboCompAGMWorldModel::NodeSequence& iceP_modifications, const ::Ice::Context& context)
-{
-    outAsync->invoke(iceC_RoboCompAGMExecutiveTopic_AGMExecutiveTopic_symbolsUpdated_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
-        [&](::Ice::OutputStream* ostr)
-        {
-            ostr->writeAll(iceP_modifications);
-        },
-        nullptr);
-}
-
-void
 RoboCompAGMExecutiveTopic::AGMExecutiveTopicPrx::_iceI_edgeUpdated(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>& outAsync, const ::RoboCompAGMWorldModel::Edge& iceP_modification, const ::Ice::Context& context)
 {
     outAsync->invoke(iceC_RoboCompAGMExecutiveTopic_AGMExecutiveTopic_edgeUpdated_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
@@ -341,6 +308,39 @@ RoboCompAGMExecutiveTopic::AGMExecutiveTopicPrx::_iceI_selfEdgeDeleted(const ::s
         nullptr);
 }
 
+void
+RoboCompAGMExecutiveTopic::AGMExecutiveTopicPrx::_iceI_structuralChange(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>& outAsync, const ::RoboCompAGMWorldModel::World& iceP_w, const ::Ice::Context& context)
+{
+    outAsync->invoke(iceC_RoboCompAGMExecutiveTopic_AGMExecutiveTopic_structuralChange_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
+        [&](::Ice::OutputStream* ostr)
+        {
+            ostr->writeAll(iceP_w);
+        },
+        nullptr);
+}
+
+void
+RoboCompAGMExecutiveTopic::AGMExecutiveTopicPrx::_iceI_symbolUpdated(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>& outAsync, const ::RoboCompAGMWorldModel::Node& iceP_modification, const ::Ice::Context& context)
+{
+    outAsync->invoke(iceC_RoboCompAGMExecutiveTopic_AGMExecutiveTopic_symbolUpdated_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
+        [&](::Ice::OutputStream* ostr)
+        {
+            ostr->writeAll(iceP_modification);
+        },
+        nullptr);
+}
+
+void
+RoboCompAGMExecutiveTopic::AGMExecutiveTopicPrx::_iceI_symbolsUpdated(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>& outAsync, const ::RoboCompAGMWorldModel::NodeSequence& iceP_modifications, const ::Ice::Context& context)
+{
+    outAsync->invoke(iceC_RoboCompAGMExecutiveTopic_AGMExecutiveTopic_symbolsUpdated_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
+        [&](::Ice::OutputStream* ostr)
+        {
+            ostr->writeAll(iceP_modifications);
+        },
+        nullptr);
+}
+
 ::std::shared_ptr<::Ice::ObjectPrx>
 RoboCompAGMExecutiveTopic::AGMExecutiveTopicPrx::_newInstance() const
 {
@@ -358,12 +358,6 @@ RoboCompAGMExecutiveTopic::AGMExecutiveTopicPrx::ice_staticId()
 namespace
 {
 
-const ::std::string iceC_RoboCompAGMExecutiveTopic_AGMExecutiveTopic_structuralChange_name = "structuralChange";
-
-const ::std::string iceC_RoboCompAGMExecutiveTopic_AGMExecutiveTopic_symbolUpdated_name = "symbolUpdated";
-
-const ::std::string iceC_RoboCompAGMExecutiveTopic_AGMExecutiveTopic_symbolsUpdated_name = "symbolsUpdated";
-
 const ::std::string iceC_RoboCompAGMExecutiveTopic_AGMExecutiveTopic_edgeUpdated_name = "edgeUpdated";
 
 const ::std::string iceC_RoboCompAGMExecutiveTopic_AGMExecutiveTopic_edgesUpdated_name = "edgesUpdated";
@@ -371,6 +365,12 @@ const ::std::string iceC_RoboCompAGMExecutiveTopic_AGMExecutiveTopic_edgesUpdate
 const ::std::string iceC_RoboCompAGMExecutiveTopic_AGMExecutiveTopic_selfEdgeAdded_name = "selfEdgeAdded";
 
 const ::std::string iceC_RoboCompAGMExecutiveTopic_AGMExecutiveTopic_selfEdgeDeleted_name = "selfEdgeDeleted";
+
+const ::std::string iceC_RoboCompAGMExecutiveTopic_AGMExecutiveTopic_structuralChange_name = "structuralChange";
+
+const ::std::string iceC_RoboCompAGMExecutiveTopic_AGMExecutiveTopic_symbolUpdated_name = "symbolUpdated";
+
+const ::std::string iceC_RoboCompAGMExecutiveTopic_AGMExecutiveTopic_symbolsUpdated_name = "symbolsUpdated";
 
 }
 ::IceProxy::Ice::Object* ::IceProxy::RoboCompAGMExecutiveTopic::upCast(::IceProxy::RoboCompAGMExecutiveTopic::AGMExecutiveTopic* p) { return p; }
@@ -389,81 +389,6 @@ void
         v = new ::IceProxy::RoboCompAGMExecutiveTopic::AGMExecutiveTopic;
         v->_copyFrom(proxy);
     }
-}
-
-::Ice::AsyncResultPtr
-IceProxy::RoboCompAGMExecutiveTopic::AGMExecutiveTopic::_iceI_begin_structuralChange(const ::RoboCompAGMWorldModel::World& iceP_w, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
-{
-    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompAGMExecutiveTopic_AGMExecutiveTopic_structuralChange_name, del, cookie, sync);
-    try
-    {
-        result->prepare(iceC_RoboCompAGMExecutiveTopic_AGMExecutiveTopic_structuralChange_name, ::Ice::Normal, context);
-        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
-        ostr->write(iceP_w);
-        result->endWriteParams();
-        result->invoke(iceC_RoboCompAGMExecutiveTopic_AGMExecutiveTopic_structuralChange_name);
-    }
-    catch(const ::Ice::Exception& ex)
-    {
-        result->abort(ex);
-    }
-    return result;
-}
-
-void
-IceProxy::RoboCompAGMExecutiveTopic::AGMExecutiveTopic::end_structuralChange(const ::Ice::AsyncResultPtr& result)
-{
-    _end(result, iceC_RoboCompAGMExecutiveTopic_AGMExecutiveTopic_structuralChange_name);
-}
-
-::Ice::AsyncResultPtr
-IceProxy::RoboCompAGMExecutiveTopic::AGMExecutiveTopic::_iceI_begin_symbolUpdated(const ::RoboCompAGMWorldModel::Node& iceP_modification, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
-{
-    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompAGMExecutiveTopic_AGMExecutiveTopic_symbolUpdated_name, del, cookie, sync);
-    try
-    {
-        result->prepare(iceC_RoboCompAGMExecutiveTopic_AGMExecutiveTopic_symbolUpdated_name, ::Ice::Normal, context);
-        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
-        ostr->write(iceP_modification);
-        result->endWriteParams();
-        result->invoke(iceC_RoboCompAGMExecutiveTopic_AGMExecutiveTopic_symbolUpdated_name);
-    }
-    catch(const ::Ice::Exception& ex)
-    {
-        result->abort(ex);
-    }
-    return result;
-}
-
-void
-IceProxy::RoboCompAGMExecutiveTopic::AGMExecutiveTopic::end_symbolUpdated(const ::Ice::AsyncResultPtr& result)
-{
-    _end(result, iceC_RoboCompAGMExecutiveTopic_AGMExecutiveTopic_symbolUpdated_name);
-}
-
-::Ice::AsyncResultPtr
-IceProxy::RoboCompAGMExecutiveTopic::AGMExecutiveTopic::_iceI_begin_symbolsUpdated(const ::RoboCompAGMWorldModel::NodeSequence& iceP_modifications, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
-{
-    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompAGMExecutiveTopic_AGMExecutiveTopic_symbolsUpdated_name, del, cookie, sync);
-    try
-    {
-        result->prepare(iceC_RoboCompAGMExecutiveTopic_AGMExecutiveTopic_symbolsUpdated_name, ::Ice::Normal, context);
-        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
-        ostr->write(iceP_modifications);
-        result->endWriteParams();
-        result->invoke(iceC_RoboCompAGMExecutiveTopic_AGMExecutiveTopic_symbolsUpdated_name);
-    }
-    catch(const ::Ice::Exception& ex)
-    {
-        result->abort(ex);
-    }
-    return result;
-}
-
-void
-IceProxy::RoboCompAGMExecutiveTopic::AGMExecutiveTopic::end_symbolsUpdated(const ::Ice::AsyncResultPtr& result)
-{
-    _end(result, iceC_RoboCompAGMExecutiveTopic_AGMExecutiveTopic_symbolsUpdated_name);
 }
 
 ::Ice::AsyncResultPtr
@@ -569,6 +494,81 @@ IceProxy::RoboCompAGMExecutiveTopic::AGMExecutiveTopic::end_selfEdgeDeleted(cons
     _end(result, iceC_RoboCompAGMExecutiveTopic_AGMExecutiveTopic_selfEdgeDeleted_name);
 }
 
+::Ice::AsyncResultPtr
+IceProxy::RoboCompAGMExecutiveTopic::AGMExecutiveTopic::_iceI_begin_structuralChange(const ::RoboCompAGMWorldModel::World& iceP_w, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
+{
+    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompAGMExecutiveTopic_AGMExecutiveTopic_structuralChange_name, del, cookie, sync);
+    try
+    {
+        result->prepare(iceC_RoboCompAGMExecutiveTopic_AGMExecutiveTopic_structuralChange_name, ::Ice::Normal, context);
+        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
+        ostr->write(iceP_w);
+        result->endWriteParams();
+        result->invoke(iceC_RoboCompAGMExecutiveTopic_AGMExecutiveTopic_structuralChange_name);
+    }
+    catch(const ::Ice::Exception& ex)
+    {
+        result->abort(ex);
+    }
+    return result;
+}
+
+void
+IceProxy::RoboCompAGMExecutiveTopic::AGMExecutiveTopic::end_structuralChange(const ::Ice::AsyncResultPtr& result)
+{
+    _end(result, iceC_RoboCompAGMExecutiveTopic_AGMExecutiveTopic_structuralChange_name);
+}
+
+::Ice::AsyncResultPtr
+IceProxy::RoboCompAGMExecutiveTopic::AGMExecutiveTopic::_iceI_begin_symbolUpdated(const ::RoboCompAGMWorldModel::Node& iceP_modification, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
+{
+    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompAGMExecutiveTopic_AGMExecutiveTopic_symbolUpdated_name, del, cookie, sync);
+    try
+    {
+        result->prepare(iceC_RoboCompAGMExecutiveTopic_AGMExecutiveTopic_symbolUpdated_name, ::Ice::Normal, context);
+        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
+        ostr->write(iceP_modification);
+        result->endWriteParams();
+        result->invoke(iceC_RoboCompAGMExecutiveTopic_AGMExecutiveTopic_symbolUpdated_name);
+    }
+    catch(const ::Ice::Exception& ex)
+    {
+        result->abort(ex);
+    }
+    return result;
+}
+
+void
+IceProxy::RoboCompAGMExecutiveTopic::AGMExecutiveTopic::end_symbolUpdated(const ::Ice::AsyncResultPtr& result)
+{
+    _end(result, iceC_RoboCompAGMExecutiveTopic_AGMExecutiveTopic_symbolUpdated_name);
+}
+
+::Ice::AsyncResultPtr
+IceProxy::RoboCompAGMExecutiveTopic::AGMExecutiveTopic::_iceI_begin_symbolsUpdated(const ::RoboCompAGMWorldModel::NodeSequence& iceP_modifications, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
+{
+    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_RoboCompAGMExecutiveTopic_AGMExecutiveTopic_symbolsUpdated_name, del, cookie, sync);
+    try
+    {
+        result->prepare(iceC_RoboCompAGMExecutiveTopic_AGMExecutiveTopic_symbolsUpdated_name, ::Ice::Normal, context);
+        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
+        ostr->write(iceP_modifications);
+        result->endWriteParams();
+        result->invoke(iceC_RoboCompAGMExecutiveTopic_AGMExecutiveTopic_symbolsUpdated_name);
+    }
+    catch(const ::Ice::Exception& ex)
+    {
+        result->abort(ex);
+    }
+    return result;
+}
+
+void
+IceProxy::RoboCompAGMExecutiveTopic::AGMExecutiveTopic::end_symbolsUpdated(const ::Ice::AsyncResultPtr& result)
+{
+    _end(result, iceC_RoboCompAGMExecutiveTopic_AGMExecutiveTopic_symbolsUpdated_name);
+}
+
 ::IceProxy::Ice::Object*
 IceProxy::RoboCompAGMExecutiveTopic::AGMExecutiveTopic::_newInstance() const
 {
@@ -628,45 +628,6 @@ RoboCompAGMExecutiveTopic::AGMExecutiveTopic::ice_staticId()
 }
 
 bool
-RoboCompAGMExecutiveTopic::AGMExecutiveTopic::_iceD_structuralChange(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::Normal, current.mode);
-    ::Ice::InputStream* istr = inS.startReadParams();
-    ::RoboCompAGMWorldModel::World iceP_w;
-    istr->read(iceP_w);
-    inS.endReadParams();
-    this->structuralChange(iceP_w, current);
-    inS.writeEmptyParams();
-    return true;
-}
-
-bool
-RoboCompAGMExecutiveTopic::AGMExecutiveTopic::_iceD_symbolUpdated(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::Normal, current.mode);
-    ::Ice::InputStream* istr = inS.startReadParams();
-    ::RoboCompAGMWorldModel::Node iceP_modification;
-    istr->read(iceP_modification);
-    inS.endReadParams();
-    this->symbolUpdated(iceP_modification, current);
-    inS.writeEmptyParams();
-    return true;
-}
-
-bool
-RoboCompAGMExecutiveTopic::AGMExecutiveTopic::_iceD_symbolsUpdated(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::Normal, current.mode);
-    ::Ice::InputStream* istr = inS.startReadParams();
-    ::RoboCompAGMWorldModel::NodeSequence iceP_modifications;
-    istr->read(iceP_modifications);
-    inS.endReadParams();
-    this->symbolsUpdated(iceP_modifications, current);
-    inS.writeEmptyParams();
-    return true;
-}
-
-bool
 RoboCompAGMExecutiveTopic::AGMExecutiveTopic::_iceD_edgeUpdated(::IceInternal::Incoming& inS, const ::Ice::Current& current)
 {
     _iceCheckMode(::Ice::Normal, current.mode);
@@ -720,6 +681,45 @@ RoboCompAGMExecutiveTopic::AGMExecutiveTopic::_iceD_selfEdgeDeleted(::IceInterna
     istr->read(iceP_edgeType);
     inS.endReadParams();
     this->selfEdgeDeleted(iceP_nodeid, iceP_edgeType, current);
+    inS.writeEmptyParams();
+    return true;
+}
+
+bool
+RoboCompAGMExecutiveTopic::AGMExecutiveTopic::_iceD_structuralChange(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::Normal, current.mode);
+    ::Ice::InputStream* istr = inS.startReadParams();
+    ::RoboCompAGMWorldModel::World iceP_w;
+    istr->read(iceP_w);
+    inS.endReadParams();
+    this->structuralChange(iceP_w, current);
+    inS.writeEmptyParams();
+    return true;
+}
+
+bool
+RoboCompAGMExecutiveTopic::AGMExecutiveTopic::_iceD_symbolUpdated(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::Normal, current.mode);
+    ::Ice::InputStream* istr = inS.startReadParams();
+    ::RoboCompAGMWorldModel::Node iceP_modification;
+    istr->read(iceP_modification);
+    inS.endReadParams();
+    this->symbolUpdated(iceP_modification, current);
+    inS.writeEmptyParams();
+    return true;
+}
+
+bool
+RoboCompAGMExecutiveTopic::AGMExecutiveTopic::_iceD_symbolsUpdated(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::Normal, current.mode);
+    ::Ice::InputStream* istr = inS.startReadParams();
+    ::RoboCompAGMWorldModel::NodeSequence iceP_modifications;
+    istr->read(iceP_modifications);
+    inS.endReadParams();
+    this->symbolsUpdated(iceP_modifications, current);
     inS.writeEmptyParams();
     return true;
 }

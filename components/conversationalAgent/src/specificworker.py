@@ -588,23 +588,23 @@ class SpecificWorker(GenericWorker):
         self.keepUiActive()
         # self.restartChatbot()
 
-        ##FIX THIS --- ONLY UPDATE IF THE SITUATION IS DIFFERENT FROM THE PREVIOUS ONE
-        if self.interaction.interactionUI == True:
+        if self.interaction.interactionUI:
             self.updateGraph()
 
-        if self.removeInteractingEdge and self.interactingEdgeInAGM:
-            print('Trying to remove interacting edge')
-            try:
-                model = self.worldModel
-                model.removeEdge(self.robot_id, self.human_id, "interacting")
-                if self.updatingDSR():
-                    self.interactingEdgeInAGM = False
-
-            except:
-                print('cant remove Edge')
-
-            self.interaction.ui.textbox.clear()
-            self.removeInteractingEdge = False
+        #UNCOMMENT
+        # if self.removeInteractingEdge and self.interactingEdgeInAGM:
+        #     print('Trying to remove interacting edge')
+        #     try:
+        #         model = self.worldModel
+        #         model.removeEdge(self.robot_id, self.human_id, "interacting")
+        #         if self.updatingDSR():
+        #             self.interactingEdgeInAGM = False
+        #
+        #     except:
+        #         print('cant remove Edge')
+        #
+        #     self.interaction.ui.textbox.clear()
+        #     self.removeInteractingEdge = False
 
         return True
 

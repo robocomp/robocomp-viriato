@@ -80,15 +80,6 @@ public:
 
     static const ::std::string& ice_staticId();
 
-    virtual void structuralChange(::RoboCompAGMWorldModel::World, const ::Ice::Current&) = 0;
-    bool _iceD_structuralChange(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    virtual void symbolUpdated(::RoboCompAGMWorldModel::Node, const ::Ice::Current&) = 0;
-    bool _iceD_symbolUpdated(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    virtual void symbolsUpdated(::RoboCompAGMWorldModel::NodeSequence, const ::Ice::Current&) = 0;
-    bool _iceD_symbolsUpdated(::IceInternal::Incoming&, const ::Ice::Current&);
-
     virtual void edgeUpdated(::RoboCompAGMWorldModel::Edge, const ::Ice::Current&) = 0;
     bool _iceD_edgeUpdated(::IceInternal::Incoming&, const ::Ice::Current&);
 
@@ -101,6 +92,15 @@ public:
     virtual void selfEdgeDeleted(int, ::std::string, const ::Ice::Current&) = 0;
     bool _iceD_selfEdgeDeleted(::IceInternal::Incoming&, const ::Ice::Current&);
 
+    virtual void structuralChange(::RoboCompAGMWorldModel::World, const ::Ice::Current&) = 0;
+    bool _iceD_structuralChange(::IceInternal::Incoming&, const ::Ice::Current&);
+
+    virtual void symbolUpdated(::RoboCompAGMWorldModel::Node, const ::Ice::Current&) = 0;
+    bool _iceD_symbolUpdated(::IceInternal::Incoming&, const ::Ice::Current&);
+
+    virtual void symbolsUpdated(::RoboCompAGMWorldModel::NodeSequence, const ::Ice::Current&) = 0;
+    bool _iceD_symbolsUpdated(::IceInternal::Incoming&, const ::Ice::Current&);
+
     virtual bool _iceDispatch(::IceInternal::Incoming&, const ::Ice::Current&) override;
 };
 
@@ -112,78 +112,6 @@ namespace RoboCompAGMExecutiveTopic
 class AGMExecutiveTopicPrx : public virtual ::Ice::Proxy<AGMExecutiveTopicPrx, ::Ice::ObjectPrx>
 {
 public:
-
-    void structuralChange(const ::RoboCompAGMWorldModel::World& iceP_w, const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        _makePromiseOutgoing<void>(true, this, &RoboCompAGMExecutiveTopic::AGMExecutiveTopicPrx::_iceI_structuralChange, iceP_w, context).get();
-    }
-
-    template<template<typename> class P = ::std::promise>
-    auto structuralChangeAsync(const ::RoboCompAGMWorldModel::World& iceP_w, const ::Ice::Context& context = Ice::noExplicitContext)
-        -> decltype(::std::declval<P<void>>().get_future())
-    {
-        return _makePromiseOutgoing<void, P>(false, this, &RoboCompAGMExecutiveTopic::AGMExecutiveTopicPrx::_iceI_structuralChange, iceP_w, context);
-    }
-
-    ::std::function<void()>
-    structuralChangeAsync(const ::RoboCompAGMWorldModel::World& iceP_w,
-                          ::std::function<void()> response,
-                          ::std::function<void(::std::exception_ptr)> ex = nullptr,
-                          ::std::function<void(bool)> sent = nullptr,
-                          const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        return _makeLamdaOutgoing<void>(response, ex, sent, this, &RoboCompAGMExecutiveTopic::AGMExecutiveTopicPrx::_iceI_structuralChange, iceP_w, context);
-    }
-
-    void _iceI_structuralChange(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>&, const ::RoboCompAGMWorldModel::World&, const ::Ice::Context&);
-
-    void symbolUpdated(const ::RoboCompAGMWorldModel::Node& iceP_modification, const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        _makePromiseOutgoing<void>(true, this, &RoboCompAGMExecutiveTopic::AGMExecutiveTopicPrx::_iceI_symbolUpdated, iceP_modification, context).get();
-    }
-
-    template<template<typename> class P = ::std::promise>
-    auto symbolUpdatedAsync(const ::RoboCompAGMWorldModel::Node& iceP_modification, const ::Ice::Context& context = Ice::noExplicitContext)
-        -> decltype(::std::declval<P<void>>().get_future())
-    {
-        return _makePromiseOutgoing<void, P>(false, this, &RoboCompAGMExecutiveTopic::AGMExecutiveTopicPrx::_iceI_symbolUpdated, iceP_modification, context);
-    }
-
-    ::std::function<void()>
-    symbolUpdatedAsync(const ::RoboCompAGMWorldModel::Node& iceP_modification,
-                       ::std::function<void()> response,
-                       ::std::function<void(::std::exception_ptr)> ex = nullptr,
-                       ::std::function<void(bool)> sent = nullptr,
-                       const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        return _makeLamdaOutgoing<void>(response, ex, sent, this, &RoboCompAGMExecutiveTopic::AGMExecutiveTopicPrx::_iceI_symbolUpdated, iceP_modification, context);
-    }
-
-    void _iceI_symbolUpdated(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>&, const ::RoboCompAGMWorldModel::Node&, const ::Ice::Context&);
-
-    void symbolsUpdated(const ::RoboCompAGMWorldModel::NodeSequence& iceP_modifications, const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        _makePromiseOutgoing<void>(true, this, &RoboCompAGMExecutiveTopic::AGMExecutiveTopicPrx::_iceI_symbolsUpdated, iceP_modifications, context).get();
-    }
-
-    template<template<typename> class P = ::std::promise>
-    auto symbolsUpdatedAsync(const ::RoboCompAGMWorldModel::NodeSequence& iceP_modifications, const ::Ice::Context& context = Ice::noExplicitContext)
-        -> decltype(::std::declval<P<void>>().get_future())
-    {
-        return _makePromiseOutgoing<void, P>(false, this, &RoboCompAGMExecutiveTopic::AGMExecutiveTopicPrx::_iceI_symbolsUpdated, iceP_modifications, context);
-    }
-
-    ::std::function<void()>
-    symbolsUpdatedAsync(const ::RoboCompAGMWorldModel::NodeSequence& iceP_modifications,
-                        ::std::function<void()> response,
-                        ::std::function<void(::std::exception_ptr)> ex = nullptr,
-                        ::std::function<void(bool)> sent = nullptr,
-                        const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        return _makeLamdaOutgoing<void>(response, ex, sent, this, &RoboCompAGMExecutiveTopic::AGMExecutiveTopicPrx::_iceI_symbolsUpdated, iceP_modifications, context);
-    }
-
-    void _iceI_symbolsUpdated(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>&, const ::RoboCompAGMWorldModel::NodeSequence&, const ::Ice::Context&);
 
     void edgeUpdated(const ::RoboCompAGMWorldModel::Edge& iceP_modification, const ::Ice::Context& context = Ice::noExplicitContext)
     {
@@ -281,6 +209,78 @@ public:
 
     void _iceI_selfEdgeDeleted(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>&, int, const ::std::string&, const ::Ice::Context&);
 
+    void structuralChange(const ::RoboCompAGMWorldModel::World& iceP_w, const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        _makePromiseOutgoing<void>(true, this, &RoboCompAGMExecutiveTopic::AGMExecutiveTopicPrx::_iceI_structuralChange, iceP_w, context).get();
+    }
+
+    template<template<typename> class P = ::std::promise>
+    auto structuralChangeAsync(const ::RoboCompAGMWorldModel::World& iceP_w, const ::Ice::Context& context = Ice::noExplicitContext)
+        -> decltype(::std::declval<P<void>>().get_future())
+    {
+        return _makePromiseOutgoing<void, P>(false, this, &RoboCompAGMExecutiveTopic::AGMExecutiveTopicPrx::_iceI_structuralChange, iceP_w, context);
+    }
+
+    ::std::function<void()>
+    structuralChangeAsync(const ::RoboCompAGMWorldModel::World& iceP_w,
+                          ::std::function<void()> response,
+                          ::std::function<void(::std::exception_ptr)> ex = nullptr,
+                          ::std::function<void(bool)> sent = nullptr,
+                          const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        return _makeLamdaOutgoing<void>(response, ex, sent, this, &RoboCompAGMExecutiveTopic::AGMExecutiveTopicPrx::_iceI_structuralChange, iceP_w, context);
+    }
+
+    void _iceI_structuralChange(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>&, const ::RoboCompAGMWorldModel::World&, const ::Ice::Context&);
+
+    void symbolUpdated(const ::RoboCompAGMWorldModel::Node& iceP_modification, const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        _makePromiseOutgoing<void>(true, this, &RoboCompAGMExecutiveTopic::AGMExecutiveTopicPrx::_iceI_symbolUpdated, iceP_modification, context).get();
+    }
+
+    template<template<typename> class P = ::std::promise>
+    auto symbolUpdatedAsync(const ::RoboCompAGMWorldModel::Node& iceP_modification, const ::Ice::Context& context = Ice::noExplicitContext)
+        -> decltype(::std::declval<P<void>>().get_future())
+    {
+        return _makePromiseOutgoing<void, P>(false, this, &RoboCompAGMExecutiveTopic::AGMExecutiveTopicPrx::_iceI_symbolUpdated, iceP_modification, context);
+    }
+
+    ::std::function<void()>
+    symbolUpdatedAsync(const ::RoboCompAGMWorldModel::Node& iceP_modification,
+                       ::std::function<void()> response,
+                       ::std::function<void(::std::exception_ptr)> ex = nullptr,
+                       ::std::function<void(bool)> sent = nullptr,
+                       const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        return _makeLamdaOutgoing<void>(response, ex, sent, this, &RoboCompAGMExecutiveTopic::AGMExecutiveTopicPrx::_iceI_symbolUpdated, iceP_modification, context);
+    }
+
+    void _iceI_symbolUpdated(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>&, const ::RoboCompAGMWorldModel::Node&, const ::Ice::Context&);
+
+    void symbolsUpdated(const ::RoboCompAGMWorldModel::NodeSequence& iceP_modifications, const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        _makePromiseOutgoing<void>(true, this, &RoboCompAGMExecutiveTopic::AGMExecutiveTopicPrx::_iceI_symbolsUpdated, iceP_modifications, context).get();
+    }
+
+    template<template<typename> class P = ::std::promise>
+    auto symbolsUpdatedAsync(const ::RoboCompAGMWorldModel::NodeSequence& iceP_modifications, const ::Ice::Context& context = Ice::noExplicitContext)
+        -> decltype(::std::declval<P<void>>().get_future())
+    {
+        return _makePromiseOutgoing<void, P>(false, this, &RoboCompAGMExecutiveTopic::AGMExecutiveTopicPrx::_iceI_symbolsUpdated, iceP_modifications, context);
+    }
+
+    ::std::function<void()>
+    symbolsUpdatedAsync(const ::RoboCompAGMWorldModel::NodeSequence& iceP_modifications,
+                        ::std::function<void()> response,
+                        ::std::function<void(::std::exception_ptr)> ex = nullptr,
+                        ::std::function<void(bool)> sent = nullptr,
+                        const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        return _makeLamdaOutgoing<void>(response, ex, sent, this, &RoboCompAGMExecutiveTopic::AGMExecutiveTopicPrx::_iceI_symbolsUpdated, iceP_modifications, context);
+    }
+
+    void _iceI_symbolsUpdated(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>&, const ::RoboCompAGMWorldModel::NodeSequence&, const ::Ice::Context&);
+
     static const ::std::string& ice_staticId();
 
 protected:
@@ -337,15 +337,6 @@ void _icePatchObjectPtr(AGMExecutiveTopicPtr&, const ::Ice::ObjectPtr&);
 namespace RoboCompAGMExecutiveTopic
 {
 
-class Callback_AGMExecutiveTopic_structuralChange_Base : public virtual ::IceInternal::CallbackBase { };
-typedef ::IceUtil::Handle< Callback_AGMExecutiveTopic_structuralChange_Base> Callback_AGMExecutiveTopic_structuralChangePtr;
-
-class Callback_AGMExecutiveTopic_symbolUpdated_Base : public virtual ::IceInternal::CallbackBase { };
-typedef ::IceUtil::Handle< Callback_AGMExecutiveTopic_symbolUpdated_Base> Callback_AGMExecutiveTopic_symbolUpdatedPtr;
-
-class Callback_AGMExecutiveTopic_symbolsUpdated_Base : public virtual ::IceInternal::CallbackBase { };
-typedef ::IceUtil::Handle< Callback_AGMExecutiveTopic_symbolsUpdated_Base> Callback_AGMExecutiveTopic_symbolsUpdatedPtr;
-
 class Callback_AGMExecutiveTopic_edgeUpdated_Base : public virtual ::IceInternal::CallbackBase { };
 typedef ::IceUtil::Handle< Callback_AGMExecutiveTopic_edgeUpdated_Base> Callback_AGMExecutiveTopic_edgeUpdatedPtr;
 
@@ -358,6 +349,15 @@ typedef ::IceUtil::Handle< Callback_AGMExecutiveTopic_selfEdgeAdded_Base> Callba
 class Callback_AGMExecutiveTopic_selfEdgeDeleted_Base : public virtual ::IceInternal::CallbackBase { };
 typedef ::IceUtil::Handle< Callback_AGMExecutiveTopic_selfEdgeDeleted_Base> Callback_AGMExecutiveTopic_selfEdgeDeletedPtr;
 
+class Callback_AGMExecutiveTopic_structuralChange_Base : public virtual ::IceInternal::CallbackBase { };
+typedef ::IceUtil::Handle< Callback_AGMExecutiveTopic_structuralChange_Base> Callback_AGMExecutiveTopic_structuralChangePtr;
+
+class Callback_AGMExecutiveTopic_symbolUpdated_Base : public virtual ::IceInternal::CallbackBase { };
+typedef ::IceUtil::Handle< Callback_AGMExecutiveTopic_symbolUpdated_Base> Callback_AGMExecutiveTopic_symbolUpdatedPtr;
+
+class Callback_AGMExecutiveTopic_symbolsUpdated_Base : public virtual ::IceInternal::CallbackBase { };
+typedef ::IceUtil::Handle< Callback_AGMExecutiveTopic_symbolsUpdated_Base> Callback_AGMExecutiveTopic_symbolsUpdatedPtr;
+
 }
 
 namespace IceProxy
@@ -368,120 +368,6 @@ namespace RoboCompAGMExecutiveTopic
 
 class AGMExecutiveTopic : public virtual ::Ice::Proxy<AGMExecutiveTopic, ::IceProxy::Ice::Object>
 {
-public:
-
-    void structuralChange(const ::RoboCompAGMWorldModel::World& iceP_w, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        end_structuralChange(_iceI_begin_structuralChange(iceP_w, context, ::IceInternal::dummyCallback, 0, true));
-    }
-
-    ::Ice::AsyncResultPtr begin_structuralChange(const ::RoboCompAGMWorldModel::World& iceP_w, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        return _iceI_begin_structuralChange(iceP_w, context, ::IceInternal::dummyCallback, 0);
-    }
-
-    ::Ice::AsyncResultPtr begin_structuralChange(const ::RoboCompAGMWorldModel::World& iceP_w, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_structuralChange(iceP_w, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_structuralChange(const ::RoboCompAGMWorldModel::World& iceP_w, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_structuralChange(iceP_w, context, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_structuralChange(const ::RoboCompAGMWorldModel::World& iceP_w, const ::RoboCompAGMExecutiveTopic::Callback_AGMExecutiveTopic_structuralChangePtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_structuralChange(iceP_w, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_structuralChange(const ::RoboCompAGMWorldModel::World& iceP_w, const ::Ice::Context& context, const ::RoboCompAGMExecutiveTopic::Callback_AGMExecutiveTopic_structuralChangePtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_structuralChange(iceP_w, context, del, cookie);
-    }
-
-    void end_structuralChange(const ::Ice::AsyncResultPtr&);
-
-private:
-
-    ::Ice::AsyncResultPtr _iceI_begin_structuralChange(const ::RoboCompAGMWorldModel::World&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
-
-public:
-
-    void symbolUpdated(const ::RoboCompAGMWorldModel::Node& iceP_modification, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        end_symbolUpdated(_iceI_begin_symbolUpdated(iceP_modification, context, ::IceInternal::dummyCallback, 0, true));
-    }
-
-    ::Ice::AsyncResultPtr begin_symbolUpdated(const ::RoboCompAGMWorldModel::Node& iceP_modification, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        return _iceI_begin_symbolUpdated(iceP_modification, context, ::IceInternal::dummyCallback, 0);
-    }
-
-    ::Ice::AsyncResultPtr begin_symbolUpdated(const ::RoboCompAGMWorldModel::Node& iceP_modification, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_symbolUpdated(iceP_modification, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_symbolUpdated(const ::RoboCompAGMWorldModel::Node& iceP_modification, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_symbolUpdated(iceP_modification, context, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_symbolUpdated(const ::RoboCompAGMWorldModel::Node& iceP_modification, const ::RoboCompAGMExecutiveTopic::Callback_AGMExecutiveTopic_symbolUpdatedPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_symbolUpdated(iceP_modification, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_symbolUpdated(const ::RoboCompAGMWorldModel::Node& iceP_modification, const ::Ice::Context& context, const ::RoboCompAGMExecutiveTopic::Callback_AGMExecutiveTopic_symbolUpdatedPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_symbolUpdated(iceP_modification, context, del, cookie);
-    }
-
-    void end_symbolUpdated(const ::Ice::AsyncResultPtr&);
-
-private:
-
-    ::Ice::AsyncResultPtr _iceI_begin_symbolUpdated(const ::RoboCompAGMWorldModel::Node&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
-
-public:
-
-    void symbolsUpdated(const ::RoboCompAGMWorldModel::NodeSequence& iceP_modifications, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        end_symbolsUpdated(_iceI_begin_symbolsUpdated(iceP_modifications, context, ::IceInternal::dummyCallback, 0, true));
-    }
-
-    ::Ice::AsyncResultPtr begin_symbolsUpdated(const ::RoboCompAGMWorldModel::NodeSequence& iceP_modifications, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        return _iceI_begin_symbolsUpdated(iceP_modifications, context, ::IceInternal::dummyCallback, 0);
-    }
-
-    ::Ice::AsyncResultPtr begin_symbolsUpdated(const ::RoboCompAGMWorldModel::NodeSequence& iceP_modifications, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_symbolsUpdated(iceP_modifications, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_symbolsUpdated(const ::RoboCompAGMWorldModel::NodeSequence& iceP_modifications, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_symbolsUpdated(iceP_modifications, context, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_symbolsUpdated(const ::RoboCompAGMWorldModel::NodeSequence& iceP_modifications, const ::RoboCompAGMExecutiveTopic::Callback_AGMExecutiveTopic_symbolsUpdatedPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_symbolsUpdated(iceP_modifications, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_symbolsUpdated(const ::RoboCompAGMWorldModel::NodeSequence& iceP_modifications, const ::Ice::Context& context, const ::RoboCompAGMExecutiveTopic::Callback_AGMExecutiveTopic_symbolsUpdatedPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_symbolsUpdated(iceP_modifications, context, del, cookie);
-    }
-
-    void end_symbolsUpdated(const ::Ice::AsyncResultPtr&);
-
-private:
-
-    ::Ice::AsyncResultPtr _iceI_begin_symbolsUpdated(const ::RoboCompAGMWorldModel::NodeSequence&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
-
 public:
 
     void edgeUpdated(const ::RoboCompAGMWorldModel::Edge& iceP_modification, const ::Ice::Context& context = ::Ice::noExplicitContext)
@@ -636,6 +522,120 @@ private:
 
 public:
 
+    void structuralChange(const ::RoboCompAGMWorldModel::World& iceP_w, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    {
+        end_structuralChange(_iceI_begin_structuralChange(iceP_w, context, ::IceInternal::dummyCallback, 0, true));
+    }
+
+    ::Ice::AsyncResultPtr begin_structuralChange(const ::RoboCompAGMWorldModel::World& iceP_w, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    {
+        return _iceI_begin_structuralChange(iceP_w, context, ::IceInternal::dummyCallback, 0);
+    }
+
+    ::Ice::AsyncResultPtr begin_structuralChange(const ::RoboCompAGMWorldModel::World& iceP_w, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_structuralChange(iceP_w, ::Ice::noExplicitContext, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_structuralChange(const ::RoboCompAGMWorldModel::World& iceP_w, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_structuralChange(iceP_w, context, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_structuralChange(const ::RoboCompAGMWorldModel::World& iceP_w, const ::RoboCompAGMExecutiveTopic::Callback_AGMExecutiveTopic_structuralChangePtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_structuralChange(iceP_w, ::Ice::noExplicitContext, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_structuralChange(const ::RoboCompAGMWorldModel::World& iceP_w, const ::Ice::Context& context, const ::RoboCompAGMExecutiveTopic::Callback_AGMExecutiveTopic_structuralChangePtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_structuralChange(iceP_w, context, del, cookie);
+    }
+
+    void end_structuralChange(const ::Ice::AsyncResultPtr&);
+
+private:
+
+    ::Ice::AsyncResultPtr _iceI_begin_structuralChange(const ::RoboCompAGMWorldModel::World&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
+
+public:
+
+    void symbolUpdated(const ::RoboCompAGMWorldModel::Node& iceP_modification, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    {
+        end_symbolUpdated(_iceI_begin_symbolUpdated(iceP_modification, context, ::IceInternal::dummyCallback, 0, true));
+    }
+
+    ::Ice::AsyncResultPtr begin_symbolUpdated(const ::RoboCompAGMWorldModel::Node& iceP_modification, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    {
+        return _iceI_begin_symbolUpdated(iceP_modification, context, ::IceInternal::dummyCallback, 0);
+    }
+
+    ::Ice::AsyncResultPtr begin_symbolUpdated(const ::RoboCompAGMWorldModel::Node& iceP_modification, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_symbolUpdated(iceP_modification, ::Ice::noExplicitContext, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_symbolUpdated(const ::RoboCompAGMWorldModel::Node& iceP_modification, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_symbolUpdated(iceP_modification, context, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_symbolUpdated(const ::RoboCompAGMWorldModel::Node& iceP_modification, const ::RoboCompAGMExecutiveTopic::Callback_AGMExecutiveTopic_symbolUpdatedPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_symbolUpdated(iceP_modification, ::Ice::noExplicitContext, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_symbolUpdated(const ::RoboCompAGMWorldModel::Node& iceP_modification, const ::Ice::Context& context, const ::RoboCompAGMExecutiveTopic::Callback_AGMExecutiveTopic_symbolUpdatedPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_symbolUpdated(iceP_modification, context, del, cookie);
+    }
+
+    void end_symbolUpdated(const ::Ice::AsyncResultPtr&);
+
+private:
+
+    ::Ice::AsyncResultPtr _iceI_begin_symbolUpdated(const ::RoboCompAGMWorldModel::Node&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
+
+public:
+
+    void symbolsUpdated(const ::RoboCompAGMWorldModel::NodeSequence& iceP_modifications, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    {
+        end_symbolsUpdated(_iceI_begin_symbolsUpdated(iceP_modifications, context, ::IceInternal::dummyCallback, 0, true));
+    }
+
+    ::Ice::AsyncResultPtr begin_symbolsUpdated(const ::RoboCompAGMWorldModel::NodeSequence& iceP_modifications, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    {
+        return _iceI_begin_symbolsUpdated(iceP_modifications, context, ::IceInternal::dummyCallback, 0);
+    }
+
+    ::Ice::AsyncResultPtr begin_symbolsUpdated(const ::RoboCompAGMWorldModel::NodeSequence& iceP_modifications, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_symbolsUpdated(iceP_modifications, ::Ice::noExplicitContext, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_symbolsUpdated(const ::RoboCompAGMWorldModel::NodeSequence& iceP_modifications, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_symbolsUpdated(iceP_modifications, context, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_symbolsUpdated(const ::RoboCompAGMWorldModel::NodeSequence& iceP_modifications, const ::RoboCompAGMExecutiveTopic::Callback_AGMExecutiveTopic_symbolsUpdatedPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_symbolsUpdated(iceP_modifications, ::Ice::noExplicitContext, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_symbolsUpdated(const ::RoboCompAGMWorldModel::NodeSequence& iceP_modifications, const ::Ice::Context& context, const ::RoboCompAGMExecutiveTopic::Callback_AGMExecutiveTopic_symbolsUpdatedPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_symbolsUpdated(iceP_modifications, context, del, cookie);
+    }
+
+    void end_symbolsUpdated(const ::Ice::AsyncResultPtr&);
+
+private:
+
+    ::Ice::AsyncResultPtr _iceI_begin_symbolsUpdated(const ::RoboCompAGMWorldModel::NodeSequence&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
+
+public:
+
     static const ::std::string& ice_staticId();
 
 protected:
@@ -665,15 +665,6 @@ public:
 
     static const ::std::string& ice_staticId();
 
-    virtual void structuralChange(const ::RoboCompAGMWorldModel::World&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
-    bool _iceD_structuralChange(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    virtual void symbolUpdated(const ::RoboCompAGMWorldModel::Node&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
-    bool _iceD_symbolUpdated(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    virtual void symbolsUpdated(const ::RoboCompAGMWorldModel::NodeSequence&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
-    bool _iceD_symbolsUpdated(::IceInternal::Incoming&, const ::Ice::Current&);
-
     virtual void edgeUpdated(const ::RoboCompAGMWorldModel::Edge&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
     bool _iceD_edgeUpdated(::IceInternal::Incoming&, const ::Ice::Current&);
 
@@ -685,6 +676,15 @@ public:
 
     virtual void selfEdgeDeleted(::Ice::Int, const ::std::string&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
     bool _iceD_selfEdgeDeleted(::IceInternal::Incoming&, const ::Ice::Current&);
+
+    virtual void structuralChange(const ::RoboCompAGMWorldModel::World&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
+    bool _iceD_structuralChange(::IceInternal::Incoming&, const ::Ice::Current&);
+
+    virtual void symbolUpdated(const ::RoboCompAGMWorldModel::Node&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
+    bool _iceD_symbolUpdated(::IceInternal::Incoming&, const ::Ice::Current&);
+
+    virtual void symbolsUpdated(const ::RoboCompAGMWorldModel::NodeSequence&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
+    bool _iceD_symbolsUpdated(::IceInternal::Incoming&, const ::Ice::Current&);
 
     virtual bool _iceDispatch(::IceInternal::Incoming&, const ::Ice::Current&);
 
@@ -713,252 +713,6 @@ namespace Ice
 
 namespace RoboCompAGMExecutiveTopic
 {
-
-template<class T>
-class CallbackNC_AGMExecutiveTopic_structuralChange : public Callback_AGMExecutiveTopic_structuralChange_Base, public ::IceInternal::OnewayCallbackNC<T>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception&);
-    typedef void (T::*Sent)(bool);
-    typedef void (T::*Response)();
-
-    CallbackNC_AGMExecutiveTopic_structuralChange(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::OnewayCallbackNC<T>(obj, cb, excb, sentcb)
-    {
-    }
-};
-
-template<class T> Callback_AGMExecutiveTopic_structuralChangePtr
-newCallback_AGMExecutiveTopic_structuralChange(const IceUtil::Handle<T>& instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_AGMExecutiveTopic_structuralChange<T>(instance, cb, excb, sentcb);
-}
-
-template<class T> Callback_AGMExecutiveTopic_structuralChangePtr
-newCallback_AGMExecutiveTopic_structuralChange(const IceUtil::Handle<T>& instance, void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_AGMExecutiveTopic_structuralChange<T>(instance, 0, excb, sentcb);
-}
-
-template<class T> Callback_AGMExecutiveTopic_structuralChangePtr
-newCallback_AGMExecutiveTopic_structuralChange(T* instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_AGMExecutiveTopic_structuralChange<T>(instance, cb, excb, sentcb);
-}
-
-template<class T> Callback_AGMExecutiveTopic_structuralChangePtr
-newCallback_AGMExecutiveTopic_structuralChange(T* instance, void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_AGMExecutiveTopic_structuralChange<T>(instance, 0, excb, sentcb);
-}
-
-template<class T, typename CT>
-class Callback_AGMExecutiveTopic_structuralChange : public Callback_AGMExecutiveTopic_structuralChange_Base, public ::IceInternal::OnewayCallback<T, CT>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
-    typedef void (T::*Sent)(bool , const CT&);
-    typedef void (T::*Response)(const CT&);
-
-    Callback_AGMExecutiveTopic_structuralChange(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::OnewayCallback<T, CT>(obj, cb, excb, sentcb)
-    {
-    }
-};
-
-template<class T, typename CT> Callback_AGMExecutiveTopic_structuralChangePtr
-newCallback_AGMExecutiveTopic_structuralChange(const IceUtil::Handle<T>& instance, void (T::*cb)(const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_AGMExecutiveTopic_structuralChange<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT> Callback_AGMExecutiveTopic_structuralChangePtr
-newCallback_AGMExecutiveTopic_structuralChange(const IceUtil::Handle<T>& instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_AGMExecutiveTopic_structuralChange<T, CT>(instance, 0, excb, sentcb);
-}
-
-template<class T, typename CT> Callback_AGMExecutiveTopic_structuralChangePtr
-newCallback_AGMExecutiveTopic_structuralChange(T* instance, void (T::*cb)(const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_AGMExecutiveTopic_structuralChange<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT> Callback_AGMExecutiveTopic_structuralChangePtr
-newCallback_AGMExecutiveTopic_structuralChange(T* instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_AGMExecutiveTopic_structuralChange<T, CT>(instance, 0, excb, sentcb);
-}
-
-template<class T>
-class CallbackNC_AGMExecutiveTopic_symbolUpdated : public Callback_AGMExecutiveTopic_symbolUpdated_Base, public ::IceInternal::OnewayCallbackNC<T>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception&);
-    typedef void (T::*Sent)(bool);
-    typedef void (T::*Response)();
-
-    CallbackNC_AGMExecutiveTopic_symbolUpdated(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::OnewayCallbackNC<T>(obj, cb, excb, sentcb)
-    {
-    }
-};
-
-template<class T> Callback_AGMExecutiveTopic_symbolUpdatedPtr
-newCallback_AGMExecutiveTopic_symbolUpdated(const IceUtil::Handle<T>& instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_AGMExecutiveTopic_symbolUpdated<T>(instance, cb, excb, sentcb);
-}
-
-template<class T> Callback_AGMExecutiveTopic_symbolUpdatedPtr
-newCallback_AGMExecutiveTopic_symbolUpdated(const IceUtil::Handle<T>& instance, void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_AGMExecutiveTopic_symbolUpdated<T>(instance, 0, excb, sentcb);
-}
-
-template<class T> Callback_AGMExecutiveTopic_symbolUpdatedPtr
-newCallback_AGMExecutiveTopic_symbolUpdated(T* instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_AGMExecutiveTopic_symbolUpdated<T>(instance, cb, excb, sentcb);
-}
-
-template<class T> Callback_AGMExecutiveTopic_symbolUpdatedPtr
-newCallback_AGMExecutiveTopic_symbolUpdated(T* instance, void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_AGMExecutiveTopic_symbolUpdated<T>(instance, 0, excb, sentcb);
-}
-
-template<class T, typename CT>
-class Callback_AGMExecutiveTopic_symbolUpdated : public Callback_AGMExecutiveTopic_symbolUpdated_Base, public ::IceInternal::OnewayCallback<T, CT>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
-    typedef void (T::*Sent)(bool , const CT&);
-    typedef void (T::*Response)(const CT&);
-
-    Callback_AGMExecutiveTopic_symbolUpdated(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::OnewayCallback<T, CT>(obj, cb, excb, sentcb)
-    {
-    }
-};
-
-template<class T, typename CT> Callback_AGMExecutiveTopic_symbolUpdatedPtr
-newCallback_AGMExecutiveTopic_symbolUpdated(const IceUtil::Handle<T>& instance, void (T::*cb)(const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_AGMExecutiveTopic_symbolUpdated<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT> Callback_AGMExecutiveTopic_symbolUpdatedPtr
-newCallback_AGMExecutiveTopic_symbolUpdated(const IceUtil::Handle<T>& instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_AGMExecutiveTopic_symbolUpdated<T, CT>(instance, 0, excb, sentcb);
-}
-
-template<class T, typename CT> Callback_AGMExecutiveTopic_symbolUpdatedPtr
-newCallback_AGMExecutiveTopic_symbolUpdated(T* instance, void (T::*cb)(const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_AGMExecutiveTopic_symbolUpdated<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT> Callback_AGMExecutiveTopic_symbolUpdatedPtr
-newCallback_AGMExecutiveTopic_symbolUpdated(T* instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_AGMExecutiveTopic_symbolUpdated<T, CT>(instance, 0, excb, sentcb);
-}
-
-template<class T>
-class CallbackNC_AGMExecutiveTopic_symbolsUpdated : public Callback_AGMExecutiveTopic_symbolsUpdated_Base, public ::IceInternal::OnewayCallbackNC<T>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception&);
-    typedef void (T::*Sent)(bool);
-    typedef void (T::*Response)();
-
-    CallbackNC_AGMExecutiveTopic_symbolsUpdated(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::OnewayCallbackNC<T>(obj, cb, excb, sentcb)
-    {
-    }
-};
-
-template<class T> Callback_AGMExecutiveTopic_symbolsUpdatedPtr
-newCallback_AGMExecutiveTopic_symbolsUpdated(const IceUtil::Handle<T>& instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_AGMExecutiveTopic_symbolsUpdated<T>(instance, cb, excb, sentcb);
-}
-
-template<class T> Callback_AGMExecutiveTopic_symbolsUpdatedPtr
-newCallback_AGMExecutiveTopic_symbolsUpdated(const IceUtil::Handle<T>& instance, void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_AGMExecutiveTopic_symbolsUpdated<T>(instance, 0, excb, sentcb);
-}
-
-template<class T> Callback_AGMExecutiveTopic_symbolsUpdatedPtr
-newCallback_AGMExecutiveTopic_symbolsUpdated(T* instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_AGMExecutiveTopic_symbolsUpdated<T>(instance, cb, excb, sentcb);
-}
-
-template<class T> Callback_AGMExecutiveTopic_symbolsUpdatedPtr
-newCallback_AGMExecutiveTopic_symbolsUpdated(T* instance, void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_AGMExecutiveTopic_symbolsUpdated<T>(instance, 0, excb, sentcb);
-}
-
-template<class T, typename CT>
-class Callback_AGMExecutiveTopic_symbolsUpdated : public Callback_AGMExecutiveTopic_symbolsUpdated_Base, public ::IceInternal::OnewayCallback<T, CT>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
-    typedef void (T::*Sent)(bool , const CT&);
-    typedef void (T::*Response)(const CT&);
-
-    Callback_AGMExecutiveTopic_symbolsUpdated(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::OnewayCallback<T, CT>(obj, cb, excb, sentcb)
-    {
-    }
-};
-
-template<class T, typename CT> Callback_AGMExecutiveTopic_symbolsUpdatedPtr
-newCallback_AGMExecutiveTopic_symbolsUpdated(const IceUtil::Handle<T>& instance, void (T::*cb)(const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_AGMExecutiveTopic_symbolsUpdated<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT> Callback_AGMExecutiveTopic_symbolsUpdatedPtr
-newCallback_AGMExecutiveTopic_symbolsUpdated(const IceUtil::Handle<T>& instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_AGMExecutiveTopic_symbolsUpdated<T, CT>(instance, 0, excb, sentcb);
-}
-
-template<class T, typename CT> Callback_AGMExecutiveTopic_symbolsUpdatedPtr
-newCallback_AGMExecutiveTopic_symbolsUpdated(T* instance, void (T::*cb)(const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_AGMExecutiveTopic_symbolsUpdated<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT> Callback_AGMExecutiveTopic_symbolsUpdatedPtr
-newCallback_AGMExecutiveTopic_symbolsUpdated(T* instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_AGMExecutiveTopic_symbolsUpdated<T, CT>(instance, 0, excb, sentcb);
-}
 
 template<class T>
 class CallbackNC_AGMExecutiveTopic_edgeUpdated : public Callback_AGMExecutiveTopic_edgeUpdated_Base, public ::IceInternal::OnewayCallbackNC<T>
@@ -1286,6 +1040,252 @@ template<class T, typename CT> Callback_AGMExecutiveTopic_selfEdgeDeletedPtr
 newCallback_AGMExecutiveTopic_selfEdgeDeleted(T* instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
 {
     return new Callback_AGMExecutiveTopic_selfEdgeDeleted<T, CT>(instance, 0, excb, sentcb);
+}
+
+template<class T>
+class CallbackNC_AGMExecutiveTopic_structuralChange : public Callback_AGMExecutiveTopic_structuralChange_Base, public ::IceInternal::OnewayCallbackNC<T>
+{
+public:
+
+    typedef IceUtil::Handle<T> TPtr;
+
+    typedef void (T::*Exception)(const ::Ice::Exception&);
+    typedef void (T::*Sent)(bool);
+    typedef void (T::*Response)();
+
+    CallbackNC_AGMExecutiveTopic_structuralChange(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::OnewayCallbackNC<T>(obj, cb, excb, sentcb)
+    {
+    }
+};
+
+template<class T> Callback_AGMExecutiveTopic_structuralChangePtr
+newCallback_AGMExecutiveTopic_structuralChange(const IceUtil::Handle<T>& instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_AGMExecutiveTopic_structuralChange<T>(instance, cb, excb, sentcb);
+}
+
+template<class T> Callback_AGMExecutiveTopic_structuralChangePtr
+newCallback_AGMExecutiveTopic_structuralChange(const IceUtil::Handle<T>& instance, void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_AGMExecutiveTopic_structuralChange<T>(instance, 0, excb, sentcb);
+}
+
+template<class T> Callback_AGMExecutiveTopic_structuralChangePtr
+newCallback_AGMExecutiveTopic_structuralChange(T* instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_AGMExecutiveTopic_structuralChange<T>(instance, cb, excb, sentcb);
+}
+
+template<class T> Callback_AGMExecutiveTopic_structuralChangePtr
+newCallback_AGMExecutiveTopic_structuralChange(T* instance, void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_AGMExecutiveTopic_structuralChange<T>(instance, 0, excb, sentcb);
+}
+
+template<class T, typename CT>
+class Callback_AGMExecutiveTopic_structuralChange : public Callback_AGMExecutiveTopic_structuralChange_Base, public ::IceInternal::OnewayCallback<T, CT>
+{
+public:
+
+    typedef IceUtil::Handle<T> TPtr;
+
+    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
+    typedef void (T::*Sent)(bool , const CT&);
+    typedef void (T::*Response)(const CT&);
+
+    Callback_AGMExecutiveTopic_structuralChange(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::OnewayCallback<T, CT>(obj, cb, excb, sentcb)
+    {
+    }
+};
+
+template<class T, typename CT> Callback_AGMExecutiveTopic_structuralChangePtr
+newCallback_AGMExecutiveTopic_structuralChange(const IceUtil::Handle<T>& instance, void (T::*cb)(const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_AGMExecutiveTopic_structuralChange<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_AGMExecutiveTopic_structuralChangePtr
+newCallback_AGMExecutiveTopic_structuralChange(const IceUtil::Handle<T>& instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_AGMExecutiveTopic_structuralChange<T, CT>(instance, 0, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_AGMExecutiveTopic_structuralChangePtr
+newCallback_AGMExecutiveTopic_structuralChange(T* instance, void (T::*cb)(const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_AGMExecutiveTopic_structuralChange<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_AGMExecutiveTopic_structuralChangePtr
+newCallback_AGMExecutiveTopic_structuralChange(T* instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_AGMExecutiveTopic_structuralChange<T, CT>(instance, 0, excb, sentcb);
+}
+
+template<class T>
+class CallbackNC_AGMExecutiveTopic_symbolUpdated : public Callback_AGMExecutiveTopic_symbolUpdated_Base, public ::IceInternal::OnewayCallbackNC<T>
+{
+public:
+
+    typedef IceUtil::Handle<T> TPtr;
+
+    typedef void (T::*Exception)(const ::Ice::Exception&);
+    typedef void (T::*Sent)(bool);
+    typedef void (T::*Response)();
+
+    CallbackNC_AGMExecutiveTopic_symbolUpdated(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::OnewayCallbackNC<T>(obj, cb, excb, sentcb)
+    {
+    }
+};
+
+template<class T> Callback_AGMExecutiveTopic_symbolUpdatedPtr
+newCallback_AGMExecutiveTopic_symbolUpdated(const IceUtil::Handle<T>& instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_AGMExecutiveTopic_symbolUpdated<T>(instance, cb, excb, sentcb);
+}
+
+template<class T> Callback_AGMExecutiveTopic_symbolUpdatedPtr
+newCallback_AGMExecutiveTopic_symbolUpdated(const IceUtil::Handle<T>& instance, void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_AGMExecutiveTopic_symbolUpdated<T>(instance, 0, excb, sentcb);
+}
+
+template<class T> Callback_AGMExecutiveTopic_symbolUpdatedPtr
+newCallback_AGMExecutiveTopic_symbolUpdated(T* instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_AGMExecutiveTopic_symbolUpdated<T>(instance, cb, excb, sentcb);
+}
+
+template<class T> Callback_AGMExecutiveTopic_symbolUpdatedPtr
+newCallback_AGMExecutiveTopic_symbolUpdated(T* instance, void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_AGMExecutiveTopic_symbolUpdated<T>(instance, 0, excb, sentcb);
+}
+
+template<class T, typename CT>
+class Callback_AGMExecutiveTopic_symbolUpdated : public Callback_AGMExecutiveTopic_symbolUpdated_Base, public ::IceInternal::OnewayCallback<T, CT>
+{
+public:
+
+    typedef IceUtil::Handle<T> TPtr;
+
+    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
+    typedef void (T::*Sent)(bool , const CT&);
+    typedef void (T::*Response)(const CT&);
+
+    Callback_AGMExecutiveTopic_symbolUpdated(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::OnewayCallback<T, CT>(obj, cb, excb, sentcb)
+    {
+    }
+};
+
+template<class T, typename CT> Callback_AGMExecutiveTopic_symbolUpdatedPtr
+newCallback_AGMExecutiveTopic_symbolUpdated(const IceUtil::Handle<T>& instance, void (T::*cb)(const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_AGMExecutiveTopic_symbolUpdated<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_AGMExecutiveTopic_symbolUpdatedPtr
+newCallback_AGMExecutiveTopic_symbolUpdated(const IceUtil::Handle<T>& instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_AGMExecutiveTopic_symbolUpdated<T, CT>(instance, 0, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_AGMExecutiveTopic_symbolUpdatedPtr
+newCallback_AGMExecutiveTopic_symbolUpdated(T* instance, void (T::*cb)(const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_AGMExecutiveTopic_symbolUpdated<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_AGMExecutiveTopic_symbolUpdatedPtr
+newCallback_AGMExecutiveTopic_symbolUpdated(T* instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_AGMExecutiveTopic_symbolUpdated<T, CT>(instance, 0, excb, sentcb);
+}
+
+template<class T>
+class CallbackNC_AGMExecutiveTopic_symbolsUpdated : public Callback_AGMExecutiveTopic_symbolsUpdated_Base, public ::IceInternal::OnewayCallbackNC<T>
+{
+public:
+
+    typedef IceUtil::Handle<T> TPtr;
+
+    typedef void (T::*Exception)(const ::Ice::Exception&);
+    typedef void (T::*Sent)(bool);
+    typedef void (T::*Response)();
+
+    CallbackNC_AGMExecutiveTopic_symbolsUpdated(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::OnewayCallbackNC<T>(obj, cb, excb, sentcb)
+    {
+    }
+};
+
+template<class T> Callback_AGMExecutiveTopic_symbolsUpdatedPtr
+newCallback_AGMExecutiveTopic_symbolsUpdated(const IceUtil::Handle<T>& instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_AGMExecutiveTopic_symbolsUpdated<T>(instance, cb, excb, sentcb);
+}
+
+template<class T> Callback_AGMExecutiveTopic_symbolsUpdatedPtr
+newCallback_AGMExecutiveTopic_symbolsUpdated(const IceUtil::Handle<T>& instance, void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_AGMExecutiveTopic_symbolsUpdated<T>(instance, 0, excb, sentcb);
+}
+
+template<class T> Callback_AGMExecutiveTopic_symbolsUpdatedPtr
+newCallback_AGMExecutiveTopic_symbolsUpdated(T* instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_AGMExecutiveTopic_symbolsUpdated<T>(instance, cb, excb, sentcb);
+}
+
+template<class T> Callback_AGMExecutiveTopic_symbolsUpdatedPtr
+newCallback_AGMExecutiveTopic_symbolsUpdated(T* instance, void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_AGMExecutiveTopic_symbolsUpdated<T>(instance, 0, excb, sentcb);
+}
+
+template<class T, typename CT>
+class Callback_AGMExecutiveTopic_symbolsUpdated : public Callback_AGMExecutiveTopic_symbolsUpdated_Base, public ::IceInternal::OnewayCallback<T, CT>
+{
+public:
+
+    typedef IceUtil::Handle<T> TPtr;
+
+    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
+    typedef void (T::*Sent)(bool , const CT&);
+    typedef void (T::*Response)(const CT&);
+
+    Callback_AGMExecutiveTopic_symbolsUpdated(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::OnewayCallback<T, CT>(obj, cb, excb, sentcb)
+    {
+    }
+};
+
+template<class T, typename CT> Callback_AGMExecutiveTopic_symbolsUpdatedPtr
+newCallback_AGMExecutiveTopic_symbolsUpdated(const IceUtil::Handle<T>& instance, void (T::*cb)(const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_AGMExecutiveTopic_symbolsUpdated<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_AGMExecutiveTopic_symbolsUpdatedPtr
+newCallback_AGMExecutiveTopic_symbolsUpdated(const IceUtil::Handle<T>& instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_AGMExecutiveTopic_symbolsUpdated<T, CT>(instance, 0, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_AGMExecutiveTopic_symbolsUpdatedPtr
+newCallback_AGMExecutiveTopic_symbolsUpdated(T* instance, void (T::*cb)(const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_AGMExecutiveTopic_symbolsUpdated<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_AGMExecutiveTopic_symbolsUpdatedPtr
+newCallback_AGMExecutiveTopic_symbolsUpdated(T* instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_AGMExecutiveTopic_symbolsUpdated<T, CT>(instance, 0, excb, sentcb);
 }
 
 }

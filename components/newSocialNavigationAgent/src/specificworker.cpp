@@ -419,7 +419,7 @@ SpecificWorker::retPersonalSpaces SpecificWorker::getPolylinesFromModel()
 
     vector <vector<QPolygonF>> polylinesSeq {intimatePolygon, personalPolygon, socialPolygon};
 
-    auto personalSpaces = worldModel->getSymbolsByType("personalSpace");
+    auto personalSpaces = worldModel->getSymbolsByType("personal_space");
     vector<int> IDsAlreadyIncluded;
 
     for( auto space : personalSpaces)
@@ -505,7 +505,7 @@ SpecificWorker::retAffordanceSpaces SpecificWorker::getAffordancesFromModel()
     vector<QPolygonF> blockedAffordances;
     std::map<float,vector<QPolygonF>> mapCostObjects;
 
-    auto affordanceSpaces = worldModel->getSymbolsByType("affordanceSpace");
+    auto affordanceSpaces = worldModel->getSymbolsByType("affordance_space");
 
 
     for( auto affordance : affordanceSpaces)
@@ -843,10 +843,10 @@ void SpecificWorker::AGMExecutiveTopic_symbolUpdated(const RoboCompAGMWorldModel
 	QMutexLocker locker(mutex);
 	AGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);
 
-    if (modification.nodeType == "personalSpace")
+    if (modification.nodeType == "personal_space")
         personalSpacesChanged = true;
 
-    if (modification.nodeType == "affordanceSpace")
+    if (modification.nodeType == "affordance_space")
         affordancesChanged = true;
 }
 
@@ -863,10 +863,10 @@ void SpecificWorker::AGMExecutiveTopic_symbolsUpdated(const RoboCompAGMWorldMode
 
         for(auto node : modifications)
         {
-            if (node.nodeType == "personalSpace")
+            if (node.nodeType == "personal_space")
                 personalSpacesChanged = true;
 
-            if (modification.nodeType == "affordanceSpace")
+            if (modification.nodeType == "affordance_space")
                 affordancesChanged = true;
         }
 

@@ -18,6 +18,7 @@
  */
 #include "specificworker.h"
 #include <cppitertools/zip.hpp>
+#include <QtWidgets/QMessageBox>
 
 /**
 * \brief Default constructor
@@ -107,6 +108,7 @@ void SpecificWorker::compute()
 
     if (worldModelChanged)
 	{
+        qDebug()<< "worldModelChanged";
         updatePeopleInModel();
         checkInteractions();
 		checkObjectAffordance();
@@ -148,8 +150,10 @@ void SpecificWorker::updatePeopleInModel()
 
 	sngPersonSeq.clear();
 	mapIdPersons.clear();
+    ids_comboBox->clear();
 
-	auto vectorPersons = worldModel->getSymbolsByType("person");
+
+    auto vectorPersons = worldModel->getSymbolsByType("person");
 
 	if (vectorPersons.size() == 0) {
 		qDebug() << "No persons found";
@@ -170,7 +174,16 @@ void SpecificWorker::updatePeopleInModel()
 
 		mapIdPersons[person.id] = person; //para acceder a la persona teniendo su id
 		sngPersonSeq.push_back(person);
-	}
+
+        ids_comboBox->addItem(QString::number(id));
+
+
+    }
+
+	if(permission_given)
+    {
+	    ids_comboBox->setCurrentIndex(indexPerson);
+    }
 }
 
 void SpecificWorker::checkHumanPermissions()
@@ -186,7 +199,7 @@ void SpecificWorker::checkHumanPermissions()
             if (symbolPair.first== robotID and secondType=="person") {
                 //check the attribute of the link
                 auto attr = edge->attributes;
-                bool permission = (attr["typeResponse"] == "true");
+                bool permission = (attr["response"] == "affirmative");
 
                 if (permission) //Replace with permission when the atribute exists
                 {
@@ -980,11 +993,17 @@ void SpecificWorker::checkRobotPermission()
     qDebug()<< __FUNCTION__;
     if(permission_checkbox->checkState() == Qt::CheckState(2)) {
         permission_given = true;
-        personPermission = sngPersonSeq[0].id;
+        if (ids_comboBox->currentText() != "")
+        {
+            personPermission = ids_comboBox->currentText().toInt();
+            indexPerson = ids_comboBox->currentIndex();
+        }
+
     }
     else
     {
         permission_given = false;
+
         personPermission = -1;
     }
     worldModelChanged = true;
@@ -1061,15 +1080,15 @@ void SpecificWorker::updatePersonalSpacesInGraph()
             string firstType = worldModel->getSymbol(symbolPair.first)->typeString();
             string secondType = worldModel->getSymbol(symbolPair.second)->typeString();
 
-            if (firstType == "person" and secondType == "personalSpace")
+            if (firstType == "person" and secondType == "personal_space")
             {
                 spaceSymbolId = symbolPair.second;
                 break;
             }
         }
 
-        std::string type = "personalSpace" ;
-        std::string imName = "personalSpaceOf" + std::to_string(personID);
+        std::string type = "personal_space" ;
+        std::string imName = "personal_space_of" + std::to_string(personID);
 
         PersonalSpaceType spaces;
 
@@ -1115,7 +1134,7 @@ void SpecificWorker::updatePersonalSpacesInGraph()
             qDebug() << "imName = "<< QString::fromStdString(imName) << " " <<"symbolId = "<<spaceSymbolId;
 
             // Symbolic part
-            AGMModelSymbol::SPtr personalSpace = newModel->newSymbol("personalSpace");
+            AGMModelSymbol::SPtr personalSpace = newModel->newSymbol("personal_space");
             spaceSymbolId = personalSpace->identifier;
             printf("Got SpaceSymbolID: %d\n", spaceSymbolId);
             personalSpace->setAttribute("imName", imName);
@@ -1180,7 +1199,7 @@ void SpecificWorker::updateAffordancesInGraph()
     AGMModel::SPtr newModel(new AGMModel(worldModel));
     bool newSymbol = false;
 
-    auto vectorAffordancesInGraph = newModel->getSymbolsByType("affordanceSpace");
+    auto vectorAffordancesInGraph = newModel->getSymbolsByType("affordance_space");
 
     qDebug()<< "Number of affordances spaces in graph = " << vectorAffordancesInGraph.size();
 
@@ -1188,8 +1207,8 @@ void SpecificWorker::updateAffordancesInGraph()
 
     for(auto const [ID,object] : mapIdObjects)
     {
-        std::string type = "affordanceSpace" ;
-        std::string imName = "affordanceOf" + ID.toStdString();
+        std::string type = "affordance_space" ;
+        std::string imName = "affordance_of" + ID.toStdString();
 
         int spaceSymbolId = -1;
 
@@ -1228,7 +1247,7 @@ void SpecificWorker::updateAffordancesInGraph()
             }
 
             // Symbolic part
-            AGMModelSymbol::SPtr spaceSymbol = newModel->newSymbol("affordanceSpace");
+            AGMModelSymbol::SPtr spaceSymbol = newModel->newSymbol("affordance_space");
             spaceSymbolId = spaceSymbol->identifier;
             printf("Got SpaceSymbolID: %d\n", spaceSymbolId);
             spaceSymbol->setAttribute("imName", imName);
@@ -1492,6 +1511,9 @@ bool SpecificWorker::setParametersAndPossibleActivation(const RoboCompAGMCommonB
         else if (action == "none")
         {
             active = false;
+            personPermission = -1;
+            permission_given = false;
+            permission_checkbox->setCheckState(Qt::CheckState(0));
         }
 	}
 	catch (...)

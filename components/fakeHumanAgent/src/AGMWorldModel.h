@@ -52,15 +52,26 @@ namespace RoboCompAGMWorldModel
 
 using StringDictionary = ::std::map<::std::string, ::std::string>;
 
+enum class BehaviorResultType : unsigned char
+{
+    InitialWorld,
+    BehaviorBasedModification,
+    BehaviorBasedNumericUpdate,
+    StatusFailTimeout,
+    StatusFailOther,
+    StatusActive,
+    StatusIdle
+};
+
 struct Node
 {
-    ::RoboCompAGMWorldModel::StringDictionary attributes;
-    int nodeIdentifier;
     ::std::string nodeType;
+    int nodeIdentifier;
+    ::RoboCompAGMWorldModel::StringDictionary attributes;
 
-    std::tuple<const ::RoboCompAGMWorldModel::StringDictionary&, const int&, const ::std::string&> ice_tuple() const
+    std::tuple<const ::std::string&, const int&, const ::RoboCompAGMWorldModel::StringDictionary&> ice_tuple() const
     {
-        return std::tie(attributes, nodeIdentifier, nodeType);
+        return std::tie(nodeType, nodeIdentifier, attributes);
     }
 };
 
@@ -68,14 +79,14 @@ using NodeSequence = ::std::vector<::RoboCompAGMWorldModel::Node>;
 
 struct Edge
 {
-    ::RoboCompAGMWorldModel::StringDictionary attributes;
     int a;
     int b;
     ::std::string edgeType;
+    ::RoboCompAGMWorldModel::StringDictionary attributes;
 
-    std::tuple<const ::RoboCompAGMWorldModel::StringDictionary&, const int&, const int&, const ::std::string&> ice_tuple() const
+    std::tuple<const int&, const int&, const ::std::string&, const ::RoboCompAGMWorldModel::StringDictionary&> ice_tuple() const
     {
-        return std::tie(attributes, a, b, edgeType);
+        return std::tie(a, b, edgeType, attributes);
     }
 };
 
@@ -93,6 +104,19 @@ struct World
     }
 };
 
+struct Event
+{
+    ::std::string sender;
+    ::RoboCompAGMWorldModel::BehaviorResultType why;
+    ::RoboCompAGMWorldModel::World backModel;
+    ::RoboCompAGMWorldModel::World newModel;
+
+    std::tuple<const ::std::string&, const ::RoboCompAGMWorldModel::BehaviorResultType&, const ::RoboCompAGMWorldModel::World&, const ::RoboCompAGMWorldModel::World&> ice_tuple() const
+    {
+        return std::tie(sender, why, backModel, newModel);
+    }
+};
+
 using Ice::operator<;
 using Ice::operator<=;
 using Ice::operator>;
@@ -104,6 +128,16 @@ using Ice::operator!=;
 
 namespace Ice
 {
+
+template<>
+struct StreamableTraits< ::RoboCompAGMWorldModel::BehaviorResultType>
+{
+    static const StreamHelperCategory helper = StreamHelperCategoryEnum;
+    static const int minValue = 0;
+    static const int maxValue = 6;
+    static const int minWireSize = 1;
+    static const bool fixedLength = false;
+};
 
 template<>
 struct StreamableTraits<::RoboCompAGMWorldModel::Node>
@@ -118,7 +152,7 @@ struct StreamReader<::RoboCompAGMWorldModel::Node, S>
 {
     static void read(S* istr, ::RoboCompAGMWorldModel::Node& v)
     {
-        istr->readAll(v.attributes, v.nodeIdentifier, v.nodeType);
+        istr->readAll(v.nodeType, v.nodeIdentifier, v.attributes);
     }
 };
 
@@ -135,7 +169,7 @@ struct StreamReader<::RoboCompAGMWorldModel::Edge, S>
 {
     static void read(S* istr, ::RoboCompAGMWorldModel::Edge& v)
     {
-        istr->readAll(v.attributes, v.a, v.b, v.edgeType);
+        istr->readAll(v.a, v.b, v.edgeType, v.attributes);
     }
 };
 
@@ -156,6 +190,23 @@ struct StreamReader<::RoboCompAGMWorldModel::World, S>
     }
 };
 
+template<>
+struct StreamableTraits<::RoboCompAGMWorldModel::Event>
+{
+    static const StreamHelperCategory helper = StreamHelperCategoryStruct;
+    static const int minWireSize = 14;
+    static const bool fixedLength = false;
+};
+
+template<typename S>
+struct StreamReader<::RoboCompAGMWorldModel::Event, S>
+{
+    static void read(S* istr, ::RoboCompAGMWorldModel::Event& v)
+    {
+        istr->readAll(v.sender, v.why, v.backModel, v.newModel);
+    }
+};
+
 }
 
 #else // C++98 mapping
@@ -165,175 +216,32 @@ namespace RoboCompAGMWorldModel
 
 typedef ::std::map< ::std::string, ::std::string> StringDictionary;
 
+enum BehaviorResultType
+{
+    InitialWorld,
+    BehaviorBasedModification,
+    BehaviorBasedNumericUpdate,
+    StatusFailTimeout,
+    StatusFailOther,
+    StatusActive,
+    StatusIdle
+};
+
 struct Node
 {
-    ::RoboCompAGMWorldModel::StringDictionary attributes;
-    ::Ice::Int nodeIdentifier;
     ::std::string nodeType;
-
-    bool operator==(const Node& rhs_) const
-    {
-        if(this == &rhs_)
-        {
-            return true;
-        }
-        if(attributes != rhs_.attributes)
-        {
-            return false;
-        }
-        if(nodeIdentifier != rhs_.nodeIdentifier)
-        {
-            return false;
-        }
-        if(nodeType != rhs_.nodeType)
-        {
-            return false;
-        }
-        return true;
-    }
-
-    bool operator<(const Node& rhs_) const
-    {
-        if(this == &rhs_)
-        {
-            return false;
-        }
-        if(attributes < rhs_.attributes)
-        {
-            return true;
-        }
-        else if(rhs_.attributes < attributes)
-        {
-            return false;
-        }
-        if(nodeIdentifier < rhs_.nodeIdentifier)
-        {
-            return true;
-        }
-        else if(rhs_.nodeIdentifier < nodeIdentifier)
-        {
-            return false;
-        }
-        if(nodeType < rhs_.nodeType)
-        {
-            return true;
-        }
-        else if(rhs_.nodeType < nodeType)
-        {
-            return false;
-        }
-        return false;
-    }
-
-    bool operator!=(const Node& rhs_) const
-    {
-        return !operator==(rhs_);
-    }
-    bool operator<=(const Node& rhs_) const
-    {
-        return operator<(rhs_) || operator==(rhs_);
-    }
-    bool operator>(const Node& rhs_) const
-    {
-        return !operator<(rhs_) && !operator==(rhs_);
-    }
-    bool operator>=(const Node& rhs_) const
-    {
-        return !operator<(rhs_);
-    }
+    ::Ice::Int nodeIdentifier;
+    ::RoboCompAGMWorldModel::StringDictionary attributes;
 };
 
 typedef ::std::vector< ::RoboCompAGMWorldModel::Node> NodeSequence;
 
 struct Edge
 {
-    ::RoboCompAGMWorldModel::StringDictionary attributes;
     ::Ice::Int a;
     ::Ice::Int b;
     ::std::string edgeType;
-
-    bool operator==(const Edge& rhs_) const
-    {
-        if(this == &rhs_)
-        {
-            return true;
-        }
-        if(attributes != rhs_.attributes)
-        {
-            return false;
-        }
-        if(a != rhs_.a)
-        {
-            return false;
-        }
-        if(b != rhs_.b)
-        {
-            return false;
-        }
-        if(edgeType != rhs_.edgeType)
-        {
-            return false;
-        }
-        return true;
-    }
-
-    bool operator<(const Edge& rhs_) const
-    {
-        if(this == &rhs_)
-        {
-            return false;
-        }
-        if(attributes < rhs_.attributes)
-        {
-            return true;
-        }
-        else if(rhs_.attributes < attributes)
-        {
-            return false;
-        }
-        if(a < rhs_.a)
-        {
-            return true;
-        }
-        else if(rhs_.a < a)
-        {
-            return false;
-        }
-        if(b < rhs_.b)
-        {
-            return true;
-        }
-        else if(rhs_.b < b)
-        {
-            return false;
-        }
-        if(edgeType < rhs_.edgeType)
-        {
-            return true;
-        }
-        else if(rhs_.edgeType < edgeType)
-        {
-            return false;
-        }
-        return false;
-    }
-
-    bool operator!=(const Edge& rhs_) const
-    {
-        return !operator==(rhs_);
-    }
-    bool operator<=(const Edge& rhs_) const
-    {
-        return operator<(rhs_) || operator==(rhs_);
-    }
-    bool operator>(const Edge& rhs_) const
-    {
-        return !operator<(rhs_) && !operator==(rhs_);
-    }
-    bool operator>=(const Edge& rhs_) const
-    {
-        return !operator<(rhs_);
-    }
+    ::RoboCompAGMWorldModel::StringDictionary attributes;
 };
 
 typedef ::std::vector< ::RoboCompAGMWorldModel::Edge> EdgeSequence;
@@ -343,83 +251,30 @@ struct World
     ::RoboCompAGMWorldModel::NodeSequence nodes;
     ::RoboCompAGMWorldModel::EdgeSequence edges;
     ::Ice::Int version;
+};
 
-    bool operator==(const World& rhs_) const
-    {
-        if(this == &rhs_)
-        {
-            return true;
-        }
-        if(nodes != rhs_.nodes)
-        {
-            return false;
-        }
-        if(edges != rhs_.edges)
-        {
-            return false;
-        }
-        if(version != rhs_.version)
-        {
-            return false;
-        }
-        return true;
-    }
-
-    bool operator<(const World& rhs_) const
-    {
-        if(this == &rhs_)
-        {
-            return false;
-        }
-        if(nodes < rhs_.nodes)
-        {
-            return true;
-        }
-        else if(rhs_.nodes < nodes)
-        {
-            return false;
-        }
-        if(edges < rhs_.edges)
-        {
-            return true;
-        }
-        else if(rhs_.edges < edges)
-        {
-            return false;
-        }
-        if(version < rhs_.version)
-        {
-            return true;
-        }
-        else if(rhs_.version < version)
-        {
-            return false;
-        }
-        return false;
-    }
-
-    bool operator!=(const World& rhs_) const
-    {
-        return !operator==(rhs_);
-    }
-    bool operator<=(const World& rhs_) const
-    {
-        return operator<(rhs_) || operator==(rhs_);
-    }
-    bool operator>(const World& rhs_) const
-    {
-        return !operator<(rhs_) && !operator==(rhs_);
-    }
-    bool operator>=(const World& rhs_) const
-    {
-        return !operator<(rhs_);
-    }
+struct Event
+{
+    ::std::string sender;
+    ::RoboCompAGMWorldModel::BehaviorResultType why;
+    ::RoboCompAGMWorldModel::World backModel;
+    ::RoboCompAGMWorldModel::World newModel;
 };
 
 }
 
 namespace Ice
 {
+
+template<>
+struct StreamableTraits< ::RoboCompAGMWorldModel::BehaviorResultType>
+{
+    static const StreamHelperCategory helper = StreamHelperCategoryEnum;
+    static const int minValue = 0;
+    static const int maxValue = 6;
+    static const int minWireSize = 1;
+    static const bool fixedLength = false;
+};
 
 template<>
 struct StreamableTraits< ::RoboCompAGMWorldModel::Node>
@@ -434,9 +289,9 @@ struct StreamWriter< ::RoboCompAGMWorldModel::Node, S>
 {
     static void write(S* ostr, const ::RoboCompAGMWorldModel::Node& v)
     {
-        ostr->write(v.attributes);
-        ostr->write(v.nodeIdentifier);
         ostr->write(v.nodeType);
+        ostr->write(v.nodeIdentifier);
+        ostr->write(v.attributes);
     }
 };
 
@@ -445,9 +300,9 @@ struct StreamReader< ::RoboCompAGMWorldModel::Node, S>
 {
     static void read(S* istr, ::RoboCompAGMWorldModel::Node& v)
     {
-        istr->read(v.attributes);
-        istr->read(v.nodeIdentifier);
         istr->read(v.nodeType);
+        istr->read(v.nodeIdentifier);
+        istr->read(v.attributes);
     }
 };
 
@@ -464,10 +319,10 @@ struct StreamWriter< ::RoboCompAGMWorldModel::Edge, S>
 {
     static void write(S* ostr, const ::RoboCompAGMWorldModel::Edge& v)
     {
-        ostr->write(v.attributes);
         ostr->write(v.a);
         ostr->write(v.b);
         ostr->write(v.edgeType);
+        ostr->write(v.attributes);
     }
 };
 
@@ -476,10 +331,10 @@ struct StreamReader< ::RoboCompAGMWorldModel::Edge, S>
 {
     static void read(S* istr, ::RoboCompAGMWorldModel::Edge& v)
     {
-        istr->read(v.attributes);
         istr->read(v.a);
         istr->read(v.b);
         istr->read(v.edgeType);
+        istr->read(v.attributes);
     }
 };
 
@@ -510,6 +365,38 @@ struct StreamReader< ::RoboCompAGMWorldModel::World, S>
         istr->read(v.nodes);
         istr->read(v.edges);
         istr->read(v.version);
+    }
+};
+
+template<>
+struct StreamableTraits< ::RoboCompAGMWorldModel::Event>
+{
+    static const StreamHelperCategory helper = StreamHelperCategoryStruct;
+    static const int minWireSize = 14;
+    static const bool fixedLength = false;
+};
+
+template<typename S>
+struct StreamWriter< ::RoboCompAGMWorldModel::Event, S>
+{
+    static void write(S* ostr, const ::RoboCompAGMWorldModel::Event& v)
+    {
+        ostr->write(v.sender);
+        ostr->write(v.why);
+        ostr->write(v.backModel);
+        ostr->write(v.newModel);
+    }
+};
+
+template<typename S>
+struct StreamReader< ::RoboCompAGMWorldModel::Event, S>
+{
+    static void read(S* istr, ::RoboCompAGMWorldModel::Event& v)
+    {
+        istr->read(v.sender);
+        istr->read(v.why);
+        istr->read(v.backModel);
+        istr->read(v.newModel);
     }
 };
 

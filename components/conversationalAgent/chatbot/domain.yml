@@ -168,33 +168,61 @@ responses:
 #-------------------------------------------------------------Situation 3-------------------------------------------------------------
 
   utter_move_sit_3:
-  - text: "I'm sorry, but could you step aside for a moment?"
-  - text: "Excuse me, could I get past you?"
-  - text: "Would you kindly move to one side for a moment?"
+  - text: "I'm sorry, but can I interrupt you so that I can pass?"
+  - text: "Excuse me, could I get past you ?"
+  - text: "Would you kindly wait until I pass by?"
   - text: "If I may interrupt you, I'd appreciate if you let me by."
 
   utter_repeat_sit_3:
-  - text: "I said could you step aside for a moment and let me pass?"
-  - text: "What I said was, could I get past you?"
-  - text: "I said could you kindly move to one side and let me pass?"
-  - text: "What I said was, I'd appreciate if you let me by."
-
-  utter_again_sit_3:
-  - text: "I understand I'm inconveniencing you, but could you take a small break and let me pass?"
-  - text: "I'm sorry to bother you, but could you pause for a moment and let me pass?"
-  - text: "Please try to understand, I need to reach my destination, could you pause for a moment and let me pass?"
-  - text: "I don’t want to be any trouble, I’ll only take a moment to pass, could you let me through?"
+  - text: "I said could I interrupt you  so that I can pass?"
+  - text: "What I said was could I get past you?"
+  - text: "I said could you kindly wait until I pass by?"
 
   utter_frustated_sit_3:
-  - text:  "Let's not waste each other's time, so could you please take a small break and let me pass?"
-  - text:  "I wouldn't want to waste anyone's time, please could you pause for a moment and let me pass?"
-  - text:  "Let’s not hold each other up, so could you step aside for a moment and let me pass?"
-  - text:  "I ask you again politely but firmly- let me through."
+  - text: "I'm sure you have important matters to do, so please could I briefly interrupt you until I can pass?"
+  - text: "I wouldn't want to keep you any longer, so please could I pass?"
+  - text: "Let's not waste each other's time, please can I pass?"
+
+  utter_again_sit_3:
+  - text: "I understand I'm inconveniencing you, but I really need to pass, so please could I briefly interrupt you?"
+  - text: "I'm sorry to bother you , but please could I get past you?"
+  - text: "I don't want to disturb you , but please could you let me pass?"
+  - text: "Please try to understand, I really need to pass"
 
   utter_handle_chitchat_sit_3:
-  - text: "Time is of essence for both of us, lets not waste it in chitchat, so please could you step aside for a moment?"
-  - text: "Time is of essence for both of us, lets not waste it in small talk so please could you kindly move to one side for a moment?"
-  - text: "I am sure you understand the importance of both of our time, lets not waste it in chitchat. Could you please move aside and let me pass?"
+  - text: "Time is of essence for all of us, lets not waste it in chitchat, so please, can I pass?"
+  - text: "Time is of essence for all of us, lets not waste it in small talk so please could you kindly wait until I pass?  It's just a moment"
+  - text: "I am sure you understand the importance of all of our time, lets not waste it in chitchat. Could you kindly wait until I pass? It's just a moment"
+
+
+#  utter_move_sit_3:
+#  - text: "I'm sorry, but could you step aside for a moment?"
+#  - text: "Excuse me, could I get past you?"
+#  - text: "Would you kindly move to one side for a moment?"
+#  - text: "If I may interrupt you, I'd appreciate if you let me by."
+#
+#  utter_repeat_sit_3:
+#  - text: "I said could you step aside for a moment and let me pass?"
+#  - text: "What I said was, could I get past you?"
+#  - text: "I said could you kindly move to one side and let me pass?"
+#  - text: "What I said was, I'd appreciate if you let me by."
+#
+#  utter_again_sit_3:
+#  - text: "I understand I'm inconveniencing you, but could you take a small break and let me pass?"
+#  - text: "I'm sorry to bother you, but could you pause for a moment and let me pass?"
+#  - text: "Please try to understand, I need to reach my destination, could you pause for a moment and let me pass?"
+#  - text: "I don’t want to be any trouble, I’ll only take a moment to pass, could you let me through?"
+#
+#  utter_frustated_sit_3:
+#  - text:  "Let's not waste each other's time, so could you please take a small break and let me pass?"
+#  - text:  "I wouldn't want to waste anyone's time, please could you pause for a moment and let me pass?"
+#  - text:  "Let’s not hold each other up, so could you step aside for a moment and let me pass?"
+#  - text:  "I ask you again politely but firmly- let me through."
+#
+#  utter_handle_chitchat_sit_3:
+#  - text: "Time is of essence for both of us, lets not waste it in chitchat, so please could you step aside for a moment?"
+#  - text: "Time is of essence for both of us, lets not waste it in small talk so please could you kindly move to one side for a moment?"
+#  - text: "I am sure you understand the importance of both of our time, lets not waste it in chitchat. Could you please move aside and let me pass?"
 
 
 

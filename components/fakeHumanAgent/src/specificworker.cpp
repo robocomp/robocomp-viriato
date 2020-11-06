@@ -508,6 +508,7 @@ void SpecificWorker::rotar(int value){
 	coordInItem.x = 0;
 	coordInItem.z = 0;
 	valorgiro = value * 0.0175;
+//	valorgiro = value/100;
 }
 void SpecificWorker::giroP(){
 	moveFlag = true;
@@ -556,21 +557,21 @@ void SpecificWorker::addPerson()
 	switch(mesh)
 	{
 		case 1:
-			meshname = "human01.3ds";
-			scale = "12";
-			rotationz= "3.1415926535";
-			break;
+            meshname = "nurse.ive";
+            scale ="10";
+            rotationz = "3.1415926535";
+            break;
 		case 2:
-			meshname = "human02.3ds";
-			scale = "1.21";
-			rotationz= "3.1415926535";
+			meshname = "abuelita02.ive";
+			scale = "1000";
+			rotationz= "0";
 			break;
 		case 3:
-			meshname = "human03.3ds";
-			scale = "8";
-			rotationz= "1.57079632679";
-			break;
-		case 4:
+            meshname = "human08.3DS";
+            scale = "950";
+            rotationz= "0";
+            break;
+        case 4:
 			meshname = "human04.3ds";
 			scale = "900";
 			rotationz= "0";
@@ -584,18 +585,16 @@ void SpecificWorker::addPerson()
 			scale = "23";
 			rotationz= "3.1415926535";
 			break;
-
 		case 7:
-			meshname = "nurse.ive";
-			scale ="10";
-			rotationz = "3.1415926535";
-			break;
-
+            meshname = "human01.3ds";
+            scale = "12";
+            rotationz= "3.1415926535";
+            break;
 		case 8:
-			meshname = "human08.3DS";
-			scale = "950";
-			rotationz= "0";
-			break;
+            meshname = "human03.3ds";
+            scale = "8";
+            rotationz= "1.57079632679";
+            break;
 
 		default:
 			qDebug()<< "Mesh error";
