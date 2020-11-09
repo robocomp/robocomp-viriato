@@ -72,11 +72,13 @@ private:
 	RoboCompAGMCommonBehavior::ParameterMap params;
 	AGMModel::SPtr worldModel, newModel;
 	bool active;
+    uint32_t robotSymbolId;
 
     std::map<int32_t, QPolygonF> mapRoomPolygon;
     void readRoomPolylines();
     bool updatePeopleRoom();
     bool updateRobotRoom();
+
 
 
 	bool setParametersAndPossibleActivation(const RoboCompAGMCommonBehavior::ParameterMap &prs, bool &reactivated);

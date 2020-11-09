@@ -48,6 +48,8 @@ bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 	{
 		RoboCompAGMWorldModel::World w = agmexecutive_proxy->getModel();
 		AGMExecutiveTopic_structuralChange(w);
+        robotSymbolId = worldModel->getIdentifierByType("robot");
+        qDebug()<< "Robot id is "<<robotSymbolId;
         readRoomPolylines();
 	}
 	catch(...)
@@ -236,20 +238,13 @@ bool SpecificWorker::updateRobotRoom() {
 
     bool changesInEdges = false;
 
-    auto robotSymbolId = worldModel->getIdentifierByType("robot");
-    AGMModelSymbol::SPtr robotparent = worldModel->getParentByLink(robotSymbolId, "RT");
-    AGMModelEdge &edgeRTrobot  = worldModel->getEdgeByIdentifiers(robotparent->identifier, robotSymbolId, "RT");
-    auto x = str2float(edgeRTrobot.attributes["tx"]);
-    auto z = str2float(edgeRTrobot.attributes["tz"]);
-
-    qDebug()<< " x,z " << x << ","<< z ;
-
+    auto currentRobotPose = innerModel->transformS6D("world","robot");
     int actualRoomID = -1;
 
     for (auto [roomID,roomPolyline] : mapRoomPolygon)
     {
         qDebug()<< roomID<< roomPolyline;
-        if (roomPolyline.containsPoint(QPointF(x,z), Qt::FillRule::OddEvenFill))
+        if (roomPolyline.containsPoint(QPointF(currentRobotPose.x(),currentRobotPose.z()), Qt::FillRule::OddEvenFill))
         {
             qDebug()<< "Contained";
             actualRoomID = roomID;

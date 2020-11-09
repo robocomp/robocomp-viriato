@@ -24,6 +24,7 @@ from PySide2.QtCore import QDateTime
 from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
+import subprocess
 
 # AGM related imports
 import AGMModelConversion
@@ -111,6 +112,7 @@ class OpenChatbotUI(QDialog):
             return
 
     def rasa_server_button_click(self):
+        print('rasa_server_button_clicked')
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         result = sock.connect_ex(('localhost', 5002))
 
@@ -118,10 +120,12 @@ class OpenChatbotUI(QDialog):
             return
 
         else:
-            proc = Process(target=self.start_rasa_server, args=())
-            proc.start()
+            self.start_rasa_server()
+            # proc = Process(target=self.start_rasa_server, args=())
+            # proc.start()
 
     def action_server_button_click(self):
+        print('rasa_action_button_clicked')
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         result = sock.connect_ex(('localhost', 5055))
 
@@ -129,19 +133,32 @@ class OpenChatbotUI(QDialog):
             return
 
         else:
-            proc = Process(target=self.start_action_server, args=())
-            proc.start()
+            # UNCOMMENT TO USE GNOME TERMINAL INSTEAD YAKUAKE
+            # proc = Process(target=self.start_action_server, args=())
+            # proc.start()
+            self.start_action_server()
 
     def start_rasa_server(self):
         try:
-            os.system(
-                "cd chatbot; gnome-terminal -e 'rasa run -m models --endpoints endpoints.yml --port 5002 --credentials credentials.yml --enable-api'")
+            p = subprocess.Popen(['/opt/robocomp/bin/rcremoteshell', 'rasa run -m models --endpoints endpoints.yml '
+                                                                     '--port 5002 --credentials credentials.yml '
+                                                                     '--enable-api',
+                                  '/home/robocomp/robocomp/components/robocomp-viriato/components/conversationalAgent'
+                                  '/chatbot', 'rasaServer'])
+            time.sleep(1)
+            # UNCOMMENT TO USE GNOME TERMINAL INSTEAD YAKUAKE
+            # os.system(
+            #     "cd chatbot; gnome-terminal -e 'rasa run -m models --endpoints endpoints.yml --port 5002 --credentials credentials.yml --enable-api'")
         except:
             print("Cannot start Rasa Server")
 
     def start_action_server(self):
         try:
-            os.system("cd chatbot;gnome-terminal -e 'rasa run actions'")
+            p = subprocess.Popen(['/opt/robocomp/bin/rcremoteshell', 'rasa run actions',
+                                  '/home/robocomp/robocomp/components/robocomp-viriato/components/conversationalAgent'
+                                  '/chatbot', 'rasaActionServer'])
+            # os.system("cd chatbot;gnome-terminal -e 'rasa run actions'")
+            time.sleep(1)
         except:
             print("Cannot start Actions Server")
 
@@ -266,7 +283,10 @@ class OpenRasaUI(QDialog):
 
     def start_action_server(self):
         try:
-            os.system("cd chatbot;gnome-terminal -e 'rasa run actions'")
+            p = subprocess.Popen(['/opt/robocomp/bin/rcremoteshell', 'rasa run actions',
+                                  '/home/robocomp/robocomp/components/robocomp-viriato/components/conversationalAgent'
+                                  '/chatbot', 'rasaActionServer'])
+            # os.system("cd chatbot;gnome-terminal -e 'rasa run actions'")
         except:
             print("Cannot start Actions Server")
 
@@ -340,6 +360,7 @@ class SpecificWorker(GenericWorker):
         self.rasa_server_active = False
         self.action_server_active = False
         self.AGMinit()
+        self.cleanGraph()
 
         self.situation = ''
         self.human_id = ''
@@ -348,12 +369,10 @@ class SpecificWorker(GenericWorker):
         self.previous_action = 'none'
         self.interactingEdgeInAGM = False
         self.removeInteractingEdge = False
-        self.list_actions = ['takeTheAttention','askForIndividualPermission','askForGroupalPermission']
-        self.change_attributes = {"rasa": ""}
+        self.list_actions = ['takeTheAttention', 'askForIndividualPermission', 'askForGroupalPermission']
+        self.change_attributes = {"rasa": "", "response": ""}
         self.ui_lock = False
         self.restart = False
-
-
 
         self.eraseFiles()
 
@@ -385,10 +404,28 @@ class SpecificWorker(GenericWorker):
 
         except:
             print("The executive is probably not running, waiting for first AGM model publication...")
+
         src = self.worldModel
 
+    def cleanGraph(self):
+        model = self.worldModel
+
+        for link in model.links:
+            if link.linkType == "interacting" and (link.a == "1" or link.b =="1"):
+                try:
+                    model = self.worldModel
+                    model.removeEdge(link.a, link.b, "interacting")
+                    if self.updatingDSR():
+                        self.interactingEdgeInAGM = False
+
+                except:
+                    print('cant remove Edge')
+                return
+
+        self.updatingDSR()
     # Function to update dsr when we have made changes to AGM local model
     def updatingDSR(self):
+
         try:
             newModel = AGMModelConversion.fromInternalToIce(self.worldModel)
             self.agmexecutive_proxy.structuralChangeProposal(newModel, "component_name", "Log_fileName")
@@ -427,9 +464,12 @@ class SpecificWorker(GenericWorker):
 
     # Function to read from file
     def readFromFile(self):
-        with open('rasa_conversation.json', 'r') as openfile:
+        print('...readFromFile...')
+        with open('chatbot/rasa_conversation.json', 'r') as openfile:
             attrs = json.load(openfile)
-            if attrs["rasa"] == self.change_attributes["rasa"]:
+            print('attrs', attrs)
+            if attrs["rasa"] == self.change_attributes["rasa"] and \
+                    attrs["response"] == self.change_attributes["response"]:
                 return False
             else:
                 attrs["timeStarted"] = str(datetime.now())
@@ -438,18 +478,21 @@ class SpecificWorker(GenericWorker):
 
     # Function to update AGM Graph locally and globally
     def updateGraph(self):
+        print('...updateGraph...')
         flag = self.readFromFile()
         if flag:
             attrs = self.change_attributes
+            print('attrs', attrs)
             try:
                 model = self.worldModel
-                model.addEdge(self.robot_id, self.human_id,  "interacting", attrs)
+                model.addEdge(self.robot_id, self.human_id, "interacting", attrs)
                 if self.updatingDSR():
                     self.interactingEdgeInAGM = True
 
             except:
                 print("Could not change attributes of link")
             if attrs["rasa"] == "stop":
+                print('ATTRS RASA STOP ROBOT')
                 self.stopChatbot()
             else:
                 return
@@ -458,7 +501,7 @@ class SpecificWorker(GenericWorker):
 
     # Function to stop chatbot and close interaction dialog box when user says OK to move
     def stopChatbot(self):
-        print('Stopping chatbot')
+        print('...Stopping chatbot...')
         self.interaction.interactionUI = False
         self.interaction.ui.display.clear()
         # self.interaction.ui.textbox.clear()
@@ -466,7 +509,7 @@ class SpecificWorker(GenericWorker):
         r = requests.post('http://localhost:5002/conversations/default/tracker/events',
                           json=[{"event": "restart"}, {"event": "followup", "name": "action_listen"}])
         self.ui_lock = True
-        self.change_attributes = {"rasa": ""}
+        self.change_attributes = {"rasa": "", "response": ""}
         self.eraseFiles()
 
         time.sleep(15)
@@ -475,9 +518,11 @@ class SpecificWorker(GenericWorker):
         print(self.ui_lock)
         print(self.action)
         if self.action in self.list_actions:
+            print('restarting chatbot')
             self.interaction.interactionUI = True
             self.startChatbot()
         else:
+            print('stopping chatbot')
             self.situation = ''
             self.human_id = ''
             self.robot_id = ''
@@ -487,6 +532,7 @@ class SpecificWorker(GenericWorker):
                 model.removeEdge(self.robot_id, self.human_id, "interacting")
                 if self.updatingDSR():
                     self.interactingEdgeInAGM = False
+
 
             except:
                 print('cant remove Edge')
@@ -514,6 +560,7 @@ class SpecificWorker(GenericWorker):
         return
 
     def rasa_server_button_click(self):
+        print('SpecificWorker rasa_server_button_click')
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         result = sock.connect_ex(('localhost', 5002))
 
@@ -523,13 +570,16 @@ class SpecificWorker(GenericWorker):
 
         else:
             if self.rasa_server_active == False:
-                proc = Process(target=self.start_rasa_server, args=())
-                proc.start()
+                # proc = Process(target=self.start_rasa_server, args=())
+                # proc.start()
+                self.start_rasa_server()
                 self.rasa_server_active = True
             else:
                 return
 
     def action_server_button_click(self):
+        print('SpecificWorker action_server_button_click')
+
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         result = sock.connect_ex(('localhost', 5055))
 
@@ -538,23 +588,32 @@ class SpecificWorker(GenericWorker):
             self.action_server_active = False
 
         else:
-            if self.action_server_active == False:
-                proc = Process(target=self.start_action_server, args=())
-                proc.start()
+            if not self.action_server_active:
+                # proc = Process(target=self.start_action_server, args=())
+                # proc.start()
+                self.start_action_server()
                 self.action_server_active = True
             else:
                 return
 
     def start_rasa_server(self):
         try:
-            os.system(
-                "cd chatbot;gnome-terminal -e 'rasa run -m models --endpoints endpoints.yml --port 5002 --credentials credentials.yml --enable-api'")
+            p = subprocess.Popen(['/opt/robocomp/bin/rcremoteshell', 'rasa run -m models --endpoints endpoints.yml '
+                                                                     '--port 5002 --credentials credentials.yml '
+                                                                     '--enable-api',
+                                  '/home/robocomp/robocomp/components/robocomp-viriato/components/conversationalAgent'
+                                  '/chatbot', 'rasaServer'])
+            # os.system(
+            #     "cd chatbot;gnome-terminal -e 'rasa run -m models --endpoints endpoints.yml --port 5002 --credentials credentials.yml --enable-api'")
         except:
             print("Cannot start Rasa Server")
 
     def start_action_server(self):
         try:
-            os.system("cd chatbot;gnome-terminal -e 'rasa run actions'")
+            p = subprocess.Popen(['/opt/robocomp/bin/rcremoteshell', 'rasa run actions',
+                                  '/home/robocomp/robocomp/components/robocomp-viriato/components/conversationalAgent'
+                                  '/chatbot', 'rasaActionServer'])
+            # os.system("cd chatbot;gnome-terminal -e 'rasa run actions'")
         except:
             print("Cannot start Actions Server")
 
@@ -591,7 +650,7 @@ class SpecificWorker(GenericWorker):
         if self.interaction.interactionUI:
             self.updateGraph()
 
-        #UNCOMMENT
+        # UNCOMMENT
         # if self.removeInteractingEdge and self.interactingEdgeInAGM:
         #     print('Trying to remove interacting edge')
         #     try:
@@ -730,7 +789,7 @@ class SpecificWorker(GenericWorker):
                             self.writeToFile(prs['p'].value, self.situation)
                             self.startChatbot()
 
-                    elif self.action == 'path_affordanceBlock':
+                    elif self.action == 'affordance_blocking':
                         if (not self.interaction.isVisible()) or (self.previous_action != self.action):
                             self.interaction.interactionUI = True
                             self.situation = 'three'
@@ -797,7 +856,6 @@ class SpecificWorker(GenericWorker):
                     print(r)
                     print("Conversation cleared")
                     self.removeInteractingEdge = True
-
 
         return ret
 

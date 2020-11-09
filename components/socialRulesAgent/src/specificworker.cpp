@@ -77,18 +77,17 @@ void SpecificWorker::initialize(int period)
 
     connect(permission_checkbox, SIGNAL(clicked()),this, SLOT(checkRobotPermission()));
 
+
     checkObjectAffordance();
 
-	auto timeValue = currtime_slider->value();
-	QTime currentTime = QTime(timeValue / 60, timeValue % 60);
-	currentTime_timeEdit->setTime(currentTime);
-
+    auto timeValue = currtime_slider->value();
+    QTime currentTime = QTime(timeValue / 60, timeValue % 60);
+    currentTime_timeEdit->setTime(currentTime);
     QString hour = currentTime.toString(Qt::SystemLocaleShortDate);
     for (auto const &map : mapIdObjects)
     {
         mapCostsPerHour[hour].push_back(map.second.cost);
     }
-
     this->Period = period;
 
     if(this->startup_check_flag)
@@ -99,24 +98,36 @@ void SpecificWorker::initialize(int period)
     {
         timer.start(Period);
         emit this->t_initialize_to_compute();
-    }
+        qDebug()<< "Worker initialized correctly";
 
+    }
 }
+
+
+int SpecificWorker::startup_check()
+{
+
+    std::cout << "Startup check" << std::endl;
+    QTimer::singleShot(200, qApp, SLOT(quit()));
+    return 0;
+}
+
 
 void SpecificWorker::compute()
 {
-
     QMutexLocker lockIM(mutex);
 
     if (worldModelChanged)
 	{
         qDebug()<< "worldModelChanged";
+
         updatePeopleInModel();
         checkInteractions();
 		checkObjectAffordance();
         if(active)
             checkHumanPermissions();
-		applySocialRules();
+
+        applySocialRules();
 
         updatePersonalSpacesInGraph();
         updateAffordancesInGraph();
@@ -136,13 +147,6 @@ void SpecificWorker::compute()
     }
 
     checkRobotmov();
-}
-
-int SpecificWorker::startup_check()
-{
-    std::cout << "Startup check" << std::endl;
-    QTimer::singleShot(200, qApp, SLOT(quit()));
-    return 0;
 }
 
 

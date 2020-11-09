@@ -230,7 +230,7 @@
 <node alias="rasaServer" endpoint="agmcommonbehavior:tcp -h localhost -p 10258">
   <dependence alias="converationalAgent"/>
   <workingDir path="/home/robocomp/" />
-  <upCommand command="rcremote localhost rasaServer /home/robocomp/robocomp/components/robocomp-viriato/components/conversationalAgent/chatbot rasa run --port 5002"/>
+  <upCommand command="rcremote localhost rasaServer /home/robocomp/robocomp/components/robocomp-viriato/components/conversationalAgent/chatbot rasa run -m models --endpoints endpoints.yml --port 5002 --credentials credentials.yml --enable-api"/>
   <downCommand command="fuser -k 5002/tcp" />
   <configFile path=""/>
   <xpos value="188.188181907" />

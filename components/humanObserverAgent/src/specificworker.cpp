@@ -90,7 +90,6 @@ void SpecificWorker::compute()
 {
     QMutexLocker lockIM(mutex);
 
-//    qDebug()<<"worldModelchanged:"<<worldModelChanged;
     //solo queremos mirar las personas cuando otro agente modifica el AGM. Si somos nosotros quien lo modifica no volvemos a observar las personas.
     if (worldModelChanged and !ourModelChanged)
     {
@@ -373,9 +372,9 @@ QPolygonF SpecificWorker::getAffordance(int objectID)
 
 bool SpecificWorker::checkHumansNear()
 {
-	auto currentRobotPose = innerModel->transformS6D("world","robot");
+    newModel = AGMModel::SPtr(new AGMModel(worldModel));
 
-	bool changesInEdges = false;
+    auto currentRobotPose = innerModel->transformS6D("world","robot");
 	vector <int32_t> currentPersonsNear;
 
 	for (auto p:totalPersons)
