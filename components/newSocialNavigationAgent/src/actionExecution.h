@@ -17,20 +17,20 @@ public:
 
     void initialize(AGMModel::SPtr worldModel_);
     void updateWordModel(AGMModel::SPtr worldModel_);
-    void update(std::string action_,  ParameterMap params_);
-    ActionExecution::retActions runActions(std::string action_,  ParameterMap params_, bool testing=false);
+    void update(std::string action_,  RoboCompAGMCommonBehavior::ParameterMap params_);
+    ActionExecution::retActions runActions(std::string action_,  RoboCompAGMCommonBehavior::ParameterMap params_, bool testing=false);
 
 
 private:
     AGMModel::SPtr worldModel;
     std::string action;
-    ParameterMap params;
+    RoboCompAGMCommonBehavior::ParameterMap params;
     bool newActionReceived = false;
 
 
-    ActionExecution::retActions action_ChangeRoom(ParameterMap params_, bool testing=false);
-    ActionExecution::retActions action_GoToPerson(ParameterMap params_);
-    ActionExecution::retActions action_GoToGroupOfPeople(ParameterMap params_);
+    ActionExecution::retActions action_ChangeRoom(RoboCompAGMCommonBehavior::ParameterMap params_, bool testing=false);
+    ActionExecution::retActions action_GoToPerson(RoboCompAGMCommonBehavior::ParameterMap params_);
+    ActionExecution::retActions action_GoToGroupOfPeople(RoboCompAGMCommonBehavior::ParameterMap params_);
 
     QPolygonF getRoomPolyline(AGMModelSymbol::SPtr roomSymbol);
     QPointF getPointInSocialSpace(AGMModelSymbol::SPtr personSymbol,AGMModelSymbol::SPtr robotSymbol);

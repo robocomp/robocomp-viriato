@@ -62,7 +62,8 @@ public:
 
         // Compute euclidean distance to target
         float euc_dist_to_target = QVector2D(robot - target).length();
-//        qDebug()<< "DISTANCE TO TARGET " << euc_dist_to_target << "NUM POINTS "<< points.size();
+        qDebug()<<"robot pose "<< robot << "target" << target;
+        qDebug()<< "DISTANCE TO TARGET " << euc_dist_to_target << "NUM POINTS "<< points.size();
 
         if (points.size() < 3 and euc_dist_to_target < FINAL_DISTANCE_TO_TARGET)
         {
@@ -150,7 +151,7 @@ private:
     float ROBOT_RADIUS_MM; //mm
 
     const float ROBOT_LENGTH = 500;
-    const float FINAL_DISTANCE_TO_TARGET = 500; //mm
+    const float FINAL_DISTANCE_TO_TARGET = 800; //mm
     float KB = 2.0;
 
     float advVelx = 0, advVelz = 0, rotVel = 0;

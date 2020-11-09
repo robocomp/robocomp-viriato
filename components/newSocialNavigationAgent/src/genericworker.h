@@ -50,18 +50,6 @@
 #define CHECK_PERIOD 5000
 #define BASIC_PERIOD 100
 
-using namespace std;
-using namespace RoboCompAGMCommonBehavior;
-using namespace RoboCompAGMExecutive;
-using namespace RoboCompAGMExecutiveTopic;
-using namespace RoboCompAGMWorldModel;
-using namespace RoboCompGenericBase;
-using namespace RoboCompLaser;
-using namespace RoboCompOmniRobot;
-using namespace RoboCompPlanning;
-using namespace RoboCompRCISMousePicker;
-using namespace RoboCompSocialNavigationGaussian;
-using namespace RoboCompSocialRules;
 
 typedef map <string,::IceProxy::Ice::Object*> MapPrx;
 
@@ -88,28 +76,28 @@ public:
 	bool isActive() { return active; }
 
 
-	AGMExecutivePrx agmexecutive_proxy;
-	LaserPrx laser_proxy;
-	OmniRobotPrx omnirobot_proxy;
+	RoboCompAGMExecutive::AGMExecutivePrx agmexecutive_proxy;
+	RoboCompLaser::LaserPrx laser_proxy;
+	RoboCompOmniRobot::OmniRobotPrx omnirobot_proxy;
 
-	virtual bool AGMCommonBehavior_activateAgent(const ParameterMap &prs) = 0;
+	virtual bool AGMCommonBehavior_activateAgent(const RoboCompAGMCommonBehavior::ParameterMap &prs) = 0;
 	virtual bool AGMCommonBehavior_deactivateAgent() = 0;
-	virtual ParameterMap AGMCommonBehavior_getAgentParameters() = 0;
-	virtual StateStruct AGMCommonBehavior_getAgentState() = 0;
+	virtual RoboCompAGMCommonBehavior::ParameterMap AGMCommonBehavior_getAgentParameters() = 0;
+	virtual RoboCompAGMCommonBehavior::StateStruct AGMCommonBehavior_getAgentState() = 0;
 	virtual void AGMCommonBehavior_killAgent() = 0;
 	virtual bool AGMCommonBehavior_reloadConfigAgent() = 0;
-	virtual bool AGMCommonBehavior_setAgentParameters(const ParameterMap &prs) = 0;
+	virtual bool AGMCommonBehavior_setAgentParameters(const RoboCompAGMCommonBehavior::ParameterMap &prs) = 0;
 	virtual int AGMCommonBehavior_uptimeAgent() = 0;
-	virtual void AGMExecutiveTopic_edgeUpdated(const RoboCompAGMWorldModel::Edge &modification) = 0;
-	virtual void AGMExecutiveTopic_edgesUpdated(const RoboCompAGMWorldModel::EdgeSequence &modifications) = 0;
-	virtual void AGMExecutiveTopic_selfEdgeAdded(const int nodeid, const string &edgeType, const RoboCompAGMWorldModel::StringDictionary &attributes) = 0;
-	virtual void AGMExecutiveTopic_selfEdgeDeleted(const int nodeid, const string &edgeType) = 0;
-	virtual void AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldModel::World &w) = 0;
-	virtual void AGMExecutiveTopic_symbolUpdated(const RoboCompAGMWorldModel::Node &modification) = 0;
-	virtual void AGMExecutiveTopic_symbolsUpdated(const RoboCompAGMWorldModel::NodeSequence &modifications) = 0;
-	virtual void RCISMousePicker_setPick(const Pick &myPick) = 0;
-	virtual void SocialRules_objectsChanged(const SRObjectSeq &objectsAffordances) = 0;
-	virtual void SocialRules_personalSpacesChanged(const RoboCompSocialNavigationGaussian::SNGPolylineSeq &intimateSpaces, const RoboCompSocialNavigationGaussian::SNGPolylineSeq &personalSpaces, const RoboCompSocialNavigationGaussian::SNGPolylineSeq &socialSpaces) = 0;
+	virtual void AGMExecutiveTopic_edgeUpdated (const RoboCompAGMWorldModel::Edge &modification) = 0;
+	virtual void AGMExecutiveTopic_edgesUpdated (const RoboCompAGMWorldModel::EdgeSequence &modifications) = 0;
+	virtual void AGMExecutiveTopic_selfEdgeAdded (const int nodeid, const std::string &edgeType, const RoboCompAGMWorldModel::StringDictionary &attributes) = 0;
+	virtual void AGMExecutiveTopic_selfEdgeDeleted (const int nodeid, const std::string &edgeType) = 0;
+	virtual void AGMExecutiveTopic_structuralChange (const RoboCompAGMWorldModel::World &w) = 0;
+	virtual void AGMExecutiveTopic_symbolUpdated (const RoboCompAGMWorldModel::Node &modification) = 0;
+	virtual void AGMExecutiveTopic_symbolsUpdated (const RoboCompAGMWorldModel::NodeSequence &modifications) = 0;
+	virtual void RCISMousePicker_setPick (const RoboCompRCISMousePicker::Pick &myPick) = 0;
+	virtual void SocialRules_objectsChanged (const RoboCompSocialRules::SRObjectSeq &objectsAffordances) = 0;
+	virtual void SocialRules_personalSpacesChanged (const RoboCompSocialNavigationGaussian::SNGPolylineSeq &intimateSpaces, const RoboCompSocialNavigationGaussian::SNGPolylineSeq &personalSpaces, const RoboCompSocialNavigationGaussian::SNGPolylineSeq &socialSpaces) = 0;
 
 protected:
 	//State Machine
@@ -127,7 +115,7 @@ protected:
 	bool active;
 	AGMModel::SPtr worldModel;
 	BehaviorParameters p;
-	ParameterMap params;
+	RoboCompAGMCommonBehavior::ParameterMap params;
 	int iter;
 	bool setParametersAndPossibleActivation(const RoboCompAGMCommonBehavior::ParameterMap &prs, bool &reactivated);
 	RoboCompPlanning::Action createAction(std::string s);

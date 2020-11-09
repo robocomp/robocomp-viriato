@@ -26,7 +26,6 @@
 #include <config.h>
 #include "genericworker.h"
 
-using namespace RoboCompSocialRules;
 
 class SocialRulesI : public virtual RoboCompSocialRules::SocialRules
 {
@@ -34,8 +33,8 @@ public:
 	SocialRulesI(GenericWorker *_worker);
 	~SocialRulesI();
 
-	void objectsChanged(const SRObjectSeq  &objectsAffordances, const Ice::Current&);
-	void personalSpacesChanged(const RoboCompSocialNavigationGaussian::SNGPolylineSeq  &intimateSpaces, const RoboCompSocialNavigationGaussian::SNGPolylineSeq  &personalSpaces, const RoboCompSocialNavigationGaussian::SNGPolylineSeq  &socialSpaces, const Ice::Current&);
+	void objectsChanged(const RoboCompSocialRules::SRObjectSeq &objectsAffordances, const Ice::Current&);
+	void personalSpacesChanged(const RoboCompSocialNavigationGaussian::SNGPolylineSeq &intimateSpaces, const RoboCompSocialNavigationGaussian::SNGPolylineSeq &personalSpaces, const RoboCompSocialNavigationGaussian::SNGPolylineSeq &socialSpaces, const Ice::Current&);
 
 private:
 

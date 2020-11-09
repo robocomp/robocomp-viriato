@@ -35,29 +35,30 @@ class SpecificWorker : public GenericWorker
 {
 Q_OBJECT
 public:
-	SpecificWorker(MapPrx& mprx);
+	SpecificWorker(MapPrx& mprx, bool startup_check);
 	~SpecificWorker();
 	bool setParams(RoboCompCommonBehavior::ParameterList params);
 
-	bool AGMCommonBehavior_activateAgent(const ParameterMap &prs);
+	bool AGMCommonBehavior_activateAgent(const RoboCompAGMCommonBehavior::ParameterMap &prs);
 	bool AGMCommonBehavior_deactivateAgent();
-	ParameterMap AGMCommonBehavior_getAgentParameters();
-	StateStruct AGMCommonBehavior_getAgentState();
+	RoboCompAGMCommonBehavior::ParameterMap AGMCommonBehavior_getAgentParameters();
+	RoboCompAGMCommonBehavior::StateStruct AGMCommonBehavior_getAgentState();
 	void AGMCommonBehavior_killAgent();
 	bool AGMCommonBehavior_reloadConfigAgent();
-	bool AGMCommonBehavior_setAgentParameters(const ParameterMap &prs);
+	bool AGMCommonBehavior_setAgentParameters(const RoboCompAGMCommonBehavior::ParameterMap &prs);
 	int AGMCommonBehavior_uptimeAgent();
 
 	void AGMExecutiveTopic_edgeUpdated(const RoboCompAGMWorldModel::Edge &modification);
 	void AGMExecutiveTopic_edgesUpdated(const RoboCompAGMWorldModel::EdgeSequence &modifications);
-	void AGMExecutiveTopic_selfEdgeAdded(const int nodeid, const string &edgeType, const RoboCompAGMWorldModel::StringDictionary &attributes);
-	void AGMExecutiveTopic_selfEdgeDeleted(const int nodeid, const string &edgeType);
+	void AGMExecutiveTopic_selfEdgeAdded(const int nodeid, const std::string &edgeType, const RoboCompAGMWorldModel::StringDictionary &attributes);
+	void AGMExecutiveTopic_selfEdgeDeleted(const int nodeid, const std::string &edgeType);
 	void AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldModel::World &w);
 	void AGMExecutiveTopic_symbolUpdated(const RoboCompAGMWorldModel::Node &modification);
 	void AGMExecutiveTopic_symbolsUpdated(const RoboCompAGMWorldModel::NodeSequence &modifications);
 
 public slots:
 	void compute();
+	int startup_check();
 	void initialize(int period);
 	//Specification slot methods State Machine
 	void sm_compute();
@@ -66,10 +67,10 @@ public slots:
 
 	//--------------------
 private:
-	std::shared_ptr<InnerModel> innerModel;
+	std::shared_ptr < InnerModel > innerModel;
 	std::string action;
-	ParameterMap params;
-	AGMModel::SPtr worldModel,newModel;
+	RoboCompAGMCommonBehavior::ParameterMap params;
+	AGMModel::SPtr worldModel, newModel;
 	bool active;
 
     std::map<int32_t, QPolygonF> mapRoomPolygon;
@@ -78,10 +79,9 @@ private:
     bool updateRobotRoom();
 
 
-	bool setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated);
+	bool setParametersAndPossibleActivation(const RoboCompAGMCommonBehavior::ParameterMap &prs, bool &reactivated);
 	void sendModificationProposal(AGMModel::SPtr &worldModel, AGMModel::SPtr &newModel);
-
-
+	bool startup_check_flag;
 
 };
 

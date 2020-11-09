@@ -21,14 +21,14 @@
 /**
 * \brief Default constructor
 */
-SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
+SpecificWorker::SpecificWorker(MapPrx& mprx,bool startup_check) : GenericWorker(mprx)
 {
 
 	active = false;
 	worldModel = AGMModel::SPtr(new AGMModel());
 	worldModel->name = "worldModel";
-
     innerModel = std::make_shared<InnerModel>();
+    this->startup_check_flag = startup_check;
 
 }
 
@@ -97,13 +97,25 @@ void SpecificWorker::initialize(int period)
     getPeopleBlocking();
 
     this->Period = period;
-    timer.start(period);
 
-
-    emit this->t_initialize_to_compute();
+    if(this->startup_check_flag)
+    {
+        this->startup_check();
+    }
+    else
+    {
+        timer.start(Period);
+        emit this->t_initialize_to_compute();
+    }
 
 }
 
+int SpecificWorker::startup_check()
+{
+    std::cout << "Startup check" << std::endl;
+    QTimer::singleShot(200, qApp, SLOT(quit()));
+    return 0;
+}
 
 
 void SpecificWorker::compute()
@@ -228,7 +240,7 @@ void SpecificWorker::checkHumanBlock()
 
     ////////////////////////// affordanceBlock ////////////////////////
 
-    edgeName = "affordanceBlock";
+    edgeName = "affordance_blocking";
 
     for(auto id: affBlockingIDs)
     {
@@ -642,12 +654,12 @@ void SpecificWorker::sm_finalize()
 
 ////////////////////////// SUBSCRIPTIONS /////////////////////////////////////////////
 
-void SpecificWorker::RCISMousePicker_setPick(const Pick &myPick)
+void SpecificWorker::RCISMousePicker_setPick(const RoboCompRCISMousePicker::Pick &myPick)
 {
     navigation.newTarget(QPointF(myPick.x,myPick.z));
 }
 
-void SpecificWorker::SocialRules_objectsChanged(const SRObjectSeq &objectsAffordances)
+void SpecificWorker::SocialRules_objectsChanged(const RoboCompSocialRules::SRObjectSeq &objectsAffordances)
 {
     //subscribesToCODE
     qDebug() << __FUNCTION__ << objectsAffordances.size();
@@ -671,7 +683,7 @@ void SpecificWorker::SocialRules_personalSpacesChanged(const RoboCompSocialNavig
 
 ///////////////////////////////////////////////////////////////////////////////////////
 
-bool SpecificWorker::AGMCommonBehavior_activateAgent(const ParameterMap &prs)
+bool SpecificWorker::AGMCommonBehavior_activateAgent(const RoboCompAGMCommonBehavior::ParameterMap &prs)
 {
     qDebug()<<__FUNCTION__;
 
@@ -696,16 +708,16 @@ bool SpecificWorker::AGMCommonBehavior_deactivateAgent()
 	return deactivate();
 }
 
-ParameterMap SpecificWorker::AGMCommonBehavior_getAgentParameters()
+RoboCompAGMCommonBehavior::ParameterMap SpecificWorker::AGMCommonBehavior_getAgentParameters()
 {
 //implementCODE
 	return params;
 }
 
-StateStruct SpecificWorker::AGMCommonBehavior_getAgentState()
+RoboCompAGMCommonBehavior::StateStruct SpecificWorker::AGMCommonBehavior_getAgentState()
 {
 //implementCODE
-	StateStruct s;
+    RoboCompAGMCommonBehavior::StateStruct s;
 	if (isActive())
 	{
 		s.state = RoboCompAGMCommonBehavior::StateEnum::Running;
@@ -730,7 +742,7 @@ bool SpecificWorker::AGMCommonBehavior_reloadConfigAgent()
 	return true;
 }
 
-bool SpecificWorker::AGMCommonBehavior_setAgentParameters(const ParameterMap &prs)
+bool SpecificWorker::AGMCommonBehavior_setAgentParameters(const RoboCompAGMCommonBehavior::ParameterMap &prs)
 {
 //implementCODE
 	bool activated = false;
@@ -874,7 +886,7 @@ void SpecificWorker::AGMExecutiveTopic_symbolsUpdated(const RoboCompAGMWorldMode
 
 }
 
-bool SpecificWorker::setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated)
+bool SpecificWorker::setParametersAndPossibleActivation(const RoboCompAGMCommonBehavior::ParameterMap &prs, bool &reactivated)
 {
 
 	printf("<<< ------------------------- setParametersAndPossibleActivation -------------------------\n");
@@ -883,7 +895,7 @@ bool SpecificWorker::setParametersAndPossibleActivation(const ParameterMap &prs,
 
 	// Update parameters
 	params.clear();
-	for (ParameterMap::const_iterator it=prs.begin(); it!=prs.end(); it++)
+	for (RoboCompAGMCommonBehavior::ParameterMap::const_iterator it=prs.begin(); it!=prs.end(); it++)
 	{
 		params[it->first] = it->second;
 		qDebug()<< QString::fromStdString(it->first) << " " << QString::fromStdString(it->second.value);

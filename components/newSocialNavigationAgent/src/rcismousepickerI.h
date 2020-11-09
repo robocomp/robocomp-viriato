@@ -26,7 +26,6 @@
 #include <config.h>
 #include "genericworker.h"
 
-using namespace RoboCompRCISMousePicker;
 
 class RCISMousePickerI : public virtual RoboCompRCISMousePicker::RCISMousePicker
 {
@@ -34,7 +33,7 @@ public:
 	RCISMousePickerI(GenericWorker *_worker);
 	~RCISMousePickerI();
 
-	void setPick(const Pick  &myPick, const Ice::Current&);
+	void setPick(const RoboCompRCISMousePicker::Pick &myPick, const Ice::Current&);
 
 private:
 

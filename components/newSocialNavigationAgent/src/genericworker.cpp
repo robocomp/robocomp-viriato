@@ -43,9 +43,9 @@ GenericWorker::GenericWorker(MapPrx& mprx) : Ui_guiDlg()
 	QObject::connect(&timer, SIGNAL(timeout()), this, SIGNAL(t_compute_to_compute()));
 
 	//------------------
-	agmexecutive_proxy = (*(AGMExecutivePrx*)mprx["AGMExecutiveProxy"]);
-	laser_proxy = (*(LaserPrx*)mprx["LaserProxy"]);
-	omnirobot_proxy = (*(OmniRobotPrx*)mprx["OmniRobotProxy"]);
+	agmexecutive_proxy = (*(RoboCompAGMExecutive::AGMExecutivePrx*)mprx["AGMExecutiveProxy"]);
+	laser_proxy = (*(RoboCompLaser::LaserPrx*)mprx["LaserProxy"]);
+	omnirobot_proxy = (*(RoboCompOmniRobot::OmniRobotPrx*)mprx["OmniRobotProxy"]);
 
 	mutex = new QMutex(QMutex::Recursive);
 
@@ -136,13 +136,13 @@ bool GenericWorker::deactivate()
 	return active;
 }
 
-bool GenericWorker::setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated)
+bool GenericWorker::setParametersAndPossibleActivation(const RoboCompAGMCommonBehavior::ParameterMap &prs, bool &reactivated)
 {
 	// We didn't reactivate the component
 	reactivated = false;
 
 	// Update parameters
-	for (ParameterMap::const_iterator it=prs.begin(); it!=prs.end(); it++)
+	for (RoboCompAGMCommonBehavior::ParameterMap::const_iterator it=prs.begin(); it!=prs.end(); it++)
 	{
 		params[it->first] = it->second;
 	}

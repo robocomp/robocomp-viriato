@@ -61,10 +61,10 @@ bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 void SpecificWorker::initialize(int period)
 {
 	std::cout << "Initialize worker" << std::endl;
-	this->Period = 1000;
 
     previousPersonsList.clear();
 
+    this->Period = period;
     if(this->startup_check_flag)
     {
         this->startup_check();
@@ -88,7 +88,7 @@ int SpecificWorker::startup_check()
 
 void SpecificWorker::compute()
 {
-    QMutexLocker l(mutex);
+    QMutexLocker lockIM(mutex);
 
 //    qDebug()<<"worldModelchanged:"<<worldModelChanged;
     //solo queremos mirar las personas cuando otro agente modifica el AGM. Si somos nosotros quien lo modifica no volvemos a observar las personas.
@@ -527,7 +527,8 @@ void SpecificWorker::AGMExecutiveTopic_selfEdgeDeleted(const int nodeid, const s
 void SpecificWorker::AGMExecutiveTopic_edgeUpdated(const RoboCompAGMWorldModel::Edge &modification)
 {
 //subscribesToCODE
-	QMutexLocker locker(mutex);
+
+    QMutexLocker locker(mutex);
 	AGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);
 	AGMInner::updateImNodeFromEdge(worldModel, modification, innerModel.get());
 

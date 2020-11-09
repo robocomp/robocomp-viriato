@@ -15,7 +15,7 @@ void ActionExecution::updateWordModel(AGMModel::SPtr worldModel_)
     worldModel = worldModel_;
 
 }
-void ActionExecution::update(std::string action_,  ParameterMap params_)
+void ActionExecution::update(std::string action_,  RoboCompAGMCommonBehavior::ParameterMap params_)
 {
     qDebug()<< "ActionExecution" << __FUNCTION__;
     action = action_;
@@ -29,7 +29,7 @@ void ActionExecution::update(std::string action_,  ParameterMap params_)
 
 //////////////////////////////////missions//////////////////////////////////////////
 
-ActionExecution::retActions ActionExecution::runActions(std::string action_,  ParameterMap params_, bool testing)
+ActionExecution::retActions ActionExecution::runActions(std::string action_,  RoboCompAGMCommonBehavior::ParameterMap params_, bool testing)
 {
 //    qDebug() << "---------------------------------------------------";
 //    qDebug() <<__FUNCTION__ <<"Checking ACTION: " << QString::fromStdString(action_);
@@ -54,7 +54,7 @@ ActionExecution::retActions ActionExecution::runActions(std::string action_,  Pa
 }
 
 
-ActionExecution::retActions ActionExecution::action_ChangeRoom(ParameterMap params_,bool testing)
+ActionExecution::retActions ActionExecution::action_ChangeRoom(RoboCompAGMCommonBehavior::ParameterMap params_,bool testing)
 {
 
 //    qDebug()<<"-------------------------------"<< __FUNCTION__<< ----------------";
@@ -139,7 +139,7 @@ ActionExecution::retActions ActionExecution::action_ChangeRoom(ParameterMap para
 
 
 
-ActionExecution::retActions ActionExecution::action_GoToPerson(ParameterMap params_)
+ActionExecution::retActions ActionExecution::action_GoToPerson(RoboCompAGMCommonBehavior::ParameterMap params_)
 {
     qDebug()<<"-------------------------------"<< __FUNCTION__<< "-------------------------------";
     AGMModelSymbol::SPtr personSymbol;
@@ -176,7 +176,7 @@ ActionExecution::retActions ActionExecution::action_GoToPerson(ParameterMap para
 
 }
 
-ActionExecution::retActions ActionExecution::action_GoToGroupOfPeople(ParameterMap params_)
+ActionExecution::retActions ActionExecution::action_GoToGroupOfPeople(RoboCompAGMCommonBehavior::ParameterMap params_)
 {
     qDebug()<<"-------------------------------"<< __FUNCTION__<< "-------------------------------";
     AGMModelSymbol::SPtr robotSymbol;

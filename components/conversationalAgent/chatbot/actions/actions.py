@@ -38,7 +38,7 @@ class actionlinktalking(Action):
 
     def run(self, dispatcher, tracker, domain):
         print("action_link_talking")
-        talk_dict = {"rasa": "is_talking", "response": " - "}
+        talk_dict = {"rasa": "is_talking", "response": ""}
         json_object = json.dumps(talk_dict, indent=4)
         with open("rasa_conversation.json", "w") as outfile:
             outfile.write(json_object)
@@ -51,7 +51,7 @@ class actionlinkwaiting(Action):
 
     def run(self, dispatcher, tracker, domain):
         print("action_link_waiting")
-        talk_dict = {"rasa": "is_waiting_for_response", "response": " - "}
+        talk_dict = {"rasa": "is_waiting_for_response", "response": ""}
         json_object = json.dumps(talk_dict, indent=4)
         with open("rasa_conversation.json", "w") as outfile:
             outfile.write(json_object)

@@ -29,12 +29,12 @@ SocialRulesI::~SocialRulesI()
 }
 
 
-void SocialRulesI::objectsChanged(const SRObjectSeq  &objectsAffordances, const Ice::Current&)
+void SocialRulesI::objectsChanged(const RoboCompSocialRules::SRObjectSeq &objectsAffordances, const Ice::Current&)
 {
 	worker->SocialRules_objectsChanged(objectsAffordances);
 }
 
-void SocialRulesI::personalSpacesChanged(const RoboCompSocialNavigationGaussian::SNGPolylineSeq  &intimateSpaces, const RoboCompSocialNavigationGaussian::SNGPolylineSeq  &personalSpaces, const RoboCompSocialNavigationGaussian::SNGPolylineSeq  &socialSpaces, const Ice::Current&)
+void SocialRulesI::personalSpacesChanged(const RoboCompSocialNavigationGaussian::SNGPolylineSeq &intimateSpaces, const RoboCompSocialNavigationGaussian::SNGPolylineSeq &personalSpaces, const RoboCompSocialNavigationGaussian::SNGPolylineSeq &socialSpaces, const Ice::Current&)
 {
 	worker->SocialRules_personalSpacesChanged(intimateSpaces, personalSpaces, socialSpaces);
 }

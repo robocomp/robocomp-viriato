@@ -106,13 +106,15 @@ void SpecificWorker::initialize(int period)
 void SpecificWorker::compute()
 {
 
+    QMutexLocker lockIM(mutex);
+
     if (worldModelChanged)
 	{
         qDebug()<< "worldModelChanged";
         updatePeopleInModel();
         checkInteractions();
 		checkObjectAffordance();
-        if(isActive())
+        if(active)
             checkHumanPermissions();
 		applySocialRules();
 
@@ -188,6 +190,7 @@ void SpecificWorker::updatePeopleInModel()
 
 void SpecificWorker::checkHumanPermissions()
 {
+    qDebug()<<"-----"<< __FUNCTION__<<"-----";
     auto robotID = worldModel->getIdentifierByType("robot");
     AGMModelSymbol::SPtr robotSymbol = worldModel->getSymbol(robotID);
 
@@ -199,13 +202,15 @@ void SpecificWorker::checkHumanPermissions()
             if (symbolPair.first== robotID and secondType=="person") {
                 //check the attribute of the link
                 auto attr = edge->attributes;
+                qDebug()<< QString::fromStdString(attr["response"]);
                 bool permission = (attr["response"] == "affirmative");
 
                 if (permission) //Replace with permission when the atribute exists
                 {
-                    //guardar el id de la persona para que no se añadan los enlaces interacting
                     personPermission = symbolPair.second;
-                }
+                    qDebug()<< personPermission;
+                } else
+                    personPermission = -1;
 
                 break;
             }
@@ -1501,19 +1506,20 @@ bool SpecificWorker::setParametersAndPossibleActivation(const RoboCompAGMCommonB
 	try
 	{
 		action = params["action"].value;
+		qDebug()<<__FUNCTION__ << QString::fromStdString(action);
 		std::transform(action.begin(), action.end(), action.begin(), ::tolower);
 		//TYPE YOUR ACTION NAME
-        if (action == "askforgroupalpermission")
+        if (action == "askforgroupalpermission" )
         {
-            qDebug()<< "action received";
+            qDebug()<< "action received - ask for groupal permission";
             active = true;
         }
         else if (action == "none")
         {
+            qDebug()<< "ACTION IS NONE";
             active = false;
-            personPermission = -1;
-            permission_given = false;
-            permission_checkbox->setCheckState(Qt::CheckState(0));
+//            worldModelChanged = true;
+//            permission_checkbox->setCheckState(Qt::CheckState(0));
         }
 	}
 	catch (...)

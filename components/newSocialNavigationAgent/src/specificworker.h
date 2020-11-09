@@ -53,27 +53,28 @@ class SpecificWorker : public GenericWorker
 Q_OBJECT
 public:
 
-	SpecificWorker(MapPrx& mprx);
+	SpecificWorker(MapPrx& mprx, bool startup_check);
 	~SpecificWorker();
 	bool setParams(RoboCompCommonBehavior::ParameterList params);
 
-	bool AGMCommonBehavior_activateAgent(const ParameterMap &prs);
+	bool AGMCommonBehavior_activateAgent(const RoboCompAGMCommonBehavior::ParameterMap &prs);
 	bool AGMCommonBehavior_deactivateAgent();
-	ParameterMap AGMCommonBehavior_getAgentParameters();
-	StateStruct AGMCommonBehavior_getAgentState();
+	RoboCompAGMCommonBehavior::ParameterMap AGMCommonBehavior_getAgentParameters();
+	RoboCompAGMCommonBehavior::StateStruct AGMCommonBehavior_getAgentState();
 	void AGMCommonBehavior_killAgent();
 	bool AGMCommonBehavior_reloadConfigAgent();
-	bool AGMCommonBehavior_setAgentParameters(const ParameterMap &prs);
+	bool AGMCommonBehavior_setAgentParameters(const RoboCompAGMCommonBehavior::ParameterMap &prs);
 	int AGMCommonBehavior_uptimeAgent();
+
 	void AGMExecutiveTopic_edgeUpdated(const RoboCompAGMWorldModel::Edge &modification);
 	void AGMExecutiveTopic_edgesUpdated(const RoboCompAGMWorldModel::EdgeSequence &modifications);
+	void AGMExecutiveTopic_selfEdgeAdded(const int nodeid, const std::string &edgeType, const RoboCompAGMWorldModel::StringDictionary &attributes);
+	void AGMExecutiveTopic_selfEdgeDeleted(const int nodeid, const std::string &edgeType);
 	void AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldModel::World &w);
 	void AGMExecutiveTopic_symbolUpdated(const RoboCompAGMWorldModel::Node &modification);
 	void AGMExecutiveTopic_symbolsUpdated(const RoboCompAGMWorldModel::NodeSequence &modifications);
-    void AGMExecutiveTopic_selfEdgeAdded(const int nodeid, const string &edgeType, const RoboCompAGMWorldModel::StringDictionary &attributes);
-    void AGMExecutiveTopic_selfEdgeDeleted(const int nodeid, const string &edgeType);
-	void RCISMousePicker_setPick(const Pick &myPick);
-	void SocialRules_objectsChanged(const SRObjectSeq &objectsAffordances);
+	void RCISMousePicker_setPick(const RoboCompRCISMousePicker::Pick &myPick);
+	void SocialRules_objectsChanged(const RoboCompSocialRules::SRObjectSeq &objectsAffordances);
 	void SocialRules_personalSpacesChanged(const RoboCompSocialNavigationGaussian::SNGPolylineSeq &intimateSpaces, const RoboCompSocialNavigationGaussian::SNGPolylineSeq &personalSpaces, const RoboCompSocialNavigationGaussian::SNGPolylineSeq &socialSpaces);
 
 	using InnerPtr = std::shared_ptr<InnerModel>;
@@ -84,6 +85,7 @@ public:
 
 public slots:
     void compute();
+    int startup_check();
     void initialize(int period);
     void checkRobotAutoMovState();
     void checkRobotPermission();
@@ -101,13 +103,14 @@ public slots:
 private:
 	InnerPtr innerModel;
 	std::string action,actionBlocked;
-	ParameterMap params;
+    RoboCompAGMCommonBehavior::ParameterMap params;
 
     bool robotBlocked = false;
 
     QString currentPlan = "none";
     QString planBlocked = "";
-    ParameterMap paramsBlocked;
+    RoboCompAGMCommonBehavior::ParameterMap paramsBlocked;
+
 
 
     AGMModel::SPtr worldModel, newModel;
@@ -135,8 +138,8 @@ private:
     ActionExecution actionExecution;
 
 
-    SNGPolylineSeq intimate_seq, personal_seq, social_seq;
-    SRObjectSeq objects_seq;
+    RoboCompSocialNavigationGaussian::SNGPolylineSeq intimate_seq, personal_seq, social_seq;
+    RoboCompSocialRules::SRObjectSeq objects_seq;
 
     bool personalSpacesChanged = false;
     bool affordancesChanged = false;
@@ -157,12 +160,12 @@ private:
 
 
 
-	bool setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated);
+	bool setParametersAndPossibleActivation(const RoboCompAGMCommonBehavior::ParameterMap &prs, bool &reactivated);
 	void sendModificationProposal(AGMModel::SPtr &worldModel, AGMModel::SPtr &newModel);
 
 	bool removeEdgeModel(int32_t id1, int32_t id2, string edgeName);
 	bool addEdgeModel(int32_t id1, int32_t id2, string edgeName);
-
+	bool startup_check_flag;
 
 };
 
