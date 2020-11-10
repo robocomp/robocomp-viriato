@@ -76,8 +76,8 @@ private:
 
     std::map<int32_t, QPolygonF> mapRoomPolygon;
     void readRoomPolylines();
-    bool updatePeopleRoom();
-    bool updateRobotRoom();
+    void updatePeopleRoom();
+    void updateRobotRoom();
 
 
 

@@ -56,6 +56,7 @@ Q_OBJECT
 		isBlocking,
 		softBlock,
         isNear,
+        front,
 		unknown
 	};
 

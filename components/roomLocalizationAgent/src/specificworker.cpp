@@ -67,7 +67,7 @@ bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 void SpecificWorker::initialize(int period)
 {
 	std::cout << "Initialize worker" << std::endl;
-    this->Period = period;
+    this->Period = 1000;
     if(this->startup_check_flag)
     {
         this->startup_check();
@@ -88,17 +88,8 @@ int SpecificWorker::startup_check()
 void SpecificWorker::compute()
 {
     QMutexLocker lockIM(mutex);
-
-	newModel = AGMModel::SPtr(new AGMModel(worldModel));
-
-    if ( updatePeopleRoom() or  updateRobotRoom()) {
-		try {
-			sendModificationProposal(worldModel, newModel);
-		}
-		catch (...) {
-			std::cout << "No se puede actualizar worldModel" << std::endl;
-		}
-	}
+    updatePeopleRoom();
+    updateRobotRoom();
 
 }
 
@@ -140,7 +131,9 @@ void SpecificWorker::readRoomPolylines()
 	}
 }
 
-bool SpecificWorker::updatePeopleRoom() {
+void SpecificWorker::updatePeopleRoom() {
+
+    newModel = AGMModel::SPtr(new AGMModel(worldModel));
 
     bool changesInEdges = false;
 
@@ -180,9 +173,9 @@ bool SpecificWorker::updatePeopleRoom() {
         int prevRoomID = -1;
         for (auto edge = personAGM->edgesBegin(worldModel); edge != personAGM->edgesEnd(worldModel); edge++)
         {
-            const std::pair<int32_t, int32_t> symbolPair = edge->getSymbolPair();
             if (edge->getLabel() == "in")
             {
+                const std::pair<int32_t, int32_t> symbolPair = edge->getSymbolPair();
                 const string secondType = worldModel->getSymbol(symbolPair.second)->symbolType;
                 if (symbolPair.first == id and secondType == "room")
                 {
@@ -230,11 +223,20 @@ bool SpecificWorker::updatePeopleRoom() {
 
 	}
 
-	return changesInEdges;
+    if (changesInEdges) {
+        try {
+            sendModificationProposal(worldModel, newModel);
+        }
+        catch (...) {
+            std::cout << "No se puede actualizar worldModel" << std::endl;
+        }
+    }
 
 }
 
-bool SpecificWorker::updateRobotRoom() {
+void SpecificWorker::updateRobotRoom() {
+
+    newModel = AGMModel::SPtr(new AGMModel(worldModel));
 
     bool changesInEdges = false;
 
@@ -243,11 +245,10 @@ bool SpecificWorker::updateRobotRoom() {
 
     for (auto [roomID,roomPolyline] : mapRoomPolygon)
     {
-        qDebug()<< roomID<< roomPolyline;
         if (roomPolyline.containsPoint(QPointF(currentRobotPose.x(),currentRobotPose.z()), Qt::FillRule::OddEvenFill))
         {
-            qDebug()<< "Contained";
             actualRoomID = roomID;
+            qDebug()<< "Robot in "<< actualRoomID;
             break;
         }
     }
@@ -262,9 +263,9 @@ bool SpecificWorker::updateRobotRoom() {
 
     for (auto edge = robotSymbol->edgesBegin(worldModel); edge != robotSymbol->edgesEnd(worldModel); edge++)
     {
-        const std::pair<int32_t, int32_t> symbolPair = edge->getSymbolPair();
         if (edge->getLabel() == "in")
         {
+            const std::pair<int32_t, int32_t> symbolPair = edge->getSymbolPair();
             const string secondType = worldModel->getSymbol(symbolPair.second)->symbolType;
             if (symbolPair.first == robotSymbolId and secondType == "room")
             {
@@ -308,9 +309,14 @@ bool SpecificWorker::updateRobotRoom() {
         changesInEdges = true;
     }
 
-
-    return changesInEdges;
-
+    if (changesInEdges) {
+        try {
+            sendModificationProposal(worldModel, newModel);
+        }
+        catch (...) {
+            std::cout << "No se puede actualizar worldModel" << std::endl;
+        }
+    }
 
 }
 

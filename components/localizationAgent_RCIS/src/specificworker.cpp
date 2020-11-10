@@ -64,7 +64,7 @@ private:
 /**
 * \brief Default constructor
 */
-SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
+SpecificWorker::SpecificWorker(MapPrx& mprx, bool startup_check) : GenericWorker(mprx)
 {
 	active = false;
 	worldModel = AGMModel::SPtr(new AGMModel());
@@ -77,7 +77,7 @@ SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
 	aux.type = "float";
 	aux.value = "0";
 	worker_params["frameRate"] = aux;
-
+	this->startup_check_flag = startup_check;
 }
 
 /**
@@ -85,7 +85,7 @@ SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
 */
 SpecificWorker::~SpecificWorker()
 {
-
+	std::cout << "Destroying SpecificWorker" << std::endl;
 }
 
 bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
@@ -111,11 +111,25 @@ bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 void SpecificWorker::initialize(int period)
 {
 	std::cout << "Initialize worker" << std::endl;
-	this->Period = period;
-	timer.start(Period);
-//	timer.start(100);
+	this->Period = 500;
+	if(this->startup_check_flag)
+	{
+		this->startup_check();
+	}
+	else
+	{
+		timer.start(Period);
+	}
 
 }
+
+int SpecificWorker::startup_check()
+{
+	std::cout << "Startup check" << std::endl;
+	QTimer::singleShot(200, qApp, SLOT(quit()));
+	return 0;
+}
+
 
 void SpecificWorker::compute()
 {
@@ -476,7 +490,7 @@ bool SpecificWorker::AGMCommonBehavior_reloadConfigAgent()
 	return true;
 }
 
-bool SpecificWorker::AGMCommonBehavior_activateAgent(const ParameterMap &prs)
+bool SpecificWorker::AGMCommonBehavior_activateAgent(const RoboCompAGMCommonBehavior::ParameterMap &prs)
 {
 	bool activated = false;
 	printf("<<activateAgent\n");
@@ -495,13 +509,13 @@ bool SpecificWorker::AGMCommonBehavior_activateAgent(const ParameterMap &prs)
 	return true;
 }
 
-bool SpecificWorker::AGMCommonBehavior_setAgentParameters(const ParameterMap &prs)
+bool SpecificWorker::AGMCommonBehavior_setAgentParameters(const RoboCompAGMCommonBehavior::ParameterMap &prs)
 {
 	bool activated = false;
 	return setParametersAndPossibleActivation(prs, activated);
 }
 
-ParameterMap SpecificWorker::AGMCommonBehavior_getAgentParameters()
+RoboCompAGMCommonBehavior::ParameterMap SpecificWorker::AGMCommonBehavior_getAgentParameters()
 {
 	return params;
 }
@@ -521,16 +535,16 @@ bool SpecificWorker::AGMCommonBehavior_deactivateAgent()
 	return deactivate();
 }
 
-StateStruct SpecificWorker::AGMCommonBehavior_getAgentState()
+RoboCompAGMCommonBehavior::StateStruct SpecificWorker::AGMCommonBehavior_getAgentState()
 {
-	StateStruct s;
+    RoboCompAGMCommonBehavior::StateStruct s;
 	if (isActive())
 	{
-		s.state = Running;
+		s.state = RoboCompAGMCommonBehavior::Running;
 	}
 	else
 	{
-		s.state = Stopped;
+		s.state = RoboCompAGMCommonBehavior::Stopped;
 	}
 	s.info = p.action.name;
 	return s;
@@ -610,7 +624,7 @@ void SpecificWorker::AGMExecutiveTopic_symbolsUpdated(const RoboCompAGMWorldMode
 
 
 
-bool SpecificWorker::setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated)
+bool SpecificWorker::setParametersAndPossibleActivation(const RoboCompAGMCommonBehavior::ParameterMap &prs, bool &reactivated)
 {
 	printf("<<< setParametersAndPossibleActivation\n");
 	// We didn't reactivate the component
@@ -618,7 +632,7 @@ bool SpecificWorker::setParametersAndPossibleActivation(const ParameterMap &prs,
 
 	// Update parameters
 	params.clear();
-	for (ParameterMap::const_iterator it=prs.begin(); it!=prs.end(); it++)
+	for (RoboCompAGMCommonBehavior::ParameterMap::const_iterator it=prs.begin(); it!=prs.end(); it++)
 	{
 		params[it->first] = it->second;
 	}
@@ -679,8 +693,8 @@ void SpecificWorker::sendModificationProposal(AGMModel::SPtr &worldModel, AGMMod
 		exit(1);
 	}
 }
-RoboCompCommonBehavior::ParameterList SpecificWorker::getWorkerParams()
-{
-	QMutexLocker locker(worker_params_mutex);
-	return worker_params;
-}
+//RoboCompCommonBehavior::ParameterList SpecificWorker::getWorkerParams()
+//{
+//	QMutexLocker locker(worker_params_mutex);
+//	return worker_params;
+//}

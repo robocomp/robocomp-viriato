@@ -88,7 +88,9 @@ void SpecificWorker::initialize(int period)
     {
         mapCostsPerHour[hour].push_back(map.second.cost);
     }
-    this->Period = period;
+
+
+    this->Period = 500;
 
     if(this->startup_check_flag)
     {
@@ -186,10 +188,6 @@ void SpecificWorker::updatePeopleInModel()
 
     }
 
-	if(permission_given)
-    {
-	    ids_comboBox->setCurrentIndex(indexPerson);
-    }
 }
 
 void SpecificWorker::checkHumanPermissions()
@@ -209,10 +207,11 @@ void SpecificWorker::checkHumanPermissions()
                 qDebug()<< QString::fromStdString(attr["response"]);
                 bool permission = (attr["response"] == "affirmative");
 
-                if (permission) //Replace with permission when the atribute exists
+                if (permission)
                 {
                     personPermission = symbolPair.second;
-                    qDebug()<< personPermission;
+                    permission_checkbox->setCheckState(Qt::CheckState(0));
+
                 } else
                     personPermission = -1;
 
@@ -1299,13 +1298,9 @@ void SpecificWorker::updateAffordancesInGraph()
 
     if(newSymbol)
     {
-        try {
-            sendModificationProposal(worldModel, newModel);
-        }
+        try { sendModificationProposal(worldModel, newModel); }
         catch(std::exception& e)
-        {
-            std::cout<<"Exception moving in AGM: "<<e.what()<<std::endl;
-        }
+        { std::cout<<"Exception moving in AGM: "<<e.what()<<std::endl; }
     }
 
     else
@@ -1523,7 +1518,6 @@ bool SpecificWorker::setParametersAndPossibleActivation(const RoboCompAGMCommonB
             qDebug()<< "ACTION IS NONE";
             active = false;
 //            worldModelChanged = true;
-//            permission_checkbox->setCheckState(Qt::CheckState(0));
         }
 	}
 	catch (...)

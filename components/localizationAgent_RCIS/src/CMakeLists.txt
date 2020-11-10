@@ -40,7 +40,8 @@ ADD_DEFINITIONS( -I/usr/include/libxml2/)
 
 #ROBOCOMP
 ROBOCOMP_INITIALIZE( $ENV{ROBOCOMP}/ )
-ROBOCOMP_WRAP_ICE( CommonBehavior AGMCommonBehavior AGMExecutive AGMExecutiveTopic AGMWorldModel GenericBase OmniRobot Planning AGMExecutive AGMExecutiveTopic )
+ROBOCOMP_IDSL_TO_ICE( CommonBehavior AGMCommonBehavior AGMExecutive AGMExecutiveTopic AGMWorldModel GenericBase OmniRobot Planning)
+ROBOCOMP_ICE_TO_SRC( CommonBehavior AGMCommonBehavior AGMExecutive AGMExecutiveTopic AGMWorldModel GenericBase OmniRobot Planning)
 SET (EXECUTABLE_OUTPUT_PATH ${RC_COMPONENT_DEVEL_PATH}/bin)
 
 

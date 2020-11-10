@@ -164,17 +164,17 @@ void SpecificWorker::compute()
             qDebug()<< "new target "<< target;
             bool reachable = navigation.newTarget(target);
 
-            int searchedPoints = 0;
-
-            if (action == "changeroom")
-            {
-                while(!reachable and searchedPoints<10){
-                    auto [_, target_] = actionExecution.runActions(action,params);
-                    reachable = navigation.newTarget(target_);
-                    searchedPoints++;
-                }
-
-            }
+//            int searchedPoints = 0;
+//
+//            if (action == "changeroom")
+//            {
+//                while(!reachable and searchedPoints<10){
+//                    auto [_, target_] = actionExecution.runActions(action,params);
+//                    reachable = navigation.newTarget(target_);
+//                    searchedPoints++;
+//                }
+//
+//            }
 
             if (!reachable)
                 qDebug()<< "Can't reach new target ";

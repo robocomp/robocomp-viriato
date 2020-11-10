@@ -1055,6 +1055,7 @@ bool SpecificWorker::setParametersAndPossibleActivation(const RoboCompAGMCommonB
 bool SpecificWorker::sendModificationProposal(AGMModel::SPtr &worldModel, AGMModel::SPtr &newModel)
 {
 	bool result = false;
+
 	try
 	{	qDebug()<<"Intentando sendModificationProposal";
 		AGMMisc::publishModification(newModel, agmexecutive_proxy, "fakeHumanAgentAgent");
@@ -1075,8 +1076,10 @@ bool SpecificWorker::sendModificationProposal(AGMModel::SPtr &worldModel, AGMMod
 	}
 	catch(const Ice::Exception& e)
 	{
+	    printf("ICE Exception \n");
 		exit(1);
 	}
+
 	return result;
 }
 
@@ -1234,12 +1237,17 @@ void SpecificWorker::addInteraction()
 							edgeName = "interacting";
 							listEntry = int1_cb->currentText() + QString(" => interacting => ") + int2_cb->currentText();
 							break;
-	    case isNear:	id2 = robotID;
-	    				edgeName = "is_near";
-						listEntry = int1_cb->currentText() + QString(" => is_near => ") + QString::number(robotID);
+	    case isNear:
+            id1 = robotID;
+            id2 = int1_cb->currentText().toInt();
+                        edgeName = "is_near";
+						listEntry =  QString::number(robotID) + QString(" => is_near => ") + int1_cb->currentText();
                         break;
 
-
+	    case front: id2 = robotID;
+            edgeName = "front";
+            listEntry =int1_cb->currentText() + QString(" => front => ") + QString::number(robotID) ;
+            break;
 
 	case unknown:	std::cout <<"Unknown interaction selected, please check TInteraction valid values" <<std::endl;
 						return;
@@ -1312,6 +1320,7 @@ SpecificWorker::TInteraction SpecificWorker::string2Interaction(std::string inte
 	if (interaction == "isBlocking") 	return isBlocking;
 	if (interaction == "softBlock") 	return softBlock;
 	if (interaction == "isNear") 	    return isNear;
+    if (interaction == "front") 	    return front;
 
 	return unknown;
 }
@@ -1338,6 +1347,10 @@ void SpecificWorker::interactionChanged(int index)
                             int2_cb->setEnabled(false);
                             break;
 
+	    case front:
+            int2_cb->setCurrentIndex(int2_cb->findText(QString::number(robotID),Qt::MatchExactly));
+            int2_cb->setEnabled(false);
+            break;
 
 		case unknown:	std::cout <<"Unknown interaction selected, please check TInteraction valid values" <<std::endl;
 						break;

@@ -102,7 +102,7 @@ void SpecificMonitor::readConfig(RoboCompCommonBehavior::ParameterList &params )
 	params["AprilWeight"] = aux;
 }
 
-//comprueba que los parametros sean correctos y los transforma a la estructura del worker
+//Check parameters and transform them to worker structure
 bool SpecificMonitor::checkParams(RoboCompCommonBehavior::ParameterList l)
 {
 	bool correct = true;

@@ -456,6 +456,16 @@
             </item>
             <item>
              <property name="text">
+              <string>isNear</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>front</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
               <string>interacting</string>
              </property>
             </item>

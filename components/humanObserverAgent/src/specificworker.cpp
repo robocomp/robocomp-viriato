@@ -64,7 +64,7 @@ void SpecificWorker::initialize(int period)
 
     previousPersonsList.clear();
 
-    this->Period = period;
+    this->Period = 1000;
     if(this->startup_check_flag)
     {
         this->startup_check();
@@ -88,28 +88,38 @@ int SpecificWorker::startup_check()
 
 void SpecificWorker::compute()
 {
+    newModel = AGMModel::SPtr(new AGMModel(worldModel));
     QMutexLocker lockIM(mutex);
 
     //solo queremos mirar las personas cuando otro agente modifica el AGM. Si somos nosotros quien lo modifica no volvemos a observar las personas.
+    bool CHI = false;
+    bool COI = false;
+    bool CHN = false;
+
     if (worldModelChanged and !ourModelChanged)
     {
     	loadInfoFromAGM();
+    	CHI = checkHumanInteraction();
+    	COI = checkObjectInteraction();
     }
     else if (worldModelChanged) {
         ourModelChanged = false;
     }
+
     worldModelChanged = false;
 
+//    if(!totalPersons.empty())
+//        CHN = checkHumansNear();
 
-    if(checkHumansNear()){
+    if (CHI or COI or CHN)
+    {
         try
         {
-            sendModificationProposal(worldModel, newModel);
+            qDebug()<<"Trying to update worldModel";
+            sendModificationProposal(worldModel,newModel);
+            ourModelChanged = true;
         }
-        catch(...)
-        {
-            std::cout<<"No se puede actualizar worldModel"<<std::endl;
-        }
+        catch(...) { std::cout<<"No se puede actualizar worldModel"<<std::endl; }
     }
 
 }
@@ -198,20 +208,6 @@ void SpecificWorker::loadInfoFromAGM()
 	}
 
 	qDebug()<<"interaction objects "<< totalObjects.size();
-
-
-	newModel = AGMModel::SPtr(new AGMModel(worldModel));
-
-	if (checkHumanInteraction() or checkObjectInteraction())
-    {
-        try
-        {
-            qDebug()<<"Trying to update worldModel";
-            sendModificationProposal(worldModel,newModel);
-            ourModelChanged = true;
-        }
-        catch(...) { std::cout<<"No se puede actualizar worldModel"<<std::endl; }
-    }
 }
 
 
@@ -372,8 +368,6 @@ QPolygonF SpecificWorker::getAffordance(int objectID)
 
 bool SpecificWorker::checkHumansNear()
 {
-    newModel = AGMModel::SPtr(new AGMModel(worldModel));
-
     auto currentRobotPose = innerModel->transformS6D("world","robot");
 	vector <int32_t> currentPersonsNear;
 
@@ -635,20 +629,23 @@ void SpecificWorker::sendModificationProposal(AGMModel::SPtr &worldModel, AGMMod
 {
 	try
 	{
-		AGMMisc::publishModification(newModel, agmexecutive_proxy, "humanObserverAgentAgent");
+		AGMMisc::publishModification(newModel, agmexecutive_proxy, "humanObserverAgent");
 	}
-/*	catch(const RoboCompAGMExecutive::Locked &e)
-	{
-	}
-	catch(const RoboCompAGMExecutive::OldModel &e)
-	{
-	}
-	catch(const RoboCompAGMExecutive::InvalidChange &e)
-	{
-	}
-*/
-	catch(const Ice::Exception& e)
-	{
-		exit(1);
-	}
+    catch(const RoboCompAGMExecutive::Locked &e)
+    {
+        printf("modelo bloqueado\n");
+
+    }
+    catch(const RoboCompAGMExecutive::OldModel &e)
+    {
+        printf("modelo viejo\n");
+    }
+    catch(const RoboCompAGMExecutive::InvalidChange &e)
+    {
+        printf("modelo invalido\n");
+    }
+    catch(const Ice::Exception& e)
+    {
+        exit(1);
+    }
 }

@@ -428,7 +428,7 @@ class SpecificWorker(GenericWorker):
 
         try:
             newModel = AGMModelConversion.fromInternalToIce(self.worldModel)
-            self.agmexecutive_proxy.structuralChangeProposal(newModel, "component_name", "Log_fileName")
+            self.agmexecutive_proxy.structuralChangeProposal(newModel, "conversationalAgent", "Log_fileName")
             w = self.agmexecutive_proxy.getModel()
             self.worldModel = AGMModelConversion.fromIceToInternal_model(w)
             print("AGM successfully updated")
