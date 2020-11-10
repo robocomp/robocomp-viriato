@@ -532,18 +532,20 @@ void SpecificWorker::sendModificationProposal(AGMModel::SPtr &worldModel, AGMMod
 	{
 		AGMMisc::publishModification(newModel, agmexecutive_proxy, "roomLocalizationAgentAgent");
 	}
-/*	catch(const RoboCompAGMExecutive::Locked &e)
-	{
-	}
-	catch(const RoboCompAGMExecutive::OldModel &e)
-	{
-	}
-	catch(const RoboCompAGMExecutive::InvalidChange &e)
-	{
-	}
-*/
-	catch(const Ice::Exception& e)
-	{
-		exit(1);
-	}
+    catch(const RoboCompAGMExecutive::Locked &e)
+    {
+        printf("modelo bloqueado\n");
+    }
+    catch(const RoboCompAGMExecutive::OldModel &e)
+    {
+        printf("modelo viejo\n");
+    }
+    catch(const RoboCompAGMExecutive::InvalidChange &e)
+    {
+        printf("modelo invalido\n");
+    }
+    catch(const Ice::Exception& e)
+    {
+        exit(1);
+    }
 }

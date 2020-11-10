@@ -987,6 +987,8 @@ void SpecificWorker::sendModificationProposal(AGMModel::SPtr &worldModel, AGMMod
     }
     catch(const RoboCompAGMExecutive::Locked &e)
     {
+        printf("modelo bloqueado\n");
+
     }
     catch(const RoboCompAGMExecutive::OldModel &e)
     {
