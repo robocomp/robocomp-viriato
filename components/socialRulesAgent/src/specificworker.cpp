@@ -90,7 +90,7 @@ void SpecificWorker::initialize(int period)
     }
 
 
-    this->Period = 500;
+    this->Period = period;
 
     if(this->startup_check_flag)
     {
@@ -126,13 +126,37 @@ void SpecificWorker::compute()
         updatePeopleInModel();
         checkInteractions();
 		checkObjectAffordance();
-        if(active)
+
+        if(active and !sngPersonSeq.empty())
             checkHumanPermissions();
 
         applySocialRules();
 
-        updatePersonalSpacesInGraph();
-        updateAffordancesInGraph();
+        symbolsToPublish.clear();
+        newModel = AGMModel::SPtr(new AGMModel(worldModel));
+        bool UPS = updatePersonalSpacesInGraph();
+        bool UA = updateAffordancesInGraph();
+        if ( UPS or UA )
+        {
+            try {
+                static QTime reloj = QTime::currentTime();
+                reloj.start();
+                qDebug()<<"Trying to update the model "<< UPS << UA;
+
+                sendModificationProposal(worldModel, newModel);
+                qDebug()<< "Model updated" << reloj.restart();
+            }
+            catch(std::exception& e) { std::cout<<"Exception updating AGM: "<<e.what()<<std::endl; }
+        }
+
+        else if(!symbolsToPublish.empty())
+        {
+            try {
+                qDebug()<<"Publish Nodes Update ";
+                AGMMisc::publishNodesUpdate(symbolsToPublish, agmexecutive_proxy); }
+            catch(std::exception& e) { std::cout<<"Exception updating SYMBOLS AGM: "<<e.what()<<std::endl; }
+        }
+
 
 		worldModelChanged = false;
         costChanged = false;
@@ -142,9 +166,6 @@ void SpecificWorker::compute()
 	else if (costChanged)
     {
         updateAffordancesInGraph();
-
-//        publishAffordances();
-
         costChanged = false;
     }
 
@@ -411,8 +432,8 @@ void SpecificWorker::arrangePersonalSpaces(RoboCompSocialNavigationGaussian::SNG
     for(auto const &person:personGroup)
         groupIDs.push_back(person.id);
 
-    qDebug()<<"Group ID " <<groupIDs;
-    qDebug()<< "----";
+//    qDebug()<<"Group ID " <<groupIDs;
+//    qDebug()<< "----";
 
 
     for(auto const &person: personGroup)
@@ -420,7 +441,7 @@ void SpecificWorker::arrangePersonalSpaces(RoboCompSocialNavigationGaussian::SNG
         vector<int> sharingWith = groupIDs;
         sharingWith.erase(std::remove(sharingWith.begin(), sharingWith.end(), person.id), sharingWith.end());
 
-        qDebug()<< person.id <<" is sharing polylines with " << sharingWith;
+//        qDebug()<< person.id <<" is sharing polylines with " << sharingWith;
 
         if(sharingWith.size() == 0)
             mapIdSpaces[person.id].spacesSharedWith.clear();
@@ -1063,14 +1084,13 @@ void SpecificWorker::publishAffordances()
 
 }
 
-void SpecificWorker::updatePersonalSpacesInGraph()
+bool SpecificWorker::updatePersonalSpacesInGraph()
 {
 
     qDebug()<<__FUNCTION__;
 
-    AGMModel::SPtr newModel(new AGMModel(worldModel));
     bool newSymbol = false;
-    vector<AGMModelSymbol::SPtr> symbolsToPublish;
+
 
     auto personsInGraph = newModel->getSymbolsByType("person");
 
@@ -1159,8 +1179,8 @@ void SpecificWorker::updatePersonalSpacesInGraph()
 
         else
         {
-            qDebug()<< " ----- Symbol already in model -----";
-            qDebug() << "imName = "<< QString::fromStdString(imName) << " " <<"symbolId = "<<spaceSymbolId;
+//            qDebug()<< " ----- Symbol already in model -----";
+//            qDebug() << "imName = "<< QString::fromStdString(imName) << " " <<"symbolId = "<<spaceSymbolId;
 
             try
             {
@@ -1184,32 +1204,19 @@ void SpecificWorker::updatePersonalSpacesInGraph()
 
     }
 
-    if(newSymbol)
-    {
-        try { sendModificationProposal(worldModel, newModel); }
-        catch(std::exception& e) { std::cout<<"Exception updating AGM: "<<e.what()<<std::endl; }
-    }
-
-    else
-    {
-        try { AGMMisc::publishNodesUpdate(symbolsToPublish, agmexecutive_proxy); }
-        catch(std::exception& e) { std::cout<<"Exception updating SYMBOLS AGM: "<<e.what()<<std::endl; }
-
-    }
+    if (newSymbol) return true;
+    else return false;
 }
 
-void SpecificWorker::updateAffordancesInGraph()
+bool SpecificWorker::updateAffordancesInGraph()
 {
-
     qDebug()<<__FUNCTION__;
-    //queda publicar la lista de ids que comparten esos espacios y ver si es mejor publicarlo como atributos del nodo
 
-    AGMModel::SPtr newModel(new AGMModel(worldModel));
     bool newSymbol = false;
 
     auto vectorAffordancesInGraph = newModel->getSymbolsByType("affordance_space");
 
-    qDebug()<< "Number of affordances spaces in graph = " << vectorAffordancesInGraph.size();
+//    qDebug()<< "Number of affordances spaces in graph = " << vectorAffordancesInGraph.size();
 
     vector<AGMModelSymbol::SPtr> symbolsToPublish;
 
@@ -1243,15 +1250,15 @@ void SpecificWorker::updateAffordancesInGraph()
 
         if(spaceSymbolId == -1)  //Symbol not found
         {
-            qDebug()<< "----- Symbol not found ----- ";
-            qDebug() << "imName = "<< QString::fromStdString(imName) << " " <<"symbolId = "<<spaceSymbolId;
+//            qDebug()<< "----- Symbol not found ----- ";
+//            qDebug() << "imName = "<< QString::fromStdString(imName) << " " <<"symbolId = "<<spaceSymbolId;
 
             try { AGMModelSymbol::SPtr objectSymbol = newModel->getSymbol(object.id); }
 
             catch(...)
             {
                 qDebug() << "OBJECT "<< ID << " NOT FOUND IN WORDMODEL ";
-                return;
+                return false;
             }
 
             // Symbolic part
@@ -1272,8 +1279,8 @@ void SpecificWorker::updateAffordancesInGraph()
 
         else
         {
-            qDebug()<< " ----- Symbol already in model -----";
-            qDebug() << "imName = "<< QString::fromStdString(imName) << " " <<"symbolId = "<<spaceSymbolId;
+//            qDebug()<< " ----- Symbol already in model -----";
+//            qDebug() << "imName = "<< QString::fromStdString(imName) << " " <<"symbolId = "<<spaceSymbolId;
 
             try
             {
@@ -1296,26 +1303,9 @@ void SpecificWorker::updateAffordancesInGraph()
 
     }
 
-    if(newSymbol)
-    {
-        try { sendModificationProposal(worldModel, newModel); }
-        catch(std::exception& e)
-        { std::cout<<"Exception moving in AGM: "<<e.what()<<std::endl; }
-    }
+    if(newSymbol) return true;
+    else return false;
 
-    else
-    {
-
-        try
-        {
-            AGMMisc::publishNodesUpdate(symbolsToPublish, agmexecutive_proxy);
-        }
-        catch(std::exception& e)
-        {
-            std::cout<<"Exception updating SYMBOLS AGM: "<<e.what()<<std::endl;
-        }
-
-    }
 }
 
 //////////////////////// State machine methods ////////////////////////////////////////

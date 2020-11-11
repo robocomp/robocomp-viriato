@@ -156,7 +156,7 @@ private:
     std::shared_ptr<InnerModel> innerModel;
 	std::string action;
 	RoboCompAGMCommonBehavior::ParameterMap params;
-	AGMModel::SPtr worldModel;
+	AGMModel::SPtr worldModel, newModel;
 
 	bool active;
 	bool setParametersAndPossibleActivation(const RoboCompAGMCommonBehavior::ParameterMap &prs, bool &reactivated);
@@ -176,6 +176,8 @@ private:
     std::map<int32_t,bool> peoplePermission;
     int32_t personPermission = -1;
     int indexPerson = 0;
+    vector<AGMModelSymbol::SPtr> symbolsToPublish;
+
     void checkHumanPermissions();
 
     void calculatePersonalSpaces(RoboCompSocialNavigationGaussian::SNGPersonSeq personGroup);
@@ -183,8 +185,8 @@ private:
 	void publishPersonalSpaces();
 	void publishAffordances();
 
-	void updatePersonalSpacesInGraph();
-	void updateAffordancesInGraph();
+	bool updatePersonalSpacesInGraph();
+	bool updateAffordancesInGraph();
 	void arrangePersonalSpaces(RoboCompSocialNavigationGaussian::SNGPersonSeq personGroup,RoboCompSocialNavigationGaussian::SNGPolylineSeq intimate,
                                RoboCompSocialNavigationGaussian::SNGPolylineSeq personal, RoboCompSocialNavigationGaussian::SNGPolylineSeq social);
 

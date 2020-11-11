@@ -88,8 +88,8 @@ public slots:
     int startup_check();
     void initialize(int period);
     void checkRobotAutoMovState();
-    void checkRobotPermission();
     void moveRobot();
+    void stopRobot();
     void sendRobotTo();
 	void forcesSliderChanged(int value = 0);
 
@@ -143,6 +143,7 @@ private:
 
     bool personalSpacesChanged = false;
     bool affordancesChanged = false;
+    bool worldModelChanged = false;
 
     RoboCompLaser::TLaserData updateLaser();
 

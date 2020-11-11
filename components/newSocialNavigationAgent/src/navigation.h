@@ -213,6 +213,13 @@ public:
         this->current_target.unlock();
     }
 
+    void blockTarget()
+    {
+        this->current_target.lock();
+        current_target.blocked.store(true);
+        this->current_target.unlock();
+    }
+
     bool isCurrentTargetActive()
     {
         return current_target.active.load();
@@ -311,7 +318,7 @@ public:
 
         this->current_target.unlock();
 
-        return isPointVisitable(newT);
+        return pointVisitable;
 
     }
 

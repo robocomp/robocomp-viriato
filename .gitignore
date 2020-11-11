@@ -360,3 +360,5 @@ components/socialRulesAgent/socialRulesAgent.cbp
 components/newSocialNavigationAgent/laserPoly.txt
 
 components/newSocialNavigationAgent/robot.txt
+
+components/keyboardrobotcontrollerOmni/src/__pycache__/

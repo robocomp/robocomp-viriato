@@ -26,7 +26,8 @@ private:
     std::string action;
     RoboCompAGMCommonBehavior::ParameterMap params;
     bool newActionReceived = false;
-
+    uint32_t previousPerson = -1;
+    uint32_t previousPerson_group = -1;
 
     ActionExecution::retActions action_ChangeRoom(RoboCompAGMCommonBehavior::ParameterMap params_, bool testing=false);
     ActionExecution::retActions action_GoToPerson(RoboCompAGMCommonBehavior::ParameterMap params_);

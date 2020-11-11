@@ -116,18 +116,13 @@ ActionExecution::retActions ActionExecution::action_ChangeRoom(RoboCompAGMCommon
 
     if (currentRoom == destRoomID)
     {
+        qDebug()<< "Robot already at target room";
         needsReplanning = false;
     }
 
     else if (newActionReceived)
     {
         qDebug()<< QString::fromStdString(prevRoomTarget) << QString::fromStdString(roomName);
-
-//        if (prevRoomTarget != roomName and (!testing))
-//        {
-//            prevRoomTarget = roomName;
-//            needsReplanning = true;
-//        }
 
         needsReplanning = true;
         newActionReceived = false;
@@ -160,13 +155,15 @@ ActionExecution::retActions ActionExecution::action_GoToPerson(RoboCompAGMCommon
     bool needsReplanning = false;
     QPointF newTarget = getPointInSocialSpace(personSymbol,robotSymbol);
 
-    if (newActionReceived)
+    if (newActionReceived or previousPerson != personSymbol->identifier)
     {
 
         newActionReceived = false;
         needsReplanning = true;
 
     }
+
+    previousPerson = personSymbol->identifier;
 
     qDebug()<<  __FUNCTION__ << "Returning "<< needsReplanning << newTarget;
 
@@ -219,11 +216,13 @@ ActionExecution::retActions ActionExecution::action_GoToGroupOfPeople(RoboCompAG
 
     qDebug()<<"Nearest person is "<< nearestPerson->identifier;
 
-    if (newActionReceived)
+    if (newActionReceived or previousPerson_group != nearestPerson->identifier )
     {
         newActionReceived = false;
         needsReplanning = true;
     }
+
+    previousPerson_group = nearestPerson->identifier;
 
     return std::make_tuple(needsReplanning, newTarget);
 

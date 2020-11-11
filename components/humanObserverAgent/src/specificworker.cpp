@@ -108,19 +108,27 @@ void SpecificWorker::compute()
 
     worldModelChanged = false;
 
-//    if(!totalPersons.empty())
-//        CHN = checkHumansNear();
+    if(!totalPersons.empty())
+        CHN = checkHumansNear();
 
     if (CHI or COI or CHN)
     {
         try
         {
-            qDebug()<<"Trying to update worldModel";
+            qDebug()<<"Trying to update worldModel" << CHI << COI << CHN;
             sendModificationProposal(worldModel,newModel);
             ourModelChanged = true;
+            qDebug()<< "Model updated";
         }
         catch(...) { std::cout<<"No se puede actualizar worldModel"<<std::endl; }
+
+        qDebug()<<  "\n";
+        qDebug()<<  "\n";
+        qDebug()<<  "\n";
+        qDebug()<<  "\n";
+
     }
+
 
 }
 
@@ -232,11 +240,11 @@ bool SpecificWorker::checkHumanInteraction()
             auto angle2 = atan2 (pose2from1.x(),pose2from1.z());
 
             QVec VI = QVec::vec2((totalPersons[i].x -totalPersons[j].x),(totalPersons[i].z -totalPersons[j].z));
-            qDebug()<< "Distancia " << VI.norm2();
+//            qDebug()<< "Distancia " << VI.norm2();
 
             if(abs(angle1) < thr_angle_humans and (abs(angle2) < thr_angle_humans) and (VI.norm2() < threshold_dist))
             {
-                qDebug()<<totalPersons[i].id<< "and"<<totalPersons[j].id<< "INTERACTING";
+//                qDebug()<<totalPersons[i].id<< "and"<<totalPersons[j].id<< "INTERACTING";
 
                 try
                 {
@@ -245,7 +253,9 @@ bool SpecificWorker::checkHumanInteraction()
                     changeInEdges = true;
                 }
 
-                catch(...) { std::cout<<__FUNCTION__<<" Ya existe el enlace"<<std::endl; }
+                catch(...) {
+//                    std::cout<<__FUNCTION__<<" Ya existe el enlace"<<std::endl;
+                }
             }
 
             else
@@ -257,7 +267,9 @@ bool SpecificWorker::checkHumanInteraction()
                     changeInEdges = true;
                 }
 
-                catch(...) { std::cout<<__FUNCTION__<<" No existe el enlace"<<std::endl; }
+                catch(...) {
+//                    std::cout<<__FUNCTION__<<" No existe el enlace"<<std::endl;
+                }
             }
 
         }
@@ -285,9 +297,9 @@ bool SpecificWorker::checkObjectInteraction()
             if(inside_affordance) qDebug() <<"Person " << person.id << " is inside the affordance of object " << object.imName;
 
             QVec pose2from1 = innerModel->transform6D(person.imName ,object.imName );
-            pose2from1.print("Object from person");
             auto angle = atan2 (pose2from1.x(),pose2from1.z());
-            qDebug()<<"Angle of view "<< angle;
+//            pose2from1.print("Object from person");
+//            qDebug()<<"Angle of view "<< angle;
 
 
             if(inside_affordance and (abs(angle) < thr_angle_humans)) 
@@ -299,7 +311,9 @@ bool SpecificWorker::checkObjectInteraction()
                     changeInEdges = true;
                 }
 
-				catch(...) { std::cout<<__FUNCTION__<<" Ya existe el enlace"<<std::endl; }
+				catch(...) {
+//				    std::cout<<__FUNCTION__<<" Ya existe el enlace"<<std::endl;
+				}
 			}
 
             else
@@ -309,7 +323,9 @@ bool SpecificWorker::checkObjectInteraction()
                     newModel->removeEdgeByIdentifiers(person.id, object.id, "interacting");
                     changeInEdges = true;
                 }
-                catch(...) { std::cout<<__FUNCTION__<<" No existe el enlace"<<std::endl; }
+                catch(...) {
+//                    std::cout<<__FUNCTION__<<" No existe el enlace"<<std::endl;
+                }
             }
         }
 	}
@@ -320,7 +336,7 @@ bool SpecificWorker::checkObjectInteraction()
 
 QPolygonF SpecificWorker::getAffordance(int objectID)
 {
-    qDebug()<<__FUNCTION__;
+//    qDebug()<<__FUNCTION__;
 
     QString polyline;
     QPolygonF objectPolygon;
@@ -368,6 +384,7 @@ QPolygonF SpecificWorker::getAffordance(int objectID)
 
 bool SpecificWorker::checkHumansNear()
 {
+
     auto currentRobotPose = innerModel->transformS6D("world","robot");
 	vector <int32_t> currentPersonsNear;
 
@@ -375,9 +392,7 @@ bool SpecificWorker::checkHumansNear()
 	{
 		auto dist = sqrt((currentRobotPose.x() - p.x) * (currentRobotPose.x() - p.x) + (currentRobotPose.z() - p.z) * (currentRobotPose.z() - p.z));
 		if (dist < 2000)
-		{
 			currentPersonsNear.push_back(p.id);
-		}
 	}
 
 	auto edgeName = "is_near";
@@ -389,7 +404,7 @@ bool SpecificWorker::checkHumansNear()
 			try
 			{
 				newModel->removeEdgeByIdentifiers(robotID, id, edgeName);
-				qDebug ()<<" Se elimina el enlace " << QString::fromStdString(edgeName) << " de " << id;
+				qDebug ()<< __FUNCTION__ <<" Se elimina el enlace " << QString::fromStdString(edgeName) << " de " << id;
 			}
 
 			catch(...)
@@ -404,7 +419,7 @@ bool SpecificWorker::checkHumansNear()
 			try
 			{
 				newModel->addEdgeByIdentifiers(robotID, id, edgeName);
-				qDebug ()<<" Se añade el enlace " << QString::fromStdString(edgeName) << " de " << id;
+				qDebug ()<<__FUNCTION__ <<"  Se añade el enlace " << QString::fromStdString(edgeName) << " de " << id;
 			}
 
 			catch(...)
@@ -552,6 +567,7 @@ void SpecificWorker::AGMExecutiveTopic_edgesUpdated(const RoboCompAGMWorldModel:
 void SpecificWorker::AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldModel::World &w)
 {
 //subscribesToCODE
+
 	QMutexLocker lockIM(mutex);
  	AGMModelConverter::fromIceToInternal(w, worldModel);
  
@@ -634,7 +650,6 @@ void SpecificWorker::sendModificationProposal(AGMModel::SPtr &worldModel, AGMMod
     catch(const RoboCompAGMExecutive::Locked &e)
     {
         printf("modelo bloqueado\n");
-
     }
     catch(const RoboCompAGMExecutive::OldModel &e)
     {

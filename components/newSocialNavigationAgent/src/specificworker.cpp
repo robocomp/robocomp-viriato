@@ -58,12 +58,12 @@ void SpecificWorker::initialize(int period)
 
     connect(autoMov_checkbox, SIGNAL(clicked()),this, SLOT(checkRobotAutoMovState()));
     connect(robotMov_checkbox, SIGNAL(clicked()),this, SLOT(moveRobot()));
-    connect(permission_checkbox, SIGNAL(clicked()),this, SLOT(checkRobotPermission()));
 
     connect(ki_slider, SIGNAL (valueChanged(int)),this,SLOT(forcesSliderChanged(int)));
     connect(ke_slider, SIGNAL (valueChanged(int)),this,SLOT(forcesSliderChanged(int)));
 
     connect(send_button, SIGNAL(clicked()),this, SLOT(sendRobotTo()));
+    connect(stopRobot_button, SIGNAL(clicked()),this, SLOT(stopRobot()));
 
 
     forcesSliderChanged();
@@ -124,6 +124,7 @@ void SpecificWorker::compute()
 
 //    static QTime reloj = QTime::currentTime();
 
+
     QMutexLocker lockIM(mutex);
 
     bool needsReplaning = false;
@@ -145,7 +146,6 @@ void SpecificWorker::compute()
 		affordancesChanged = false;
 		needsReplaning = true;
 	}
-
 
     RoboCompLaser::TLaserData laserData = updateLaser();
 	navigation.update(totalPersons, laserData, needsReplaning);
@@ -588,6 +588,15 @@ void  SpecificWorker::moveRobot()
 
 }
 
+void SpecificWorker::stopRobot()
+{
+    if (navigation.isCurrentTargetActive())
+    {
+        navigation.deactivateTarget();
+        navigation.stopRobot();
+    }
+
+}
 
 void  SpecificWorker::checkRobotAutoMovState()
 {
@@ -614,14 +623,6 @@ void SpecificWorker::sendRobotTo()
 
     navigation.newTarget(QPointF(x,z));
 
-}
-
-void SpecificWorker::checkRobotPermission()
-{
-    qDebug()<< __FUNCTION__;
-    if(permission_checkbox->checkState() == Qt::CheckState(2)) {
-        robotBlocked = false;
-    }
 }
 
 void SpecificWorker::
@@ -828,7 +829,6 @@ void SpecificWorker::AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldMo
 {
 	qDebug() << __FUNCTION__;
 
-
     QMutexLocker lockIM(mutex);
 
 
@@ -844,7 +844,7 @@ void SpecificWorker::AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldMo
 
 	personalSpacesChanged = true;
 	affordancesChanged = true;
-
+    worldModelChanged = true;
 
 }
 
@@ -940,7 +940,7 @@ bool SpecificWorker::setParametersAndPossibleActivation(const RoboCompAGMCommonB
 
             if (navigation.current_target.blocked.load() )
 		    {
-                navigation.stopRobot();
+                stopRobot();
                 navigation.deactivateTarget();
             }
 

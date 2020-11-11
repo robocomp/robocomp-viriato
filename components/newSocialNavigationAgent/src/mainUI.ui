@@ -140,9 +140,9 @@
          </widget>
         </item>
         <item>
-         <widget class="QCheckBox" name="permission_checkbox">
+         <widget class="QPushButton" name="stopRobot_button">
           <property name="text">
-           <string>Permission to pass</string>
+           <string>stop Robot</string>
           </property>
          </widget>
         </item>

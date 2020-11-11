@@ -231,7 +231,7 @@ public:
 		}
 		if (source == target)
 		{
-			qDebug() << __FUNCTION__ << "Robot already at target. Returning empty path";
+//			qDebug() << __FUNCTION__ << "Robot already at target. Returning empty path";
 			return std::list<QPointF>();
 		}
 		// vector de distancias inicializado a DBL_MAX
