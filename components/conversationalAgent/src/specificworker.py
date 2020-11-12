@@ -671,18 +671,24 @@ class SpecificWorker(GenericWorker):
     # SUBSCRIPTION to selfEdgeAdded method from AGMExecutiveTopic interface
     #
     def AGMExecutiveTopic_selfEdgeAdded(self, nodeid, edgeType, attributes):
-        #
-        # subscribesToCODE
-        #
+
+        try:
+            self.worldModel.addEdge(nodeid,nodeid, edgeType, attributes)
+
+        except:
+            print("Couldn't add an edge. Duplicate?\n")
+
         pass
 
     #
     # SUBSCRIPTION to selfEdgeDeleted method from AGMExecutiveTopic interface
     #
     def AGMExecutiveTopic_selfEdgeDeleted(self, nodeid, edgeType):
-        #
-        # subscribesToCODE
-        #
+        try:
+            self.worldModel.removeEdge(nodeid, nodeid, edgeType)
+
+        except:
+            print("Couldn't add an edge. Duplicate?\n")
         pass
 
     #

@@ -758,9 +758,13 @@ void SpecificWorker::AGMExecutiveTopic_selfEdgeAdded(const int nodeid, const str
 
         viewer->reloadInnerModel(innerModel);
 		navigation.updateInnerModel(innerModel);
-
+        personalSpacesChanged = true;
+        affordancesChanged = true;
 
 	} catch(...) { printf("Can't extract an InnerModel from the current model.\n"); }
+
+
+
 }
 
 void SpecificWorker::AGMExecutiveTopic_selfEdgeDeleted(const int nodeid, const string &edgeType)
@@ -775,7 +779,8 @@ void SpecificWorker::AGMExecutiveTopic_selfEdgeDeleted(const int nodeid, const s
 
         viewer->reloadInnerModel(innerModel);
 		navigation.updateInnerModel(innerModel);
-
+        personalSpacesChanged = true;
+        affordancesChanged = true;
 
     } catch(...) { printf("Can't extract an InnerModel from the current model.\n"); }
 }

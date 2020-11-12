@@ -1235,11 +1235,32 @@ void SpecificWorker::addInteraction()
 						return;
 	}
 	QList<QListWidgetItem*> list = interaction_lw->findItems(listEntry, Qt::MatchExactly);
+
 	if (list.size() > 0)
 	{
 		std::cout << "Interaction is already used" << std::endl;
 		QMessageBox::information(this, "Interaction", "Interaction is already used");
 	}
+	else if (id1 == id2)
+    {
+        AGMModel::SPtr newModel(new AGMModel(worldModel));
+        newModel->addEdgeByIdentifiers(id1, id2, edgeName);
+        try
+        {
+            map<std::string,std::string> attrs = {};
+            AGMMisc::publishSelfEdgeAdded(id1,edgeName,attrs,agmexecutive_proxy);
+            AGMModelEdge edge = newModel->getEdgeByIdentifiers(id1, id2, edgeName);
+            QListWidgetItem *item = new QListWidgetItem(listEntry);
+            item->setData(Qt::UserRole, QVariant::fromValue<AGMModelEdge>(edge));
+            interaction_lw->addItem(item);
+            rinteraction_pb->setEnabled(interaction_lw->count() > 0);
+
+        }
+        catch(...)
+        {
+        };
+
+    }
 	else
 	{
 		AGMModel::SPtr newModel(new AGMModel(worldModel));
@@ -1266,16 +1287,30 @@ void SpecificWorker::removeEdgeAGM()
 	QListWidgetItem *item = interaction_lw->currentItem();
 	if (item != NULL)
 	{
+        //comprobar si el enlace es a si mismo
 		AGMModelEdge edge = item->data(Qt::UserRole).value<AGMModelEdge>();
-		AGMModel::SPtr newModel(new AGMModel(worldModel));
-		newModel->removeEdge(edge);
-		if(sendModificationProposal(worldModel, newModel))
-		{
-			std::cout << "remove item from list" << std::endl;
-			interaction_lw->removeItemWidget(item);
-			delete item;
-		}
+
+		if(edge.symbolPair.first == edge.symbolPair.second)
+        {
+            AGMMisc::publishSelfEdgeDeleted(edge.symbolPair.first,edge->getLabel(),agmexecutive_proxy);
+            interaction_lw->removeItemWidget(item);
+            delete item;
+        }
+		else
+        {
+            AGMModel::SPtr newModel(new AGMModel(worldModel));
+            newModel->removeEdge(edge);
+
+            if(sendModificationProposal(worldModel, newModel))
+            {
+                std::cout << "remove item from list" << std::endl;
+                interaction_lw->removeItemWidget(item);
+                delete item;
+            }
+        }
+
 	}
+
 	else{
 		QMessageBox::information(this, "Interaction", "No interaction is selected");
 	}
