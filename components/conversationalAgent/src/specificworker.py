@@ -361,7 +361,6 @@ class SpecificWorker(GenericWorker):
         self.action_server_active = False
         self.AGMinit()
         self.cleanGraph()
-
         self.situation = ''
         self.human_id = ''
         self.robot_id = ''
@@ -411,7 +410,7 @@ class SpecificWorker(GenericWorker):
         model = self.worldModel
 
         for link in model.links:
-            if link.linkType == "interacting" and (link.a == "1" or link.b =="1"):
+            if link.linkType == "interacting" and (link.a == "1" or link.b == "1"):
                 try:
                     model = self.worldModel
                     model.removeEdge(link.a, link.b, "interacting")
@@ -422,7 +421,6 @@ class SpecificWorker(GenericWorker):
                     print('cant remove Edge')
                 return
 
-        self.updatingDSR()
     # Function to update dsr when we have made changes to AGM local model
     def updatingDSR(self):
 
@@ -492,7 +490,6 @@ class SpecificWorker(GenericWorker):
             except:
                 print("Could not change attributes of link")
             if attrs["rasa"] == "stop":
-                print('ATTRS RASA STOP ROBOT')
                 self.stopChatbot()
             else:
                 return
@@ -501,7 +498,7 @@ class SpecificWorker(GenericWorker):
 
     # Function to stop chatbot and close interaction dialog box when user says OK to move
     def stopChatbot(self):
-        print('...Stopping chatbot...')
+        print('stopChatbot')
         self.interaction.interactionUI = False
         self.interaction.ui.display.clear()
         # self.interaction.ui.textbox.clear()
@@ -511,12 +508,13 @@ class SpecificWorker(GenericWorker):
         self.ui_lock = True
         self.change_attributes = {"rasa": "", "response": ""}
         self.eraseFiles()
+        self.removeInteractingEdge = True
 
-        time.sleep(15)
+        time.sleep(10)
         print(self.ui_lock)
         self.ui_lock = False
         print(self.ui_lock)
-        print(self.action)
+
         if self.action in self.list_actions:
             print('restarting chatbot')
             self.interaction.interactionUI = True
@@ -527,15 +525,11 @@ class SpecificWorker(GenericWorker):
             self.human_id = ''
             self.robot_id = ''
             self.change_attributes = {}
-            try:
-                model = self.worldModel
-                model.removeEdge(self.robot_id, self.human_id, "interacting")
-                if self.updatingDSR():
-                    self.interactingEdgeInAGM = False
 
+            if self.removeInteractingEdge and self.interactingEdgeInAGM:
+                print('Trying to remove interacting edge')
+                self.cleanGraph()
 
-            except:
-                print('cant remove Edge')
             return
 
     # Function to start chatbot and initialize conversation
@@ -649,21 +643,6 @@ class SpecificWorker(GenericWorker):
 
         if self.interaction.interactionUI:
             self.updateGraph()
-
-        # UNCOMMENT
-        # if self.removeInteractingEdge and self.interactingEdgeInAGM:
-        #     print('Trying to remove interacting edge')
-        #     try:
-        #         model = self.worldModel
-        #         model.removeEdge(self.robot_id, self.human_id, "interacting")
-        #         if self.updatingDSR():
-        #             self.interactingEdgeInAGM = False
-        #
-        #     except:
-        #         print('cant remove Edge')
-        #
-        #     self.interaction.ui.textbox.clear()
-        #     self.removeInteractingEdge = False
 
         return True
 
@@ -804,38 +783,6 @@ class SpecificWorker(GenericWorker):
                 else:
                     if not self.interaction.isVisible():
                         self.interaction.show()
-
-                    # if prs['action'].value == 'takeTheAttention':
-                    #     if self.interaction.isVisible() == False:
-                    #         self.interaction.show()
-                    #
-                    # elif prs['action'].value == 'path_is_blocking':
-                    #     if self.situation == 'four':
-                    #         flag_near = False
-                    #         for link in self.worldModel.links:
-                    #             if link.linkType == "is_near":
-                    #                 flag_near = True
-                    #         if flag_near == False:
-                    #             self.interaction.interactionUI = False
-                    #             # self.interaction.ui.display.clear()
-                    #             # self.interaction.ui.textbox.clear()
-                    #             self.interaction.hide()
-                    #             r = requests.post('http://localhost:5002/conversations/default/tracker/events',
-                    #                               json=[{"event": "restart"},
-                    #                                     {"event": "followup", "name": "action_listen"}])
-                    #             print(r)
-                    #             print("Conversation cleared")
-                    #             self.AGMCommonBehavior_activateAgent(prs)
-                    #     else:
-                    #         if self.interaction.isVisible() == False:
-                    #             self.interaction.show()
-                    #
-                    # elif prs['action'].value == 'path_affordanceBlock':
-                    #     if self.interaction.isVisible() == False:
-                    #         self.interaction.show()
-                    #
-                    # else:
-                    #     print("Wrong Plan Recieved")
 
                 self.previous_action = self.action
                 self.removeInteractingEdge = False

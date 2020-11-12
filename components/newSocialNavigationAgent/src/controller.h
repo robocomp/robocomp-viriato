@@ -151,7 +151,7 @@ private:
     float ROBOT_RADIUS_MM; //mm
 
     const float ROBOT_LENGTH = 500;
-    const float FINAL_DISTANCE_TO_TARGET = 800; //mm
+    const float FINAL_DISTANCE_TO_TARGET = 500; //mm
     float KB = 2.0;
 
     float advVelx = 0, advVelz = 0, rotVel = 0;

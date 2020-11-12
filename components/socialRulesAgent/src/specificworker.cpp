@@ -231,7 +231,7 @@ void SpecificWorker::checkHumanPermissions()
                 if (permission)
                 {
                     personPermission = symbolPair.second;
-                    permission_checkbox->setCheckState(Qt::CheckState(0));
+                    permission_checkbox->setCheckState(Qt::CheckState(2));
 
                 } else
                     personPermission = -1;
@@ -1032,7 +1032,6 @@ void SpecificWorker::checkRobotPermission()
     else
     {
         permission_given = false;
-
         personPermission = -1;
     }
     worldModelChanged = true;
