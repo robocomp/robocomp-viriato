@@ -272,6 +272,7 @@ AGMModelSymbol::SPtr ActionExecution::getNearestPerson(vector<AGMModelSymbol::SP
 
 QPointF ActionExecution::getPointInSocialSpace(AGMModelSymbol::SPtr personSymbol,AGMModelSymbol::SPtr robotSymbol)
 {
+    qDebug()<<__FUNCTION__;
     localPerson person;
 
     auto id = personSymbol->identifier;
@@ -296,21 +297,9 @@ QPointF ActionExecution::getPointInSocialSpace(AGMModelSymbol::SPtr personSymbol
 
     AGMModelSymbol::SPtr personalSpace;
 
-    for (AGMModelSymbol::iterator edge = personSymbol->edgesBegin(worldModel);
-         edge!=personSymbol->edgesEnd(worldModel);
-         edge++) {
-        if (edge->getLabel()=="has") {
-            const std::pair<int32_t, int32_t> symbolPair = edge->getSymbolPair();
-            personalSpace = worldModel->getSymbolByIdentifier(symbolPair.second);
-            break;
-        }
-    }
-
-
-    QString personal = QString::fromStdString(personalSpace->getAttribute("personal"));
+    QString personal = QString::fromStdString(personSymbol->getAttribute("polyline_personal"));
 
     vector<QPolygonF> polygonSeq;
-
     QPolygonF personalPolygon;
 
     for(auto pol: personal.split(";;"))

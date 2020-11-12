@@ -3,7 +3,7 @@
 
 		<!-- bedroom -->
 		<transform id="room_3">
-		 <!--  CAMS 
+		 <!--  CAMS -->
 		         
 		  <transform id="cam01" tx="-1300" tz="-4300" ty="1900"   rx="0.50" ry="0" >
 					<rgbd id="cam01_corridor" width="320" height="240" focal="240" port="10196" ifconfig="44000,55000" noise="0" />
@@ -18,7 +18,7 @@
 		    	<transform id="cam03" tx="-5900" ty="1800" tz="300"  rx="-0.5" ry="2.5" rz="0.3">
 					<rgbd id="cam03_room" width="320" height="240" focal="240" port="10196" ifconfig="44000,55000" noise="0" />
 					<plane id="03rgbd_mesh" texture="#550000" size="50,50,200" repeat="1" nx="0" ny="0" nz="1" px="0" py="0" pz="-200" collide="0" />
-				</transform>-->
+				</transform>
 
 			<!-- FLOOR -->
 			<transform id="floor" tx="-4000" tz="-2000" ty="0">
@@ -116,7 +116,7 @@
 				<plane id="muro12" nx="0" nz="-5000" size="6000,1900,100"  texture="#74ADA1" collide="1" />
 			</transform>
 		
-			<!-- TELE -->	
+			<!-- TELE 	-->	
             		<transform id="board" tx="3000" tz="4300" ty="1350" ry="3.14">
 		        	<mesh id="board_mesh" file="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/tv/tv.3DS" 					
 		              	scale="30,30,30" tx="-150" tz="-150" ty="-300" rx="1.57" rz="3.14" collide="1" />
@@ -138,7 +138,7 @@
 		
 
 		   
-	 		</transform>	
+	 		</transform>
             
 		</transform>
 

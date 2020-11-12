@@ -185,8 +185,8 @@ private:
 	void publishPersonalSpaces();
 	void publishAffordances();
 
-	bool updatePersonalSpacesInGraph();
-	bool updateAffordancesInGraph();
+	void updatePersonalSpacesInGraph();
+	void updateAffordancesInGraph();
 	void arrangePersonalSpaces(RoboCompSocialNavigationGaussian::SNGPersonSeq personGroup,RoboCompSocialNavigationGaussian::SNGPolylineSeq intimate,
                                RoboCompSocialNavigationGaussian::SNGPolylineSeq personal, RoboCompSocialNavigationGaussian::SNGPolylineSeq social);
 

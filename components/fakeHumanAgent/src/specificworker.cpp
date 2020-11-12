@@ -219,6 +219,11 @@ int SpecificWorker::includeInAGM(int id,const RoboCompInnerModelManager::Pose3D 
 	printf("Got personSymbolId: %d\n", personSymbolId);
 	person->setAttribute("imName", imName);
 	person->setAttribute("imType", "transform");
+    person->setAttribute("polyline_intimate", "");
+    person->setAttribute("polyline_personal", "");
+    person->setAttribute("polyline_social", "");
+    person->setAttribute("polyline_sharedWith","");
+
     newModel->addEdgeByIdentifiers(person->identifier, 3, "in");
 
 
@@ -311,29 +316,6 @@ bool SpecificWorker::removeFromAGM(int id)
 	AGMModel::SPtr newModel(new AGMModel(worldModel));
 
 	AGMModelSymbol::SPtr personAGM = worldModel->getSymbolByIdentifier(personMap[id].personSymbolId);
-
-
-	for (AGMModelSymbol::iterator edge = personAGM->edgesBegin(worldModel);
-		 edge!=personAGM->edgesEnd(worldModel);
-		 edge++) {
-        const std::pair<int32_t, int32_t> symbolPair = edge->getSymbolPair();
-
-        AGMModelSymbol::SPtr first = worldModel->getSymbol(symbolPair.first);
-        AGMModelSymbol::SPtr second = worldModel->getSymbol(symbolPair.second);
-        string firstType = first->typeString();
-        string secondType = second->typeString();
-
-        qDebug()<< "FIRST "<< QString::fromStdString(first->typeString()) << "SECOND "<< QString::fromStdString(secondType);
-
-        if(firstType == "person" and secondType == "personal_space")
-        {
-            qDebug() << "Identifier "<<second->identifier << " Type "<< QString::fromStdString(secondType);
-            newModel->removeEdgesRelatedToSymbol(second->identifier);
-            newModel->removeSymbol(second->identifier);
-        }
-
-
-	}
 
 	newModel->removeEdgesRelatedToSymbol(personMap[id].personSymbolId);
 	newModel->removeSymbol(personMap[id].personSymbolId);

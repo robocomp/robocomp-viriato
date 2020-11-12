@@ -342,21 +342,8 @@ QPolygonF SpecificWorker::getAffordance(int objectID)
     QPolygonF objectPolygon;
 
     AGMModelSymbol::SPtr objectAGM = worldModel->getSymbol(objectID);
+    polyline = QString::fromStdString(objectAGM->getAttribute("polyline_affordance"));
 
-    for (AGMModelSymbol::iterator edge = objectAGM->edgesBegin(worldModel);
-         edge!=objectAGM->edgesEnd(worldModel);
-         edge++) {
-        if (edge->getLabel()=="has") {
-            const std::pair<int32_t, int32_t> symbolPair = edge->getSymbolPair();
-            auto second = worldModel->getSymbol(symbolPair.second);
-            const string secondType = worldModel->getSymbol(symbolPair.second)->symbolType;
-
-            if (symbolPair.first==objectID and secondType=="affordance_space") {
-                polyline = QString::fromStdString(second->getAttribute("affordance"));
-                break;
-            }
-        }
-    }
 
     if(!polyline.isEmpty())
     {

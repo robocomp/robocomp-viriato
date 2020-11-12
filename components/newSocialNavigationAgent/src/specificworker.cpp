@@ -431,27 +431,18 @@ SpecificWorker::retPersonalSpaces SpecificWorker::getPolylinesFromModel()
 
     vector <vector<QPolygonF>> polylinesSeq {intimatePolygon, personalPolygon, socialPolygon};
 
-    auto personalSpaces = worldModel->getSymbolsByType("personal_space");
+    auto peopleAGM = worldModel->getSymbolsByType("person");
     vector<int> IDsAlreadyIncluded;
 
-    for( auto space : personalSpaces)
+    for( auto person : peopleAGM)
     {
-        int owner = -1;
+        int32_t owner = person->identifier;
+        qDebug()<< owner;
+        QString intimate = QString::fromStdString(person->getAttribute("polyline_intimate"));
+        QString personal = QString::fromStdString(person->getAttribute("polyline_personal"));
+        QString social = QString::fromStdString(person->getAttribute("polyline_social"));
+        QString sharedWith = QString::fromStdString(person->getAttribute("polyline_sharedWith"));
 
-        for (AGMModelSymbol::iterator edge = space->edgesBegin(worldModel);
-             edge!=space->edgesEnd(worldModel);
-             edge++) {
-            if (edge->getLabel()=="has") {
-                const std::pair<int32_t, int32_t> symbolPair = edge->getSymbolPair();
-                owner = symbolPair.first;
-            }
-        }
-
-        QString intimate = QString::fromStdString(space->getAttribute("intimate"));
-        QString personal = QString::fromStdString(space->getAttribute("personal"));
-        QString social = QString::fromStdString(space->getAttribute("social"));
-
-        QString sharedWith = QString::fromStdString(space->getAttribute("sharedWith"));
         vector<int> sharedWithIDs;
 
         for (auto sh : sharedWith.split(" ")) {
@@ -517,14 +508,14 @@ SpecificWorker::retAffordanceSpaces SpecificWorker::getAffordancesFromModel()
     vector<QPolygonF> blockedAffordances;
     std::map<float,vector<QPolygonF>> mapCostObjects;
 
-    auto affordanceSpaces = worldModel->getSymbolsByType("affordance_space");
+    auto objectsAGM = worldModel->getSymbolsByType("object");
 
 
-    for( auto affordance : affordanceSpaces)
+    for( auto affordance : objectsAGM)
     {
         QPolygonF object;
 
-        QString polyline = QString::fromStdString(affordance->getAttribute("affordance"));
+        QString polyline = QString::fromStdString(affordance->getAttribute("polyline_affordance"));
         float cost = std::stof(affordance->getAttribute("cost"));
         bool interacting = (affordance->getAttribute("interacting") == "1");
 
@@ -855,11 +846,13 @@ void SpecificWorker::AGMExecutiveTopic_symbolUpdated(const RoboCompAGMWorldModel
 	QMutexLocker locker(mutex);
 	AGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);
 
-    if (modification.nodeType == "personal_space")
+    if (modification.nodeType == "person")
         personalSpacesChanged = true;
 
-    if (modification.nodeType == "affordance_space")
+    if (modification.nodeType == "object")
         affordancesChanged = true;
+
+
 }
 
 void SpecificWorker::AGMExecutiveTopic_symbolsUpdated(const RoboCompAGMWorldModel::NodeSequence &modifications)
@@ -875,15 +868,14 @@ void SpecificWorker::AGMExecutiveTopic_symbolsUpdated(const RoboCompAGMWorldMode
 
         for(auto node : modifications)
         {
-            if (node.nodeType == "personal_space")
+            if (node.nodeType == "person")
                 personalSpacesChanged = true;
 
-            if (modification.nodeType == "affordance_space")
+            if (modification.nodeType == "object")
                 affordancesChanged = true;
         }
 
     }
-
 }
 
 bool SpecificWorker::setParametersAndPossibleActivation(const RoboCompAGMCommonBehavior::ParameterMap &prs, bool &reactivated)

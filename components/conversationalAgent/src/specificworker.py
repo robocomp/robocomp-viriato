@@ -466,8 +466,7 @@ class SpecificWorker(GenericWorker):
         with open('chatbot/rasa_conversation.json', 'r') as openfile:
             attrs = json.load(openfile)
             print('attrs', attrs)
-            if attrs["rasa"] == self.change_attributes["rasa"] and \
-                    attrs["response"] == self.change_attributes["response"]:
+            if attrs["rasa"] == self.change_attributes["rasa"] and attrs["response"] == self.change_attributes["response"]:
                 return False
             else:
                 attrs["timeStarted"] = str(datetime.now())

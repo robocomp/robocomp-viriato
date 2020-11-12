@@ -134,29 +134,15 @@ void SpecificWorker::compute()
 
         symbolsToPublish.clear();
         newModel = AGMModel::SPtr(new AGMModel(worldModel));
-        bool UPS = updatePersonalSpacesInGraph();
-        bool UA = updateAffordancesInGraph();
-        if ( UPS or UA )
-        {
-            try {
-                static QTime reloj = QTime::currentTime();
-                reloj.start();
-                qDebug()<<"Trying to update the model "<< UPS << UA;
-
-                sendModificationProposal(worldModel, newModel);
-                qDebug()<< "Model updated" << reloj.restart();
-            }
-            catch(std::exception& e) { std::cout<<"Exception updating AGM: "<<e.what()<<std::endl; }
-        }
-
-        else if(!symbolsToPublish.empty())
+        updatePersonalSpacesInGraph();
+        updateAffordancesInGraph();
+        if (!symbolsToPublish.empty())
         {
             try {
                 qDebug()<<"Publish Nodes Update ";
                 AGMMisc::publishNodesUpdate(symbolsToPublish, agmexecutive_proxy); }
             catch(std::exception& e) { std::cout<<"Exception updating SYMBOLS AGM: "<<e.what()<<std::endl; }
         }
-
 
 		worldModelChanged = false;
         costChanged = false;
@@ -657,6 +643,7 @@ RoboCompSocialNavigationGaussian::SNGPolyline SpecificWorker::affordanceRectangu
     point4.z = obj.z + obj.depth/2 +obj.inter_space;
     polyline.push_back(point4);
 
+
     return polyline;
 
 }
@@ -1083,13 +1070,12 @@ void SpecificWorker::publishAffordances()
 
 }
 
-bool SpecificWorker::updatePersonalSpacesInGraph()
+void SpecificWorker::updatePersonalSpacesInGraph()
 {
 
     qDebug()<<__FUNCTION__;
 
     bool newSymbol = false;
-
 
     auto personsInGraph = newModel->getSymbolsByType("person");
 
@@ -1098,30 +1084,8 @@ bool SpecificWorker::updatePersonalSpacesInGraph()
         int32_t personID = personAGM->identifier;
         int32_t spaceSymbolId = -1;
 
-        for (AGMModelSymbol::iterator edge = personAGM->edgesBegin(worldModel);
-             edge!=personAGM->edgesEnd(worldModel);
-             edge++)
-        {
-            const std::pair<int32_t, int32_t> symbolPair = edge->getSymbolPair();
-
-            string firstType = worldModel->getSymbol(symbolPair.first)->typeString();
-            string secondType = worldModel->getSymbol(symbolPair.second)->typeString();
-
-            if (firstType == "person" and secondType == "personal_space")
-            {
-                spaceSymbolId = symbolPair.second;
-                break;
-            }
-        }
-
-        std::string type = "personal_space" ;
-        std::string imName = "personal_space_of" + std::to_string(personID);
-
         PersonalSpaceType spaces;
-
-        try{
-            spaces = mapIdSpaces[personID];
-        }
+        try{ spaces = mapIdSpaces[personID]; }
         catch(...){
             qDebug()<<"Person not found in mapIdSpaces";
             continue;
@@ -1136,7 +1100,6 @@ bool SpecificWorker::updatePersonalSpacesInGraph()
             {
                 for (auto p: pol)
                 {
-
                     string pointStr = to_string(p.x) + " " + to_string(p.z) + ";";
                     str += pointStr;
                 }
@@ -1154,156 +1117,60 @@ bool SpecificWorker::updatePersonalSpacesInGraph()
 
         }
 
+        personAGM->setAttribute("polyline_intimate", polylinesStr[0]);
+        personAGM->setAttribute("polyline_personal", polylinesStr[1]);
+        personAGM->setAttribute("polyline_social", polylinesStr[2]);
+        personAGM->setAttribute("polyline_sharedWith", sharedWith);
 
-        if(spaceSymbolId == -1)  //Symbol not found
-        {
-            qDebug()<< "----- Symbol not found ----- ";
-            qDebug() << "imName = "<< QString::fromStdString(imName) << " " <<"symbolId = "<<spaceSymbolId;
-
-            // Symbolic part
-            AGMModelSymbol::SPtr personalSpace = newModel->newSymbol("personal_space");
-            spaceSymbolId = personalSpace->identifier;
-            printf("Got SpaceSymbolID: %d\n", spaceSymbolId);
-            personalSpace->setAttribute("imName", imName);
-
-            personalSpace->setAttribute("intimate", polylinesStr[0]);
-            personalSpace->setAttribute("personal", polylinesStr[1]);
-            personalSpace->setAttribute("social", polylinesStr[2]);
-            personalSpace->setAttribute("sharedWith", sharedWith);
-
-            newModel->addEdgeByIdentifiers(personID,spaceSymbolId, "has");
-
-            newSymbol = true;
-        }
-
-        else
-        {
-//            qDebug()<< " ----- Symbol already in model -----";
-//            qDebug() << "imName = "<< QString::fromStdString(imName) << " " <<"symbolId = "<<spaceSymbolId;
-
-            try
-            {
-                AGMModelSymbol::SPtr spaceSymbol = worldModel->getSymbolByIdentifier(spaceSymbolId);
-
-                spaceSymbol->setAttribute("intimate", polylinesStr[0]);
-                spaceSymbol->setAttribute("personal", polylinesStr[1]);
-                spaceSymbol->setAttribute("social", polylinesStr[2]);
-                spaceSymbol->setAttribute("sharedWith", sharedWith);
-
-                symbolsToPublish.push_back(spaceSymbol);
-
-            }
-
-            catch(...)
-            {
-                qDebug()<< "[ERROR] CANT READ EDGE FROM AGM";
-            }
-
-        }
-
+        symbolsToPublish.push_back(personAGM);
     }
-
-    if (newSymbol) return true;
-    else return false;
 }
 
-bool SpecificWorker::updateAffordancesInGraph()
+void SpecificWorker::updateAffordancesInGraph()
 {
     qDebug()<<__FUNCTION__;
 
     bool newSymbol = false;
 
-    auto vectorAffordancesInGraph = newModel->getSymbolsByType("affordance_space");
 
 //    qDebug()<< "Number of affordances spaces in graph = " << vectorAffordancesInGraph.size();
 
-    vector<AGMModelSymbol::SPtr> symbolsToPublish;
-
-    for(auto const [ID,object] : mapIdObjects)
+    for(auto const [imName_,object] : mapIdObjects)
     {
         std::string type = "affordance_space" ;
-        std::string imName = "affordance_of" + ID.toStdString();
+        std::string imName = "affordance_of" + imName_.toStdString();
 
-        int spaceSymbolId = -1;
+        auto vectorObjectsInGraph = newModel->getSymbolsByType("object");
 
-        for(auto spaces : vectorAffordancesInGraph)
+        for(auto objectAGM : vectorObjectsInGraph)
         {
-            auto id = spaces->identifier;
-
-            if(newModel->getSymbolByIdentifier(id)->getAttribute("imName") == imName)
+            if(object.id == objectAGM->identifier)
             {
-                spaceSymbolId = id;
+                qDebug()<< "Update affordance";
+
+                string str;
+                for(auto p: object.affordance)
+                {
+                    string pointStr = to_string(p.x) + " " + to_string(p.z) + ";";
+                    str += pointStr;
+                }
+                str += ";";
+
+
+                objectAGM->setAttribute("polyline_affordance", str);
+                objectAGM->setAttribute("cost", to_string(object.cost));
+                objectAGM->setAttribute("interacting", to_string(object.interacting));
+
+                symbolsToPublish.push_back(objectAGM);
+
                 break;
             }
         }
 
-        string str;
-
-        for(auto p: object.affordance)
-        {
-                string pointStr = to_string(p.x) + " " + to_string(p.z) + ";";
-                str += pointStr;
-        }
-        str += ";";
 
 
-        if(spaceSymbolId == -1)  //Symbol not found
-        {
-//            qDebug()<< "----- Symbol not found ----- ";
-//            qDebug() << "imName = "<< QString::fromStdString(imName) << " " <<"symbolId = "<<spaceSymbolId;
-
-            try { AGMModelSymbol::SPtr objectSymbol = newModel->getSymbol(object.id); }
-
-            catch(...)
-            {
-                qDebug() << "OBJECT "<< ID << " NOT FOUND IN WORDMODEL ";
-                return false;
-            }
-
-            // Symbolic part
-            AGMModelSymbol::SPtr spaceSymbol = newModel->newSymbol("affordance_space");
-            spaceSymbolId = spaceSymbol->identifier;
-            printf("Got SpaceSymbolID: %d\n", spaceSymbolId);
-            spaceSymbol->setAttribute("imName", imName);
-
-            spaceSymbol->setAttribute("affordance", str);
-            spaceSymbol->setAttribute("cost", to_string(object.cost));
-            spaceSymbol->setAttribute("interacting", to_string(object.interacting));
-
-
-            newModel->addEdgeByIdentifiers(object.id,spaceSymbolId, "has");
-
-            newSymbol = true;
-        }
-
-        else
-        {
-//            qDebug()<< " ----- Symbol already in model -----";
-//            qDebug() << "imName = "<< QString::fromStdString(imName) << " " <<"symbolId = "<<spaceSymbolId;
-
-            try
-            {
-                AGMModelSymbol::SPtr spaceSymbol = worldModel->getSymbolByIdentifier(spaceSymbolId);
-
-                spaceSymbol->setAttribute("affordance", str);
-                spaceSymbol->setAttribute("cost", to_string(object.cost));
-                spaceSymbol->setAttribute("interacting", to_string(object.interacting));
-
-                symbolsToPublish.push_back(spaceSymbol);
-
-            }
-
-            catch(...)
-            {
-                qDebug()<< "[ERROR] CANT READ EDGE FROM AGM";
-            }
-
-        }
 
     }
-
-    if(newSymbol) return true;
-    else return false;
 
 }
 
