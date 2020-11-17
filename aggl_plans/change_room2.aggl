@@ -10,11 +10,35 @@ vertexDiameter=40.0
 ===
 types
 {
+(object)
 (person)
 (robot)
 (room)
 }
 ===
+askForAffordancePermission : active(1)
+{
+	{
+		o:object(110,-50)
+		p:person(-50,-180)
+		robot:robot(185,-215)
+		o->o(interactive)
+		p->o(interacting)
+		p->p(is_near)
+		p->robot(affordance_blocking)
+		robot->robot(blocked)
+	}
+	=>
+	{
+		o:object(125,105)
+		p:person(-60,-15)
+		robot:robot(190,-40)
+		o->o(interactive)
+		p->o(interacting)
+		p->p(is_near)
+	}
+}
+
 askForGroupalPermission : active(1)
 {
 	{
@@ -88,6 +112,26 @@ changeRoom : active(1)
 		robot->room2(in)
 		room1->room2(accessible)
 		room2->room1(accessible)
+	}
+}
+
+goToAffordance : active(1)
+{
+	{
+		o:object(-5,80)
+		p:person(-155,-20)
+		robot:robot(125,-80)
+		p->o(interacting)
+		p->robot(affordance_blocking)
+	}
+	=>
+	{
+		o:object(35,100)
+		p:person(-125,-25)
+		robot:robot(105,-95)
+		p->o(interacting)
+		p->p(is_near)
+		p->robot(affordance_blocking)
 	}
 }
 
