@@ -136,12 +136,9 @@ class SpecificWorker(GenericWorker):
         person_near = False
         for link in list(self.worldModel.links):
             if link.linkType == 'is_near':
-                type_a = self.worldModel.getNode(link.a).sType
-                type_b = self.worldModel.getNode(link.b).sType
+                people_id.append(link.a)
+                person_near = True
 
-                if type_a == 'robot' and type_b == 'person' or type_a == 'person' and type_b == 'robot':
-                    people_id.append(link.a if type_a == 'person' else link.b)
-                    person_near = True
 
         return person_near, people_id
 

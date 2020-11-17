@@ -109,13 +109,15 @@ void SpecificWorker::compute()
     worldModelChanged = false;
 
     if(!totalPersons.empty())
-        CHN = checkHumansNear();
+        checkHumansNear();
 
-    if (CHI or COI or CHN)
+
+    if (CHI or COI)
     {
         try
         {
             qDebug()<<"Trying to update worldModel" << CHI << COI << CHN;
+
             sendModificationProposal(worldModel,newModel);
             ourModelChanged = true;
             qDebug()<< "Model updated";
@@ -128,6 +130,7 @@ void SpecificWorker::compute()
         qDebug()<<  "\n";
 
     }
+
 
 
 }
@@ -172,7 +175,7 @@ void SpecificWorker::loadInfoFromAGM()
         person.z = str2float(edgeRT.attributes["tz"]);
 		person.rot = str2float(edgeRT.attributes["ry"]);
 
-		cout<< "PERSON " <<person.id<< " x = "<<person.x <<" z = "<<person.z <<" rot "<<person.rot <<endl;
+//		cout<< "PERSON " <<person.id<< " x = "<<person.x <<" z = "<<person.z <<" rot "<<person.rot <<endl;
         totalPersons.push_back(person);
     }
 
@@ -181,7 +184,6 @@ void SpecificWorker::loadInfoFromAGM()
 	{
 		ObjectType object;
 		auto id =  obj->identifier;
-
 
 		try
 		{
@@ -193,7 +195,6 @@ void SpecificWorker::loadInfoFromAGM()
 			//El objeto no es interactivo
 			continue;
 		}
-
 
 		AGMModelSymbol::SPtr objectParent = worldModel->getParentByLink(id, "RT");
 		AGMModelEdge &edgeRT  = worldModel->getEdgeByIdentifiers(objectParent->identifier,id, "RT");
@@ -209,13 +210,12 @@ void SpecificWorker::loadInfoFromAGM()
 
         object.shape = QString::fromStdString(worldModel->getSymbolByIdentifier(id)->getAttribute("shape"));
 
-        cout<< "OBJECT - interaction space " <<object.inter_space << "mm"<< " x = "<<object.x <<" z = "<<object.z <<" rot "<<object.rot << endl;
+//        cout<< "OBJECT - interaction space " <<object.inter_space << "mm"<< " x = "<<object.x <<" z = "<<object.z <<" rot "<<object.rot << endl;
 
 		totalObjects.push_back(object);
 
 	}
 
-	qDebug()<<"interaction objects "<< totalObjects.size();
 }
 
 
@@ -371,6 +371,7 @@ QPolygonF SpecificWorker::getAffordance(int objectID)
 
 bool SpecificWorker::checkHumansNear()
 {
+    static bool first = true;
 
     auto currentRobotPose = innerModel->transformS6D("world","robot");
 	vector <int32_t> currentPersonsNear;
@@ -382,41 +383,56 @@ bool SpecificWorker::checkHumansNear()
 			currentPersonsNear.push_back(p.id);
 	}
 
-	auto edgeName = "is_near";
-
-	if (prevPersonsNear != currentPersonsNear)
+	std::string edgeName = "is_near";
+    qDebug()<< "prevPersonsNear " << prevPersonsNear << "currentPersonsNear " << currentPersonsNear;
+	if ((prevPersonsNear != currentPersonsNear) or first)
 	{
-		for(auto id: prevPersonsNear)
+        auto vectorPersons = worldModel->getSymbolsByType("person");
+
+		for(auto personAGM: vectorPersons)
 		{
-			try
-			{
-				newModel->removeEdgeByIdentifiers(robotID, id, edgeName);
-				qDebug ()<< __FUNCTION__ <<" Se elimina el enlace " << QString::fromStdString(edgeName) << " de " << id;
-			}
+            for (auto edge = personAGM->edgesBegin(worldModel); edge != personAGM->edgesEnd(worldModel); edge++)
+            {
+                qDebug()<< QString::fromStdString(edgeName) << " found " << personAGM->identifier;
 
-			catch(...)
-			{
-				std::cout<<__FUNCTION__<<"No existe el enlace"<<std::endl;
+                if (edge->getLabel() == edgeName)
+                {
+                    auto id = personAGM->identifier;
+                    try
+                    {
+                        AGMMisc::publishSelfEdgeDeleted(id,edgeName,agmexecutive_proxy);
+                        qDebug ()<< __FUNCTION__ <<" Se elimina el enlace " << QString::fromStdString(edgeName) << " de " << id;
+                    }
 
-			}
+                    catch(...)
+                    {
+                        std::cout<<__FUNCTION__<< "No se puede eliminar el enlace "<< edgeName << " de " << id <<std::endl;
+
+                    }
+                }
+            }
+
 		}
 
 		for(auto id: currentPersonsNear)
 		{
 			try
 			{
-				newModel->addEdgeByIdentifiers(robotID, id, edgeName);
+                map<std::string,std::string> attrs = {};
+                AGMMisc::publishSelfEdgeAdded(id,edgeName,attrs,agmexecutive_proxy);
 				qDebug ()<<__FUNCTION__ <<"  Se añade el enlace " << QString::fromStdString(edgeName) << " de " << id;
 			}
 
 			catch(...)
 			{
-				std::cout<<__FUNCTION__<<"No existe el enlace"<<std::endl;
+				std::cout<<__FUNCTION__<< "No se puede añadir el enlace"<< edgeName << "de " << id <<std::endl;
 
 			}
 		}
 
 		prevPersonsNear = currentPersonsNear;
+
+		first = false;
 
 		return true;
 	}
