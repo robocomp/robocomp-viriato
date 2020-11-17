@@ -162,8 +162,8 @@ class SpecificWorker(GenericWorker):
         personal_spaces = ["intimate", "personal", "social"]
                                         # sigma_h, sigma_r, sigma_s,  h
         dict_space_param = {"intimate": [1.3,       1.,     1.3,    0.8],
-                            "personal": [1.3,       1.,     1.3,    0.4],
-                            "social":   [3.,        1.,     1.3,    0.1],
+                            "personal": [1.3,       1.,     1.3,    0.5 ], #0.4
+                            "social":   [3.,        1.,     1.3,    0.2], #0.1
                             }
 
         dict_space_polylines = {"intimate": [],
@@ -223,15 +223,16 @@ class SpecificWorker(GenericWorker):
         if represent:
             for soc in dict_spaces_to_plot["social"]:
                 x, y = zip(*soc)
-                plt.plot(x, y, color='c', marker='.')
+                plt.plot(x, y, color='c',linestyle='None', marker='.')
 
             for per in dict_spaces_to_plot["personal"]:
                 x, y = zip(*per)
-                plt.plot(x, y, color='m', marker='.')
+                plt.plot(x, y, color='m',linestyle='None', marker='.')
 
             for inti in dict_spaces_to_plot["intimate"]:
                 x, y = zip(*inti)
-                plt.plot(x, y, color='r', marker='.')
+                plt.plot(x, y, color='r',linestyle='None', marker='.')
+
 
             plt.axis('equal')
             plt.xlabel('X')

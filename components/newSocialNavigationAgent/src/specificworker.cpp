@@ -183,8 +183,8 @@ void SpecificWorker::compute()
 
         if(robotBlocked)
             checkRobotBlock();
-
     }
+
 
 }
 
@@ -254,10 +254,10 @@ void SpecificWorker::checkHumanBlock()
 
 
 
-    if  (active and
-            (blockingIDs.size() != 0 or affBlockingIDs.size() != 0))
+    if  (active and (blockingIDs.size() != 0 or affBlockingIDs.size() != 0))
+//    if  (blockingIDs.size() != 0 or affBlockingIDs.size() != 0)
     {
-
+        qDebug()<<"Blocking robot";
         if(addEdgeModel(robotID,robotID,"blocked"))
             edgesChanged = true;
 
@@ -271,13 +271,19 @@ void SpecificWorker::checkHumanBlock()
         }
     }
 
-    if (!robotBlocked)
+    else if (active and !robotBlocked)
     {
         if(removeEdgeModel(robotID,robotID,"blocked"))
             edgesChanged = true;
 
-
-        for (auto id: blockingIDsInModel)
+        for (auto id: prev_blockingIDs)
+        {
+            if(removeEdgeModel(id,robotID,edgeInModel))
+            {
+                edgesChanged = true;
+            }
+        }
+        for (auto id: prev_affBlockingIDs)
         {
             if(removeEdgeModel(id,robotID,edgeInModel))
             {
@@ -291,9 +297,7 @@ void SpecificWorker::checkHumanBlock()
 
         edgeInModel = "";
 
-
     }
-
 
 
 	if(edgesChanged){
@@ -311,10 +315,7 @@ void SpecificWorker::checkHumanBlock()
 		if (currentEdge != "")
 		{
             edgeInModel = currentEdge;
-            if (!blockingIDs.empty())
-                blockingIDsInModel = blockingIDs;
-            else if (!affBlockingIDs.empty())
-                blockingIDsInModel = affBlockingIDs;
+
         }
 	}
 
@@ -997,6 +998,7 @@ void SpecificWorker::sendModificationProposal(AGMModel::SPtr &worldModel, AGMMod
     }
     catch(const Ice::Exception& e)
     {
+        printf("sendModificationProposal --- unknown exception \n");
         exit(1);
     }
 }

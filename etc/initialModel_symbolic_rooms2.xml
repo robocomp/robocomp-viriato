@@ -1,0 +1,111 @@
+
+<AGMModel>
+
+	<symbol id="100" type="world">
+		<attribute key="imType" value="transform" />
+		<attribute key="imName" value="world" />
+	</symbol>
+
+	<symbol id="1" type="robot">
+		<attribute key="imType" value="transform" />
+		<attribute key="imName" value="robot" />
+	</symbol>
+
+		<!-- left room -->
+	<symbol id="3" type="room">
+		<attribute key="imType" value="transform" />
+		<attribute key="imName" value="room_3" />
+		<attribute key="polyline" value="-6500 2500;-1500 2500;-1500 -4500;-6500 -4500" />
+	</symbol>
+
+	<link src="1" dst="3" label="in"  > </link>
+	<link src="3" dst="1" label="RT" >
+		<linkAttribute key="tx" value="-5000" />
+		<linkAttribute key="ty" value="0" />
+		<linkAttribute key="tz" value="-3500" />
+		<linkAttribute key="rx" value="0" />
+		<linkAttribute key="ry" value="1.57" />
+		<linkAttribute key="rz" value="0" />
+	</link>
+	
+	<link src="3" dst="100" label="in"  > </link>
+
+		<!-- Right room -->
+	<symbol id="4" type="room">
+		<attribute key="imType" value="transform" />
+		<attribute key="imName" value="room_4" />
+		<attribute key="polyline" value="-1500 -1000;6500 -1000;6500 -4500;-1500 -4500" />
+	</symbol>
+
+		<link src="4" dst="100" label="in"  > </link>
+	<link src="4" dst="3" label="accessible"  > </link>
+	<link src="3" dst="4" label="accessible"  > </link>
+
+<!-- TRAPEZOID -->
+	<symbol id="3000" type="object">
+		<attribute key="imType" value="transform" />
+		<attribute key="imName" value="board" />
+        
+		<attribute key="shape" value="trapezoid" />
+		<attribute key="inter_space" value="3500" />
+		<attribute key="inter_angle" value="0.75" />
+		<attribute key="width" value="2000" />
+		<attribute key="height" value="1500" />
+		<attribute key="depth" value="500" />
+        
+        <attribute key="polyline_affordance" value="" />
+        <attribute key="cost" value="1" />
+        <attribute key="interacting" value="" />
+	</symbol>
+	
+	<link src="3000" dst="3000" label="interactive"  > </link>
+	<link src="3000" dst="4" label="in"  > </link>
+
+
+	<!-- RECTANGLE 
+
+	<symbol id="3100" type="object">
+		<attribute key="imType" value="transform" />
+		<attribute key="imName" value="bed" />
+        
+		<attribute key="shape" value="rectangle" />
+		<attribute key="inter_space" value="500" /> 
+		<attribute key="inter_angle" value="0" />
+		<attribute key="width" value="900" />
+		<attribute key="height" value="500" />
+		<attribute key="depth" value="2000" />
+        
+        <attribute key="polyline_affordance" value="" />
+        <attribute key="cost" value="1" />
+        <attribute key="interacting" value="" />
+
+	</symbol>
+	
+	<link src="3100" dst="3100" label="interactive"  > </link>
+	<link src="3100" dst="6" label="in"  > </link> -->
+
+
+	<!-- CIRCLE 
+
+	<symbol id="3200" type="object">
+		<attribute key="imType" value="transform" />
+		<attribute key="imName" value="tableD" />
+        
+		<attribute key="shape" value="circle" />
+		<attribute key="inter_space" value="500" />
+		<attribute key="inter_angle" value="0" />
+		<attribute key="width" value="3000" />
+		<attribute key="height" value="800" />
+		<attribute key="depth" value="1800" />
+        
+        <attribute key="polyline_affordance" value="" />
+        <attribute key="cost" value="1" />
+        <attribute key="interacting" value="" />
+
+	</symbol>
+
+    <link src="3200" dst="3200" label="interactive"  > </link>
+	<link src="3200" dst="6" label="in"  > </link> -->
+
+	
+</AGMModel>

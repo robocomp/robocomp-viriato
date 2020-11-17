@@ -124,7 +124,6 @@ private:
 	vector<vector<int32_t>> prev_softBlockingIDs = {};
 
 	string edgeInModel;
-    vector<int32_t> blockingIDsInModel;
 
 	localPersonsVec totalPersons;
 
