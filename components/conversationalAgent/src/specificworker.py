@@ -25,8 +25,10 @@ from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 import subprocess
+import sys, os
 
 # AGM related imports
+sys.path.append('/usr/local/share/agm')
 import AGMModelConversion
 from AGGL import *
 
@@ -366,6 +368,7 @@ class SpecificWorker(GenericWorker):
         self.robot_id = ''
         self.action = 'none'
         self.previous_action = 'none'
+        self.action_chatbot_started = 'none'
         self.interactingEdgeInAGM = False
         self.removeInteractingEdge = False
         self.list_actions = ['takeTheAttention', 'askForIndividualPermission', 'askForGroupalPermission']
@@ -404,16 +407,13 @@ class SpecificWorker(GenericWorker):
         except:
             print("The executive is probably not running, waiting for first AGM model publication...")
 
-        src = self.worldModel
 
     def cleanGraph(self):
-        model = self.worldModel
-
-        for link in model.links:
+        for link in self.worldModel.links:
             if link.linkType == "interacting" and (link.a == "1" or link.b == "1"):
                 try:
-                    model = self.worldModel
-                    model.removeEdge(link.a, link.b, "interacting")
+
+                    self.worldModel.removeEdge(link.a, link.b, "interacting")
                     if self.updatingDSR():
                         self.interactingEdgeInAGM = False
 
@@ -423,12 +423,12 @@ class SpecificWorker(GenericWorker):
 
     # Function to update dsr when we have made changes to AGM local model
     def updatingDSR(self):
-
+        print('updating DSR')
         try:
-            newModel = AGMModelConversion.fromInternalToIce(self.worldModel)
-            self.agmexecutive_proxy.structuralChangeProposal(newModel, "conversationalAgent", "Log_fileName")
-            w = self.agmexecutive_proxy.getModel()
-            self.worldModel = AGMModelConversion.fromIceToInternal_model(w)
+            newModelICE = AGMModelConversion.fromInternalToIce(self.worldModel)
+            self.agmexecutive_proxy.structuralChangeProposal(newModelICE, "conversationalAgent", "")
+            # w = self.agmexecutive_proxy.getModel()
+            # self.worldModel = AGMModelConversion.fromIceToInternal_model(w)
             print("AGM successfully updated")
             return True
         except:
@@ -446,7 +446,6 @@ class SpecificWorker(GenericWorker):
     # Function to write to file
     def writeToFile(self, id, situation):
         print('write to file', situation)
-        self.AGMinit()
         try:
             src = self.worldModel
             person_attributes = src.getNode(id).attributes
@@ -466,7 +465,8 @@ class SpecificWorker(GenericWorker):
         with open('chatbot/rasa_conversation.json', 'r') as openfile:
             attrs = json.load(openfile)
             print('attrs', attrs)
-            if attrs["rasa"] == self.change_attributes["rasa"] and attrs["response"] == self.change_attributes["response"]:
+            if attrs["rasa"] == self.change_attributes["rasa"] and attrs["response"] == self.change_attributes[
+                "response"]:
                 return False
             else:
                 attrs["timeStarted"] = str(datetime.now())
@@ -481,8 +481,8 @@ class SpecificWorker(GenericWorker):
             attrs = self.change_attributes
             print('attrs', attrs)
             try:
-                model = self.worldModel
-                model.addEdge(self.robot_id, self.human_id, "interacting", attrs)
+
+                self.worldModel.addEdge(self.robot_id, self.human_id, "interacting", attrs)
                 if self.updatingDSR():
                     self.interactingEdgeInAGM = True
 
@@ -509,16 +509,17 @@ class SpecificWorker(GenericWorker):
         self.eraseFiles()
         self.removeInteractingEdge = True
 
-        time.sleep(10)
-        print(self.ui_lock)
-        self.ui_lock = False
-        print(self.ui_lock)
-
         if self.action in self.list_actions:
-            print('restarting chatbot')
-            self.interaction.interactionUI = True
-            self.startChatbot()
+            if self.action != self.action_chatbot_started:
+                time.sleep(1)
+                print('restarting chatbot')
+                self.interaction.interactionUI = True
+                self.startChatbot()
         else:
+            time.sleep(15)
+            print(self.ui_lock)
+            self.ui_lock = False
+            print(self.ui_lock)
             print('stopping chatbot')
             self.situation = ''
             self.human_id = ''
@@ -653,75 +654,80 @@ class SpecificWorker(GenericWorker):
         return True
 
     def AGMExecutiveTopic_edgeUpdated(self, modification):
-        #
-        # subscribesToCODE
-        #
-        pass
+        # print('AGMExecutiveTopic_edgeUpdated')
+        self.mutex.lock()
+        self.worldModel.addEdge(str(modification.a), str(modification.b), str(modification.edgeType),
+                                modification.attributes)
+        self.mutex.unlock()
 
     #
     # SUBSCRIPTION to edgesUpdated method from AGMExecutiveTopic interface
     #
     def AGMExecutiveTopic_edgesUpdated(self, modifications):
-        #
-        # subscribesToCODE
-        #
-        pass
+        # print('AGMExecutiveTopic_edgesUpdated')
+        self.mutex.lock()
+        for modification in modifications:
+            self.worldModel.addEdge(str(modification.a),str(modification.b),str(modification.edgeType), modification.attributes)
 
-    #
+
+        self.mutex.unlock()
+
     # SUBSCRIPTION to selfEdgeAdded method from AGMExecutiveTopic interface
     #
     def AGMExecutiveTopic_selfEdgeAdded(self, nodeid, edgeType, attributes):
+        self.mutex.lock()
 
+        print('AGMExecutiveTopic_selfEdgeAdded', nodeid, edgeType)
         try:
-            self.worldModel.addEdge(nodeid,nodeid, edgeType, attributes)
+            self.worldModel.addEdge(nodeid, nodeid, edgeType, attributes)
+
+            for i in range(len(self.worldModel.links)):
+                if str(self.worldModel.links[i].a) == nodeid:
+                    print(nodeid, ' found ---------')
 
         except:
             print("Couldn't add an edge. Duplicate?\n")
 
-        pass
+        self.mutex.unlock()
 
     #
     # SUBSCRIPTION to selfEdgeDeleted method from AGMExecutiveTopic interface
     #
     def AGMExecutiveTopic_selfEdgeDeleted(self, nodeid, edgeType):
+        self.mutex.lock()
+
+        print('AGMExecutiveTopic_selfEdgeDeleted', nodeid, edgeType)
+
         try:
             self.worldModel.removeEdge(nodeid, nodeid, edgeType)
 
         except:
             print("Couldn't add an edge. Duplicate?\n")
-        pass
+
+        self.mutex.unlock()
 
     #
     # SUBSCRIPTION to structuralChange method from AGMExecutiveTopic interface
     #
     def AGMExecutiveTopic_structuralChange(self, w):
+        print('AGMExecutiveTopic_structuralChange')
         self.mutex.lock()
-        # print("before")
-        # print(type(self.worldModel), type(w))
         self.worldModel = AGMModelConversion.fromIceToInternal_model(w)
-        # print("after")
-        # print(type(self.worldModel), type(w))
-        # print(self.worldModel)
-        # fromIceToInternal(w, worldModel)
         self.mutex.unlock()
 
+        print('--- End structuralChange ---')
     #
     # SUBSCRIPTION to symbolUpdated method from AGMExecutiveTopic interface
     #
     def AGMExecutiveTopic_symbolUpdated(self, modification):
-        #
-        # subscribesToCODE
-        #
-        pass
+        AGMModelConversion.fromIceToInternal_node(modification)
 
     #
     # SUBSCRIPTION to symbolsUpdated method from AGMExecutiveTopic interface
     #
     def AGMExecutiveTopic_symbolsUpdated(self, modifications):
-        #
-        # subscribesToCODE
-        #
-        pass
+        for modification in modifications:
+            AGMModelConversion.fromIceToInternal_node(modification)
 
     # =============== Methods for Component Implements ==================
     # ===================================================================
@@ -732,7 +738,7 @@ class SpecificWorker(GenericWorker):
 
     # Function that will recieve parameters from mission and will activate agent
     def AGMCommonBehavior_activateAgent(self, prs):
-        print("parameters recieved ---> ", prs['action'].value)
+        print("AGMCommonBehavior_activateAgent ---> ", prs['action'].value)
         ret = bool()
         self.action = prs['action'].value
 
@@ -750,6 +756,7 @@ class SpecificWorker(GenericWorker):
                             self.human_id = prs['p'].value
                             self.robot_id = prs['robot'].value
                             self.writeToFile(prs['p'].value, self.situation)
+                            self.action_chatbot_started = self.action
                             self.startChatbot()
 
                     elif self.action == 'askForIndividualPermission':
@@ -761,6 +768,7 @@ class SpecificWorker(GenericWorker):
                             self.human_id = prs['p'].value
                             self.robot_id = prs['robot'].value
                             self.writeToFile(prs['p'].value, self.situation)
+                            self.action_chatbot_started = self.action
                             self.startChatbot()
 
                     elif self.action == 'askForGroupalPermission':
@@ -771,6 +779,7 @@ class SpecificWorker(GenericWorker):
                             self.human_id = prs['p'].value
                             self.robot_id = prs['robot'].value
                             self.writeToFile(prs['p'].value, self.situation)
+                            self.action_chatbot_started = self.action
                             self.startChatbot()
 
                     elif self.action == 'affordance_blocking':
@@ -780,6 +789,7 @@ class SpecificWorker(GenericWorker):
                             self.human_id = prs['p'].value
                             self.robot_id = prs['robot'].value
                             self.writeToFile(prs['p'].value, self.situation)
+                            self.action_chatbot_started = self.action
                             self.startChatbot()
 
                     else:

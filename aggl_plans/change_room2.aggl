@@ -21,11 +21,11 @@ askForGroupalPermission : active(1)
 		p:person(-70,-245)
 		p2:person(115,10)
 		robot:robot(-195,55)
+		p->p(is_near)
 		p->p2(interacting)
 		p->robot(is_blocking)
 		p2->p(interacting)
 		p2->robot(is_blocking)
-		robot->p(is_near)
 		robot->robot(blocked)
 	}
 	=>
@@ -33,9 +33,9 @@ askForGroupalPermission : active(1)
 		p:person(0,-350)
 		p2:person(170,-75)
 		robot:robot(-140,10)
+		p->p(is_near)
 		p->p2(interacting)
 		p2->p(interacting)
-		robot->p(is_near)
 	}
 }
 
@@ -44,15 +44,17 @@ askForIndividualPermission : active(1)
 	{
 		p:person(-40,-50)
 		robot:robot(-195,55)
+		p->p(is_near)
+		p->robot(front)
 		p->robot(is_blocking)
-		robot->p(is_near)
 		robot->robot(blocked)
 	}
 	=>
 	{
 		p:person(10,-115)
 		robot:robot(-140,10)
-		robot->p(is_near)
+		p->p(is_near)
+		p->robot(front)
 	}
 	precondition
 	{
@@ -105,11 +107,11 @@ goToGroupOfPeople : active(1)
 		p:person(-275,-40)
 		p2:person(-30,30)
 		robot:robot(0,-205)
+		p->p(is_near)
 		p->p2(interacting)
 		p->robot(is_blocking)
 		p2->p(interacting)
 		p2->robot(is_blocking)
-		robot->p(is_near)
 	}
 }
 
@@ -124,8 +126,8 @@ goToPerson : active(1)
 	{
 		p:person(-225,-80)
 		robot:robot(0,-205)
+		p->p(is_near)
 		p->robot(is_blocking)
-		robot->p(is_near)
 	}
 	precondition
 	{
@@ -144,14 +146,14 @@ takeTheAttention : active(1)
 	{
 		p:person(-15,-25)
 		robot:robot(-150,50)
-		robot->p(is_near)
+		p->p(is_near)
 	}
 	=>
 	{
 		p:person(75,0)
 		robot:robot(-105,90)
+		p->p(is_near)
 		p->robot(front)
-		robot->p(is_near)
 	}
 }
 

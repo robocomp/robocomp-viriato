@@ -18,29 +18,24 @@ types
 askForGroupalPermission : active(1)
 {
 	{
-		p:person(-40,-50)
+		p:person(-70,-245)
+		p2:person(115,10)
 		robot:robot(-195,55)
-		p->robot(front)
-		p->robot(is_blocking)
-		robot->p(is_near)
+		p->p(is_blocking)
+		p->p(is_near)
+		p->p2(interacting)
+		p2->p(interacting)
+		p2->p2(is_blocking)
 		robot->robot(blocked)
 	}
 	=>
 	{
-		p:person(10,-115)
+		p:person(0,-350)
+		p2:person(170,-75)
 		robot:robot(-140,10)
-		p->robot(front)
-		robot->p(is_near)
-	}
-	precondition
-	{
-		(forall 
-			otherp:person
-			(when   
-				(not (= p otherp))
-				(is_blocking otherp robot))
-			)       
-		)
+		p->p(is_near)
+		p->p2(interacting)
+		p2->p(interacting)
 	}
 }
 
@@ -49,17 +44,17 @@ askForIndividualPermission : active(1)
 	{
 		p:person(-40,-50)
 		robot:robot(-195,55)
+		p->p(is_blocking)
+		p->p(is_near)
 		p->robot(front)
-		p->robot(is_blocking)
-		robot->p(is_near)
 		robot->robot(blocked)
 	}
 	=>
 	{
 		p:person(10,-115)
 		robot:robot(-140,10)
+		p->p(is_near)
 		p->robot(front)
-		robot->p(is_near)
 	}
 	precondition
 	{
@@ -67,7 +62,7 @@ askForIndividualPermission : active(1)
 			otherp:person
 			(when   
 				(not (= p otherp))
-				(not (is_blocking otherp robot))
+				(not (is_blocking otherp otherp))
 			)       
 		)
 	}
@@ -96,19 +91,43 @@ changeRoom : active(1)
 	}
 }
 
+goToGroupOfPeople : active(1)
+{
+	{
+		p:person(-235,-35)
+		p2:person(25,105)
+		robot:robot(-35,-180)
+		p->p(is_blocking)
+		p->p2(interacting)
+		p2->p(interacting)
+		p2->p2(is_blocking)
+	}
+	=>
+	{
+		p:person(-275,-40)
+		p2:person(-30,30)
+		robot:robot(0,-205)
+		p->p(is_blocking)
+		p->p(is_near)
+		p->p2(interacting)
+		p2->p(interacting)
+		p2->p2(is_blocking)
+	}
+}
+
 goToPerson : active(1)
 {
 	{
 		p:person(-235,-35)
 		robot:robot(-35,-180)
-		p->robot(is_blocking)
+		p->p(is_blocking)
 	}
 	=>
 	{
 		p:person(-225,-80)
 		robot:robot(0,-205)
-		p->robot(is_blocking)
-		robot->p(is_near)
+		p->p(is_blocking)
+		p->p(is_near)
 	}
 	precondition
 	{
@@ -116,52 +135,25 @@ goToPerson : active(1)
 			otherp:person
 			(when   
 				(not (= p otherp))
-				(not (is_blocking otherp robot))
+				(not (is_blocking otherp otherp))
 			)       
 		)
 	}
 }
-
-goToGroupOfPeople : active(1)
-{
-	{
-		p:person(-235,-35)
-		robot:robot(-35,-180)
-		p->robot(is_blocking)
-	}
-	=>
-	{
-		p:person(-225,-80)
-		robot:robot(0,-205)
-		p->robot(is_blocking)
-		robot->p(is_near)
-	}
-	precondition
-	{
-		(forall 
-			otherp:person
-			(when   
-				(not (= p otherp))
-				(is_blocking otherp robot))
-			)       
-		)
-	}
-}
-
 
 takeTheAttention : active(1)
 {
 	{
 		p:person(-15,-25)
 		robot:robot(-150,50)
-		robot->p(is_near)
+		p->p(is_near)
 	}
 	=>
 	{
 		p:person(75,0)
 		robot:robot(-105,90)
+		p->p(is_near)
 		p->robot(front)
-		robot->p(is_near)
 	}
 }
 
