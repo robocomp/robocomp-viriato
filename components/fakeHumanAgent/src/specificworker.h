@@ -132,6 +132,7 @@ public slots:
 	
 	void autoMovement();
 	void addPerson();
+	void addPersonFromFile();
 	void delPerson();
 	void savePoints();
 	void loadPoints();

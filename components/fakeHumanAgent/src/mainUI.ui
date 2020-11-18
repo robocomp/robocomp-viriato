@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>535</width>
-    <height>604</height>
+    <height>598</height>
    </rect>
   </property>
   <property name="acceptDrops">
@@ -216,6 +216,13 @@
            <widget class="Line" name="line">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="addFromFile_pb">
+            <property name="text">
+             <string>add from file</string>
             </property>
            </widget>
           </item>

@@ -394,6 +394,7 @@ void SpecificWorker::initializeUI(){
 	giro->QAbstractSlider::setSliderPosition(0);
 
 	connect(add_pb, SIGNAL(clicked()), this, SLOT(addPerson()));
+	connect(addFromFile_pb, SIGNAL(clicked()), this, SLOT(addPersonFromFile()));
 	connect(del_pb, SIGNAL(clicked()), this, SLOT(delPerson()));
 	connect(setPose_pb, SIGNAL(clicked()), this, SLOT(setPose()));
 	
@@ -614,6 +615,115 @@ void SpecificWorker::addPerson()
 
 		}
 	}
+}
+
+void SpecificWorker::addPersonFromFile()
+{
+    string line;
+    ifstream file ("humansFile.txt");
+    if (file.is_open())
+    {
+        while ( getline (file,line))
+        {
+            auto splitLine =  QString::fromStdString(line.data()).split(" ");
+            qDebug()<< splitLine[0]<< splitLine[1]<<splitLine[2]<<splitLine[3];
+            RoboCompInnerModelManager::Pose3D pose;
+            pose.x = splitLine[0].toFloat();
+            pose.y = 0;
+            pose.z = splitLine[1].toFloat();
+            pose.rx = 0.f;
+            pose.ry = splitLine[2].toFloat();
+            pose.rz = 0.f;
+            int mesh = mesh_cb->currentText().toInt();
+
+            translationy = "0";
+
+            switch(splitLine[3].toInt())
+            {
+                case 1:
+                    meshname = "nurse.ive";
+                    scale ="10";
+                    rotationz = "3.1415926535";
+                    break;
+                case 2:
+                    meshname = "abuelita02.ive";
+                    scale = "1000";
+                    rotationz= "0";
+                    break;
+                case 3:
+                    meshname = "human08.3DS";
+                    scale = "950";
+                    rotationz= "0";
+                    break;
+                case 4:
+                    meshname = "human04.3ds";
+                    scale = "900";
+                    rotationz= "0";
+                    break;
+                case 5:meshname = "human05.3ds";
+                    scale = "800";
+                    rotationz= "0";
+                    break;
+                case 6:
+                    meshname = "human06.3ds";
+                    scale = "23";
+                    rotationz= "3.1415926535";
+                    break;
+                case 7:
+                    meshname = "human01.3ds";
+                    scale = "12";
+                    rotationz= "3.1415926535";
+                    break;
+                case 8:
+                    meshname = "human03.3ds";
+                    scale = "8";
+                    rotationz= "1.57079632679";
+                    break;
+
+                default:
+                    qDebug()<< "Mesh error";
+                    return;
+            }
+
+
+            int id = personMap.size() + 1;
+            // avoid inserting same element twice
+            while (personMap.find(id) != personMap.end())
+                id++;
+
+
+            // Include person in RCIS
+            if (includeInRCIS(id, pose, meshname))
+            {
+                // Include person in AGM
+                int personSymbolId = includeInAGM(id, pose, meshname);
+                if (personSymbolId != -1)
+                {
+                    TPerson person;
+                    person.autoMovement = false;
+                    person.pose = pose;
+                    person.personSymbolId = personSymbolId;
+                    person.name = "person" + std::to_string(id);
+                    personMap.insert(std::pair<int,TPerson>(personSymbolId,person));
+                    //include in comboBox
+                    person_cb->addItem(QString::number(personSymbolId));
+                    int index = person_cb->findText(QString::number(personSymbolId));
+                    person_cb->setCurrentIndex(index);
+
+                    int1_cb->addItem(QString::number(personSymbolId));
+                    int2_cb->addItem(QString::number(personSymbolId));
+                    updatePersonInterfaz(true);
+
+                }
+            }
+            sleep(1);
+
+        }
+
+        file.close();
+    }
+
+
 }
 void SpecificWorker::delPerson()
 {

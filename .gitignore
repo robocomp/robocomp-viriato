@@ -652,3 +652,13 @@ components/socialRulesAgent/src/SocialRules.ice
 components/socialRulesAgent/src/ui_mainUI.h
 
 components/newSocialNavigationAgent (copia)/
+
+components/humanObserverAgent/bin/humanObserverAgent
+
+components/newSocialNavigationAgent/bin/socialNavigationAgent
+
+components/roomLocalizationAgent/bin/roomLocalizationAgent
+
+components/localizationAgent_RCIS/bin/localizationAgent
+
+components/socialRulesAgent/bin/socialRulesAgent
