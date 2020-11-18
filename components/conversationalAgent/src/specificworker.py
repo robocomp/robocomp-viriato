@@ -371,7 +371,7 @@ class SpecificWorker(GenericWorker):
         self.action_chatbot_started = 'none'
         self.interactingEdgeInAGM = False
         self.removeInteractingEdge = False
-        self.list_actions = ['takeTheAttention', 'askForIndividualPermission', 'askForGroupalPermission']
+        self.list_actions = ['takeTheAttention', 'askForIndividualPermission', 'askForGroupalPermission','askForAffordancePermission']
         self.change_attributes = {"rasa": "", "response": ""}
         self.ui_lock = False
         self.restart = False
@@ -783,6 +783,7 @@ class SpecificWorker(GenericWorker):
                             self.startChatbot()
 
                     elif self.action == 'askForAffordancePermission':
+                        print('heere')
                         if (not self.interaction.isVisible()) or (self.previous_action != self.action):
                             self.interaction.interactionUI = True
                             self.situation = 'three'
