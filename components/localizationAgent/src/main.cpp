@@ -1,5 +1,5 @@
 /*
- *    Copyright (C) 2019 by YOUR NAME HERE
+ *    Copyright (C) 2020 by YOUR NAME HERE
  *
  *    This file is part of RoboComp
  *
@@ -86,25 +86,21 @@
 #include <apriltagsI.h>
 #include <fullposeestimationpubI.h>
 
+#include <GenericBase.h>
 #include <JointMotor.h>
 #include <Planning.h>
-#include <GenericBase.h>
 
 
-// User includes here
-
-// Namespaces
-using namespace std;
-using namespace RoboCompCommonBehavior;
 
 class localizationAgent : public RoboComp::Application
 {
 public:
-	localizationAgent (QString prfx) { prefix = prfx.toStdString(); }
+	localizationAgent (QString prfx, bool startup_check) { prefix = prfx.toStdString(); this->startup_check_flag=startup_check; }
 private:
 	void initialize();
 	std::string prefix;
 	MapPrx mprx;
+	bool startup_check_flag = false;
 
 public:
 	virtual int run(int, char*[]);
@@ -119,7 +115,11 @@ void ::localizationAgent::initialize()
 
 int ::localizationAgent::run(int argc, char* argv[])
 {
+#ifdef USE_QTGUI
+	QApplication a(argc, argv);  // GUI application
+#else
 	QCoreApplication a(argc, argv);  // NON-GUI application
+#endif
 
 
 	sigset_t sigs;
@@ -136,13 +136,12 @@ int ::localizationAgent::run(int argc, char* argv[])
 
 	int status=EXIT_SUCCESS;
 
-	AGMExecutivePrx agmexecutive_proxy;
-	FullPoseEstimationPrx fullposeestimation_proxy;
-	OmniRobotPrx omnirobot_proxy;
+	RoboCompAGMExecutive::AGMExecutivePrx agmexecutive_proxy;
+	RoboCompFullPoseEstimation::FullPoseEstimationPrx fullposeestimation_proxy;
+	RoboCompOmniRobot::OmniRobotPrx omnirobot_proxy;
 
 	string proxy, tmp;
 	initialize();
-
 
 	try
 	{
@@ -150,7 +149,7 @@ int ::localizationAgent::run(int argc, char* argv[])
 		{
 			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy AGMExecutiveProxy\n";
 		}
-		agmexecutive_proxy = AGMExecutivePrx::uncheckedCast( communicator()->stringToProxy( proxy ) );
+		agmexecutive_proxy = RoboCompAGMExecutive::AGMExecutivePrx::uncheckedCast( communicator()->stringToProxy( proxy ) );
 	}
 	catch(const Ice::Exception& ex)
 	{
@@ -167,7 +166,7 @@ int ::localizationAgent::run(int argc, char* argv[])
 		{
 			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy FullPoseEstimationProxy\n";
 		}
-		fullposeestimation_proxy = FullPoseEstimationPrx::uncheckedCast( communicator()->stringToProxy( proxy ) );
+		fullposeestimation_proxy = RoboCompFullPoseEstimation::FullPoseEstimationPrx::uncheckedCast( communicator()->stringToProxy( proxy ) );
 	}
 	catch(const Ice::Exception& ex)
 	{
@@ -184,7 +183,7 @@ int ::localizationAgent::run(int argc, char* argv[])
 		{
 			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy OmniRobotProxy\n";
 		}
-		omnirobot_proxy = OmniRobotPrx::uncheckedCast( communicator()->stringToProxy( proxy ) );
+		omnirobot_proxy = RoboCompOmniRobot::OmniRobotPrx::uncheckedCast( communicator()->stringToProxy( proxy ) );
 	}
 	catch(const Ice::Exception& ex)
 	{
@@ -194,6 +193,7 @@ int ::localizationAgent::run(int argc, char* argv[])
 	rInfo("OmniRobotProxy initialized Ok!");
 
 	mprx["OmniRobotProxy"] = (::IceProxy::Ice::Object*)(&omnirobot_proxy);//Remote server proxy creation example
+
 	IceStorm::TopicManagerPrx topicManager;
 	try
 	{
@@ -201,11 +201,11 @@ int ::localizationAgent::run(int argc, char* argv[])
 	}
 	catch (const Ice::Exception &ex)
 	{
-		cout << "[" << PROGRAM_NAME << "]: Exception: STORM not running: " << ex << endl;
+		cout << "[" << PROGRAM_NAME << "]: Exception: 'rcnode' not running: " << ex << endl;
 		return EXIT_FAILURE;
 	}
 
-	SpecificWorker *worker = new SpecificWorker(mprx);
+	SpecificWorker *worker = new SpecificWorker(mprx, startup_check_flag);
 	//Monitor thread
 	SpecificMonitor *monitor = new SpecificMonitor(worker,communicator());
 	QObject::connect(monitor, SIGNAL(kill()), &a, SLOT(quit()));
@@ -255,11 +255,10 @@ int ::localizationAgent::run(int argc, char* argv[])
 			adapterAGMCommonBehavior->add(agmcommonbehavior, Ice::stringToIdentity("agmcommonbehavior"));
 			adapterAGMCommonBehavior->activate();
 			cout << "[" << PROGRAM_NAME << "]: AGMCommonBehavior adapter created in port " << tmp << endl;
-			}
-			catch (const IceStorm::TopicExists&){
-				cout << "[" << PROGRAM_NAME << "]: ERROR creating or activating adapter for AGMCommonBehavior\n";
-			}
-
+		}
+		catch (const IceStorm::TopicExists&){
+			cout << "[" << PROGRAM_NAME << "]: ERROR creating or activating adapter for AGMCommonBehavior\n";
+		}
 
 
 		// Server adapter creation and publication
@@ -272,10 +271,10 @@ int ::localizationAgent::run(int argc, char* argv[])
 				cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy AGMExecutiveTopicProxy";
 			}
 			Ice::ObjectAdapterPtr AGMExecutiveTopic_adapter = communicator()->createObjectAdapterWithEndpoints("agmexecutivetopic", tmp);
-			AGMExecutiveTopicPtr agmexecutivetopicI_ =  new AGMExecutiveTopicI(worker);
+			RoboCompAGMExecutiveTopic::AGMExecutiveTopicPtr agmexecutivetopicI_ =  new AGMExecutiveTopicI(worker);
 			Ice::ObjectPrx agmexecutivetopic = AGMExecutiveTopic_adapter->addWithUUID(agmexecutivetopicI_)->ice_oneway();
 			if(!agmexecutivetopic_topic)
-
+			{
 				try {
 					agmexecutivetopic_topic = topicManager->create("AGMExecutiveTopic");
 				}
@@ -291,6 +290,12 @@ int ::localizationAgent::run(int argc, char* argv[])
 						//Error. Topic does not exist
 					}
 				}
+				catch(const IceUtil::NullHandleException&)
+				{
+					cout << "[" << PROGRAM_NAME << "]: ERROR TopicManager is Null. Check that your configuration file contains an entry like:\n"<<
+					"\t\tTopicManager.Proxy=IceStorm/TopicManager:default -p <port>\n";
+					return EXIT_FAILURE;
+				}
 				IceStorm::QoS qos;
 				agmexecutivetopic_topic->subscribeAndGetPublisher(qos, agmexecutivetopic);
 			}
@@ -302,6 +307,7 @@ int ::localizationAgent::run(int argc, char* argv[])
 			//Error. Topic does not exist
 		}
 
+
 		// Server adapter creation and publication
 		IceStorm::TopicPrx apriltags_topic;
 		Ice::ObjectPrx apriltags;
@@ -312,7 +318,7 @@ int ::localizationAgent::run(int argc, char* argv[])
 				cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy AprilTagsProxy";
 			}
 			Ice::ObjectAdapterPtr AprilTags_adapter = communicator()->createObjectAdapterWithEndpoints("apriltags", tmp);
-			AprilTagsPtr apriltagsI_ =  new AprilTagsI(worker);
+			RoboCompAprilTags::AprilTagsPtr apriltagsI_ =  new AprilTagsI(worker);
 			Ice::ObjectPrx apriltags = AprilTags_adapter->addWithUUID(apriltagsI_)->ice_oneway();
 			if(!apriltags_topic)
 			{
@@ -331,6 +337,12 @@ int ::localizationAgent::run(int argc, char* argv[])
 						//Error. Topic does not exist
 					}
 				}
+				catch(const IceUtil::NullHandleException&)
+				{
+					cout << "[" << PROGRAM_NAME << "]: ERROR TopicManager is Null. Check that your configuration file contains an entry like:\n"<<
+					"\t\tTopicManager.Proxy=IceStorm/TopicManager:default -p <port>\n";
+					return EXIT_FAILURE;
+				}
 				IceStorm::QoS qos;
 				apriltags_topic->subscribeAndGetPublisher(qos, apriltags);
 			}
@@ -342,6 +354,7 @@ int ::localizationAgent::run(int argc, char* argv[])
 			//Error. Topic does not exist
 		}
 
+
 		// Server adapter creation and publication
 		IceStorm::TopicPrx fullposeestimationpub_topic;
 		Ice::ObjectPrx fullposeestimationpub;
@@ -352,7 +365,7 @@ int ::localizationAgent::run(int argc, char* argv[])
 				cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy FullPoseEstimationPubProxy";
 			}
 			Ice::ObjectAdapterPtr FullPoseEstimationPub_adapter = communicator()->createObjectAdapterWithEndpoints("fullposeestimationpub", tmp);
-			FullPoseEstimationPubPtr fullposeestimationpubI_ =  new FullPoseEstimationPubI(worker);
+			RoboCompFullPoseEstimationPub::FullPoseEstimationPubPtr fullposeestimationpubI_ =  new FullPoseEstimationPubI(worker);
 			Ice::ObjectPrx fullposeestimationpub = FullPoseEstimationPub_adapter->addWithUUID(fullposeestimationpubI_)->ice_oneway();
 			if(!fullposeestimationpub_topic)
 			{
@@ -371,6 +384,12 @@ int ::localizationAgent::run(int argc, char* argv[])
 						//Error. Topic does not exist
 					}
 				}
+				catch(const IceUtil::NullHandleException&)
+				{
+					cout << "[" << PROGRAM_NAME << "]: ERROR TopicManager is Null. Check that your configuration file contains an entry like:\n"<<
+					"\t\tTopicManager.Proxy=IceStorm/TopicManager:default -p <port>\n";
+					return EXIT_FAILURE;
+				}
 				IceStorm::QoS qos;
 				fullposeestimationpub_topic->subscribeAndGetPublisher(qos, fullposeestimationpub);
 			}
@@ -381,6 +400,7 @@ int ::localizationAgent::run(int argc, char* argv[])
 			cout << "[" << PROGRAM_NAME << "]: Error creating FullPoseEstimationPub topic.\n";
 			//Error. Topic does not exist
 		}
+
 
 		// Server adapter creation and publication
 		cout << SERVER_FULL_NAME " started" << endl;
@@ -396,31 +416,14 @@ int ::localizationAgent::run(int argc, char* argv[])
 
 		try
 		{
-			std::cout << "Unsubscribing topic: agmexecutivetopic " <<std::endl;
-			agmexecutivetopic_topic->unsubscribe( agmexecutivetopic );
-		}
-		catch(const Ice::Exception& ex)
-		{
-			std::cout << "ERROR Unsubscribing topic: agmexecutivetopic " <<std::endl;
-		}
-		try
-		{
-			std::cout << "Unsubscribing topic: apriltags " <<std::endl;
-			apriltags_topic->unsubscribe( apriltags );
-		}
-		catch(const Ice::Exception& ex)
-		{
-			std::cout << "ERROR Unsubscribing topic: apriltags " <<std::endl;
-		}
-		try
-		{
 			std::cout << "Unsubscribing topic: fullposeestimationpub " <<std::endl;
 			fullposeestimationpub_topic->unsubscribe( fullposeestimationpub );
 		}
 		catch(const Ice::Exception& ex)
 		{
-			std::cout << "ERROR Unsubscribing topic: fullposeestimationpub " <<std::endl;
+			std::cout << "ERROR Unsubscribing topic: fullposeestimationpub " << ex.what()<<std::endl;
 		}
+
 
 		status = EXIT_SUCCESS;
 	}
@@ -449,36 +452,53 @@ int main(int argc, char* argv[])
 	string arg;
 
 	// Set config file
-	std::string configFile = "config";
+	QString configFile("etc/config");
+	bool startup_check_flag = false;
+	QString prefix("");
 	if (argc > 1)
 	{
-		std::string initIC("--Ice.Config=");
-		size_t pos = std::string(argv[1]).find(initIC);
-		if (pos == 0)
+	    QString initIC = QString("--Ice.Config=");
+	    for (int i = 1; i < argc; ++i)
 		{
-			configFile = std::string(argv[1]+initIC.size());
-		}
-		else
-		{
-			configFile = std::string(argv[1]);
-		}
-	}
+		    arg = argv[i];
+            if (arg.find(initIC.toStdString(), 0) == 0)
+            {
+                configFile = QString::fromStdString(arg).remove(0, initIC.size());
+            }
+            else
+            {
+                configFile = QString::fromStdString(argv[1]);
+            }
+        }
 
-	// Search in argument list for --prefix= argument (if exist)
-	QString prefix("");
-	QString prfx = QString("--prefix=");
-	for (int i = 2; i < argc; ++i)
-	{
-		arg = argv[i];
-		if (arg.find(prfx.toStdString(), 0) == 0)
-		{
-			prefix = QString::fromStdString(arg).remove(0, prfx.size());
-			if (prefix.size()>0)
-				prefix += QString(".");
-			printf("Configuration prefix: <%s>\n", prefix.toStdString().c_str());
-		}
-	}
-	::localizationAgent app(prefix);
+        // Search in argument list for --prefix= argument (if exist)
+        QString prfx = QString("--prefix=");
+        for (int i = 2; i < argc; ++i)
+        {
+            arg = argv[i];
+            if (arg.find(prfx.toStdString(), 0) == 0)
+            {
+                prefix = QString::fromStdString(arg).remove(0, prfx.size());
+                if (prefix.size()>0)
+                    prefix += QString(".");
+                printf("Configuration prefix: <%s>\n", prefix.toStdString().c_str());
+            }
+        }
 
-	return app.main(argc, argv, configFile.c_str());
+        // Search in argument list for --test argument (if exist)
+        QString startup = QString("--startup-check");
+		for (int i = 0; i < argc; ++i)
+		{
+			arg = argv[i];
+			if (arg.find(startup.toStdString(), 0) == 0)
+			{
+				startup_check_flag = true;
+				cout << "Startup check = True"<< endl;
+			}
+		}
+
+	}
+	::localizationAgent app(prefix, startup_check_flag);
+
+	return app.main(argc, argv, configFile.toLocal8Bit().data());
 }

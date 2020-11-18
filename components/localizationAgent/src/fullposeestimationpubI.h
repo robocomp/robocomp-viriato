@@ -1,5 +1,5 @@
 /*
- *    Copyright (C)2019 by YOUR NAME HERE
+ *    Copyright (C) 2020 by YOUR NAME HERE
  *
  *    This file is part of RoboComp
  *
@@ -26,15 +26,14 @@
 #include <config.h>
 #include "genericworker.h"
 
-using namespace RoboCompFullPoseEstimationPub;
 
 class FullPoseEstimationPubI : public virtual RoboCompFullPoseEstimationPub::FullPoseEstimationPub
 {
 public:
-FullPoseEstimationPubI(GenericWorker *_worker);
+	FullPoseEstimationPubI(GenericWorker *_worker);
 	~FullPoseEstimationPubI();
 
-	void newFullPose(const RoboCompFullPoseEstimation::FullPose  &pose, const Ice::Current&);
+	void newFullPose(const RoboCompFullPoseEstimation::FullPose &pose, const Ice::Current&);
 
 private:
 

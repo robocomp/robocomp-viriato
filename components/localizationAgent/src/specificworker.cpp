@@ -65,7 +65,7 @@ private:
 /**
 * \brief Default constructor
 */
-SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
+SpecificWorker::SpecificWorker(MapPrx& mprx, bool startup_check) : GenericWorker(mprx)
 {
 	active = false;
 	worldModel = AGMModel::SPtr(new AGMModel());
@@ -397,7 +397,7 @@ bool SpecificWorker::AGMCommonBehavior_reloadConfigAgent()
 	return true;
 }
 
-bool SpecificWorker::AGMCommonBehavior_activateAgent(const ParameterMap &prs)
+bool SpecificWorker::AGMCommonBehavior_activateAgent(const RoboCompAGMCommonBehavior::ParameterMap &prs)
 {
 //implementCODE
 	bool activated = false;
@@ -415,14 +415,14 @@ bool SpecificWorker::AGMCommonBehavior_activateAgent(const ParameterMap &prs)
 	return true;
 }
 
-bool SpecificWorker::AGMCommonBehavior_setAgentParameters(const ParameterMap &prs)
+bool SpecificWorker::AGMCommonBehavior_setAgentParameters(const RoboCompAGMCommonBehavior::ParameterMap &prs)
 {
 //implementCODE
 	bool activated = false;
 	return setParametersAndPossibleActivation(prs, activated);
 }
 
-ParameterMap SpecificWorker::AGMCommonBehavior_getAgentParameters()
+RoboCompAGMCommonBehavior::ParameterMap SpecificWorker::AGMCommonBehavior_getAgentParameters()
 {
 //implementCODE
 	return params;
@@ -446,10 +446,10 @@ bool SpecificWorker::AGMCommonBehavior_deactivateAgent()
 	return deactivate();
 }
 
-StateStruct SpecificWorker::AGMCommonBehavior_getAgentState()
+RoboCompAGMCommonBehavior::StateStruct SpecificWorker::AGMCommonBehavior_getAgentState()
 {
 //implementCODE
-	StateStruct s;
+	RoboCompAGMCommonBehavior::StateStruct s;
 	if (isActive())
 	{
 		s.state = RoboCompAGMCommonBehavior::StateEnum::Running;
@@ -527,13 +527,13 @@ void SpecificWorker::AGMExecutiveTopic_symbolsUpdated(const RoboCompAGMWorldMode
 
 }
 
-void SpecificWorker::AprilTags_newAprilTagAndPose(const tagsList &tags, const RoboCompGenericBase::TBaseState &bState, const RoboCompJointMotor::MotorStateMap &hState)
+void SpecificWorker::AprilTags_newAprilTagAndPose(const RoboCompAprilTags::tagsList &tags, const RoboCompGenericBase::TBaseState &bState, const RoboCompJointMotor::MotorStateMap &hState)
 {
 //subscribesToCODE
 
 }
 
-void SpecificWorker::AprilTags_newAprilTag(const tagsList &tags)
+void SpecificWorker::AprilTags_newAprilTag(const RoboCompAprilTags::tagsList &tags)
 {
 	std::cout<<"April received"<<std::endl;
 	for(auto tag: tags)
@@ -553,7 +553,7 @@ void SpecificWorker::FullPoseEstimationPub_newFullPose(const RoboCompFullPoseEst
 
 
 
-bool SpecificWorker::setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated)
+bool SpecificWorker::setParametersAndPossibleActivation(const RoboCompAGMCommonBehavior::ParameterMap &prs, bool &reactivated)
 {
 	printf("<<< setParametersAndPossibleActivation\n");
 	// We didn't reactivate the component
@@ -561,7 +561,7 @@ bool SpecificWorker::setParametersAndPossibleActivation(const ParameterMap &prs,
 
 	// Update parameters
 	params.clear();
-	for (ParameterMap::const_iterator it=prs.begin(); it!=prs.end(); it++)
+	for (RoboCompAGMCommonBehavior::ParameterMap::const_iterator it=prs.begin(); it!=prs.end(); it++)
 	{
 		params[it->first] = it->second;
 	}

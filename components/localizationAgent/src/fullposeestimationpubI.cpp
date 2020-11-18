@@ -1,5 +1,5 @@
 /*
- *    Copyright (C) 2019 by YOUR NAME HERE
+ *    Copyright (C) 2020 by YOUR NAME HERE
  *
  *    This file is part of RoboComp
  *
@@ -28,7 +28,8 @@ FullPoseEstimationPubI::~FullPoseEstimationPubI()
 {
 }
 
-void FullPoseEstimationPubI::newFullPose(const RoboCompFullPoseEstimation::FullPose  &pose, const Ice::Current&)
+
+void FullPoseEstimationPubI::newFullPose(const RoboCompFullPoseEstimation::FullPose &pose, const Ice::Current&)
 {
 	worker->FullPoseEstimationPub_newFullPose(pose);
 }

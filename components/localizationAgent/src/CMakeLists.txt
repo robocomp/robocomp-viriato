@@ -1,5 +1,4 @@
 cmake_minimum_required(VERSION 2.8.11)
-PROJECT( localizationAgent )
 
 
 IF ( "$ENV{ROBOCOMP}" STREQUAL "")
@@ -34,9 +33,17 @@ SET ( SOURCES
 
 
 
+# AGM Agent's requirements
+find_package(LibXml2 REQUIRED)
+include_directories(LIBXML2_INCLUDE_DIRS)
+include_directories(/usr/include/libxml2/)
+SET(LIBS ${LIBS} -lagm)
+ADD_DEFINITIONS( -I/usr/include/libxml2/)
+
 #ROBOCOMP
 ROBOCOMP_INITIALIZE( $ENV{ROBOCOMP}/ )
-ROBOCOMP_WRAP_ICE( CommonBehavior JointMotor Planning GenericBase FullPoseEstimation OmniRobot AprilTags FullPoseEstimationPub AGMCommonBehavior AGMExecutive AGMWorldModel AGMExecutiveTopic AGMWorldModel Planning AGMCommonBehavior )
+ROBOCOMP_IDSL_TO_ICE( CommonBehavior AGMCommonBehavior AGMExecutive AGMExecutiveTopic AGMWorldModel AprilTags FullPoseEstimation FullPoseEstimationPub GenericBase JointMotor OmniRobot Planning)
+ROBOCOMP_ICE_TO_SRC( CommonBehavior AGMCommonBehavior AGMExecutive AGMExecutiveTopic AGMWorldModel AprilTags FullPoseEstimation FullPoseEstimationPub GenericBase JointMotor OmniRobot Planning)
 SET (EXECUTABLE_OUTPUT_PATH ${RC_COMPONENT_DEVEL_PATH}/bin)
 
 
