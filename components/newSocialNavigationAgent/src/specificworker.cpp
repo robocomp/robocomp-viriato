@@ -224,8 +224,11 @@ void SpecificWorker::checkHumanBlock()
 //    qDebug()<< "blocking - prev: " << prev_blockingIDs << " current: " << blockingIDs;
 //    qDebug()<< "aff blocking - prev: " << prev_affBlockingIDs << " current: " << affBlockingIDs;
 
-//    if(blockingIDs.size() == 1) edgeName = "is_blocking";
-//    else edgeName = "strongInterBlock";
+//    qDebug()<< "prev_blockingIDs == blockingIDs " <<(prev_blockingIDs == blockingIDs);
+//    qDebug()<< "prev_affBlockingIDs == affBlockingIDs" <<(prev_affBlockingIDs == affBlockingIDs);
+//    qDebug()<< "robotBlocked " <<robotBlocked;
+//
+
     edgeName = "is_blocking";
 
     for(auto id: blockingIDs)
@@ -234,7 +237,6 @@ void SpecificWorker::checkHumanBlock()
         {
             edgesChanged = true;
         }
-        currentEdge = edgeName;
 
     }
 
@@ -248,7 +250,6 @@ void SpecificWorker::checkHumanBlock()
         {
             edgesChanged = true;
         }
-        currentEdge = edgeName;
     }
      ////////////////////////////////////////////////////////////////////
 
@@ -278,14 +279,14 @@ void SpecificWorker::checkHumanBlock()
 
         for (auto id: prev_blockingIDs)
         {
-            if(removeEdgeModel(id,robotID,edgeInModel))
+            if(removeEdgeModel(id,robotID,"is_blocking"))
             {
                 edgesChanged = true;
             }
         }
         for (auto id: prev_affBlockingIDs)
         {
-            if(removeEdgeModel(id,robotID,edgeInModel))
+            if(removeEdgeModel(id,robotID,"affordance_blocking"))
             {
                 edgesChanged = true;
             }
@@ -295,7 +296,6 @@ void SpecificWorker::checkHumanBlock()
         planBlocked = "";
         paramsBlocked.clear();
 
-        edgeInModel = "";
 
     }
 
@@ -311,12 +311,6 @@ void SpecificWorker::checkHumanBlock()
 		{
 			std::cout<<"No se puede actualizar worldModel"<<std::endl;
 		}
-
-		if (currentEdge != "")
-		{
-            edgeInModel = currentEdge;
-
-        }
 	}
 
 

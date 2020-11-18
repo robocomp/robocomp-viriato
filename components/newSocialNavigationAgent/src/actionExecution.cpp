@@ -45,6 +45,9 @@ ActionExecution::retActions ActionExecution::runActions(std::string action_,  Ro
     if (action_ == "gotoperson")
         ret = action_GoToPerson(params_);
 
+    if (action_ == "gotoaffordance")
+        ret = action_GoToAffordance(params_);
+
     if (action_ == "gotogroupofpeople")
         ret = action_GoToGroupOfPeople(params_);
 
@@ -140,7 +143,6 @@ ActionExecution::retActions ActionExecution::action_GoToPerson(RoboCompAGMCommon
     AGMModelSymbol::SPtr personSymbol;
     AGMModelSymbol::SPtr robotSymbol;
 
-
     try
     {
         personSymbol = worldModel->getSymbolByIdentifier(std::stoi(params_["p"].value));
@@ -167,6 +169,46 @@ ActionExecution::retActions ActionExecution::action_GoToPerson(RoboCompAGMCommon
 
     qDebug()<<  __FUNCTION__ << "Returning "<< needsReplanning << newTarget;
 
+
+    return std::make_tuple(needsReplanning, newTarget);
+
+
+}
+
+
+
+ActionExecution::retActions ActionExecution::action_GoToAffordance(RoboCompAGMCommonBehavior::ParameterMap params_)
+{
+    qDebug()<<"-------------------------------"<< __FUNCTION__<< "-------------------------------";
+    AGMModelSymbol::SPtr personSymbol;
+    AGMModelSymbol::SPtr robotSymbol;
+    AGMModelSymbol::SPtr objectSymbol;
+
+    try
+    {
+        personSymbol = worldModel->getSymbolByIdentifier(std::stoi(params_["p"].value));
+        robotSymbol = worldModel->getSymbolByIdentifier(std::stoi(params_["robot"].value));
+        objectSymbol = worldModel->getSymbolByIdentifier(std::stoi(params_["o"].value));
+    }
+    catch( const Ice::Exception& ex)
+    {
+        std::cout << "Exception:: Error reading room and robot symbols" << ex << endl;
+    }
+
+
+    bool needsReplanning = false;
+    QPointF newTarget = getPointNearAffordance(personSymbol, objectSymbol, robotSymbol);
+
+    if (newActionReceived or previousPerson != personSymbol->identifier)
+    {
+        newActionReceived = false;
+        needsReplanning = true;
+
+    }
+
+    previousPerson = personSymbol->identifier;
+
+    qDebug()<<  __FUNCTION__ << "Returning "<< needsReplanning << newTarget;
 
     return std::make_tuple(needsReplanning, newTarget);
 
@@ -227,8 +269,6 @@ ActionExecution::retActions ActionExecution::action_GoToGroupOfPeople(RoboCompAG
     return std::make_tuple(needsReplanning, newTarget);
 
 }
-
-
 
 AGMModelSymbol::SPtr ActionExecution::getNearestPerson(vector<AGMModelSymbol::SPtr> totalPersons,AGMModelSymbol::SPtr robotSymbol)
 {
@@ -295,8 +335,6 @@ QPointF ActionExecution::getPointInSocialSpace(AGMModelSymbol::SPtr personSymbol
 
     qDebug()<<__FUNCTION__<<"ROBOT POSE "<< robot.x << robot.z ;
 
-    AGMModelSymbol::SPtr personalSpace;
-
     QString personal = QString::fromStdString(personSymbol->getAttribute("polyline_personal"));
 
     vector<QPolygonF> polygonSeq;
@@ -344,6 +382,70 @@ QPointF ActionExecution::getPointInSocialSpace(AGMModelSymbol::SPtr personSymbol
 }
 
 
+QPointF ActionExecution::getPointNearAffordance(AGMModelSymbol::SPtr personSymbol,AGMModelSymbol::SPtr objectSymbol,AGMModelSymbol::SPtr robotSymbol)
+{
+    qDebug()<<__FUNCTION__;
+    localPerson person;
+
+    auto id = personSymbol->identifier;
+    AGMModelSymbol::SPtr personParent = worldModel->getParentByLink(id, "RT");
+    AGMModelEdge& edgeRT = worldModel->getEdgeByIdentifiers(personParent->identifier, id, "RT");
+
+    person.id = id;
+    person.x = str2float(edgeRT.attributes["tx"]);
+    person.z = str2float(edgeRT.attributes["tz"]);
+
+    localPerson robot;
+
+    auto id_r = robotSymbol->identifier;
+    AGMModelSymbol::SPtr robotParent = worldModel->getParentByLink(id_r, "RT");
+    AGMModelEdge& edgeRT_r = worldModel->getEdgeByIdentifiers(robotParent->identifier, id_r, "RT");
+
+    robot.id = id_r;
+    robot.x = str2float(edgeRT_r.attributes["tx"]);
+    robot.z = str2float(edgeRT_r.attributes["tz"]);
+
+    qDebug()<<__FUNCTION__<<"ROBOT POSE "<< robot.x << robot.z ;
+
+    QString affordance = QString::fromStdString(objectSymbol->getAttribute("polyline_affordance"));
+
+    vector<QPolygonF> polygonSeq;
+    QPolygonF affPolygon;
+
+    for(auto pol: affordance.split(";;"))
+    {
+        if(pol.size() == 0)
+            continue;
+
+        for (auto pxz : pol.split(";"))
+        {
+            auto p = pxz.split(" ");
+
+            if (p.size() != 2)
+                continue;
+
+            auto x = std::stof(p[0].toStdString());
+            auto z = std::stof(p[1].toStdString());
+
+            affPolygon<< QPointF(x,z);
+        }
+
+    }
+
+    QLineF line(QPointF(person.x,person.z),QPointF(robot.x,robot.z));
+
+    for (int i = 0; i < 10; i++)
+    {
+        float step = i/10.0f;
+
+        QPointF point = line.pointAt(step);
+
+        if (!affPolygon.containsPoint(point,Qt::OddEvenFill)){
+            return point;
+        }
+    }
+
+}
 
 QPolygonF ActionExecution::getRoomPolyline(AGMModelSymbol::SPtr roomSymbol)
 {

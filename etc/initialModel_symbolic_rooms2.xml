@@ -34,13 +34,26 @@
 	<symbol id="4" type="room">
 		<attribute key="imType" value="transform" />
 		<attribute key="imName" value="room_4" />
-		<attribute key="polyline" value="-1500 -1000;6500 -1000;6500 -4500;-1500 -4500" />
+		<attribute key="polyline" value="-1500 -1000;7500 -1000;7500 -4500;-1500 -4500" />
 	</symbol>
 
 		<link src="4" dst="100" label="in"  > </link>
 	<link src="4" dst="3" label="accessible"  > </link>
 	<link src="3" dst="4" label="accessible"  > </link>
 
+    
+    	<!-- Upper Right room -->
+	<symbol id="5" type="room">
+		<attribute key="imType" value="transform" />
+		<attribute key="imName" value="room_5" />
+		<attribute key="polyline" value="-1500 2500;7500 2500;7500 -1000;-1500 -100" />
+	</symbol>
+
+		<link src="5" dst="100" label="in"  > </link>
+	<link src="4" dst="5" label="accessible"  > </link>
+	<link src="5" dst="4" label="accessible"  > </link>
+    
+    
 <!-- TRAPEZOID -->
 	<symbol id="3000" type="object">
 		<attribute key="imType" value="transform" />

@@ -782,7 +782,7 @@ class SpecificWorker(GenericWorker):
                             self.action_chatbot_started = self.action
                             self.startChatbot()
 
-                    elif self.action == 'affordance_blocking':
+                    elif self.action == 'askForAffordancePermission':
                         if (not self.interaction.isVisible()) or (self.previous_action != self.action):
                             self.interaction.interactionUI = True
                             self.situation = 'three'

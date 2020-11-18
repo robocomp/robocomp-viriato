@@ -31,10 +31,12 @@ private:
 
     ActionExecution::retActions action_ChangeRoom(RoboCompAGMCommonBehavior::ParameterMap params_, bool testing=false);
     ActionExecution::retActions action_GoToPerson(RoboCompAGMCommonBehavior::ParameterMap params_);
+    ActionExecution::retActions action_GoToAffordance(RoboCompAGMCommonBehavior::ParameterMap params_);
     ActionExecution::retActions action_GoToGroupOfPeople(RoboCompAGMCommonBehavior::ParameterMap params_);
 
     QPolygonF getRoomPolyline(AGMModelSymbol::SPtr roomSymbol);
     QPointF getPointInSocialSpace(AGMModelSymbol::SPtr personSymbol,AGMModelSymbol::SPtr robotSymbol);
+    QPointF getPointNearAffordance(AGMModelSymbol::SPtr personSymbol,AGMModelSymbol::SPtr objectSymbol,AGMModelSymbol::SPtr robotSymbol);
     QPointF getRandomPointInRoom(QPolygonF room);
     AGMModelSymbol::SPtr getNearestPerson(vector<AGMModelSymbol::SPtr> totalPersons,AGMModelSymbol::SPtr robotSymbol);
 
