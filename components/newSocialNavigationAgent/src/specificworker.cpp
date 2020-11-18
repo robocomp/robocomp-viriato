@@ -68,7 +68,7 @@ void SpecificWorker::initialize(int period)
 
     forcesSliderChanged();
     moveRobot();
-
+    robotBlocked = false;
 
 #ifdef USE_QTGUI
 	viewer = std::make_shared<InnerViewer>(innerModel, "Social Navigation");  //InnerViewer copies internally innerModel so it has to be resynchronized
@@ -131,6 +131,7 @@ void SpecificWorker::compute()
 
     if(personalSpacesChanged)
 	{
+        qDebug()<<"personalSpacesChanged";
     	getPersonsFromModel();
         auto [intimate,personal,social] = getPolylinesFromModel();
     	navigation.updatePersonalPolylines(intimate,personal,social);
@@ -140,8 +141,9 @@ void SpecificWorker::compute()
 
 	if(affordancesChanged)
 	{
-        auto [mapCostObjects, totalAffordances, blockedAffordances] = getAffordancesFromModel();
+        qDebug()<<"affordancesChanged";
 
+        auto [mapCostObjects, totalAffordances, blockedAffordances] = getAffordancesFromModel();
         navigation.updateAffordancesPolylines(mapCostObjects,totalAffordances,blockedAffordances);
 		affordancesChanged = false;
 		needsReplaning = true;
@@ -152,16 +154,12 @@ void SpecificWorker::compute()
     viewer->run();
 
 
-	if (!totalPersons.empty())
-        checkHumanBlock();
-
-
     if (active)
     {
         auto [newTarget, target] = actionExecution.runActions(action,params);
         if (newTarget)
         {
-            qDebug()<< "new target "<< target;
+            qDebug()<< " ------- ACTION EXECUTION NEW TARGET------- "<< target;
             bool reachable = navigation.newTarget(target);
 
 //            int searchedPoints = 0;
@@ -185,14 +183,20 @@ void SpecificWorker::compute()
             checkRobotBlock();
     }
 
-
+    if (!totalPersons.empty())
+        checkHumanBlock();
 }
 
 //Check if the robot is still blocked
 void SpecificWorker::checkRobotBlock()
 {
-    qDebug()<<__FUNCTION__;
-    auto [_, target] = actionExecution.runActions(actionBlocked,paramsBlocked, true);
+//    qDebug()<<__FUNCTION__ << QString::fromStdString(actionBlocked) <<  paramsBlocked;
+    auto [newTarget, target] = actionExecution.runActions(actionBlocked,paramsBlocked, true);
+
+    if (newTarget)
+    {
+        navigation.newTarget(target);
+    }
     if(navigation.isPointVisitable(target))
     {
         qDebug()<< "---- ROBOT NOT BLOCKED ----";
@@ -218,47 +222,68 @@ void SpecificWorker::checkHumanBlock()
     auto affBlockingIDs = navigation.affBlockIDs;
 
 
-    if((prev_blockingIDs == blockingIDs)  and (prev_affBlockingIDs == affBlockingIDs) and robotBlocked)
-        return;
-//
+
+//    if((prev_blockingIDs == blockingIDs)  and (prev_affBlockingIDs == affBlockingIDs) and robotBlocked)
+//        return;
+
 //    qDebug()<< "blocking - prev: " << prev_blockingIDs << " current: " << blockingIDs;
 //    qDebug()<< "aff blocking - prev: " << prev_affBlockingIDs << " current: " << affBlockingIDs;
-
 //    qDebug()<< "prev_blockingIDs == blockingIDs " <<(prev_blockingIDs == blockingIDs);
 //    qDebug()<< "prev_affBlockingIDs == affBlockingIDs" <<(prev_affBlockingIDs == affBlockingIDs);
 //    qDebug()<< "robotBlocked " <<robotBlocked;
-//
 
+
+    ////////////////////////// human Block ////////////////////////
     edgeName = "is_blocking";
+
+    if((!robotBlocked)
+        or ( robotBlocked and (!blockingIDs.empty() or !affBlockingIDs.empty())))
+    {
+
+
+        for (auto id: prev_blockingIDs)
+        {
+            //no se borra si se va añadir despues
+            if(std::find(std::begin(blockingIDs), std::end(blockingIDs), id) != std::end(blockingIDs))
+                continue;
+
+            if(removeEdgeModel(id,robotID,edgeName))
+                edgesChanged = true;
+        }
+    }
 
     for(auto id: blockingIDs)
     {
         if (addEdgeModel(id,robotID,edgeName))
-        {
             edgesChanged = true;
-        }
-
     }
 
     ////////////////////////// affordanceBlock ////////////////////////
-
     edgeName = "affordance_blocking";
+
+    if((!robotBlocked)
+       or (robotBlocked and (!affBlockingIDs.empty() or !blockingIDs.empty())))
+    {
+        for (auto id: prev_affBlockingIDs)
+        {
+            if(std::find(std::begin(affBlockingIDs), std::end(affBlockingIDs), id) != std::end(affBlockingIDs))
+                continue;
+
+            if(removeEdgeModel(id,robotID,edgeName))
+                edgesChanged = true;
+        }
+    }
 
     for(auto id: affBlockingIDs)
     {
         if(addEdgeModel(id,robotID,edgeName))
-        {
             edgesChanged = true;
-        }
     }
      ////////////////////////////////////////////////////////////////////
 
-
-
-    if  (active and (blockingIDs.size() != 0 or affBlockingIDs.size() != 0))
-//    if  (blockingIDs.size() != 0 or affBlockingIDs.size() != 0)
+    if  (!robotBlocked and (!blockingIDs.empty() or !affBlockingIDs.empty()))
     {
-        qDebug()<<"Blocking robot";
+        qDebug()<<" ----- Blocking robot ----- ";
         if(addEdgeModel(robotID,robotID,"blocked"))
             edgesChanged = true;
 
@@ -272,7 +297,7 @@ void SpecificWorker::checkHumanBlock()
         }
     }
 
-    else if (active and !robotBlocked)
+    else if (!robotBlocked)
     {
         if(removeEdgeModel(robotID,robotID,"blocked"))
             edgesChanged = true;
@@ -280,23 +305,17 @@ void SpecificWorker::checkHumanBlock()
         for (auto id: prev_blockingIDs)
         {
             if(removeEdgeModel(id,robotID,"is_blocking"))
-            {
                 edgesChanged = true;
-            }
         }
         for (auto id: prev_affBlockingIDs)
         {
             if(removeEdgeModel(id,robotID,"affordance_blocking"))
-            {
                 edgesChanged = true;
-            }
         }
 
         actionBlocked = "";
         planBlocked = "";
         paramsBlocked.clear();
-
-
     }
 
 
@@ -312,8 +331,6 @@ void SpecificWorker::checkHumanBlock()
 			std::cout<<"No se puede actualizar worldModel"<<std::endl;
 		}
 	}
-
-
 
     prev_blockingIDs = blockingIDs;
     prev_affBlockingIDs = affBlockingIDs;
@@ -352,7 +369,7 @@ bool SpecificWorker::addEdgeModel(int32_t id1, int32_t id2, string edgeName)
 
     catch(...)
     {
-        std::cout<<__FUNCTION__<<" Ya existe el enlace " << edgeName <<std::endl;
+//        std::cout<<__FUNCTION__<<" Ya existe el enlace " << edgeName <<std::endl;
         return false;
     }
 }
@@ -432,7 +449,6 @@ SpecificWorker::retPersonalSpaces SpecificWorker::getPolylinesFromModel()
     for( auto person : peopleAGM)
     {
         int32_t owner = person->identifier;
-        qDebug()<< owner;
         QString intimate = QString::fromStdString(person->getAttribute("polyline_intimate"));
         QString personal = QString::fromStdString(person->getAttribute("polyline_personal"));
         QString social = QString::fromStdString(person->getAttribute("polyline_social"));
@@ -538,10 +554,6 @@ SpecificWorker::retAffordanceSpaces SpecificWorker::getAffordancesFromModel()
 
         }
     }
-
-
-    qDebug()<< "END "<< __FUNCTION__;
-
     return std::make_tuple(mapCostObjects,totalAffordances,blockedAffordances);
 }
 
@@ -800,11 +812,6 @@ void SpecificWorker::AGMExecutiveTopic_edgesUpdated(const RoboCompAGMWorldModel:
 
 //	qDebug() << __FUNCTION__;
 
-//    if(!specificWorkerInitialized)
-//    {
-//        QMutexLocker lockIM(mutex);
-//    }
-
     QMutexLocker lockIM(mutex);
 
 	for (auto modification : modifications)
@@ -852,6 +859,8 @@ void SpecificWorker::AGMExecutiveTopic_symbolUpdated(const RoboCompAGMWorldModel
     if (modification.nodeType == "object")
         affordancesChanged = true;
 
+    if(affordancesChanged or personalSpacesChanged)
+        actionExecution.updateWordModel(worldModel);
 
 }
 
@@ -874,8 +883,9 @@ void SpecificWorker::AGMExecutiveTopic_symbolsUpdated(const RoboCompAGMWorldMode
             if (modification.nodeType == "object")
                 affordancesChanged = true;
         }
-
     }
+    if(affordancesChanged or personalSpacesChanged)
+        actionExecution.updateWordModel(worldModel);
 }
 
 bool SpecificWorker::setParametersAndPossibleActivation(const RoboCompAGMCommonBehavior::ParameterMap &prs, bool &reactivated)

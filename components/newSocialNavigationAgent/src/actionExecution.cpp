@@ -31,8 +31,11 @@ void ActionExecution::update(std::string action_,  RoboCompAGMCommonBehavior::Pa
 
 ActionExecution::retActions ActionExecution::runActions(std::string action_,  RoboCompAGMCommonBehavior::ParameterMap params_, bool testing)
 {
-//    qDebug() << "---------------------------------------------------";
-//    qDebug() <<__FUNCTION__ <<"Checking ACTION: " << QString::fromStdString(action_);
+//    if(!testing)
+//    {
+//        qDebug() << "---------------------------------------------------";
+//        qDebug() <<__FUNCTION__ <<"Checking ACTION: " << QString::fromStdString(action_);
+//    }
 
     retActions ret;
 
@@ -64,7 +67,6 @@ ActionExecution::retActions ActionExecution::action_ChangeRoom(RoboCompAGMCommon
     AGMModelSymbol::SPtr roomSymbol;
     AGMModelSymbol::SPtr robotSymbol;
 
-
     try
     {
         roomSymbol = worldModel->getSymbolByIdentifier(std::stoi(params_["room2"].value));
@@ -74,7 +76,6 @@ ActionExecution::retActions ActionExecution::action_ChangeRoom(RoboCompAGMCommon
     {
         std::cout << "Exception:: Error reading room and robot symbols" << ex << endl;
     }
-
 
     int32_t destRoomID = roomSymbol->identifier;
     std::string roomName = roomSymbol->getAttribute("imName");
@@ -125,7 +126,7 @@ ActionExecution::retActions ActionExecution::action_ChangeRoom(RoboCompAGMCommon
 
     else if (newActionReceived)
     {
-        qDebug()<< QString::fromStdString(prevRoomTarget) << QString::fromStdString(roomName);
+//        qDebug()<<"newActionReceived "<< QString::fromStdString(prevRoomTarget) << QString::fromStdString(roomName);
 
         needsReplanning = true;
         newActionReceived = false;
@@ -179,7 +180,7 @@ ActionExecution::retActions ActionExecution::action_GoToPerson(RoboCompAGMCommon
 
 ActionExecution::retActions ActionExecution::action_GoToAffordance(RoboCompAGMCommonBehavior::ParameterMap params_)
 {
-    qDebug()<<"-------------------------------"<< __FUNCTION__<< "-------------------------------";
+//    qDebug()<<"-------------------------------"<< __FUNCTION__<< "-------------------------------";
     AGMModelSymbol::SPtr personSymbol;
     AGMModelSymbol::SPtr robotSymbol;
     AGMModelSymbol::SPtr objectSymbol;
@@ -208,7 +209,7 @@ ActionExecution::retActions ActionExecution::action_GoToAffordance(RoboCompAGMCo
 
     previousPerson = personSymbol->identifier;
 
-    qDebug()<<  __FUNCTION__ << "Returning "<< needsReplanning << newTarget;
+//    qDebug()<<  __FUNCTION__ << " Returning "<< needsReplanning << newTarget;
 
     return std::make_tuple(needsReplanning, newTarget);
 
@@ -384,7 +385,7 @@ QPointF ActionExecution::getPointInSocialSpace(AGMModelSymbol::SPtr personSymbol
 
 QPointF ActionExecution::getPointNearAffordance(AGMModelSymbol::SPtr personSymbol,AGMModelSymbol::SPtr objectSymbol,AGMModelSymbol::SPtr robotSymbol)
 {
-    qDebug()<<__FUNCTION__;
+//    qDebug()<<__FUNCTION__;
     localPerson person;
 
     auto id = personSymbol->identifier;
@@ -405,7 +406,7 @@ QPointF ActionExecution::getPointNearAffordance(AGMModelSymbol::SPtr personSymbo
     robot.x = str2float(edgeRT_r.attributes["tx"]);
     robot.z = str2float(edgeRT_r.attributes["tz"]);
 
-    qDebug()<<__FUNCTION__<<"ROBOT POSE "<< robot.x << robot.z ;
+//    qDebug()<<__FUNCTION__<<"ROBOT POSE "<< robot.x << robot.z ;
 
     QString affordance = QString::fromStdString(objectSymbol->getAttribute("polyline_affordance"));
 

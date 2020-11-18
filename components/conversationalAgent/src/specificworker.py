@@ -504,6 +504,7 @@ class SpecificWorker(GenericWorker):
         self.interaction.hide()
         r = requests.post('http://localhost:5002/conversations/default/tracker/events',
                           json=[{"event": "restart"}, {"event": "followup", "name": "action_listen"}])
+
         self.ui_lock = True
         self.change_attributes = {"rasa": "", "response": ""}
         self.eraseFiles()
@@ -511,12 +512,14 @@ class SpecificWorker(GenericWorker):
 
         if self.action in self.list_actions:
             if self.action != self.action_chatbot_started:
-                time.sleep(1)
+                time.sleep(2)
+                self.ui_lock = False
                 print('restarting chatbot')
                 self.interaction.interactionUI = True
                 self.startChatbot()
         else:
-            time.sleep(15)
+            self.ui_lock = True
+            time.sleep(10)
             print(self.ui_lock)
             self.ui_lock = False
             print(self.ui_lock)
