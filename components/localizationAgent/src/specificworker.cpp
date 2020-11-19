@@ -298,7 +298,7 @@ void SpecificWorker::sm_pop_data()
 	if(not db.isEmpty())
 	{
 		poseRead = db.get();
-		if(poseRead.source == "realsense" and UWB_DATA >= 10)
+		if(poseRead.source == "realsense") // and UWB_DATA >= 10)
 		{
 			emit t_pop_data_to_read_rs();
 		}
@@ -545,8 +545,8 @@ void SpecificWorker::AprilTags_newAprilTag(const RoboCompAprilTags::tagsList &ta
 
 void SpecificWorker::FullPoseEstimationPub_newFullPose(const RoboCompFullPoseEstimation::FullPose &pose)
 {
-//	std::cout<<"FullPose received "<<std::endl;
-//	std::cout << pose.source <<" (x,y,z,rx,ry,rz): ("<<pose.x<<","<<pose.y<<","<<pose.z<<","<<pose.rx<<","<<pose.ry<<","<<pose.rz<<")"<<std::endl;
+	std::cout<<"FullPose received "<<std::endl;
+	std::cout << pose.source <<" (x,y,z,rx,ry,rz): ("<<pose.x<<","<<pose.y<<","<<pose.z<<","<<pose.rx<<","<<pose.ry<<","<<pose.rz<<")"<<std::endl;
 	RoboCompFullPoseEstimation::FullPose copy = pose;
 	db.put(copy);
 }
