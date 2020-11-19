@@ -461,10 +461,9 @@ class SpecificWorker(GenericWorker):
 
     # Function to read from file
     def readFromFile(self):
-        print('...readFromFile...')
         with open('chatbot/rasa_conversation.json', 'r') as openfile:
             attrs = json.load(openfile)
-            print('attrs', attrs)
+            print(attrs)
             if attrs["rasa"] == self.change_attributes["rasa"] and attrs["response"] == self.change_attributes[
                 "response"]:
                 return False
@@ -475,15 +474,14 @@ class SpecificWorker(GenericWorker):
 
     # Function to update AGM Graph locally and globally
     def updateGraph(self):
-        print('...updateGraph...')
         flag = self.readFromFile()
         if flag:
             attrs = self.change_attributes
-            print('attrs', attrs)
             try:
 
                 self.worldModel.addEdge(self.robot_id, self.human_id, "interacting", attrs)
                 if self.updatingDSR():
+                    print('interacting edge in AGM')
                     self.interactingEdgeInAGM = True
 
             except:
@@ -497,7 +495,7 @@ class SpecificWorker(GenericWorker):
 
     # Function to stop chatbot and close interaction dialog box when user says OK to move
     def stopChatbot(self):
-        print('stopChatbot')
+        print('---------------------- stopChatbot ------------------------')
         self.interaction.interactionUI = False
         self.interaction.ui.display.clear()
         # self.interaction.ui.textbox.clear()
@@ -505,35 +503,34 @@ class SpecificWorker(GenericWorker):
         r = requests.post('http://localhost:5002/conversations/default/tracker/events',
                           json=[{"event": "restart"}, {"event": "followup", "name": "action_listen"}])
 
-        self.ui_lock = True
         self.change_attributes = {"rasa": "", "response": ""}
         self.eraseFiles()
         self.removeInteractingEdge = True
 
-        if self.action in self.list_actions:
-            if self.action != self.action_chatbot_started:
+        if self.action in self.list_actions and self.action != self.action_chatbot_started:
+                print('stopChatBot --- self action != self action chatbot started')
+                print(self.action, self.action_chatbot_started)
+                self.ui_lock = True
                 time.sleep(2)
                 self.ui_lock = False
-                print('restarting chatbot')
+                print('-------------------------> restarting chatbot')
                 self.interaction.interactionUI = True
                 self.startChatbot()
         else:
+            print('stopChatBot --- action not in list_actions or action==action_chatbot_started')
             self.ui_lock = True
             time.sleep(10)
-            print(self.ui_lock)
             self.ui_lock = False
-            print(self.ui_lock)
-            print('stopping chatbot')
+            print('------------------------->stopping chatbot')
             self.situation = ''
             self.human_id = ''
             self.robot_id = ''
             self.change_attributes = {}
 
-            if self.removeInteractingEdge and self.interactingEdgeInAGM:
-                print('Trying to remove interacting edge')
-                self.cleanGraph()
+        print('---------------------- END stopChatbot -----------------------')
+        return
 
-            return
+
 
     # Function to start chatbot and initialize conversation
     def startChatbot(self):
@@ -646,6 +643,10 @@ class SpecificWorker(GenericWorker):
 
         if self.interaction.interactionUI:
             self.updateGraph()
+            
+        if self.removeInteractingEdge and self.interactingEdgeInAGM:
+            print('Trying to remove interacting edge')
+            self.cleanGraph()
 
         return True
 
@@ -745,6 +746,8 @@ class SpecificWorker(GenericWorker):
         ret = bool()
         self.action = prs['action'].value
 
+        print('ui locked = ', self.ui_lock)
+
         if not self.ui_lock:
             if self.action in self.list_actions:
                 print('prev_action', self.previous_action)
@@ -809,8 +812,7 @@ class SpecificWorker(GenericWorker):
             else:
                 if not self.interaction.interactionUI:
                     self.previous_action = self.action
-                    self.removeInteractingEdge = True
-                    return
+
 
                 else:
                     self.interaction.interactionUI = False
@@ -821,7 +823,8 @@ class SpecificWorker(GenericWorker):
                                       json=[{"event": "restart"}, {"event": "followup", "name": "action_listen"}])
                     print(r)
                     print("Conversation cleared")
-                    self.removeInteractingEdge = True
+
+                self.removeInteractingEdge = True
 
         return ret
 

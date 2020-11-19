@@ -106,6 +106,8 @@ private:
     RoboCompAGMCommonBehavior::ParameterMap params;
 
     bool robotBlocked = false;
+    bool robotBlockedInAGM = false;
+    bool blockingEdgesInAGM = false;
 
     QString currentPlan = "none";
     QString planBlocked = "";

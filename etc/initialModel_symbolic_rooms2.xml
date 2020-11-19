@@ -15,43 +15,55 @@
 	<symbol id="3" type="room">
 		<attribute key="imType" value="transform" />
 		<attribute key="imName" value="room_3" />
-		<attribute key="polyline" value="-6500 2500;-1500 2500;-1500 -4500;-6500 -4500" />
+		<attribute key="polyline" value="-8500 2500;-3500 2500;-3500 -4500;-8500 -4500" />
 	</symbol>
 
 	<link src="1" dst="3" label="in"  > </link>
 	<link src="3" dst="1" label="RT" >
-		<linkAttribute key="tx" value="-5500" />
+		<linkAttribute key="tx" value="-7500" />
 		<linkAttribute key="ty" value="0" />
-		<linkAttribute key="tz" value="1500" />
+		<linkAttribute key="tz" value="-3500" />
 		<linkAttribute key="rx" value="0" />
-		<linkAttribute key="ry" value="3.14" />
+		<linkAttribute key="ry" value="0" />
 		<linkAttribute key="rz" value="0" />
 	</link>
 	
 	<link src="3" dst="100" label="in"  > </link>
-
-		<!-- Right room -->
+    
+	<!-- Corridor -->
 	<symbol id="4" type="room">
 		<attribute key="imType" value="transform" />
 		<attribute key="imName" value="room_4" />
-		<attribute key="polyline" value="-1500 -1000;7500 -1000;7500 -4500;-1500 -4500" />
+		<attribute key="polyline" value="-3500 2500;-1500 2500;-1500 -4500;-3500 -4500" />
 	</symbol>
 
 		<link src="4" dst="100" label="in"  > </link>
 	<link src="4" dst="3" label="accessible"  > </link>
 	<link src="3" dst="4" label="accessible"  > </link>
-
     
-    	<!-- Upper Right room -->
+    
+		<!-- Right room -->
 	<symbol id="5" type="room">
 		<attribute key="imType" value="transform" />
 		<attribute key="imName" value="room_5" />
-		<attribute key="polyline" value="-1500 2500;7500 2500;7500 -1000;-1500 -100" />
+		<attribute key="polyline" value="-1500 -1000;7500 -1000;7500 -4500;-1500 -4500" />
 	</symbol>
 
 		<link src="5" dst="100" label="in"  > </link>
-	<link src="4" dst="5" label="accessible"  > </link>
 	<link src="5" dst="4" label="accessible"  > </link>
+	<link src="4" dst="5" label="accessible"  > </link>
+
+    
+    	<!-- Upper Right room -->
+	<symbol id="6" type="room">
+		<attribute key="imType" value="transform" />
+		<attribute key="imName" value="room_6" />
+		<attribute key="polyline" value="-1500 2500;7500 2500;7500 -1000;-1500 -1000" />
+	</symbol>
+
+		<link src="6" dst="100" label="in"  > </link>
+	<link src="6" dst="5" label="accessible"  > </link>
+	<link src="5" dst="6" label="accessible"  > </link>
     
     
 <!-- TRAPEZOID -->
@@ -72,7 +84,7 @@
 	</symbol>
 	
 	<link src="3000" dst="3000" label="interactive"  > </link>
-	<link src="3000" dst="4" label="in"  > </link>
+	<link src="3000" dst="5" label="in"  > </link>
 
 
 	<!-- RECTANGLE 

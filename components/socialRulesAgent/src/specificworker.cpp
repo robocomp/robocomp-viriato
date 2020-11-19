@@ -123,12 +123,12 @@ void SpecificWorker::compute()
 	{
         qDebug()<< "worldModelChanged";
 
+        if(active and !sngPersonSeq.empty())
+            checkHumanPermissions();
+
         updatePeopleInModel();
         checkInteractions();
 		checkObjectAffordance();
-
-        if(active and !sngPersonSeq.empty())
-            checkHumanPermissions();
 
         applySocialRules();
 
@@ -211,13 +211,14 @@ void SpecificWorker::checkHumanPermissions()
             if (symbolPair.first== robotID and secondType=="person") {
                 //check the attribute of the link
                 auto attr = edge->attributes;
-                qDebug()<< QString::fromStdString(attr["response"]);
                 bool permission = (attr["response"] == "affirmative");
 
                 if (permission)
                 {
                     personPermission = symbolPair.second;
                     permission_checkbox->setCheckState(Qt::CheckState(2));
+                    qDebug()<< "Person "<< personPermission << "has given permission";
+
 
                 } else
                     personPermission = -1;
@@ -522,7 +523,6 @@ void SpecificWorker::checkObjectAffordance()
             catch(const Ice::Exception &e)
             {
                 std::cout <<"Error reading symbol attributes -- CHECK INITIAL MODEL SYMBOLIC" <<e.what() << std::endl;
-
             }
 
             mapIdObjects[imName] = object;
@@ -539,7 +539,7 @@ void SpecificWorker::checkObjectAffordance()
             AGMModelEdge edge = *it;
             if(edge->getLabel() == "interacting")
             {
-                if(permission_given)
+                if(personPermission != -1)
                 {
                     const std::pair<int32_t, int32_t> symbolPair = edge->getSymbolPair();
 
@@ -1364,9 +1364,10 @@ bool SpecificWorker::setParametersAndPossibleActivation(const RoboCompAGMCommonB
 		qDebug()<<__FUNCTION__ << QString::fromStdString(action);
 		std::transform(action.begin(), action.end(), action.begin(), ::tolower);
 		//TYPE YOUR ACTION NAME
-        if (action == "askforgroupalpermission" )
+        if (action == "askforgroupalpermission" or action == "askforaffordancepermission" )
         {
             qDebug()<< "action received - ask for groupal permission";
+            worldModelChanged =true;
             active = true;
         }
         else if (action == "none")

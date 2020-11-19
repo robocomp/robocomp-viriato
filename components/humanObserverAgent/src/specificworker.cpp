@@ -391,13 +391,15 @@ bool SpecificWorker::checkHumansNear()
 
 		for(auto personAGM: vectorPersons)
 		{
+            auto id = personAGM->identifier;
+
+            if(std::find(std::begin(currentPersonsNear), std::end(currentPersonsNear), id) != std::end(currentPersonsNear))
+                continue;
+
             for (auto edge = personAGM->edgesBegin(worldModel); edge != personAGM->edgesEnd(worldModel); edge++)
             {
-                qDebug()<< QString::fromStdString(edgeName) << " found " << personAGM->identifier;
-
                 if (edge->getLabel() == edgeName)
                 {
-                    auto id = personAGM->identifier;
                     try
                     {
                         AGMMisc::publishSelfEdgeDeleted(id,edgeName,agmexecutive_proxy);

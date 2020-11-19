@@ -546,7 +546,6 @@ bool findNewPath()
 
         if(checkHumanBlock() or checkAffordancesBlock())
         {
-            qDebug()<< "humanBlock = True";
             this->current_target.lock();
                 current_target.humanBlock.store(true);
             this->current_target.unlock();
@@ -559,7 +558,7 @@ bool findNewPath()
 
 bool checkHumanBlock()
 {
-    qDebug()<<"---"<<__FUNCTION__<<"---";
+    qDebug()<< "Navigation ---"<<__FUNCTION__<<"---";
 
     grid.resetGrid();
 
@@ -581,7 +580,7 @@ bool checkHumanBlock()
 
             if (path.empty())
             {
-                qDebug()<<__FUNCTION__<< "Human Blocking robot";
+//                qDebug()<<__FUNCTION__<< "Human Blocking robot";
 
                 blockFound = true;
 

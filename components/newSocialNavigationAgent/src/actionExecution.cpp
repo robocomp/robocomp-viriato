@@ -55,6 +55,7 @@ ActionExecution::retActions ActionExecution::runActions(std::string action_,  Ro
         ret = action_GoToGroupOfPeople(params_);
 
 
+
     return ret;
 
 }
@@ -115,16 +116,16 @@ ActionExecution::retActions ActionExecution::action_ChangeRoom(RoboCompAGMCommon
     bool needsReplanning = false;
 
     auto roomPolygon = getRoomPolyline(roomSymbol);
-    QPointF newTarget = roomPolygon.boundingRect().center();
-//    QPointF newTarget = getRandomPointInRoom(roomPolygon);
+//    QPointF newTarget = roomPolygon.boundingRect().center();
+    QPointF newTarget = getRandomPointInRoom(roomPolygon);
 
-    if (currentRoom == destRoomID)
-    {
-        qDebug()<< "Robot already at target room";
-        needsReplanning = false;
-    }
+//    if (currentRoom == destRoomID)
+//    {
+//        qDebug()<< "Robot already at target room";
+//        needsReplanning = false;
+//    }
 
-    else if (newActionReceived)
+    if (newActionReceived)
     {
 //        qDebug()<<"newActionReceived "<< QString::fromStdString(prevRoomTarget) << QString::fromStdString(roomName);
 
@@ -432,8 +433,8 @@ QPointF ActionExecution::getPointNearAffordance(AGMModelSymbol::SPtr personSymbo
         }
 
     }
-
     QLineF line(QPointF(person.x,person.z),QPointF(robot.x,robot.z));
+//    QLineF line(QPointF(person.x,person.z),QPointF(robot.x,person.z));
 
     for (int i = 0; i < 10; i++)
     {
