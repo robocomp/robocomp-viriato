@@ -86,15 +86,13 @@
 				<plane id="muro11" nx="0" nz="-5000" size="9000,1900,100"  texture="#74ADA1" collide="1" />
 			</transform>
 
-			<transform id="pared12" tx="1800" tz="-1000" ty="950" >
-				<plane id="muro12" nx="0" nz="-5000" size="6500,1900,100"  texture="#74ADA1" collide="1" />
+			<transform id="pared12" tx="2350" tz="-1000" ty="950" >
+				<plane id="muro12" nx="0" nz="-5000" size="7750,1900,100"  texture="#74ADA1" collide="1" />
 			</transform>
-            <transform id="pared122" tx="7000" tz="-1000" ty="950" >
-				<plane id="muro122" nx="0" nz="-5000" size="1100,1900,100"  texture="#74ADA1" collide="1" />
-			</transform>
+ 
 			<!-- TELE 	-->	
 <!--             		<transform id="board" tx="600" tz="-1250" ty="1350" ry="3.14"> -->
-            <transform id="board" tx="1200" tz="-1200" ty="1350" ry="3.14"> 
+            <transform id="board" tx="4750" tz="-1200" ty="1350" ry="3.14"> 
 
 		        	<mesh id="board_mesh" file="/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/tv/tv.3DS" 					
 		              	scale="30,30,30" tx="125" tz="-150" ty="-300" rx="1.57" rz="3.14" collide="1" />

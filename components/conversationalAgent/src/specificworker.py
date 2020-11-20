@@ -438,10 +438,20 @@ class SpecificWorker(GenericWorker):
             # Function to erase and initialize rasa_conversation Json file
 
     def eraseFiles(self):
-        sample = self.change_attributes
-        json_object = json.dumps(sample, indent=4)
-        with open('chatbot/rasa_conversation.json', 'w') as outfile:
-            outfile.write(json_object)
+        try:
+            print('--- eraseFiles ---')
+            print(self.change_attributes)
+            json_object = json.dumps(self.change_attributes, indent=4)
+            with open('chatbot/rasa_conversation.json', 'w') as outfile:
+                outfile.write(json_object)
+            print(self.change_attributes)
+
+        except:
+            print("Could not write to file person_attributes.json")
+
+        print('--- eraseFiles ---')
+        return
+
 
     # Function to write to file
     def writeToFile(self, id, situation):
@@ -463,9 +473,12 @@ class SpecificWorker(GenericWorker):
     def readFromFile(self):
         with open('chatbot/rasa_conversation.json', 'r') as openfile:
             attrs = json.load(openfile)
-            print(attrs)
-            if attrs["rasa"] == self.change_attributes["rasa"] and attrs["response"] == self.change_attributes[
-                "response"]:
+
+            if self.change_attributes == {}:
+                self.change_attributes = {"rasa":"", "response":""}
+
+            if attrs["rasa"] == self.change_attributes["rasa"] \
+                    and attrs["response"] == self.change_attributes["response"]:
                 return False
             else:
                 attrs["timeStarted"] = str(datetime.now())
@@ -503,29 +516,33 @@ class SpecificWorker(GenericWorker):
         r = requests.post('http://localhost:5002/conversations/default/tracker/events',
                           json=[{"event": "restart"}, {"event": "followup", "name": "action_listen"}])
 
-        self.change_attributes = {"rasa": "", "response": ""}
+        self.ui_lock = True
+        self.change_attributes["rasa"] = ""
+        self.change_attributes["response"] = ""
+        self.change_attributes["timeStarted"] = ""
         self.eraseFiles()
         self.removeInteractingEdge = True
 
         if self.action in self.list_actions and self.action != self.action_chatbot_started:
                 print('stopChatBot --- self action != self action chatbot started')
                 print(self.action, self.action_chatbot_started)
-                self.ui_lock = True
                 time.sleep(2)
                 self.ui_lock = False
+
                 print('-------------------------> restarting chatbot')
                 self.interaction.interactionUI = True
                 self.startChatbot()
         else:
             print('stopChatBot --- action not in list_actions or action==action_chatbot_started')
-            self.ui_lock = True
             time.sleep(10)
             self.ui_lock = False
+
             print('------------------------->stopping chatbot')
             self.situation = ''
             self.human_id = ''
             self.robot_id = ''
             self.change_attributes = {}
+
 
         print('---------------------- END stopChatbot -----------------------')
         return
@@ -647,6 +664,7 @@ class SpecificWorker(GenericWorker):
         if self.removeInteractingEdge and self.interactingEdgeInAGM:
             print('Trying to remove interacting edge')
             self.cleanGraph()
+            self.removeInteractingEdge = False
 
         return True
 
@@ -724,14 +742,20 @@ class SpecificWorker(GenericWorker):
     # SUBSCRIPTION to symbolUpdated method from AGMExecutiveTopic interface
     #
     def AGMExecutiveTopic_symbolUpdated(self, modification):
+        self.mutex.lock()
+
         AGMModelConversion.fromIceToInternal_node(modification)
+        self.mutex.unlock()
 
     #
     # SUBSCRIPTION to symbolsUpdated method from AGMExecutiveTopic interface
     #
     def AGMExecutiveTopic_symbolsUpdated(self, modifications):
+        self.mutex.lock()
+
         for modification in modifications:
             AGMModelConversion.fromIceToInternal_node(modification)
+        self.mutex.unlock()
 
     # =============== Methods for Component Implements ==================
     # ===================================================================

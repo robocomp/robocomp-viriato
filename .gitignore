@@ -662,3 +662,5 @@ components/roomLocalizationAgent/bin/roomLocalizationAgent
 components/localizationAgent_RCIS/bin/localizationAgent
 
 components/socialRulesAgent/bin/socialRulesAgent
+
+components/fakeHumanAgent/humansFile.txt.save

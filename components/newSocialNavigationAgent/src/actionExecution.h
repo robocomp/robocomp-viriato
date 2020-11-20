@@ -39,6 +39,7 @@ private:
     QPointF getPointNearAffordance(AGMModelSymbol::SPtr personSymbol,AGMModelSymbol::SPtr objectSymbol,AGMModelSymbol::SPtr robotSymbol);
     QPointF getRandomPointInRoom(QPolygonF room);
     AGMModelSymbol::SPtr getNearestPerson(vector<AGMModelSymbol::SPtr> totalPersons,AGMModelSymbol::SPtr robotSymbol);
+    QPointF goToMiddlePoint(vector<AGMModelSymbol::SPtr> totalPersons,AGMModelSymbol::SPtr robotSymbol);
 
 };
 

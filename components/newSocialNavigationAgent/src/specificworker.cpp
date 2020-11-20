@@ -160,30 +160,30 @@ void SpecificWorker::compute()
         if(std::find(std::begin(list_actions), std::end(list_actions), action) == std::end(list_actions))
             stopRobot();
 
-            auto [newTarget, target] = actionExecution.runActions(action,params);
+        auto [newTarget, target] = actionExecution.runActions(action,params);
         if (newTarget)
         {
             qDebug()<< " ------- ACTION EXECUTION NEW TARGET------- "<< QString::fromStdString(action) << target;
             bool reachable = navigation.newTarget(target);
 
-            int searchedPoints = 0;
-
-            if (action == "changeroom")
-            {
-                while(!reachable and searchedPoints<10){
-                    auto [_, target_] = actionExecution.runActions(action,params);
-                    reachable = navigation.newTarget(target_);
-                    searchedPoints++;
-                }
-
-            }
+//            int searchedPoints = 0;
+//
+//            if (action == "changeroom")
+//            {
+//                while(!reachable and searchedPoints<10){
+//                    auto [_, target_] = actionExecution.runActions(action,params);
+//                    reachable = navigation.newTarget(target_);
+//                    searchedPoints++;
+//                }
+//
+//            }
 
             if (!reachable)
                 qDebug()<< "Can't reach new target ";
 
         }
 
-        if(robotBlocked)
+        if(robotBlockedInAGM)
             checkRobotBlock();
     }
 
@@ -260,7 +260,6 @@ void SpecificWorker::checkHumanBlock()
         if (addEdgeModel(id,robotID,edgeName))
         {
             edgesChanged = true;
-            blockingEdgesInAGM = true;
         }
     }
 
@@ -285,10 +284,11 @@ void SpecificWorker::checkHumanBlock()
         if(addEdgeModel(id,robotID,edgeName))
         {
             edgesChanged = true;
-            blockingEdgesInAGM = true;
         }
     }
      ////////////////////////////////////////////////////////////////////
+
+    blockingEdgesInAGM = !blockingIDs.empty() or !affBlockingIDs.empty();
 
 //    if  (!robotBlockedInAGM and (!blockingIDs.empty() or !affBlockingIDs.empty()))
     if  (!robotBlockedInAGM and blockingEdgesInAGM)
@@ -345,7 +345,10 @@ void SpecificWorker::checkHumanBlock()
 
 		try
 		{
+		    static QTime reloj = QTime::currentTime();
+            reloj.start();
             sendModificationProposal(worldModel, newModel);
+            qDebug()<<"sendModificationProposal time "<< reloj.restart()/1000 << " seconds";
 		}
 		catch(...)
 		{
@@ -609,7 +612,6 @@ void  SpecificWorker::moveRobot()
 
 void SpecificWorker::stopRobot()
 {
-    qDebug()<<__FUNCTION__;
     if (navigation.isCurrentTargetActive())
     {
         navigation.deactivateTarget();
@@ -908,7 +910,9 @@ void SpecificWorker::AGMExecutiveTopic_symbolsUpdated(const RoboCompAGMWorldMode
         }
     }
     if(affordancesChanged or personalSpacesChanged)
+    {
         actionExecution.updateWordModel(worldModel);
+    }
 }
 
 bool SpecificWorker::setParametersAndPossibleActivation(const RoboCompAGMCommonBehavior::ParameterMap &prs, bool &reactivated)
@@ -951,7 +955,6 @@ bool SpecificWorker::setParametersAndPossibleActivation(const RoboCompAGMCommonB
     qDebug()<<"Current plan "<< currentPlan;
 
 
-
     try
 	{
 		action = params["action"].value;
@@ -963,13 +966,11 @@ bool SpecificWorker::setParametersAndPossibleActivation(const RoboCompAGMCommonB
 		}
 		else
 		{
-		    qDebug()<< " End mission .....";
+		    qDebug()<< " Action none --- END MISSION ---";
             active = false;
 
             if (navigation.current_target.blocked.load() )
-		    {
                 stopRobot();
-            }
 
             robotBlocked = false;
             actionBlocked = action;
@@ -995,10 +996,7 @@ bool SpecificWorker::setParametersAndPossibleActivation(const RoboCompAGMCommonB
 
     }
 
-
-
-
-    printf("<<< ------------------------- setParametersAndPossibleActivation -------------------------\n");
+	printf("<<< ------------------------- setParametersAndPossibleActivation -------------------------\n");
 
 	return true;
 }

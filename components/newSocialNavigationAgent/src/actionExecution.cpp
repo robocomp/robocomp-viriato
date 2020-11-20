@@ -13,6 +13,7 @@ void ActionExecution::initialize(AGMModel::SPtr worldModel_)
 void ActionExecution::updateWordModel(AGMModel::SPtr worldModel_)
 {
     worldModel = worldModel_;
+    newActionReceived = true;
 
 }
 void ActionExecution::update(std::string action_,  RoboCompAGMCommonBehavior::ParameterMap params_)
@@ -116,8 +117,8 @@ ActionExecution::retActions ActionExecution::action_ChangeRoom(RoboCompAGMCommon
     bool needsReplanning = false;
 
     auto roomPolygon = getRoomPolyline(roomSymbol);
-//    QPointF newTarget = roomPolygon.boundingRect().center();
-    QPointF newTarget = getRandomPointInRoom(roomPolygon);
+    QPointF newTarget = roomPolygon.boundingRect().center();
+//    QPointF newTarget = getRandomPointInRoom(roomPolygon);
 
 //    if (currentRoom == destRoomID)
 //    {
@@ -217,6 +218,7 @@ ActionExecution::retActions ActionExecution::action_GoToAffordance(RoboCompAGMCo
 
 }
 
+
 ActionExecution::retActions ActionExecution::action_GoToGroupOfPeople(RoboCompAGMCommonBehavior::ParameterMap params_)
 {
     qDebug()<<"-------------------------------"<< __FUNCTION__<< "-------------------------------";
@@ -255,10 +257,19 @@ ActionExecution::retActions ActionExecution::action_GoToGroupOfPeople(RoboCompAG
         std::cout << "Exception:: Cant get edge between robot and person:" << ex << endl;
     }
 
-    auto nearestPerson = getNearestPerson(totalPerson,robotSymbol);
-    QPointF newTarget = getPointInSocialSpace(nearestPerson,robotSymbol);
+    QPointF newTarget;
 
-    qDebug()<<"Nearest person is "<< nearestPerson->identifier;
+    AGMModelSymbol::SPtr nearestPerson = getNearestPerson(totalPerson,robotSymbol);
+    if(totalPerson.size()>2)
+    {
+        newTarget = getPointInSocialSpace(nearestPerson,robotSymbol);
+        qDebug()<<"Nearest person is "<< nearestPerson->identifier;
+    }
+
+    else
+    {
+        newTarget = goToMiddlePoint(totalPerson,robotSymbol);
+    }
 
     if (newActionReceived or previousPerson_group != nearestPerson->identifier )
     {
@@ -268,9 +279,96 @@ ActionExecution::retActions ActionExecution::action_GoToGroupOfPeople(RoboCompAG
 
     previousPerson_group = nearestPerson->identifier;
 
+    qDebug()<<"Returning "<< needsReplanning <<newTarget;
     return std::make_tuple(needsReplanning, newTarget);
 
 }
+
+QPointF ActionExecution::goToMiddlePoint(vector<AGMModelSymbol::SPtr> totalPersons,AGMModelSymbol::SPtr robotSymbol)
+{
+    qDebug()<<__FUNCTION__;
+    localPerson robot;
+    auto id_r = robotSymbol->identifier;
+    AGMModelSymbol::SPtr robotParent = worldModel->getParentByLink(id_r, "RT");
+    AGMModelEdge& edgeRT_r = worldModel->getEdgeByIdentifiers(robotParent->identifier, id_r, "RT");
+
+    robot.id = id_r;
+    robot.x = str2float(edgeRT_r.attributes["tx"]);
+    robot.z = str2float(edgeRT_r.attributes["tz"]);
+
+    localPerson person1;
+    auto id1 = totalPersons[0]->identifier;
+    AGMModelSymbol::SPtr personParent = worldModel->getParentByLink(id1, "RT");
+    AGMModelEdge& edgeRT = worldModel->getEdgeByIdentifiers(personParent->identifier, id1, "RT");
+    person1.id = id1;
+    person1.x = str2float(edgeRT.attributes["tx"]);
+    person1.z = str2float(edgeRT.attributes["tz"]);
+
+    localPerson person2;
+    auto id2 = totalPersons[1]->identifier;
+    AGMModelSymbol::SPtr personParent2 = worldModel->getParentByLink(id2, "RT");
+    AGMModelEdge& edgeRT2 = worldModel->getEdgeByIdentifiers(personParent->identifier, id2, "RT");
+    person2.id = id2;
+    person2.x = str2float(edgeRT2.attributes["tx"]);
+    person2.z = str2float(edgeRT2.attributes["tz"]);
+
+
+
+    auto nearestPerson = getNearestPerson(totalPersons, robotSymbol);
+    localPerson localNearestPerson;
+
+    if(nearestPerson == totalPersons[0])
+        localNearestPerson = person1;
+    else
+        localNearestPerson = person2;
+
+    QString personal = QString::fromStdString(nearestPerson->getAttribute("polyline_personal"));
+
+    vector<QPolygonF> polygonSeq;
+    QPolygonF personalPolygon;
+    for(auto pol: personal.split(";;"))
+    {
+        if(pol.size() == 0)
+            continue;
+
+        personalPolygon = QPolygonF();
+
+        for (auto pxz : pol.split(";"))
+        {
+            auto p = pxz.split(" ");
+
+            if (p.size() != 2)
+                continue;
+
+            auto x = std::stof(p[0].toStdString());
+            auto z = std::stof(p[1].toStdString());
+
+            personalPolygon << QPointF(x, z);
+        }
+
+        //Puede haber varios espacios sociales, se comprueba que la persona esta contenida en el espacio social
+        if (!personalPolygon.containsPoint(QPointF(localNearestPerson.x, localNearestPerson.z), Qt::OddEvenFill))
+            break;
+    }
+
+    QLineF line(QPointF(person1.x,person1.z),QPointF(person2.x,person2.z));
+    auto middle = line.center();
+    QLineF line2(QPointF(middle.x(),middle.y()),QPointF(robot.x,robot.z));
+    for (int i = 0; i < 10; i++)
+    {
+        float step = i/10.0f;
+
+        QPointF point = line2.pointAt(step);
+
+        if (!personalPolygon.containsPoint(point, Qt::OddEvenFill)){
+            return point;
+        }
+    }
+
+
+}
+
+
 
 AGMModelSymbol::SPtr ActionExecution::getNearestPerson(vector<AGMModelSymbol::SPtr> totalPersons,AGMModelSymbol::SPtr robotSymbol)
 {
@@ -311,7 +409,6 @@ AGMModelSymbol::SPtr ActionExecution::getNearestPerson(vector<AGMModelSymbol::SP
 
     return nearestPerson;
 }
-
 QPointF ActionExecution::getPointInSocialSpace(AGMModelSymbol::SPtr personSymbol,AGMModelSymbol::SPtr robotSymbol)
 {
     qDebug()<<__FUNCTION__;
@@ -359,11 +456,11 @@ QPointF ActionExecution::getPointInSocialSpace(AGMModelSymbol::SPtr personSymbol
             auto x = std::stof(p[0].toStdString());
             auto z = std::stof(p[1].toStdString());
 
-            personalPolygon << QPointF(x,z);
+            personalPolygon << QPointF(x, z);
         }
 
         //Puede haber varios espacios sociales, se comprueba que la persona esta contenida en el espacio social
-        if (personalPolygon.containsPoint(QPointF(person.x,person.z),Qt::OddEvenFill))
+        if (!personalPolygon.containsPoint(QPointF(person.x, person.z), Qt::OddEvenFill))
             break;
     }
 
@@ -376,13 +473,12 @@ QPointF ActionExecution::getPointInSocialSpace(AGMModelSymbol::SPtr personSymbol
         QPointF point = line.pointAt(step);
 
         //El punto más cercano a la persona dentro del espacio social será el primer punto no contenido en el personal
-        if (!personalPolygon.containsPoint(point,Qt::OddEvenFill)){
+        if (personalPolygon.containsPoint(point, Qt::OddEvenFill)){
             return point;
         }
     }
 
 }
-
 
 QPointF ActionExecution::getPointNearAffordance(AGMModelSymbol::SPtr personSymbol,AGMModelSymbol::SPtr objectSymbol,AGMModelSymbol::SPtr robotSymbol)
 {
@@ -413,6 +509,7 @@ QPointF ActionExecution::getPointNearAffordance(AGMModelSymbol::SPtr personSymbo
 
     vector<QPolygonF> polygonSeq;
     QPolygonF affPolygon;
+    QPolygonF fakeAffordance;
 
     for(auto pol: affordance.split(";;"))
     {
@@ -433,17 +530,23 @@ QPointF ActionExecution::getPointNearAffordance(AGMModelSymbol::SPtr personSymbo
         }
 
     }
-    QLineF line(QPointF(person.x,person.z),QPointF(robot.x,robot.z));
-//    QLineF line(QPointF(person.x,person.z),QPointF(robot.x,person.z));
+    //This is only valid if the object affordance is vertical
+//    QLineF line(QPointF(person.x,person.z),QPointF(robot.x,robot.z));
+    QLineF line(QPointF(person.x,person.z),QPointF(robot.x,person.z));
 
-    for (int i = 0; i < 10; i++)
+    int count = 0;
+
+    for (int i = 0; i < 100; i++)
     {
-        float step = i/10.0f;
+        float step = i/100.0f;
 
         QPointF point = line.pointAt(step);
 
         if (!affPolygon.containsPoint(point,Qt::OddEvenFill)){
-            return point;
+            if(count >5)
+                return point;
+            else
+                count++;
         }
     }
 

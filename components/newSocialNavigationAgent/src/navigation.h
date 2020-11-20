@@ -236,6 +236,7 @@ public:
                 if (!findNewPath()) {
 
                     qDebug()<< "checkPathState - Path not found";
+                    stopRobot();
 
                     if(current_target.humanBlock.load()) //if the path is blocked by human the target is not deactivated
                         return false;
@@ -817,7 +818,7 @@ void computeForces(const std::vector<QPointF> &path, const RoboCompLaser::TLaser
         if (isPointVisitable(temp_p)
                 and (!currentRobotPolygon.containsPoint(temp_p, Qt::OddEvenFill))
                 and (std::none_of(std::begin(intimateSpaces), std::end(intimateSpaces),[temp_p](const auto &poly) { return poly.containsPoint(temp_p, Qt::OddEvenFill);}))
-                and (std::none_of(std::begin(personalSpaces), std::end(personalSpaces),[temp_p](const auto &poly) { return poly.containsPoint(temp_p, Qt::OddEvenFill);}))
+//                and (std::none_of(std::begin(personalSpaces), std::end(personalSpaces),[temp_p](const auto &poly) { return poly.containsPoint(temp_p, Qt::OddEvenFill);}))
             )
         {
 
