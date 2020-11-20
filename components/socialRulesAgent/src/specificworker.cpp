@@ -486,7 +486,7 @@ void SpecificWorker::checkObjectAffordance()
                  edge++)
             {
                 if (edge->getLabel()=="interactive") {
-                    interactive == true;
+                    interactive = true;
                 }
             }
 

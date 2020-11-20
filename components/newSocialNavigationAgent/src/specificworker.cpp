@@ -556,7 +556,7 @@ SpecificWorker::retAffordanceSpaces SpecificWorker::getAffordancesFromModel()
              edge++)
         {
             if (edge->getLabel()=="interactive") {
-                interactive == true;
+                interactive = true;
             }
         }
 
