@@ -292,13 +292,15 @@ void SpecificWorker::checkHumanBlock()
 
 //    if  (!robotBlockedInAGM and (!blockingIDs.empty() or !affBlockingIDs.empty()))
     if  (!robotBlockedInAGM and blockingEdgesInAGM)
+//    if  (blockingEdgesInAGM)
     {
         qDebug()<<" ----- Blocking robot ----- " << currentPlan;
         if(addEdgeModel(robotID,robotID,"blocked"))
         {
             edgesChanged = true;
-            robotBlockedInAGM = true;
         }
+
+        robotBlockedInAGM = true;
 
         robotBlocked = true;
 
@@ -546,13 +548,26 @@ SpecificWorker::retAffordanceSpaces SpecificWorker::getAffordancesFromModel()
     auto objectsAGM = worldModel->getSymbolsByType("object");
 
 
-    for( auto affordance : objectsAGM)
+    for( auto objectAGM : objectsAGM)
     {
+        bool interactive = false;
+        for (AGMModelSymbol::iterator edge = objectAGM->edgesBegin(worldModel);
+             edge!=objectAGM->edgesEnd(worldModel);
+             edge++)
+        {
+            if (edge->getLabel()=="interactive") {
+                interactive == true;
+            }
+        }
+
+        if(!interactive)
+            continue;
+
         QPolygonF object;
 
-        QString polyline = QString::fromStdString(affordance->getAttribute("polyline_affordance"));
-        float cost = std::stof(affordance->getAttribute("cost"));
-        bool interacting = (affordance->getAttribute("interacting") == "1");
+        QString polyline = QString::fromStdString(objectAGM->getAttribute("polyline_affordance"));
+        float cost = std::stof(objectAGM->getAttribute("cost"));
+        bool interacting = (objectAGM->getAttribute("interacting") == "1");
 
         for(auto pol: polyline.split(";;"))
         {
@@ -578,6 +593,8 @@ SpecificWorker::retAffordanceSpaces SpecificWorker::getAffordancesFromModel()
 
         }
     }
+    qDebug()<<"END "<<__FUNCTION__;
+
     return std::make_tuple(mapCostObjects,totalAffordances,blockedAffordances);
 }
 
@@ -853,7 +870,6 @@ void SpecificWorker::AGMExecutiveTopic_structuralChange(const RoboCompAGMWorldMo
 
     QMutexLocker lockIM(mutex);
 
-
 	try {
 		AGMModelConverter::fromIceToInternal(w, worldModel);
 		innerModel.reset(AGMInner::extractInnerModel(worldModel));
@@ -969,9 +985,6 @@ bool SpecificWorker::setParametersAndPossibleActivation(const RoboCompAGMCommonB
 		    qDebug()<< " Action none --- END MISSION ---";
             active = false;
 
-            if (navigation.current_target.blocked.load() )
-                stopRobot();
-
             robotBlocked = false;
             actionBlocked = action;
             currentPlan = "none";
@@ -1026,6 +1039,6 @@ void SpecificWorker::sendModificationProposal(AGMModel::SPtr &worldModel, AGMMod
     catch(const Ice::Exception& e)
     {
         printf("sendModificationProposal --- unknown exception \n");
-        exit(1);
+//        exit(1);
     }
 }

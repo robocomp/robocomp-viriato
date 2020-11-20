@@ -534,7 +534,7 @@ class SpecificWorker(GenericWorker):
                 self.startChatbot()
         else:
             print('stopChatBot --- action not in list_actions or action==action_chatbot_started')
-            time.sleep(10)
+            time.sleep(15)
             self.ui_lock = False
 
             print('------------------------->stopping chatbot')
@@ -677,22 +677,16 @@ class SpecificWorker(GenericWorker):
 
     def AGMExecutiveTopic_edgeUpdated(self, modification):
         # print('AGMExecutiveTopic_edgeUpdated')
-        self.mutex.lock()
         self.worldModel.addEdge(str(modification.a), str(modification.b), str(modification.edgeType),
                                 modification.attributes)
-        self.mutex.unlock()
 
     #
     # SUBSCRIPTION to edgesUpdated method from AGMExecutiveTopic interface
     #
     def AGMExecutiveTopic_edgesUpdated(self, modifications):
         # print('AGMExecutiveTopic_edgesUpdated')
-        self.mutex.lock()
         for modification in modifications:
             self.worldModel.addEdge(str(modification.a),str(modification.b),str(modification.edgeType), modification.attributes)
-
-
-        self.mutex.unlock()
 
     # SUBSCRIPTION to selfEdgeAdded method from AGMExecutiveTopic interface
     #
@@ -742,20 +736,15 @@ class SpecificWorker(GenericWorker):
     # SUBSCRIPTION to symbolUpdated method from AGMExecutiveTopic interface
     #
     def AGMExecutiveTopic_symbolUpdated(self, modification):
-        self.mutex.lock()
-
         AGMModelConversion.fromIceToInternal_node(modification)
-        self.mutex.unlock()
 
     #
     # SUBSCRIPTION to symbolsUpdated method from AGMExecutiveTopic interface
     #
     def AGMExecutiveTopic_symbolsUpdated(self, modifications):
-        self.mutex.lock()
 
         for modification in modifications:
             AGMModelConversion.fromIceToInternal_node(modification)
-        self.mutex.unlock()
 
     # =============== Methods for Component Implements ==================
     # ===================================================================

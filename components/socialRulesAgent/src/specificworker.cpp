@@ -474,12 +474,24 @@ void SpecificWorker::checkObjectAffordance()
 
             auto id = obj->identifier;
 
-            try { worldModel->getEdge(obj, obj, "interactive"); }
-
-            catch (const Ice::Exception &e) {
-                std::cout <<"Not interactive" <<e.what() << std::endl;
-                continue;
+//            try { worldModel->getEdge(obj, obj, "interactive"); }
+//
+//            catch (const Ice::Exception &e) {
+//                std::cout <<"Not interactive" <<e.what() << std::endl;
+//                continue;
+//            }
+            bool interactive = false;
+            for (AGMModelSymbol::iterator edge = obj->edgesBegin(worldModel);
+                 edge!=obj->edgesEnd(worldModel);
+                 edge++)
+            {
+                if (edge->getLabel()=="interactive") {
+                    interactive == true;
+                }
             }
+
+            if(!interactive)
+                continue;
 
             ObjectType object;
             QString imName;

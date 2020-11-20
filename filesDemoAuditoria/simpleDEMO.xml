@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<rcmanager>
+
+ <generalInformation>
+  <editor path="kate" dock="false" />
+  <timeouts fixed="1000.0" blink="300.0" />
+  <clicks switch="2.0" interval="400.0" />
+  <graph alpha="80.0" active="true" scale="200.0" />
+  <graphTiming idletime="1000.0" focustime="500.0" fasttime="10.0" fastperiod="2000.0" />
+  <simulation hookes="0.07" springlength="0.5" friction="0.4" step="0.5" fieldforce="20000.0" />
+ </generalInformation>
+
+  <node alias="mission - no deps" endpoint="commonbehavior:tcp -h localhost -p 11247">
+  <dependence alias="executive" />
+  <workingDir path="/home/robocomp/" />
+  <upCommand command="rcremote localhost mission /home/robocomp/AGM/tools/agmmission agmmission /home/robocomp/robocomp/components/robocomp-viriato/filesDemoAuditoria/mission.conf" />
+  <downCommand command="killall -9 agmmission" />
+  <configFile path="/home/robocomp/robocomp/components/robocomp-viriato/filesDemoAuditoria/mission.conf" />
+  <xpos value="-11.0935151594" />
+  <ypos value="-224.933874221" />
+  <radius value="10.0" />
+  <color value="#AAAAAA" />
+ </node>
+
+ <!--<node alias="logger" endpoint="commonbehavior:tcp -p 12070">
+  <dependence alias="IS" />
+  <workingDir path="/home/robocomp/" />
+  <upCommand command="rcremote localhost rclogger /home/robocomp/ rclogger" />
+  <downCommand command="killall -9 rclogger" />
+  <configFile path="" />
+  <xpos value="16.9997118071" />
+  <ypos value="51.7617554197" />
+  <radius value="10.0" />
+  <color value="#FF3333" />
+ </node> -->
+
+ <node alias="laser" endpoint="laser:tcp -h localhost -p 10003">
+  <dependence alias="base" />
+  <workingDir path="/home/robocomp/" />
+  <upCommand command="rcremote localhost rgbd /home/robocomp/robocomp/components/robocomp-viriato/filesDemoAuditoria rcis simulation.xml -f 100" />
+  <downCommand command="killall -9 rcis" />
+  <configFile path="rcremote localhost configs /home/robocomp/robocomp/components/robocomp-viriato/filesDemoAuditoria kate simulation.xml" />
+  <xpos value="-158.4646681749" />
+  <ypos value="50.5106363282" />
+  <radius value="10.0" />
+  <color value="#3333FF" />
+ </node>
+
+ <node alias="js" endpoint="joystick:tcp -h localhost -p 10002">
+  <dependence alias="base" />
+  <workingDir path="/home/robocomp/" />
+  <upCommand command="rcremote localhost jstck /home/robocomp/robocomp/components/robocomp-robolab/components/hardware/external_control/joystickomni/ ./bin/joystickomni --Ice.Config=/home/robocomp/robocomp/components/robocomp-robolab/components/hardware/external_control/joystickomni/etc/config" />
+  <downCommand command="killall -9 joystickomni" />
+  <configFile path="/home/robocomp/robocomp/components/robocomp-robolab/components/hardware/external_control/joystickomni/etc/config" />
+  <xpos value="-280.691178623" />
+  <ypos value="50.5106363282" />
+  <radius value="10.0" />
+  <color value="#FF3333" />
+ </node>
+
+ <node alias="base" endpoint="omnirobot:tcp -h localhost -p 12238">
+ <dependence alias="executive" />
+
+  <workingDir path="/home/robocomp/" />
+  <upCommand command="rcremote localhost rgbd /home/robocomp/robocomp/components/robocomp-viriato/filesDemoAuditoria rcis simulation.xml -f 45" />
+  <downCommand command="killall -9 rcis" />
+  <configFile path="rcremote localhost configs /home/robocomp/robocomp/components/robocomp-viriato/filesDemoAuditoria kate simulation.xml" />
+  <xpos value="-216.350970747" />
+  <ypos value="50.5106363282" />
+  <radius value="10.0" />
+  <color value="#FF3333" />
+ </node>
+
+ <node alias="storm" endpoint="IceStorm/TopicManager:default -h localhost -p 9999">
+  <workingDir path="/home/robocomp/robocomp/components/robocomp-viriato/etc/" />
+  <upCommand command="rcremote localhost IS /home/robocomp/robocomp/components/robocomp-viriato/etc/ rcnode" />
+  <downCommand command="killall -9 icebox" />
+  <configFile path="/home/robocomp/robocomp/components/robocomp-viriato/etc/ursus.conf" />
+  <xpos value="58.22150957623" />
+  <ypos value="-115.512538117" />
+  <radius value="10.0" />
+  <color value="#FF3333" />
+ </node>
+
+ <node alias="executive" endpoint="agmexecutive:tcp -h localhost -p 10198">
+  <dependence alias="storm" />
+  <workingDir path="/home/robocomp/" />
+  <upCommand command="rcremote localhost AGMExecutive /home/robocomp/AGM/tools/AGMExecutive_robocomp python2 AGMExecutive_robocomp.py /home/robocomp/robocomp/components/robocomp-viriato/filesDemoAuditoria/executiveAUTONOMY.conf" />
+  <downCommand command="pkill -9 -f AGMExecutive_robocomp.py" />
+  <configFile path="xxx" />
+  <xpos value="-8.22150957623" />
+  <ypos value="-115.512538117" />
+  <radius value="10.0" />
+  <color value="#33FF33" />
+ </node>
+
+ <node alias="LocalizationA" endpoint="commonbehavior:tcp -p 14351">
+  <dependence alias="executive" />
+  <dependence alias="base" />
+  <!--dependence alias="slam" /-->
+  <workingDir path="/home/robocomp/" />
+  <upCommand command="rcremote localhost localizationAgent /home/robocomp/robocomp/components/robocomp-viriato/components/localizationAgent_RCIS ./bin/localizationAgent /home/robocomp/robocomp/components/robocomp-viriato/components/localizationAgent_RCIS/etc/config" />
+  <downCommand command="killall -9 localizationAgent" />
+  <configFile path="/home/robocomp/robocomp/components/robocomp-viriato/components/localizationAgent_RCIS/etc/config" />
+  <xpos value="-116.350970747" />
+  <ypos value="-115.512538117" />
+  <radius value="13.0" />
+<!--   <color value="#FF3333" /> -->
+ </node>
+
+ <node alias="roomLocalizationA" endpoint="commonbehavior:tcp -p 15555">
+  <dependence alias="executive" />
+  <dependence alias="base" />
+
+  <workingDir path="/home/robocomp/" />
+  <upCommand command="rcremote localhost roomlocalizationAgent /home/robocomp/robocomp/components/robocomp-viriato/components/roomLocalizationAgent ./bin/roomLocalizationAgent /home/robocomp/robocomp/components/robocomp-viriato/filesDemoAuditoria/roomLocalizationAgent.conf" />
+  <downCommand command="killall -9 roomLocalizationAgent" />
+  <configFile path="/home/robocomp/robocomp/components/robocomp-viriato/filesDemoAuditoria/roomLocalizationAgent.conf" />
+  <xpos value="-216.350970747" />
+  <ypos value="-45.512538117" />
+  <radius value="13.0" />
+<!--   <color value="#FF3333" /> -->
+ </node>
+
+<!--<node alias="testtrajectory2D" endpoint="RCISMousePickerTopic:tcp -h localhost -p 13204">
+  <dependence alias="newSocialnavigA"/>
+  <workingDir path="/home/robocomp/"/>
+  <upCommand command="rcremote localhost testtrajectory2D /home/robocomp/robocomp/components/robocomp-tests/testTrajectoryRobot2D python src/testTrajectoryRobot2D.py etc/config"/>
+  <downCommand command="pkill -9 -f testTrajectoryRobot2D.py"/>
+  <configFile path="/home/robocomp/robocomp/components/robocomp-tests/testTrajectoryRobot2D/config"/>
+  <xpos value="-271.097569307"/><ypos value="-63.5106363282"/>
+  <radius value="10.0"/>
+  <color value="#33FF33"/>
+ </node> -->
+
+ <node alias="newSocialnavigA" endpoint="agmcommonbehavior:tcp -h localhost -p 10330">
+  <dependence alias="LocalizationA" />
+
+  <dependence alias="base" />
+  <workingDir path="/home/robocomp/" />
+  <upCommand command="rcremote localhost socialnavAgnt /home/robocomp/robocomp/components/robocomp-viriato/components/newSocialNavigationAgent ./bin/socialNavigationAgent /home/robocomp/robocomp/components/robocomp-viriato/filesDemoAuditoria/socialNavigationAgent.conf" />
+  <downCommand command="killall -9 socialNavigationAgent" />
+  <configFile path="/home/robocomp/robocomp/components/robocomp-viriato/filesDemoAuditoria/socialNavigationAgent.conf" />
+  <xpos value="-60.097569307" />
+  <ypos value="-30.5106363282" />
+  <radius value="10.0" />
+  <color value="#33FF33" />
+ </node>
+
+ <node alias="socialRulesAgent" endpoint="agmcommonbehavior:tcp -h localhost -p 10341">
+  <dependence alias="newSocialnavigA" />
+  <dependence alias="socialnavigG" />
+  <dependence alias="executive" />
+
+  <workingDir path="/home/robocomp/" />
+  <upCommand command="rcremote localhost socialRulesAgent /home/robocomp/robocomp/components/robocomp-viriato/components/socialRulesAgent ./bin/socialRulesAgent /home/robocomp/robocomp/components/robocomp-viriato/filesDemoAuditoria/socialRulesAgent.conf" />
+  <downCommand command="killall -9 socialRulesAgent" />
+  <configFile path="/home/robocomp/robocomp/components/robocomp-viriato/filesDemoAuditoria/socialRulesAgent.conf" />
+  <xpos value="-8.097569307" />
+  <ypos value="50.5106363282" />
+  <radius value="10.0" />
+  <color value="#33FF33" />
+ </node>
+
+ <node alias="socialnavigG" endpoint="socialnavigationgaussian:tcp -h localhost -p 20020">
+  <workingDir path="/home/robocomp/" />
+  <upCommand command="rcremote localhost socialnavGauss /home/robocomp/robocomp/components/robocomp-viriato/components/socialnavigationGaussian python2 src/socialnavigationGaussian.py etc/config" />
+  <downCommand command="pkill -9 -f socialnavigationGaussian.py"/>
+<configFile path="/home/robocomp/robocomp/components/robocomp-viriato/filesDemoAuditoria/socialnavigationGaussian.conf" />
+  <xpos value="100.097569307" />
+  <ypos value="50.5106363282" />
+  <radius value="10.0" />
+  <color value="#33FF33" />
+ </node>
+
+
+
+
+ <node alias="humanFakeA" endpoint="agmcommonbehavior:tcp -h localhost -p 10210">
+  <dependence alias="executive" />
+ <dependence alias="base" />
+ <dependence alias="humanObserver" />
+  <workingDir path="/home/robocomp/" />
+  <upCommand command="rcremote localhost humanFakeA /home/robocomp/robocomp/components/robocomp-viriato/components/fakeHumanAgent ./bin/fakeHumanAgent /home/robocomp/robocomp/components/robocomp-viriato/filesDemoAuditoria/humanFake.conf" />
+  <downCommand command="killall -9 fakeHumanAgent" />
+  <configFile path="/home/robocomp/robocomp/components/robocomp-viriato/filesDemoAuditoria/humanFake.conf" />
+  <xpos value="-150.9789855056" />
+  <ypos value="-224.933874221" />
+  <radius value="10.0" />
+  <color value="#33FF33" />
+ </node>
+
+ <node alias="humanObserver" endpoint="agmcommonbehavior:tcp -h localhost -p 14330">
+ <dependence alias="socialRulesAgent" />
+  <workingDir path="/home/robocomp/" />
+  <upCommand command="rcremote localhost humanObserver /home/robocomp/robocomp/components/robocomp-viriato/components/humanObserverAgent ./bin/humanObserverAgent /home/robocomp/robocomp/components/robocomp-viriato/filesDemoAuditoria/humanObserverAgent.conf" />
+  <downCommand command="killall -9 humanObserverAgent" />
+  <configFile path="/home/robocomp/robocomp/components/robocomp-viriato/filesDemoAuditoria/humanObserverAgent.conf" />
+  <xpos value="-300.9789855056" />
+  <ypos value="-224.933874221" />
+  <radius value="10.0" />
+  <color value="#33FF33" />
+ </node>
+
+<node alias="faceDetector" endpoint="agmcommonbehavior:tcp -h localhost -p 10288">
+  <dependence alias="executive" />
+  <workingDir path="/home/robocomp/" />
+  <upCommand command="rcremote localhost faceDetector /home/robocomp/robocomp/components/robocomp-viriato/components/faceDetector python2 src/faceDetector.py /home/robocomp/robocomp/components/robocomp-viriato/filesDemoAuditoria/faceDetector.conf" />
+  <downCommand command="pkill -9 -f faceDetector.py" />
+  <configFile path="/home/robocomp/robocomp/components/robocomp-viriato/filesDemoAuditoria/faceDetector.conf" />
+  <xpos value="138.188181907" />
+  <ypos value="-39.333666022" />
+  <radius value="13.0" />
+  <color value="#33FF33" />
+ </node>
+
+ <node alias="converationalAgent" endpoint="agmcommonbehavior:tcp -h localhost -p 10258">
+  <dependence alias="executive" />
+  <workingDir path="/home/robocomp/" />
+  <upCommand command="rcremote localhost conversationalAgent /home/robocomp/robocomp/components/robocomp-viriato/components/conversationalAgent python3 src/conversationalAgent.py /home/robocomp/robocomp/components/robocomp-viriato/filesDemoAuditoria/conversationalAgent.conf" />
+  <downCommand command="pkill -9 -f conversationalAgent.py" />
+  <configFile path="/home/robocomp/robocomp/components/robocomp-viriato/filesDemoAuditoria/conversationalAgent.conf" />
+  <xpos value="138.188181907" />
+  <ypos value="-239.333666022" />
+  <radius value="13.0" />
+  <color value="#33FF33" />
+ </node>
+
+
+ 
+<node alias="rasaServer" endpoint="agmcommonbehavior:tcp -h localhost -p 10258">
+  <dependence alias="converationalAgent"/>
+  <workingDir path="/home/robocomp/" />
+  <upCommand command="rcremote localhost rasaServer /home/robocomp/robocomp/components/robocomp-viriato/components/conversationalAgent/chatbot rasa run -m models --endpoints endpoints.yml --port 5002 --credentials credentials.yml --enable-api"/>
+  <downCommand command="fuser -k 5002/tcp" />
+  <configFile path=""/>
+  <xpos value="188.188181907" />
+  <ypos value="-299.333666022" />
+  <radius value="10.0" />
+  <color value="#FF3333" />
+</node>
+
+<node alias="actionServer" endpoint="agmcommonbehavior:tcp -h localhost -p 10258">
+  <dependence alias="converationalAgent"/>
+  <workingDir path="/home/robocomp/" />
+  <upCommand command="rcremote localhost actionServer /home/robocomp/robocomp/components/robocomp-viriato/components/conversationalAgent/chatbot rasa run actions"/>
+  <downCommand command="fuser -k 5055/tcp" />
+  <configFile path=""/>
+  <xpos value="188.188181907" />
+  <ypos value="-179.333666022" />
+  <radius value="10.0" />
+  <color value="#FF3333" />
+</node>
+
+ 
+ 
+</rcmanager>

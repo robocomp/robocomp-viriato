@@ -110,8 +110,7 @@ ActionExecution::retActions ActionExecution::action_ChangeRoom(RoboCompAGMCommon
 
     if (currentRoom == -1)
     {
-        qDebug()<< "shit";
-        exit(-1);
+        qDebug()<< "Cant locate robot";
     }
 
     bool needsReplanning = false;
@@ -347,7 +346,7 @@ QPointF ActionExecution::goToMiddlePoint(vector<AGMModelSymbol::SPtr> totalPerso
         }
 
         //Puede haber varios espacios sociales, se comprueba que la persona esta contenida en el espacio social
-        if (!personalPolygon.containsPoint(QPointF(localNearestPerson.x, localNearestPerson.z), Qt::OddEvenFill))
+        if (personalPolygon.containsPoint(QPointF(localNearestPerson.x, localNearestPerson.z), Qt::OddEvenFill))
             break;
     }
 
@@ -460,7 +459,7 @@ QPointF ActionExecution::getPointInSocialSpace(AGMModelSymbol::SPtr personSymbol
         }
 
         //Puede haber varios espacios sociales, se comprueba que la persona esta contenida en el espacio social
-        if (!personalPolygon.containsPoint(QPointF(person.x, person.z), Qt::OddEvenFill))
+        if (personalPolygon.containsPoint(QPointF(person.x, person.z), Qt::OddEvenFill))
             break;
     }
 
@@ -473,7 +472,7 @@ QPointF ActionExecution::getPointInSocialSpace(AGMModelSymbol::SPtr personSymbol
         QPointF point = line.pointAt(step);
 
         //El punto más cercano a la persona dentro del espacio social será el primer punto no contenido en el personal
-        if (personalPolygon.containsPoint(point, Qt::OddEvenFill)){
+        if (!personalPolygon.containsPoint(point, Qt::OddEvenFill)){
             return point;
         }
     }

@@ -1,0 +1,6 @@
+<innermodel>
+	<include path="/home/robocomp/robocomp/components/robocomp-viriato/filesDemoAuditoria/viriato.xml"/>
+    	<include path="/home/robocomp/robocomp/components/robocomp-viriato/filesDemoAuditoria/autonomyLab2.xml"/> 
+
+</innermodel>
+

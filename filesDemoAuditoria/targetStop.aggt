@@ -1,0 +1,7 @@
+{
+	1:robot(1,1)
+	1->1(stop)
+}
+precondition
+{
+}
