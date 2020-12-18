@@ -124,8 +124,12 @@ void SpecificWorker::compute()
 
 //    static QTime reloj = QTime::currentTime();
 
-
-    QMutexLocker lockIM(mutex);
+std::chrono::system_clock::time_point init_time = std::chrono::system_clock::now();
+std::chrono::system_clock::time_point pend = std::chrono::system_clock::now();
+std::chrono::system_clock::time_point pinit = pend;
+std::chrono::duration<float> elapsed = (pend - pinit)*1000;
+    
+	QMutexLocker lockIM(mutex);
 
     bool needsReplaning = false;
 
@@ -138,7 +142,11 @@ void SpecificWorker::compute()
 		personalSpacesChanged = false;
 		needsReplaning = true;
 	}
-
+pend = std::chrono::system_clock::now();
+elapsed = (pend - pinit)*1000;
+std::cout<<"personalSpacesChanged: "<<elapsed.count()<<std::endl;
+pinit = pend;
+	
 	if(affordancesChanged)
 	{
         qDebug()<<"affordancesChanged";
@@ -148,11 +156,28 @@ void SpecificWorker::compute()
 		affordancesChanged = false;
 		needsReplaning = true;
 	}
+pend = std::chrono::system_clock::now();
+elapsed = (pend - pinit)*1000;
+std::cout<<"affordancesChanged: "<<elapsed.count()<<std::endl;
+pinit = pend;
 
     RoboCompLaser::TLaserData laserData = updateLaser();
+pend = std::chrono::system_clock::now();
+elapsed = (pend - pinit)*1000;
+std::cout<<"updateLaser: "<<elapsed.count()<<std::endl;
+pinit = pend;
+cout<<"Total persson: "<<totalPersons.size()<<std::endl;
 	navigation.update(totalPersons, laserData, needsReplaning);
-    viewer->run();
 
+pend = std::chrono::system_clock::now();
+elapsed = (pend - pinit)*1000;
+std::cout<<"navigation: "<<elapsed.count()<<std::endl;
+pinit = pend;
+    viewer->run();
+pend = std::chrono::system_clock::now();
+elapsed = (pend - pinit)*1000;
+std::cout<<"viewer->run: "<<elapsed.count()<<std::endl;
+pinit = pend;
 
     if (active)
     {
@@ -189,6 +214,10 @@ void SpecificWorker::compute()
 
     if (!totalPersons.empty())
         checkHumanBlock();
+pend = std::chrono::system_clock::now();
+elapsed = (pend - init_time)*1000;
+std::cout<<"totalTime: "<<elapsed.count()<<std::endl;
+
 }
 
 //Check if the robot is still blocked

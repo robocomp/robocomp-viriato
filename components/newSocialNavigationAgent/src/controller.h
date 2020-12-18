@@ -11,10 +11,29 @@
 #include <cppitertools/range.hpp>
 #include <tuple>
 
+struct Edge_val{
+	bool previous = false;
+	bool current = false;
+	void set (bool new_state)
+	{
+		previous = current;
+		current = new_state;
+	};
+	bool rising_edge()
+	{
+		return (previous == false and current == true);
+	};
+	bool lowering_edge()
+	{
+		return (previous == true and current == false);
+	};
+};
+
+
 class Controller {
 public:
                             //   blocked, active, velx,velz,velrot
-    using retUpdate = std::tuple <bool,bool,float,float,float>;
+    using retUpdate = std::tuple <bool,bool,Edge_val, float,float,float>;
 
     void initialize(const std::shared_ptr<InnerModel> &innerModel_,
             std::shared_ptr<RoboCompCommonBehavior::ParameterList> params_)
@@ -58,7 +77,7 @@ public:
         QPointF robotNose = robot + QPointF(250*sin(robotPose.ry()),250*cos(robotPose.ry()));
 
         auto firstPointInPath = points[0];
-
+        auto secondPointInPath = points[1];
 
         // Compute euclidean distance to target
         float euc_dist_to_target = QVector2D(robot - target).length();
@@ -77,43 +96,43 @@ public:
 
             active = false;
 
-            return std::make_tuple(blocked, active, advVelx, advVelz,rotVel);
+            return std::make_tuple(blocked, active, turning, advVelx, advVelz,rotVel);
         }
-
-        // Proceed through path
-        // Compute rotation speed. We use angle between robot's nose and line between first and sucessive points
-        // as an estimation of curvature ahead
-
-        std::vector<float> angles;
-        auto lim = std::min(6, (int)points.size());
         QLineF nose(robot, robotNose);
+		auto targetInRobot = innerModel->transform("robot", QVec::vec3(target.x(), 0, target.y()), "world");
+		targetInRobot.print("targetInRobot");
+		
 
-        for (auto &&i : iter::range(1, lim))
-            angles.push_back(rewrapAngleRestricted(qDegreesToRadians(nose.angleTo(QLineF(firstPointInPath, points[i])))));
+		auto angle = atan2(targetInRobot.x(), targetInRobot.z());
+		std::cout<<"target angle "<<angle<<std::endl;
+		if(fabs(angle) > 0.7 )
+		{
+			rotVel = 0.3 * angle;
+			rotVel = std::clamp(rotVel, (float)-0.5, (float)0.5);
+			advVelz = 0;
+			advVelx = 0;
+			turning.set(true);
+		}
+		else
+		{
+			turning.set(false);
+			
+			// Proceed through path
+			// Compute rotation speed. We use angle between robot's nose and line between first and sucessive points
+			// as an estimation of curvature ahead
 
-        auto min_angle = std::min(angles.begin(), angles.end());
-//        auto min_angle = std::min_element(angles.begin(), angles.end());
+			std::vector<float> angles;
+			auto lim = std::min(6, (int)points.size());
 
 
-        if (min_angle != angles.end())
-        {
-            rotVel = 1.2 * *min_angle;
-            if (fabs(rotVel) > MAX_ROT_SPEED)
-                rotVel = rotVel / fabs(rotVel) * MAX_ROT_SPEED;
-        }
-        else
-        {
-            rotVel = 0;
-            qDebug() << __FUNCTION__ << "rotvel = 0";
-        }
+//			for (auto &&i : iter::range(1, lim))
+			auto min_angle = rewrapAngleRestricted(qDegreesToRadians(nose.angleTo(QLineF(robot, secondPointInPath))));
+			rotVel = 0.6 * min_angle;
+			rotVel = std::clamp(rotVel, (float)-0.5, (float)0.5);
 
-//
-//        qDebug()<< "[CONTROLLER]"<<__FUNCTION__<< "Angles "<<angles << "min_angle " << *min_angle;
-//        qDebug()<<"rotVel" <<rotVel;
-
-        // Compute advance speed
-        std::min(advVelz = MAX_ADV_SPEED * exponentialFunction(rotVel, 0.3, 0.4, 0), euc_dist_to_target);
-
+			// Compute advance speed
+			std::min(advVelz = MAX_ADV_SPEED * exponentialFunction(rotVel, 0.3, 0.4, 0), euc_dist_to_target);
+		}
         // Compute bumper-away speed
         QVector2D total{0, 0};
         for (const auto &l : laserData)
@@ -130,7 +149,7 @@ public:
             advVelx = bumperVel.x();
 
 
-        return std::make_tuple (blocked, active, advVelx, advVelz,rotVel);
+        return std::make_tuple (blocked, active, turning, advVelx, advVelz,rotVel);
 
     }
 
@@ -151,12 +170,14 @@ private:
     float ROBOT_RADIUS_MM; //mm
 
     const float ROBOT_LENGTH = 500;
-    const float FINAL_DISTANCE_TO_TARGET = 500; //mm
+    const float FINAL_DISTANCE_TO_TARGET = 250; //mm
     float KB = 2.0;
 
     float advVelx = 0, advVelz = 0, rotVel = 0;
     QVector2D bumperVel;
 
+	Edge_val turning;
+	
     // compute max de gauss(value) where gauss(x)=y  y min
     float exponentialFunction(float value, float xValue, float yValue, float min)
     {

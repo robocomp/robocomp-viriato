@@ -113,6 +113,10 @@ public:
 
     void update(localPersonsVec totalPersons_, const RoboCompLaser::TLaserData &laserData_, bool needsReplaning)
     {
+std::chrono::system_clock::time_point init_time = std::chrono::system_clock::now();
+std::chrono::system_clock::time_point pend = std::chrono::system_clock::now();
+std::chrono::system_clock::time_point pinit = pend;
+std::chrono::duration<float> elapsed = (pend - pinit)*1000;
 
     //    qDebug()<<"Navigation - "<< __FUNCTION__;
     //    static QTime reloj = QTime::currentTime();
@@ -122,20 +126,35 @@ public:
             updateFreeSpaceMap();
             gridChanged = false;
         }
+pend = std::chrono::system_clock::now();
+elapsed = (pend - pinit)*1000;
+std::cout<<"\t gridChanged: "<<elapsed.count()<<std::endl;
+pinit = pend;
 
         totalPersons = totalPersons_;
         RoboCompLaser::TLaserData laserData;
         laserData = computeLaser(laserData_);
-        currentRobotPose = innerModel->transformS6D("world","robot");
+pend = std::chrono::system_clock::now();
+elapsed = (pend - pinit)*1000;
+std::cout<<"\t computeLaser: "<<elapsed.count()<<std::endl;
+pinit = pend;
+		currentRobotPose = innerModel->transformS6D("world","robot");
     //    qDebug()<< "Updated Robot pose " << reloj.restart();
 
         updateLaserPolygon(laserData);
+pend = std::chrono::system_clock::now();
+elapsed = (pend - pinit)*1000;
+std::cout<<"\t updateLaserPolygon: "<<elapsed.count()<<std::endl;
+pinit = pend;
         currentRobotPolygon = getRobotPolygon();
 
 
         currentRobotNose = getRobotNose();
 
-
+pend = std::chrono::system_clock::now();
+elapsed = (pend - pinit)*1000;
+std::cout<<"\t currentRobotNose: "<<elapsed.count()<<std::endl;
+pinit = pend;
         if(needsReplaning)
         {
             for (auto p: pathPoints)
@@ -155,27 +174,48 @@ public:
                 }
             }
         }
-
+pend = std::chrono::system_clock::now();
+elapsed = (pend - pinit)*1000;
+std::cout<<"\t needsReplaning: "<<elapsed.count()<<std::endl;
+pinit = pend;
         if (checkPathState() == false)
             return;
-
+pend = std::chrono::system_clock::now();
+elapsed = (pend - pinit)*1000;
+std::cout<<"\t checkPathState: "<<elapsed.count()<<std::endl;
+pinit = pend;
 
         computeForces(pathPoints, laserData);
+pend = std::chrono::system_clock::now();
+elapsed = (pend - pinit)*1000;
+std::cout<<"\t computeForces: "<<elapsed.count()<<std::endl;
+pinit = pend;
         cleanPoints();
         addPoints();
-
-        auto [blocked, active, xVel,zVel,rotVel] = controller.update(pathPoints, laserData, current_target.p, currentRobotPose);
+pend = std::chrono::system_clock::now();
+elapsed = (pend - pinit)*1000;
+std::cout<<"\t points: "<<elapsed.count()<<std::endl;
+pinit = pend;
+        auto [blocked, active, turning, xVel,zVel,rotVel] = controller.update(pathPoints, laserData, current_target.p, currentRobotPose);
     //    qDebug()<< "xVel "<<xVel << "zVel "<<zVel << "rotVel" << rotVel;
+pend = std::chrono::system_clock::now();
+elapsed = (pend - pinit)*1000;
+std::cout<<"\t controller: "<<elapsed.count()<<std::endl;
+pinit = pend;
 
-        if (blocked)
+        if (blocked or turning.lowering_edge())
         {
             stopRobot();
 
             this->current_target.lock();
                 current_target.blocked.store(true);
             this->current_target.unlock();
+std::cout<<"LOWERING*************************"<<std::endl;
         }
-
+pend = std::chrono::system_clock::now();
+elapsed = (pend - pinit)*1000;
+std::cout<<"\t blocked: "<<elapsed.count()<<std::endl;
+pinit = pend;
         if (!active)
         {
             stopRobot();
@@ -190,14 +230,27 @@ public:
 
             if(robotAutoMov) newRandomTarget();
         }
-
+pend = std::chrono::system_clock::now();
+elapsed = (pend - pinit)*1000;
+std::cout<<"\t active: "<<elapsed.count()<<std::endl;
+pinit = pend;
         if (!blocked and active)
         {
-            if(moveRobot) omnirobot_proxy->setSpeedBase(xVel,zVel,rotVel);
+            if(moveRobot)
+			{
+				omnirobot_proxy->setSpeedBase(xVel,zVel,rotVel);
+				std::cout<<"\t base velocity(xVel, zVel, rot): "<<xVel<<" "<<zVel<<" "<<rotVel<<std::endl;
+			}
         }
-
+pend = std::chrono::system_clock::now();
+elapsed = (pend - pinit)*1000;
+std::cout<<"\t omnirobot_proxy: "<<elapsed.count()<<std::endl;
+pinit = pend;
         drawRoad();
-
+pend = std::chrono::system_clock::now();
+elapsed = (pend - pinit)*1000;
+std::cout<<"\t drawRoad: "<<elapsed.count()<<std::endl;
+pinit = pend;
 
     };
 
@@ -1015,7 +1068,7 @@ QPointF getRobotNose()
     auto robot = QPointF(currentRobotPose.x(),currentRobotPose.z());
 
 //    return (robot + QPointF( (robotZLong/2 + 200) * sin(currentRobotPose.ry()), (robotZLong/2 + 200) * cos(currentRobotPose.ry())));
-    return (robot + QPointF(250*sin(currentRobotPose.ry()),250*cos(currentRobotPose.ry())));
+    return (robot + QPointF(300*sin(currentRobotPose.ry()),300*cos(currentRobotPose.ry())));
 
 }
 
