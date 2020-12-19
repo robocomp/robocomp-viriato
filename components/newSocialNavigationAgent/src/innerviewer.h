@@ -43,7 +43,7 @@ class InnerViewer
 	typedef std::lock_guard<std::recursive_mutex> guard;
 	
 	public:
-		InnerViewer(const InnerPtr &innerModel_, const std::__cxx11::string& name_ = "unknown", unsigned int period_=100000);
+		InnerViewer(const InnerPtr &innerModel_, const std::string& name_ = "unknown", unsigned int period_=100000);
 		void run();
 		void reloadInnerModel(InnerPtr other);
 		
