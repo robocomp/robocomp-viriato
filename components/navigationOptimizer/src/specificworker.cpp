@@ -36,21 +36,21 @@ SpecificWorker::~SpecificWorker()
 
 bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 {
-//	THE FOLLOWING IS JUST AN EXAMPLE
-//	To use innerModelPath parameter you should uncomment specificmonitor.cpp readConfig method content
-//	try
-//	{
-//		RoboCompCommonBehavior::Parameter par = params.at("InnerModelPath");
-//		std::string innermodel_path = par.value;
-//		innerModel = std::make_shared(innermodel_path);
-//	}
-//	catch(const std::exception &e) { qFatal("Error reading config params"); }
-
-
-
-
-
-
+    RoboCompCommonBehavior::Parameter par = params.at("InnerModel ");
+    if( QFile::exists(QString::fromStdString(par.value)) )
+        innerModel = std::make_shared<InnerModel>(par.value);
+    else
+    {
+        std::cout << "Innermodel path " << par.value << " not found. "; 
+        qFatal("Abort");
+    }
+    
+    confParams  = std::make_shared<RoboCompCommonBehavior::ParameterList>(params);
+#ifdef USE_QTGUI
+	viewer = std::make_shared<InnerViewer>(innerModel, "Social Navigation");  //InnerViewer copies internally innerModel so it has to be resynchronized
+#endif
+    
+    navigation.initialize(innerModel, viewer, confParams, omnirobot_proxy);
 	return true;
 }
 
@@ -71,19 +71,13 @@ void SpecificWorker::initialize(int period)
 
 void SpecificWorker::compute()
 {
-	//computeCODE
-	//QMutexLocker locker(mutex);
-	//try
-	//{
-	//  camera_proxy->getYImage(0,img, cState, bState);
-	//  memcpy(image_gray.data, &img[0], m_width*m_height*sizeof(uchar));
-	//  searchTags(image_gray);
-	//}
-	//catch(const Ice::Exception &e)
-	//{
-	//  std::cout << "Error reading from Camera" << e << std::endl;
-	//}
-	
+    bool needsReplaning = false;
+	localPersonsVec totalPersons;
+    
+    
+    RoboCompLaser::TLaserData laserData = updateLaser();
+    
+	navigation.update(totalPersons, laserData, needsReplaning);
 	
 }
 
@@ -95,6 +89,22 @@ int SpecificWorker::startup_check()
 }
 
 
+
+RoboCompLaser::TLaserData  SpecificWorker::updateLaser()
+{
+//	qDebug()<<__FUNCTION__;
+
+	RoboCompLaser::TLaserData laserData;
+
+    try
+    {
+		laserData  = laser_proxy->getLaserData();
+    }
+
+    catch(const Ice::Exception &e){ std::cout <<"Can't connect to laser --" <<e.what() << std::endl; };
+
+    return laserData;
+}
 
 
 /**************************************/

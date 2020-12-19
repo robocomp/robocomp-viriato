@@ -29,6 +29,15 @@
 
 #include <genericworker.h>
 #include <innermodel/innermodel.h>
+#include <grid.h>
+#include <controller.h>
+#include <navigation.h>
+
+
+#define USE_QTGUI
+#ifdef USE_QTGUI
+	#include "innerviewer.h"
+#endif
 
 class SpecificWorker : public GenericWorker
 {
@@ -37,17 +46,24 @@ public:
 	SpecificWorker(TuplePrx tprx, bool startup_check);
 	~SpecificWorker();
 	bool setParams(RoboCompCommonBehavior::ParameterList params);
+    RoboCompLaser::TLaserData  updateLaser();
 
-
-
+	#ifdef USE_QTGUI
+		using InnerViewerPtr = std::shared_ptr<InnerViewer>;
+	#endif
+    
 public slots:
 	void compute();
 	int startup_check();
 	void initialize(int period);
 private:
-	std::shared_ptr < InnerModel > innerModel;
+	std::shared_ptr<InnerModel>innerModel;
+    #ifdef USE_QTGUI
+        InnerViewerPtr viewer;
+    #endif
 	bool startup_check_flag;
-
+    Navigation<Grid<>,Controller> navigation;
+    std::shared_ptr<RoboCompCommonBehavior::ParameterList> confParams;    
 };
 
 #endif
