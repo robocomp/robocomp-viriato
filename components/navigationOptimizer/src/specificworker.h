@@ -29,10 +29,15 @@
 
 #include <genericworker.h>
 #include <innermodel/innermodel.h>
+#include <QGraphicsScene>
+#include <QGraphicsSceneMouseEvent>
+#include <QGraphicsView>
+#include <QGraphicsLineItem>
+#include <QGraphicsPolygonItem>
 #include <grid.h>
 #include <controller.h>
 #include <navigation.h>
-
+#include <myscene.h>
 
 #define USE_QTGUI
 #ifdef USE_QTGUI
@@ -64,6 +69,23 @@ private:
 	bool startup_check_flag;
     Navigation<Grid<>,Controller> navigation;
     std::shared_ptr<RoboCompCommonBehavior::ParameterList> confParams;    
+    
+//2d scene
+    const float ROBOT_LENGTH = 400;
+    QGraphicsView *graphicsView;
+    MyScene scene;
+    QGraphicsItem *robot_polygon = nullptr;
+    QPolygonF read_laser();
+    QPointF target;
+    // path
+    void draw_path(const std::vector<QPointF> &path);
+    bool atTarget = true;
+    void init_drawing( Grid<>::Dimensions dim);
+    QGraphicsEllipseItem *target_draw = nullptr;
+    void draw_target(const RoboCompGenericBase::TBaseState &bState, QPointF t);
+    void draw_laser(const QPolygonF &poly);
+    void initializeWorld();
+    std::vector<QGraphicsItem *> boxes;
 };
 
 #endif

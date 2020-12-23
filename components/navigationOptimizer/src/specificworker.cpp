@@ -36,19 +36,24 @@ SpecificWorker::~SpecificWorker()
 
 bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 {
-    RoboCompCommonBehavior::Parameter par = params.at("InnerModel ");
+    RoboCompCommonBehavior::Parameter par = params.at("InnerModel");
     if( QFile::exists(QString::fromStdString(par.value)) )
+    {
         innerModel = std::make_shared<InnerModel>(par.value);
+    }
     else
     {
         std::cout << "Innermodel path " << par.value << " not found. "; 
-        qFatal("Abort");
+        qFatal("InnerModel file not found");
     }
-    
     confParams  = std::make_shared<RoboCompCommonBehavior::ParameterList>(params);
 #ifdef USE_QTGUI
 	viewer = std::make_shared<InnerViewer>(innerModel, "Social Navigation");  //InnerViewer copies internally innerModel so it has to be resynchronized
 #endif
+    
+    Grid<>::Dimensions dim;  //default values
+    init_drawing(dim);
+    initializeWorld();
     
     navigation.initialize(innerModel, viewer, confParams, omnirobot_proxy);
 	return true;
@@ -106,6 +111,155 @@ RoboCompLaser::TLaserData  SpecificWorker::updateLaser()
     return laserData;
 }
 
+///////////////////////////////////// DRAWING /////////////////////////////////////////////////////////////////
+void SpecificWorker::init_drawing( Grid<>::Dimensions dim)
+{
+    graphicsView = new QGraphicsView();
+    graphicsView->setScene(&scene);
+    graphicsView->setMinimumSize(400,400);
+    scene.setSceneRect(dim.HMIN, dim.VMIN, dim.WIDTH, dim.HEIGHT);
+    graphicsView->scale(1, -1);
+    graphicsView->fitInView(scene.sceneRect(), Qt::KeepAspectRatio );
+    graphicsView->show();
+/*    connect(&scene, &MyScene::new_target, this, [this](QGraphicsSceneMouseEvent *e)
+    {
+        qDebug() << "Lambda SLOT: " << e->scenePos();
+        target_buffer.put(e->scenePos());
+        atTarget = false;
+    });*/
+
+   //robot
+    QPolygonF poly2;
+    float size = ROBOT_LENGTH / 2.f;
+    poly2 << QPoint(-size, -size)
+          << QPoint(-size, size)
+          << QPoint(-size / 3, size * 1.6)
+          << QPoint(size / 3, size * 1.6)
+          << QPoint(size, size)
+          << QPoint(size, -size);
+    QColor rc("DarkRed"); rc.setAlpha(80);
+    robot_polygon = scene.addPolygon(poly2, QPen(QColor("DarkRed")), QBrush(rc));
+    robot_polygon->setZValue(5);
+    try
+    {
+        RoboCompGenericBase::TBaseState bState;
+        omnirobot_proxy->getBaseState(bState);
+        robot_polygon->setRotation(qRadiansToDegrees(bState.alpha));
+        robot_polygon->setPos(bState.x, bState.z);
+    }
+    catch(const Ice::Exception &e){};;
+}
+
+void SpecificWorker::draw_laser(const QPolygonF &poly) // robot coordinates
+{
+    static QGraphicsItem *laser_polygon = nullptr;
+    if (laser_polygon != nullptr)
+        scene.removeItem(laser_polygon);
+
+    QColor color("LightGreen");
+    color.setAlpha(40);
+    laser_polygon = scene.addPolygon(robot_polygon->mapToScene(poly), QPen(QColor("DarkGreen"), 30), QBrush(color));
+    laser_polygon->setZValue(3);
+}
+void SpecificWorker::draw_path(const std::vector<QPointF> &path)
+{
+    static std::vector<QGraphicsEllipseItem *> path_paint;
+    static QString path_color = "#FF00FF";
+
+    for(auto p : path_paint)
+        scene.removeItem(p);
+    path_paint.clear();
+    for(auto &p : path)
+        path_paint.push_back(scene.addEllipse(p.x()-25, p.y()-25, 50 , 50, QPen(path_color), QBrush(QColor(path_color))));
+}
+
+void SpecificWorker::draw_target(const RoboCompGenericBase::TBaseState &bState, QPointF t)
+{
+    if (target_draw) scene.removeItem(target_draw);
+    target_draw = scene.addEllipse(t.x() - 50, t.y() - 50, 100, 100, QPen(QColor("green")), QBrush(QColor("green")));
+    // angular reference obtained from line joinning robot an target when  clicking
+    float tr_x = t.x() - bState.x;
+    float tr_y = t.y() - bState.z;
+    float ref_ang = -atan2(tr_x, tr_y);   // signo menos para tener ángulos respecto a Y CCW
+    auto ex = t.x() + 350 * sin(-ref_ang);
+    auto ey = t.y() + 350 * cos(-ref_ang);  //OJO signos porque el ang está respecto a Y CCW
+    auto line = scene.addLine(t.x(), t.y(), ex, ey, QPen(QBrush(QColor("green")), 20));
+    line->setParentItem(target_draw);
+    auto ball = scene.addEllipse(ex - 25, ey - 25, 50, 50, QPen(QColor("green")), QBrush(QColor("green")));
+    ball->setParentItem(target_draw);
+}
+
+//load world model from file
+void SpecificWorker::initializeWorld()
+{
+	QString val;
+	QFile file(QString::fromStdString(confParams->at("World").value));
+	if (not file.open(QIODevice::ReadOnly | QIODevice::Text))
+	{
+		qDebug() << "Error reading world file, check config params:" << QString::fromStdString(confParams->at("World").value);
+		exit(-1);
+	}
+	val = file.readAll();
+	file.close();
+	QJsonDocument doc = QJsonDocument::fromJson(val.toUtf8());
+	QJsonObject jObject = doc.object();
+	QVariantMap mainMap = jObject.toVariantMap();
+	//load dimensions
+//	QVariantMap dim = mainMap[QString("dimensions")].toMap();
+//	dimensions = TDim{dim["TILESIZE"].toInt(), dim["LEFT"].toFloat(), dim["BOTTOM"].toFloat(), dim["WIDTH"].toFloat(), dim["HEIGHT"].toFloat()};
+
+	//load tables
+	QVariantMap tables = mainMap[QString("tables")].toMap();
+	for (auto &t : tables)
+	{
+		QVariantList object = t.toList();
+		auto box = scene.addRect(QRectF(-object[2].toFloat() / 2, -object[3].toFloat() / 2, object[2].toFloat(), object[3].toFloat()), QPen(QColor("SandyBrown")), QBrush(QColor("SandyBrown")));
+		box->setPos(object[4].toFloat(), object[5].toFloat());
+		box->setRotation(object[6].toFloat());
+		boxes.push_back(box);
+	}
+	//load roundtables
+	QVariantMap rtables = mainMap[QString("roundTables")].toMap();
+	for (auto &t : rtables)
+	{
+		QVariantList object = t.toList();
+		auto box = scene.addEllipse(QRectF(-object[2].toFloat() / 2, -object[3].toFloat() / 2, object[2].toFloat(), object[3].toFloat()), QPen(QColor("Khaki")), QBrush(QColor("Khaki")));
+		box->setPos(object[4].toFloat(), object[5].toFloat());
+		boxes.push_back(box);
+	}
+	//load walls
+	QVariantMap walls = mainMap[QString("walls")].toMap();
+	for (auto &t : walls)
+	{
+		QVariantList object = t.toList();
+		auto box = scene.addRect(QRectF(-object[2].toFloat() / 2, -object[3].toFloat() / 2, object[2].toFloat(), object[3].toFloat()), QPen(QColor("Brown")), QBrush(QColor("Brown")));
+		box->setPos(object[4].toFloat(), object[5].toFloat());
+		//box->setRotation(object[6].toFloat()*180/M_PI2);
+		boxes.push_back(box);
+	}
+
+	//load points
+	QVariantMap points = mainMap[QString("points")].toMap();
+	for (auto &t : points)
+	{
+		QVariantList object = t.toList();
+		auto box = scene.addRect(QRectF(-object[2].toFloat() / 2, -object[3].toFloat() / 2, object[2].toFloat(), object[3].toFloat()), QPen(QColor("Brown")), QBrush(QColor("Brown")));
+		box->setPos(object[4].toFloat(), object[5].toFloat());
+		//box->setRotation(object[6].toFloat()*180/M_PI2);
+		boxes.push_back(box);
+	}
+	//load boxes
+	QVariantMap cajas = mainMap[QString("boxes")].toMap();
+	for (auto &t : cajas)
+	{
+		QVariantList object = t.toList();
+		auto box = scene.addRect(QRectF(-object[2].toFloat() / 2, -object[3].toFloat() / 2, object[2].toFloat(), object[3].toFloat()), QPen(QColor("Brown")), QBrush(QColor("Orange")));
+		box->setPos(object[4].toFloat(), object[5].toFloat());
+		//box->setRotation(object[6].toFloat()*180/M_PI2);
+		box->setFlag(QGraphicsItem::ItemIsMovable);
+		boxes.push_back(box);
+	}
+}
 
 /**************************************/
 // From the RoboCompJoystickAdapter you can call this methods:

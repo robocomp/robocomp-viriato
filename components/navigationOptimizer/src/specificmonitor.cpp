@@ -89,11 +89,11 @@ void SpecificMonitor::readConfig(RoboCompCommonBehavior::ParameterList &params )
     RoboCompCommonBehavior::Parameter aux;
 	aux.editable = false;
 	configGetString("NavigationAgent", "InnerModel", aux.value,"no file");
-	params["NavigationAgent.InnerModel"] = aux;
+	params["InnerModel"] = aux;
 
 	aux.editable = false;
 	configGetString("NavigationAgent", "RobotName", aux.value,"robot");
-	params["NavigationAgent.RobotName"] = aux;
+	params["RobotName"] = aux;
 
 	aux.editable = false;
 	configGetString( "NavigationAgent","MaxZSpeed", aux.value,"600");
@@ -166,7 +166,9 @@ void SpecificMonitor::readConfig(RoboCompCommonBehavior::ParameterList &params )
 	aux.editable = false;
 	configGetString( "NavigationAgent","MinimumSafetyDistance", aux.value, "100");
 	params["MinimumSafetyDistance"] = aux;
-std::cout<<"here"<<std::endl;
+    
+    configGetString( "NavigationAgent","World", aux.value, "");
+	params["World"] = aux;
 }
 
 //Check parameters and transform them to worker structure

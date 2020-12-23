@@ -6,8 +6,8 @@ LaserProxy = laser:tcp -h localhost -p 10003
 OmniRobotProxy = omnirobot:tcp -h localhost -p 10004
 
 
-
-NavigationAgent.InnerModel = ../simpleworldomni.xml
+NavigationAgent.World = viriato_dwa.json
+NavigationAgent.InnerModel = simpleworldomni.xml
 
 NavigationAgent.MaxZSpeed = 300
 NavigationAgent.MaxXSpeed = 300
