@@ -234,7 +234,7 @@ void SpecificWorker::initializeWorld()
 		QVariantList object = t.toList();
 		auto box = scene.addRect(QRectF(-object[2].toFloat() / 2, -object[3].toFloat() / 2, object[2].toFloat(), object[3].toFloat()), QPen(QColor("Brown")), QBrush(QColor("Brown")));
 		box->setPos(object[4].toFloat(), object[5].toFloat());
-		//box->setRotation(object[6].toFloat()*180/M_PI2);
+		box->setRotation(object[6].toFloat()*180/M_PI);
 		boxes.push_back(box);
 	}
 
@@ -245,7 +245,7 @@ void SpecificWorker::initializeWorld()
 		QVariantList object = t.toList();
 		auto box = scene.addRect(QRectF(-object[2].toFloat() / 2, -object[3].toFloat() / 2, object[2].toFloat(), object[3].toFloat()), QPen(QColor("Brown")), QBrush(QColor("Brown")));
 		box->setPos(object[4].toFloat(), object[5].toFloat());
-		//box->setRotation(object[6].toFloat()*180/M_PI2);
+		box->setRotation(object[6].toFloat()*180/M_PI);
 		boxes.push_back(box);
 	}
 	//load boxes
@@ -255,7 +255,7 @@ void SpecificWorker::initializeWorld()
 		QVariantList object = t.toList();
 		auto box = scene.addRect(QRectF(-object[2].toFloat() / 2, -object[3].toFloat() / 2, object[2].toFloat(), object[3].toFloat()), QPen(QColor("Brown")), QBrush(QColor("Orange")));
 		box->setPos(object[4].toFloat(), object[5].toFloat());
-		//box->setRotation(object[6].toFloat()*180/M_PI2);
+		box->setRotation(object[6].toFloat()*180/M_PI);
 		box->setFlag(QGraphicsItem::ItemIsMovable);
 		boxes.push_back(box);
 	}
