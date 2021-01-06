@@ -44,48 +44,50 @@
 	#include "innerviewer.h"
 #endif
 
+
 class SpecificWorker : public GenericWorker
 {
-Q_OBJECT
-public:
-	SpecificWorker(TuplePrx tprx, bool startup_check);
-	~SpecificWorker();
-	bool setParams(RoboCompCommonBehavior::ParameterList params);
-    RoboCompLaser::TLaserData  updateLaser();
+    Q_OBJECT
+    public:
+        SpecificWorker(TuplePrx tprx, bool startup_check);
+        ~SpecificWorker();
+        bool setParams(RoboCompCommonBehavior::ParameterList params);
+        RoboCompLaser::TLaserData  updateLaser();
 
-	#ifdef USE_QTGUI
-		using InnerViewerPtr = std::shared_ptr<InnerViewer>;
-	#endif
-    
-public slots:
-	void compute();
-	int startup_check();
-	void initialize(int period);
-private:
-	std::shared_ptr<InnerModel>innerModel;
-    #ifdef USE_QTGUI
-        InnerViewerPtr viewer;
-    #endif
-	bool startup_check_flag;
-    Navigation<Grid<>,Controller> navigation;
-    std::shared_ptr<RoboCompCommonBehavior::ParameterList> confParams;    
-    
-//2d scene
-    const float ROBOT_LENGTH = 400;
-    QGraphicsView *graphicsView;
-    MyScene scene;
-    QGraphicsItem *robot_polygon = nullptr;
-    QPolygonF read_laser();
-    QPointF target;
-    // path
-    void draw_path(const std::vector<QPointF> &path);
-    bool atTarget = true;
-    void init_drawing( Grid<>::Dimensions dim);
-    QGraphicsEllipseItem *target_draw = nullptr;
-    void draw_target(const RoboCompGenericBase::TBaseState &bState, QPointF t);
-    void draw_laser(const QPolygonF &poly);
-    void initializeWorld();
-    std::vector<QGraphicsItem *> boxes;
+        //#ifdef USE_QTGUI
+        //    using InnerViewerPtr = std::shared_ptr<InnerViewer>;
+        //#endif
+
+    public slots:
+        void compute();
+        int startup_check();
+        void initialize(int period);
+
+    private:
+        std::shared_ptr<InnerModel>innerModel;
+        //#ifdef USE_QTGUI
+        //    InnerViewerPtr viewer;
+        //#endif
+        bool startup_check_flag;
+        Navigation<Grid<>,Controller> navigation;
+        std::shared_ptr<RoboCompCommonBehavior::ParameterList> confParams;
+
+    //2d scene
+        const float ROBOT_LENGTH = 400;
+        //QGraphicsView *graphicsView;
+        MyScene scene;
+        QGraphicsItem *robot_polygon = nullptr;
+        QPolygonF read_laser();
+        QPointF target;
+        // path
+        void draw_path(const std::vector<QPointF> &path);
+        bool atTarget = true;
+        void init_drawing( Grid<>::Dimensions dim);
+        QGraphicsEllipseItem *target_draw = nullptr;
+        void draw_target(const RoboCompGenericBase::TBaseState &bState, QPointF t);
+        void draw_laser(const QPolygonF &poly);
+        void initializeWorld();
+        std::vector<QGraphicsItem *> boxes;
 };
 
 #endif

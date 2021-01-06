@@ -18,4 +18,4 @@ typedef struct{
 typedef std::vector<localPerson> localPersonsVec;
 
 
-#endif LOCALPERSON_H
+#endif

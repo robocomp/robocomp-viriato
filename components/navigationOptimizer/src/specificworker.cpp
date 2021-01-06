@@ -38,52 +38,44 @@ bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 {
     RoboCompCommonBehavior::Parameter par = params.at("InnerModel");
     if( QFile::exists(QString::fromStdString(par.value)) )
-    {
         innerModel = std::make_shared<InnerModel>(par.value);
-    }
     else
     {
         std::cout << "Innermodel path " << par.value << " not found. "; 
         qFatal("InnerModel file not found");
     }
     confParams  = std::make_shared<RoboCompCommonBehavior::ParameterList>(params);
-#ifdef USE_QTGUI
-	viewer = std::make_shared<InnerViewer>(innerModel, "Social Navigation");  //InnerViewer copies internally innerModel so it has to be resynchronized
-#endif
-    
-    Grid<>::Dimensions dim;  //default values
-    init_drawing(dim);
-    initializeWorld();
-    
-    navigation.initialize(innerModel, viewer, confParams, omnirobot_proxy);
+//#ifdef USE_QTGUI
+//	viewer = std::make_shared<InnerViewer>(innerModel, "Social Navigation");  //InnerViewer copies internally innerModel so it has to be resynchronized
+//#endif
+
 	return true;
 }
 
 void SpecificWorker::initialize(int period)
 {
 	std::cout << "Initialize worker" << std::endl;
+
+    Grid<>::Dimensions dim;  //default values
+    init_drawing(dim);
+    initializeWorld();
+
+    //navigation.initialize(innerModel, viewer, confParams, omnirobot_proxy);
+
 	this->Period = period;
 	if(this->startup_check_flag)
-	{
 		this->startup_check();
-	}
 	else
-	{
 		timer.start(Period);
-	}
-
 }
 
 void SpecificWorker::compute()
 {
     bool needsReplaning = false;
 	localPersonsVec totalPersons;
-    
-    
+
     RoboCompLaser::TLaserData laserData = updateLaser();
-    
-	navigation.update(totalPersons, laserData, needsReplaning);
-	
+	//navigation.update(totalPersons, laserData, needsReplaning);
 }
 
 int SpecificWorker::startup_check()
@@ -100,21 +92,18 @@ RoboCompLaser::TLaserData  SpecificWorker::updateLaser()
 //	qDebug()<<__FUNCTION__;
 
 	RoboCompLaser::TLaserData laserData;
-
     try
     {
 		laserData  = laser_proxy->getLaserData();
     }
-
     catch(const Ice::Exception &e){ std::cout <<"Can't connect to laser --" <<e.what() << std::endl; };
-
     return laserData;
 }
 
 ///////////////////////////////////// DRAWING /////////////////////////////////////////////////////////////////
 void SpecificWorker::init_drawing( Grid<>::Dimensions dim)
 {
-    graphicsView = new QGraphicsView();
+    //graphicsView = new QGraphicsView();
     graphicsView->setScene(&scene);
     graphicsView->setMinimumSize(400,400);
     scene.setSceneRect(dim.HMIN, dim.VMIN, dim.WIDTH, dim.HEIGHT);

@@ -64,7 +64,7 @@ public:
 	struct Dimensions
 	{
 		int TILE_SIZE = 10;
-		float HMIN = -2500, VMIN = -2500, WIDTH = 2500, HEIGHT = 2500;
+		float HMIN = -2500, VMIN = -2500, WIDTH = 5000, HEIGHT = 5000;
 	};
 
 	struct Key
