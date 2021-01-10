@@ -18,6 +18,8 @@
  */
 #include "specificworker.h"
 
+
+
 /**
 * \brief Default constructor
 */
@@ -72,32 +74,57 @@ void SpecificWorker::initialize(int period)
 void SpecificWorker::compute()
 {
     bool needsReplaning = false;
+    read_base();
+    auto laser_data = read_laser();
+    draw_laser(laser_data);
+
 	localPersonsVec totalPersons;
-
-    RoboCompLaser::TLaserData laserData = updateLaser();
-	//navigation.update(totalPersons, laserData, needsReplaning);
+    //navigation.update(totalPersons, laser_data, needsReplaning);
 }
 
-int SpecificWorker::startup_check()
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+void SpecificWorker::read_base()
 {
-	std::cout << "Startup check" << std::endl;
-	QTimer::singleShot(200, qApp, SLOT(quit()));
-	return 0;
-}
-
-
-
-RoboCompLaser::TLaserData  SpecificWorker::updateLaser()
-{
-//	qDebug()<<__FUNCTION__;
-
-	RoboCompLaser::TLaserData laserData;
     try
     {
-		laserData  = laser_proxy->getLaserData();
+        RoboCompGenericBase::TBaseState bState;
+        omnirobot_proxy->getBaseState(bState);
+        robot_polygon->setRotation(qRadiansToDegrees(bState.alpha));
+        robot_polygon->setPos(bState.x, bState.z);
     }
-    catch(const Ice::Exception &e){ std::cout <<"Can't connect to laser --" <<e.what() << std::endl; };
-    return laserData;
+    catch(const Ice::Exception &e){};;
+}
+
+QPolygonF SpecificWorker::read_laser() // in robot coordinates
+{
+    QPolygonF laser_poly;
+    try
+    {
+        auto ldata = laser_proxy->getLaserData();
+
+        // Simplify laser contour with Ramer-Douglas-Peucker
+        std::vector<Point> plist(ldata.size());
+        std::generate(plist.begin(), plist.end(), [ldata, k=0]() mutable
+        { auto &l = ldata[k++]; return std::make_pair(l.dist * sin(l.angle), l.dist * cos(l.angle));});
+        vector<Point> pointListOut;
+        ramer_douglas_peucker(plist, MAX_RDP_DEVIATION_mm, pointListOut);
+        laser_poly.resize(pointListOut.size());
+        std::generate(laser_poly.begin(), laser_poly.end(), [pointListOut, this, k=0]() mutable
+        { auto &p = pointListOut[k++]; return QPointF(p.first, p.second);});
+
+        // Filter out spikes. If the angle between two line segments is less than to the specified maximum angle
+        std::vector<QPointF> removed;
+        for(auto &&[k, ps] : iter::sliding_window(laser_poly,3) | iter::enumerate)
+            if( MAX_SPIKING_ANGLE_rads > acos(QVector2D::dotProduct( QVector2D(ps[0] - ps[1]).normalized(), QVector2D(ps[2] - ps[1]).normalized())))
+                removed.push_back(ps[1]);
+        for(auto &&r : removed)
+            laser_poly.erase(std::remove_if(laser_poly.begin(), laser_poly.end(), [r](auto &p) { return p == r; }), laser_poly.end());
+    }
+    catch(const Ice::Exception &e)
+    { std::cout << "Error reading from Laser" << e << std::endl;}
+    laser_poly.pop_back();
+    return laser_poly;  //robot coordinates
 }
 
 ///////////////////////////////////// DRAWING /////////////////////////////////////////////////////////////////
@@ -250,6 +277,58 @@ void SpecificWorker::initializeWorld()
 	}
 }
 
+void SpecificWorker::ramer_douglas_peucker(const vector<Point> &pointList, double epsilon, vector<Point> &out)
+{
+    if(pointList.size()<2)
+    {
+        qWarning() << "Not enough points to simplify";
+        return;
+    }
+
+    // Find the point with the maximum distance from line between start and end
+    auto line = Eigen::ParametrizedLine<float, 2>::Through(Eigen::Vector2f(pointList.front().first, pointList.front().second),
+                                                           Eigen::Vector2f(pointList.back().first, pointList.back().second));
+    auto max = std::max_element(pointList.begin()+1, pointList.end(), [line](auto &a, auto &b)
+    { return line.distance(Eigen::Vector2f(a.first, a.second)) < line.distance(Eigen::Vector2f(b.first, b.second));});
+    float dmax =  line.distance(Eigen::Vector2f((*max).first, (*max).second));
+
+    // If max distance is greater than epsilon, recursively simplify
+    if(dmax > epsilon)
+    {
+        // Recursive call
+        vector<Point> recResults1;
+        vector<Point> recResults2;
+        vector<Point> firstLine(pointList.begin(), max + 1);
+        vector<Point> lastLine(max, pointList.end());
+
+        ramer_douglas_peucker(firstLine, epsilon, recResults1);
+        ramer_douglas_peucker(lastLine, epsilon, recResults2);
+
+        // Build the result list
+        out.assign(recResults1.begin(), recResults1.end() - 1);
+        out.insert(out.end(), recResults2.begin(), recResults2.end());
+        if (out.size() < 2)
+        {
+            qWarning() << "Problem assembling output";
+            return;
+        }
+    }
+    else
+    {
+        //Just return start and end points
+        out.clear();
+        out.push_back(pointList.front());
+        out.push_back(pointList.back());
+    }
+}
+
+/**************************************/
+int SpecificWorker::startup_check()
+{
+    std::cout << "Startup check" << std::endl;
+    QTimer::singleShot(200, qApp, SLOT(quit()));
+    return 0;
+}
 /**************************************/
 // From the RoboCompJoystickAdapter you can call this methods:
 // this->joystickadapter_proxy->sendData(...)

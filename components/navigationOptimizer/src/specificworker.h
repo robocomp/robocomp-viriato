@@ -38,6 +38,7 @@
 #include <controller.h>
 #include <navigation.h>
 #include <myscene.h>
+#include <Eigen/Dense>
 
 #define USE_QTGUI
 #ifdef USE_QTGUI
@@ -47,12 +48,12 @@
 
 class SpecificWorker : public GenericWorker
 {
+    using Point = std::pair<float, float>;
     Q_OBJECT
     public:
         SpecificWorker(TuplePrx tprx, bool startup_check);
         ~SpecificWorker();
         bool setParams(RoboCompCommonBehavior::ParameterList params);
-        RoboCompLaser::TLaserData  updateLaser();
 
         //#ifdef USE_QTGUI
         //    using InnerViewerPtr = std::shared_ptr<InnerViewer>;
@@ -72,12 +73,18 @@ class SpecificWorker : public GenericWorker
         Navigation<Grid<>,Controller> navigation;
         std::shared_ptr<RoboCompCommonBehavior::ParameterList> confParams;
 
-    //2d scene
+        //robot
+        void read_base();
+        QPolygonF read_laser();
+        const float MAX_SPIKING_ANGLE_rads = 0.2;
+        const float MAX_RDP_DEVIATION_mm  =  70;
+        void ramer_douglas_peucker(const vector<Point> &pointList, double epsilon, vector<Point> &out);
+
+        //2d scene
         const float ROBOT_LENGTH = 400;
         //QGraphicsView *graphicsView;
         MyScene scene;
         QGraphicsItem *robot_polygon = nullptr;
-        QPolygonF read_laser();
         QPointF target;
         // path
         void draw_path(const std::vector<QPointF> &path);
