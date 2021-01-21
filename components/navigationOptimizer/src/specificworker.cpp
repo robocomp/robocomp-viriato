@@ -62,7 +62,8 @@ void SpecificWorker::initialize(int period)
     init_drawing(dim);
     initializeWorld();
 
-    //navigation.initialize(innerModel, viewer, confParams, omnirobot_proxy);
+    navigation.initialize(innerModel, confParams, omnirobot_proxy, &scene);
+    navigation.grid.draw(&scene);
 
 	this->Period = period;
 	if(this->startup_check_flag)
@@ -74,17 +75,41 @@ void SpecificWorker::initialize(int period)
 void SpecificWorker::compute()
 {
     bool needsReplaning = false;
-    read_base();
-    auto laser_data = read_laser();
+    auto bState = read_base();
+    auto [laser_data, ldata] = read_laser(); //QPolygon and RoboComp
     draw_laser(laser_data);
 
-	localPersonsVec totalPersons;
-    //navigation.update(totalPersons, laser_data, needsReplaning);
+    // check for new target
+    if(auto t = target_buffer.try_get(); t.has_value())
+    {
+        //set target
+        target.pos = t.value().pos;
+        draw_target(bState, t.value().pos);
+        needsReplaning = true;
+        atTarget = false;
+    }
+    if(not atTarget)
+    {
+        QVec rtarget =  innerModel->transform("robot", QVec::vec3(target.pos.x(), 0., target.pos.y()), "world");
+        //double target_ang = -atan2(rtarget[0], rtarget[2]);
+        //double rot_error = -atan2(target.pos.x() - bState.x, target.pos.y() - bState.z) - bState.alpha;
+        double pos_error = rtarget.norm2();
+
+        if (pos_error < 40)
+        {
+            stop_robot();
+            atTarget = true;
+        }
+        else
+        {
+            navigation.update(ldata, target, needsReplaning);
+        }
+    }
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 
-void SpecificWorker::read_base()
+RoboCompGenericBase::TBaseState SpecificWorker::read_base()
 {
     try
     {
@@ -92,16 +117,20 @@ void SpecificWorker::read_base()
         omnirobot_proxy->getBaseState(bState);
         robot_polygon->setRotation(qRadiansToDegrees(bState.alpha));
         robot_polygon->setPos(bState.x, bState.z);
+        innerModel->updateTransformValues("robot", bState.x, 0, bState.z, 0, bState.alpha, 0);
+        return bState;
     }
-    catch(const Ice::Exception &e){};;
+    catch(const Ice::Exception &e){};
+    return RoboCompGenericBase::TBaseState();
 }
 
-QPolygonF SpecificWorker::read_laser() // in robot coordinates
+std::tuple<QPolygonF,RoboCompLaser::TLaserData> SpecificWorker::read_laser() // in robot coordinates
 {
     QPolygonF laser_poly;
+    RoboCompLaser::TLaserData ldata;
     try
     {
-        auto ldata = laser_proxy->getLaserData();
+        ldata = laser_proxy->getLaserData();
 
         // Simplify laser contour with Ramer-Douglas-Peucker
         std::vector<Point> plist(ldata.size());
@@ -124,25 +153,39 @@ QPolygonF SpecificWorker::read_laser() // in robot coordinates
     catch(const Ice::Exception &e)
     { std::cout << "Error reading from Laser" << e << std::endl;}
     laser_poly.pop_back();
-    return laser_poly;  //robot coordinates
+    return std::make_tuple(laser_poly, ldata);  //robot coordinates
 }
 
+void SpecificWorker::stop_robot()
+{
+    try
+    {
+        omnirobot_proxy->setSpeedBase(0, 0, 0);
+        std::cout << "FINISH" << std::endl;
+        atTarget = true;
+    }
+    catch(const Ice::Exception &e)
+    { std::cout << e.what() << std::endl;}
+}
 ///////////////////////////////////// DRAWING /////////////////////////////////////////////////////////////////
 void SpecificWorker::init_drawing( Grid<>::Dimensions dim)
 {
-    //graphicsView = new QGraphicsView();
+
     graphicsView->setScene(&scene);
     graphicsView->setMinimumSize(400,400);
     scene.setSceneRect(dim.HMIN, dim.VMIN, dim.WIDTH, dim.HEIGHT);
     graphicsView->scale(1, -1);
     graphicsView->fitInView(scene.sceneRect(), Qt::KeepAspectRatio );
     graphicsView->show();
-/*    connect(&scene, &MyScene::new_target, this, [this](QGraphicsSceneMouseEvent *e)
-    {
-        qDebug() << "Lambda SLOT: " << e->scenePos();
-        target_buffer.put(e->scenePos());
-        atTarget = false;
-    });*/
+    connect(&scene, &MyScene::new_target, this, [this](QGraphicsSceneMouseEvent *e)
+        {
+            qDebug() << "Lambda SLOT: " << e->scenePos();
+            target_buffer.put(std::move(e->scenePos()), [r=robot_polygon->pos()](auto &&t, auto &out)
+                {
+                    out.pos = t;
+                    out.ang  = -atan2(t.x() - r.x(), t.y() - r.y()); //target ang in the direction or line joining robot-target
+                });
+        });
 
    //robot
     QPolygonF poly2;

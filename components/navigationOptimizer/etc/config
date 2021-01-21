@@ -28,10 +28,10 @@ NavigationAgent.MinimunDetectableRotation = 0.03
 NavigationAgent.MinimunDetectableTranslation = 7
 NavigationAgent.MinimumSafetyDistance = 100
 
-NavigationAgent.OuterRegionLeft = -5000
-NavigationAgent.OuterRegionRight = 7000
-NavigationAgent.OuterRegionBottom = -7000
-NavigationAgent.OuterRegionTop = 5000
+NavigationAgent.OuterRegionLeft = -2500
+NavigationAgent.OuterRegionRight = 2500
+NavigationAgent.OuterRegionBottom = -2500
+NavigationAgent.OuterRegionTop = 2500
 
 Ice.Warn.Connections=0
 Ice.Trace.Network=0

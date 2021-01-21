@@ -54,6 +54,18 @@
 <!--			<plane id="cajaMesh5" nx="1" size="400,400,400"  texture="/home/robocomp/robocomp/files/osgModels/textures/Metal.jpg" />-->
 <!--		</transform>-->
 <!--		-->
+
+		<!--OBSTACLES-->
+		<transform id="caja1" tx="1400" tz="800" ty="0" >
+			<plane id="cajaMesh1" nx="1" size="400, 400,2000"  texture="/home/robocomp/robocomp/files/osgModels/textures/Metal.jpg" collide="1"/>
+		</transform>
+
+		<transform id="caja2" tx="-1400" tz="800" ty="0" >
+			<plane id="cajaMesh2" nx="1" size="400,400,2000"  texture="/home/robocomp/robocomp/files/osgModels/textures/Metal.jpg" collide="1"/>
+		</transform>-->
+
+
+
 		<omnirobot id="robot" port="10004" >
 		<!-- laser position -->
 		<transform id="laserPose" tx="0" ty="370" tz="230" rx="0" >

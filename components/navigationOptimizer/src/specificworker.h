@@ -37,6 +37,7 @@
 #include <grid.h>
 #include <controller.h>
 #include <navigation.h>
+#include <doublebuffer/DoubleBuffer.h>
 #include <myscene.h>
 #include <Eigen/Dense>
 
@@ -74,18 +75,23 @@ class SpecificWorker : public GenericWorker
         std::shared_ptr<RoboCompCommonBehavior::ParameterList> confParams;
 
         //robot
-        void read_base();
-        QPolygonF read_laser();
+        RoboCompGenericBase::TBaseState read_base();
+        std::tuple<QPolygonF,RoboCompLaser::TLaserData> read_laser();
         const float MAX_SPIKING_ANGLE_rads = 0.2;
         const float MAX_RDP_DEVIATION_mm  =  70;
         void ramer_douglas_peucker(const vector<Point> &pointList, double epsilon, vector<Point> &out);
+        void stop_robot();
 
         //2d scene
         const float ROBOT_LENGTH = 400;
-        //QGraphicsView *graphicsView;
         MyScene scene;
         QGraphicsItem *robot_polygon = nullptr;
-        QPointF target;
+
+        // Target
+        using Target = Navigation<Grid<>,Controller>::Target;
+        Target target;
+        DoubleBuffer<QPointF, Target> target_buffer;
+
         // path
         void draw_path(const std::vector<QPointF> &path);
         bool atTarget = true;

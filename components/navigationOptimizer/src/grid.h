@@ -26,6 +26,7 @@
 #include "innerviewer.h"
 #include <limits>
 #include <collisions.h>
+#include <QGraphicsRectItem>
 using namespace std;
 
 #define TILE_SIZE_ 250
@@ -50,7 +51,7 @@ struct TCellDefault
     bool free;
     bool visited;
     float cost;
-
+    QGraphicsRectItem* g_item;
     // method to save the value
     void save(std::ostream &os) const {	os << free << " " << visited; };
     void read(std::istream &is) {	is >> free >> visited ;};
@@ -149,9 +150,7 @@ public:
 //		std::cout << "Grid::Initialize. Grid initialized to map size: " << fmap.size() << std::endl;
 //	}
 
-
-
-	void initialize(std::shared_ptr<Collisions> collisions_)
+	void initialize(std::shared_ptr<Collisions> collisions_, QGraphicsScene *scene)
     {
 	    qDebug()<<"Grid - " <<__FUNCTION__;
 
@@ -166,12 +165,16 @@ public:
         fmap_aux.clear();
 
         qDebug()<<"Collisions - checkRobotValidStateAtTargetFast";
-
+        QColor free_color_t(free_color); free_color_t.setAlpha(40);
         for (int i = dim.HMIN; i < dim.HMIN + dim.WIDTH; i += dim.TILE_SIZE)
             for (int j = dim.VMIN; j < dim.VMIN + dim.HEIGHT; j += dim.TILE_SIZE)
             {
                 bool free = collisions_->checkRobotValidStateAtTargetFast(QVec::vec3(i,10,j),QVec::zeros(3));
-                fmap.emplace(Key(i, j), T{count++, free, false, 1.f});
+                T t;
+                t.id = count++; t.free = free; t.visited = false;
+                Key k(i, j);
+                t.g_item = scene->addRect(k.x, k.z, 50, 50, QPen(free_color_t), QBrush(QColor(free_color_t)));
+                fmap.emplace(k, t);
             }
 
 		collisions_->checkRobotValidStateAtTargetFast(QVec::vec3(0,10,0),QVec::zeros(3)); //para devolver el robot a la posición 0,0
@@ -216,7 +219,6 @@ public:
 	{
 		Key source = pointToGrid(source_.x(), source_.y());
 		Key target = pointToGrid(target_.x(), target_.y());
-
 
 		// Admission rules
 		if (!(target.x >= dim.HMIN and target.x < dim.HMIN + dim.WIDTH and target.z >= dim.VMIN and target.z < dim.VMIN + dim.HEIGHT))
@@ -346,7 +348,6 @@ public:
             }
     }
 
-
 	std::tuple<bool, QVector2D> vectorToClosestObstacle(QPointF center)
     {
 
@@ -413,7 +414,6 @@ public:
         return std::make_tuple(obstacleFound,closestVector);
     }
 
-
 	std::vector<std::pair<Key, T>> neighboors(const Key &k, const std::vector<int> xincs,const std::vector<int> zincs, bool all = false)
 	{
 		std::vector<std::pair<Key, T>> neigh;
@@ -451,88 +451,47 @@ public:
 		return neigh;
 	}
 
-    void draw(std::shared_ptr<InnerViewer> viewer)
+    void draw(QGraphicsScene* scene)
     {
-        qDebug()<<"Grid - " <<__FUNCTION__;
-
-        try	{ viewer->removeNode("IMV_fmap");} catch(const QString &s){	qDebug() << s; };
-        try	{ viewer->addTransform_ignoreExisting("IMV_fmap","world");} catch(const QString &s){qDebug() << s; };
-
-        auto normal = QVec::vec3(1,1,0);
-        auto size =  QVec::vec3(50,50,50);
-
-        try
+        QColor f_color(free_color); f_color.setAlpha(50);
+        QColor o_color(occupied_color); o_color.setAlpha(10);
+        for (const auto &[key, value] : fmap)
         {
-            uint i = 0;
-
-            for( const auto &[key,value] : fmap)
-            {
-
-                QString item = "IMV_fmap_point_" + QString::number(i);
-                if(value.free)
-                {
-                    if (value.cost == 2.0) //affordance spaces
-                        viewer->addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), normal, "#FFFF00", size);
-//                        viewer->addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), normal, "#FFFF00", size);
-                    else if (value.cost == 3.0) //lowvisited spaces
-                        viewer->addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), normal, "#FFBF00", size);
-//                        viewer->addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), normal, "#FFFF00", size);
-                    else if (value.cost == 4.0) //mediumvisited spaces
-                        viewer->addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), normal, "#FF8000", size);
-//                        viewer->addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), normal, "#FFFF00", size);
-                    else if (value.cost == 5.0) //highVisited spaces
-                            viewer->addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), normal, "#FF4000", size);
-//                        viewer->addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), normal, "#FFFF00", size);
-
-					else if (value.cost == 8.0) //zona social
-                        viewer->addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), normal, "#00BFFF", size);
-
-                    else if (value.cost == 10.0) //zona personal
-                        viewer->addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), normal, "#BF00FF", size);
-
-                    else
-                        viewer->addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), normal, "#E6E6E6", size); // Libre
-                }
-
-                else
-                    viewer->addPlane_ignoreExisting(item, "IMV_fmap", QVec::vec3(key.x, 10, key.z), QVec::vec3(1,1,0), "#B40404", size); //Ocupado
-
-                i++;
-            }
-
-
+            if (value.free)
+                value.g_item->setBrush(f_color);
+            else
+                value.g_item->setBrush(o_color);
         }
-
-        catch(const QString &s) {qDebug() << s;	}
     }
+    private:
+        FMap fmap, fmap_aux;
+        Dimensions dim;
+        const QString free_color = "orange";
+        const QString occupied_color = "red";
 
-private:
-	FMap fmap, fmap_aux;
-	Dimensions dim;
+        /**
+            * @brief Recovers the optimal path from the list of previous nodes
+            *
+            */
+        std::list<QPointF> orderPath(const std::vector<std::pair<std::uint32_t, Key>> &previous, const Key &source, const Key &target)
+        {
+            std::list<QPointF> res;
+            Key k = target;
+            std::uint32_t u = fmap.at(k).id;
+            while (previous[u].first != (std::uint32_t)-1)
+            {
+                res.push_front(QPointF(k.x, k.z));
+                u = previous[u].first;
+                k = previous[u].second;
+            }
+            //qDebug() << __FILE__ << __FUNCTION__ << "Path length:" << res.size();  //exit point
+            return res;
+        };
 
-	/**
-		* @brief Recovers the optimal path from the list of previous nodes
-		* 
-		*/
-	std::list<QPointF> orderPath(const std::vector<std::pair<std::uint32_t, Key>> &previous, const Key &source, const Key &target)
-	{
-		std::list<QPointF> res;
-		Key k = target;
-		std::uint32_t u = fmap.at(k).id;
-		while (previous[u].first != (std::uint32_t)-1)
-		{
-			res.push_front(QPointF(k.x, k.z));
-			u = previous[u].first;
-			k = previous[u].second;
-		}
-		//qDebug() << __FILE__ << __FUNCTION__ << "Path length:" << res.size();  //exit point
-		return res;
-	};
-
-	inline double heuristicL2(const Key &a, const Key &b) const
-	{
-		return sqrt((a.x - b.x) * (a.x - b.x) + (a.z - b.z) * (a.z - b.z));
-	}
+        inline double heuristicL2(const Key &a, const Key &b) const
+        {
+            return sqrt((a.x - b.x) * (a.x - b.x) + (a.z - b.z) * (a.z - b.z));
+        }
 };
 
 

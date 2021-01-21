@@ -76,7 +76,6 @@ public:
         QPointF robot = QPointF(robotPose.x(),robotPose.z());
         QPointF robotNose = robot + QPointF(250*sin(robotPose.ry()),250*cos(robotPose.ry()));
 
-        auto firstPointInPath = points[0];
         auto secondPointInPath = points[1];
 
         // Compute euclidean distance to target
@@ -122,10 +121,6 @@ public:
 			// as an estimation of curvature ahead
 
 			std::vector<float> angles;
-			auto lim = std::min(6, (int)points.size());
-
-
-//			for (auto &&i : iter::range(1, lim))
 			auto min_angle = rewrapAngleRestricted(qDegreesToRadians(nose.angleTo(QLineF(robot, secondPointInPath))));
 			rotVel = 0.6 * min_angle;
 			rotVel = std::clamp(rotVel, (float)-0.5, (float)0.5);
