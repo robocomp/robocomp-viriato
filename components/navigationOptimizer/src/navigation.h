@@ -57,7 +57,7 @@ class Navigation
         TMap grid;
         TController controller;
 
-        void initialize(const std::shared_ptr<InnerModel> &innerModel_,
+        void initialize(const Grid<>::Dimensions &dim, const std::shared_ptr<InnerModel> &innerModel_,
                         std::shared_ptr< RoboCompCommonBehavior::ParameterList > configparams_,
                         RoboCompOmniRobot::OmniRobotPrxPtr omnirobot_proxy_,
                         QGraphicsScene *scene_)
@@ -67,18 +67,15 @@ class Navigation
             innerModel = innerModel_;
             configparams = configparams_;
             scene = scene_;
-            //viewer = viewer_;
-
             omnirobot_proxy = omnirobot_proxy_;
             stopRobot();
              //grid can't be initialized if the robot is moving
 
             collisions =  std::make_shared<Collisions>();
-
             collisions->initialize(innerModel, configparams);
-            grid.initialize(collisions, scene);
-
-            controller.initialize(innerModel,configparams);
+            grid.initialize(collisions, dim, false);
+            grid.draw(scene);
+            controller.initialize(innerModel, configparams);
 
             robotXWidth = std::stof(configparams->at("RobotXWidth").value);
             robotZLong = std::stof(configparams->at("RobotZLong").value);
@@ -121,8 +118,8 @@ class Navigation
             cleanPoints();
             addPoints();
 
-            auto [blocked, active, turning, xVel,zVel,rotVel] = controller.update(pathPoints, laserData_, current_target.pos, currentRobotPose);
-            omnirobot_proxy->setSpeedBase(xVel,zVel,rotVel);
+            auto [active,advVel,sideVel,rotVel] = controller.update(pathPoints, laserData_, current_target.pos, currentRobotPose);
+            omnirobot_proxy->setSpeedBase(sideVel, advVel, rotVel);
             draw_path(pathPoints);
         };
 
@@ -156,7 +153,6 @@ class Navigation
         QTime reloj = QTime::currentTime();
 
         QPointF lastPointInPath, currentRobotNose;
-
         QPolygonF currentRobotPolygon, laser_poly;
         std::vector<QPointF> laser_cart;
         QVec currentRobotPose;
@@ -165,11 +161,12 @@ class Navigation
         QVec robotBottomLeft, robotBottomRight, robotTopRight, robotTopLeft;
 
         bool gridChanged = false;
-
         vector<QPolygonF> intimateSpaces,personalSpaces,socialSpaces, totalAffordances;
         vector<QPolygonF> affordancesBlocked;
 
         std::map<float, vector<QPolygonF>> mapCostObjects;
+
+
 
     ////////// GRID RELATED METHODS //////////
     void updateFreeSpaceMap(bool drawGrid = true)

@@ -39,31 +39,31 @@ SpecificWorker::~SpecificWorker()
 bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 {
     RoboCompCommonBehavior::Parameter par = params.at("InnerModel");
-    if( QFile::exists(QString::fromStdString(par.value)) )
+    if( QFile::exists(QString::fromStdString(par.value)))
+    {
         innerModel = std::make_shared<InnerModel>(par.value);
+        dim.TILE_SIZE = int(100);  // Get from config
+        dim.HMIN = std::min(std::stof(params.at("OuterRegionLeft").value), std::stof(params.at("OuterRegionRight").value));
+        dim.WIDTH = std::max(std::stof(params.at("OuterRegionLeft").value), std::stof(params.at("OuterRegionRight").value)) - dim.HMIN;
+        dim.VMIN = std::min(std::stof(params.at("OuterRegionTop").value), std::stof(params.at("OuterRegionBottom").value));
+        dim.HEIGHT = std::max(std::stof(params.at("OuterRegionTop").value), std::stof(params.at("OuterRegionBottom").value)) - dim.VMIN;
+    }
     else
     {
         std::cout << "Innermodel path " << par.value << " not found. "; 
         qFatal("InnerModel file not found");
     }
     confParams  = std::make_shared<RoboCompCommonBehavior::ParameterList>(params);
-//#ifdef USE_QTGUI
-//	viewer = std::make_shared<InnerViewer>(innerModel, "Social Navigation");  //InnerViewer copies internally innerModel so it has to be resynchronized
-//#endif
-
 	return true;
 }
 
 void SpecificWorker::initialize(int period)
 {
 	std::cout << "Initialize worker" << std::endl;
-
-    Grid<>::Dimensions dim;  //default values
     init_drawing(dim);
     initializeWorld();
 
-    navigation.initialize(innerModel, confParams, omnirobot_proxy, &scene);
-    navigation.grid.draw(&scene);
+    navigation.initialize(dim, innerModel, confParams, omnirobot_proxy, &scene);
 
 	this->Period = period;
 	if(this->startup_check_flag)

@@ -5,6 +5,7 @@ SET ( SOURCES
   specificmonitor.cpp
   innerviewer.cpp
   myscene.h
+  grid.cpp
 )
 
 # Headers set

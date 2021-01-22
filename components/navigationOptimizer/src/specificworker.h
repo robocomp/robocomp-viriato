@@ -22,8 +22,6 @@
 	@author authorname
 */
 
-
-
 #ifndef SPECIFICWORKER_H
 #define SPECIFICWORKER_H
 
@@ -34,7 +32,8 @@
 #include <QGraphicsView>
 #include <QGraphicsLineItem>
 #include <QGraphicsPolygonItem>
-#include <grid.h>
+#include "grid.h"
+#include "grid.cpp"
 #include <controller.h>
 #include <navigation.h>
 #include <doublebuffer/DoubleBuffer.h>
@@ -67,6 +66,7 @@ class SpecificWorker : public GenericWorker
 
     private:
         std::shared_ptr<InnerModel>innerModel;
+        Grid<>::Dimensions dim;
         //#ifdef USE_QTGUI
         //    InnerViewerPtr viewer;
         //#endif
