@@ -56,56 +56,57 @@ public:
         {   std::cerr << "CONTROLLER. Out of Range error reading parameters: " << oor.what() << '\n'; }
     }
 
-    std::tuple<bool, float, float, float> update(const std::vector<QPointF> &points, const RoboCompLaser::TLaserData &laser_data, QPointF target, QVec robot_pose)
+    std::tuple<bool, float, float, float> update( const std::vector<QPointF> &points,
+                                                  const RoboCompLaser::TLaserData &laser_data,
+                                                  QPointF target, QPointF robot, QPointF robot_nose)
     {
-        qDebug() << __FUNCTION__ << "------- Controller - ";
+        //qDebug() << __FUNCTION__ << "------- Controller - ";
         if(points.size() < 2)
             return std::make_tuple(false, 0,0,0);
 
         float advVel = 0.f, sideVel = 0.f, rotVel = 0.f;
-        QPointF robot = QPointF(robot_pose.x(),robot_pose.z());
-        QPointF robot_nose = robot + QPointF(250*sin(robot_pose.ry()),250*cos(robot_pose.ry()));
-        auto secondPointInPath = points[1];
 
         // Compute euclidean distance to target
         float euc_dist_to_target = QVector2D(robot - target).length();
         auto is_increasing = [](float new_val)
-        { static float ant_value = 0.f;
+        {
+            static float ant_value = 0.f;
             bool res = false;
             if( new_val - ant_value > 0 ) res = true;
             ant_value = new_val;
             return res;
         };
 
-        std::cout << std::boolalpha << __FUNCTION__ << " Conditions: n points < 2 " << (points.size() < 2)
-                  << " dist < 100 " << (euc_dist_to_target < FINAL_DISTANCE_TO_TARGET)
-                  << " der_dist > 0 " << is_increasing(euc_dist_to_target)  << std::endl;
-        if ( (points.size() < 2) or (euc_dist_to_target < FINAL_DISTANCE_TO_TARGET) or is_increasing(euc_dist_to_target))
+        if ( (points.size() < 2) or (euc_dist_to_target < FINAL_DISTANCE_TO_TARGET)) /*or is_increasing(euc_dist_to_target))*/
         {
+            qDebug() << __FUNCTION__;
             qDebug()<< "·························";
             qDebug()<< "···· TARGET ACHIEVED ····";
             qDebug()<< "·························";
             qDebug()<< " ";
 
             advVelz = 0;  sideVel= 0; rotVel = 0;
-            std::cout << std::boolalpha << __FUNCTION__ << " Target achieved. Conditions: n points < 2 " << (points.size() < 2)
-                      << " dist < 100 " << (euc_dist_to_target < FINAL_DISTANCE_TO_TARGET)
-                      << " der_dist > 0 " << is_increasing(euc_dist_to_target)  << std::endl;
+//            std::cout << std::boolalpha << __FUNCTION__ << " Target achieved. Conditions: n points < 2 " << (points.size() < 2)
+//                      << " dist < 100 " << (euc_dist_to_target < FINAL_DISTANCE_TO_TARGET)
+//                      << " der_dist > 0 " << is_increasing(euc_dist_to_target)  << std::endl;
             return std::make_tuple(false, 0, 0, 0);  //active, adv, side, rot
         }
 
         /// Compute rotational speed
         QLineF robot_to_nose(robot, robot_nose);
-        float angle = rewrapAngleRestricted(qDegreesToRadians(robot_to_nose.angleTo(QLineF(robot_nose, points[1]))));
+        float angle = -rewrapAngleRestricted(qDegreesToRadians(robot_to_nose.angleTo(QLineF(robot_nose, points[1])))); // WATCH SIGN
         if(angle >= 0)
             rotVel = std::clamp(angle, 0.f, MAX_ROT_SPEED);
         else
             rotVel = std::clamp(angle, -MAX_ROT_SPEED, 0.f);
-        if(euc_dist_to_target < 5*FINAL_DISTANCE_TO_TARGET)
-            rotVel = 0.f;
+//        if(euc_dist_to_target < 5*FINAL_DISTANCE_TO_TARGET)
+//            rotVel = 0.f;
+//        if( fabs(rotVel) < 0.01) rotVel = 0.f;
+
+        std::cout << std::boolalpha << __FUNCTION__ << "Controller:  dist " << euc_dist_to_target << " der_dist  " << is_increasing(euc_dist_to_target) << " angle " << angle << " rotvel " << rotVel << std::endl;
 
         /// Compute advance speed
-        std::min(advVel = MAX_ADV_SPEED * exponentialFunction(rotVel, 1.5, 0.1, 0), euc_dist_to_target);
+        std::min(advVel = MAX_ADV_SPEED * exponentialFunction(rotVel, 1., 0.1, 0), euc_dist_to_target);
 
         /// Compute bumper-away speed
         QVector2D total{0, 0};
@@ -121,7 +122,9 @@ public:
             sideVel = bumperVel.y();
 
         //qInfo() << advVelz << advVelx << rotVel;
-        return std::make_tuple(true, advVel, sideVel, -rotVel);
+        std::cout << std::boolalpha << __FUNCTION__ << "Controller output " << advVel << " " << sideVel << " " << rotVel  << std::endl;
+        std::cout << "-------" << std::endl;
+        return std::make_tuple(true, advVel, 0, rotVel);
     }
 
 

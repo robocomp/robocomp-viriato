@@ -26,6 +26,8 @@
 SpecificWorker::SpecificWorker(TuplePrx tprx, bool startup_check) : GenericWorker(tprx)
 {
 	this->startup_check_flag = startup_check;
+    QLoggingCategory::setFilterRules("*.debug=false\n");
+
 }
 
 /**
@@ -117,7 +119,7 @@ RoboCompGenericBase::TBaseState SpecificWorker::read_base()
         omnirobot_proxy->getBaseState(bState);
         robot_polygon->setRotation(qRadiansToDegrees(bState.alpha));
         robot_polygon->setPos(bState.x, bState.z);
-        innerModel->updateTransformValues("robot", bState.x, 0, bState.z, 0, bState.alpha, 0);
+        innerModel->updateTransformValues("robot", bState.x, 0, bState.z, 0, -bState.alpha, 0);  // WATCH - sign
         return bState;
     }
     catch(const Ice::Exception &e){};

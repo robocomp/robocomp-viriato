@@ -114,7 +114,7 @@ class Grid
         void clear();
         void saveToFile(const std::string &fich);
         void readFromFile(const std::string &fich);
-        std::list<QPointF> computePath(const QPointF &source_, const QPointF &target_);
+        std::vector<QPointF> computePath(const QPointF &source_, const QPointF &target_);
         Key pointToGrid(long int x, long int z) const;
         void setFree(const Key &k);
         bool isFree(const Key &k) ;

@@ -17,7 +17,7 @@ public:
     std::set<QString> excludedNodes;
     QRectF outerRegion;
 
-    void initialize(const std::shared_ptr<InnerModel> &innerModel_,const std::shared_ptr< RoboCompCommonBehavior::ParameterList > &params_) {
+    void initialize(std::shared_ptr<InnerModel> innerModel_, std::shared_ptr< RoboCompCommonBehavior::ParameterList > params_) {
 
 
         qDebug()<<"Collisions - " <<__FUNCTION__;

@@ -27,8 +27,7 @@ void Grid<T>::initialize(std::shared_ptr<Collisions> collisions_,
         {
             for (int j = dim.VMIN; j < dim.VMIN + dim.HEIGHT; j += dim.TILE_SIZE)
             {
-                bool free = collisions_->checkRobotValidStateAtTargetFast(std::vector<float>{(float) i,(float) j, 10},
-                                                                          std::vector<float>{0.0, 0.0, 0.0});
+                bool free = collisions_->checkRobotValidStateAtTargetFast(QVec::vec3(i,10,j),QVec::zeros(3));
                 fmap.emplace(Key(i, j), T{count++, free, true, 1.f, ""});
             }
             std::cout << __FUNCTION__ << " Progress: " << i*100/(dim.HMIN+dim.WIDTH) << std::endl;
@@ -101,28 +100,37 @@ void Grid<T>::readFromFile(const std::string &fich)
 }
 
 template <typename T>
-std::list<QPointF> Grid<T>::computePath(const QPointF &source_, const QPointF &target_)
+std::vector<QPointF> Grid<T>::computePath(const QPointF &source_, const QPointF &target_)
 {
     Key source = pointToGrid(source_.x(), source_.y());
     Key target = pointToGrid(target_.x(), target_.y());
 
+    auto to_vector = [](const std::list<QPointF> &list)
+        {
+            std::vector<QPointF> path;
+            path.reserve(list.size());
+            std::copy(std::begin(list), std::end(list), std::back_inserter(path));
+            return path;
+        };
+
     // Admission rules
     if (!(target.x >= dim.HMIN and target.x < dim.HMIN + dim.WIDTH and target.z >= dim.VMIN and target.z < dim.VMIN + dim.HEIGHT))
     {
-        qDebug() << __FUNCTION__ << "Target " << target_.x() << target_.y() << "out of limits " << dim.HMIN << dim.VMIN << dim.HMIN+dim.WIDTH << dim.VMIN+dim.HEIGHT
-        << "Returning empty path";
-        return std::list<QPointF>();
+        qDebug() << __FUNCTION__ << "Target " << target_.x() << target_.y() << "out of limits " << dim.HMIN << dim.VMIN << dim.HMIN+dim.WIDTH << dim.VMIN+dim.HEIGHT<< "Returning empty path";
+        return to_vector(std::list<QPointF>());
     }
     if (!(source.x >= dim.HMIN and source.x < dim.HMIN + dim.WIDTH and source.z >= dim.VMIN and source.z < dim.VMIN + dim.HEIGHT))
     {
         qDebug() << __FUNCTION__ << "Robot out of limits. Returning empty path";
-        return std::list<QPointF>();
+        return to_vector(std::list<QPointF>());
     }
     if (source == target)
     {
         qDebug() << __FUNCTION__ << "Robot already at target. Returning empty path";
-        return std::list<QPointF>();
+        return to_vector(std::list<QPointF>());
     }
+
+    /// Djikstra proper
     // vector de distancias inicializado a DBL_MAX
     std::vector<double> min_distance(fmap.size(),std::numeric_limits<double>::max());
     // std::uint32_t id with source value
@@ -130,7 +138,7 @@ std::list<QPointF> Grid<T>::computePath(const QPointF &source_, const QPointF &t
     if(not success)
     {
         qWarning() << "Could not find source position in Grid";
-        return std::list<QPointF>();
+        return to_vector(std::list<QPointF>());
     }
     auto id = val.id;
     // initialize source position to 0
@@ -159,9 +167,9 @@ std::list<QPointF> Grid<T>::computePath(const QPointF &source_, const QPointF &t
 //				qDebug() << __FILE__ << __FUNCTION__  << "Min distance found:" << min_distance[fmap.at(where).id];  //exit point
             auto p = orderPath(previous, source, target);
             if (p.size() > 1)
-                return p;
+                return to_vector(p);
             else
-                return std::list<QPointF>();
+                return to_vector(std::list<QPointF>());
         }
         active_vertices.erase(active_vertices.begin());
         for (auto ed : neighboors_8(where))
@@ -178,7 +186,7 @@ std::list<QPointF> Grid<T>::computePath(const QPointF &source_, const QPointF &t
         }
     }
     qDebug() << __FUNCTION__ << "Path from (" << source.x << "," << source.z << ") not  found. Returning empty path";
-    return std::list<QPointF>();
+    return to_vector(std::list<QPointF>());
 };
 
 template <typename T>
@@ -397,10 +405,10 @@ void Grid<T>::draw(QGraphicsScene* scene)
                 color = "#E6E6E6";
         }
         else
-            color = "#B40404";
+            color = "DarkRed";
 
         QColor my_color = QColor(QString::fromStdString(color));
-        //my_color.setAlpha(60);
+        my_color.setAlpha(60);
         QGraphicsRectItem* aux = scene->addRect(key.x, key.z, 50, 50, QPen(my_color), QBrush(my_color));
         aux->setZValue(1);
         scene_grid_points.push_back(aux);
