@@ -86,9 +86,6 @@ public:
             qDebug()<< " ";
 
             advVelz = 0;  sideVel= 0; rotVel = 0;
-//            std::cout << std::boolalpha << __FUNCTION__ << " Target achieved. Conditions: n points < 2 " << (points.size() < 2)
-//                      << " dist < 100 " << (euc_dist_to_target < FINAL_DISTANCE_TO_TARGET)
-//                      << " der_dist > 0 " << is_increasing(euc_dist_to_target)  << std::endl;
             return std::make_tuple(false, 0, 0, 0);  //active, adv, side, rot
         }
 
@@ -106,7 +103,7 @@ public:
         std::cout << std::boolalpha << __FUNCTION__ << "Controller:  dist " << euc_dist_to_target << " der_dist  " << is_increasing(euc_dist_to_target) << " angle " << angle << " rotvel " << rotVel << std::endl;
 
         /// Compute advance speed
-        std::min(advVel = MAX_ADV_SPEED * exponentialFunction(rotVel, 1., 0.1, 0), euc_dist_to_target);
+        std::min(advVel = MAX_ADV_SPEED * exponentialFunction(rotVel, 0.9, 0.1, 0), euc_dist_to_target);
 
         /// Compute bumper-away speed
         QVector2D total{0, 0};
@@ -124,7 +121,7 @@ public:
         //qInfo() << advVelz << advVelx << rotVel;
         std::cout << std::boolalpha << __FUNCTION__ << "Controller output " << advVel << " " << sideVel << " " << rotVel  << std::endl;
         std::cout << "-------" << std::endl;
-        return std::make_tuple(true, advVel, 0, rotVel);
+        return std::make_tuple(true, advVel, sideVel, rotVel);
     }
 
 
@@ -143,7 +140,7 @@ private:
 
     const float ROBOT_LENGTH = 500;
     const float FINAL_DISTANCE_TO_TARGET = 250; //mm
-    float KB = 2.0;
+    float KB = 3.0;
 
     float advVelx = 0, advVelz = 0, rotVel = 0;
     QVector2D bumperVel;

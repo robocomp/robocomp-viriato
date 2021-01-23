@@ -34,12 +34,12 @@
 #include <QGraphicsPolygonItem>
 #include "grid.h"
 #include "grid.cpp"
-#include <navigation.h>
+#include "navigation.h"
+#include "navigation.cpp"
 #include <controller.h>
 #include <doublebuffer/DoubleBuffer.h>
 #include <myscene.h>
 #include <Eigen/Dense>
-
 
 #define USE_QTGUI
 #ifdef USE_QTGUI

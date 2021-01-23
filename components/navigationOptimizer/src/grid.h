@@ -27,7 +27,6 @@
 #include <collisions.h>
 #include <QGraphicsScene>
 
-
 struct TCellDefault
 {
     std::uint32_t id;

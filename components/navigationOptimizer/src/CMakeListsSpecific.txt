@@ -6,6 +6,7 @@ SET ( SOURCES
   innerviewer.cpp
   myscene.h
   grid.cpp
+  navigation.cpp
 )
 
 # Headers set
@@ -19,7 +20,7 @@ SET ( HEADERS
   localPerson.h
 )
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 
 SET (LIBS ${LIBS} osg osgViewer osgDB fcl )
 
