@@ -75,8 +75,7 @@ void SpecificWorker::initialize(int period)
 void SpecificWorker::compute()
 {
     bool needsReplaning = false;
-//    auto bState = read_base(); //changed to use publication bState source 
-    auto bState = pub_bState;
+    auto bState = read_base(); 
     auto [laser_data, ldata] = read_laser(); //QPolygon and RoboComp
     draw_laser(laser_data);
 
@@ -114,8 +113,9 @@ RoboCompGenericBase::TBaseState SpecificWorker::read_base()
 {
     try
     {
-        RoboCompGenericBase::TBaseState bState;
-        omnirobot_proxy->getBaseState(bState);
+//        RoboCompGenericBase::TBaseState bState;
+//        omnirobot_proxy->getBaseState(bState);//changed to use publication bState source 
+        RoboCompGenericBase::TBaseState bState = pub_bState;
         robot_polygon->setRotation(qRadiansToDegrees(bState.alpha));
         robot_polygon->setPos(bState.x, bState.z);
         innerModel->updateTransformValues("robot", bState.x, 0, bState.z, 0, -bState.alpha, 0);  // WATCH - sign
