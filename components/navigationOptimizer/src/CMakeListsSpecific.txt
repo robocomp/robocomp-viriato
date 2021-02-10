@@ -20,7 +20,8 @@ SET ( HEADERS
   localPerson.h
 )
 
-set(CMAKE_CXX_STANDARD 20)
+include_directories(/usr/include/eigen3)
+set(CMAKE_CXX_STANDARD 17)
 
 SET (LIBS ${LIBS} osg osgViewer osgDB fcl )
 

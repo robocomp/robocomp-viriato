@@ -2,9 +2,14 @@ CommonBehavior.Endpoints=tcp -p 14000
 
 # Proxies for required interfaces
 JoystickAdapterProxy = joystickadapter:tcp -h localhost -p 13100
-LaserProxy = laser:tcp -h localhost -p 10003
-OmniRobotProxy = omnirobot:tcp -h localhost -p 10004
+LaserProxy = laser:tcp -h robonuc1.local -p 10003
+OmniRobotProxy = omnirobot:tcp -h robonuc1.local -p 10004
 
+# This property is used by the clients to connect to IceStorm.
+TopicManager.Proxy=IceStorm/TopicManager:default -h robonuc1.local -p 9999
+
+# Endpoints for subscriptions interfaces
+FullPoseEstimationPubTopic.Endpoints=tcp -p 13444
 
 NavigationAgent.World = viriato_dwa_3objects.json
 NavigationAgent.InnerModel = simpleworldomni.xml

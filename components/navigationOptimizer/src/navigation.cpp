@@ -4,7 +4,7 @@
 
 #include "navigation.h"
 #include <QGraphicsLineItem>
-#include <ranges>
+//#include <ranges>
 
 template<typename TMap, typename TController>
 void Navigation<TMap,TController>::initialize( const Grid<>::Dimensions &dim, std::shared_ptr<InnerModel> innerModel_,
@@ -72,7 +72,10 @@ template<typename TMap, typename TController>
 void Navigation<TMap,TController>::stopRobot()
 {
     qDebug() << "Navigation - " << __FUNCTION__;
-    omnirobot_proxy->setSpeedBase(0, 0, 0);
+    try{
+        omnirobot_proxy->setSpeedBase(0, 0, 0);
+    }
+    catch(const Ice::Exception &e){};
 }
 
 template<typename TMap, typename TController>

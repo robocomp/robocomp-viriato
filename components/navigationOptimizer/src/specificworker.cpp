@@ -64,9 +64,7 @@ void SpecificWorker::initialize(int period)
 	std::cout << "Initialize worker" << std::endl;
     init_drawing(dim);
     initializeWorld();
-
     navigation.initialize(dim, innerModel, confParams, omnirobot_proxy, &scene);
-
 	this->Period = period;
 	if(this->startup_check_flag)
 		this->startup_check();
@@ -77,7 +75,8 @@ void SpecificWorker::initialize(int period)
 void SpecificWorker::compute()
 {
     bool needsReplaning = false;
-    auto bState = read_base();
+//    auto bState = read_base(); //changed to use publication bState source 
+    auto bState = pub_bState;
     auto [laser_data, ldata] = read_laser(); //QPolygon and RoboComp
     draw_laser(laser_data);
 
@@ -374,6 +373,15 @@ int SpecificWorker::startup_check()
     QTimer::singleShot(200, qApp, SLOT(quit()));
     return 0;
 }
+//SUBSCRIPTION to newFullPose method from FullPoseEstimationPub interface
+void SpecificWorker::FullPoseEstimationPub_newFullPose(RoboCompFullPoseEstimation::FullPose pose)
+{
+    pub_bState.x = pose.x;
+    pub_bState.z = pose.z;
+    pub_bState.alpha = pose.ry;
+    std::cout << "\r" << "Publication pose: " << pub_bState.x<<" "<<pub_bState.z<<" "<<pub_bState.alpha<<std::endl;
+}
+
 /**************************************/
 // From the RoboCompJoystickAdapter you can call this methods:
 // this->joystickadapter_proxy->sendData(...)

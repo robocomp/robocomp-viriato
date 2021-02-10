@@ -1,5 +1,5 @@
 /*
- *    Copyright (C) 2020 by YOUR NAME HERE
+ *    Copyright (C) 2021 by YOUR NAME HERE
  *
  *    This file is part of RoboComp
  *
@@ -31,6 +31,8 @@
 #include <ui_mainUI.h>
 #include <CommonBehavior.h>
 
+#include <FullPoseEstimation.h>
+#include <FullPoseEstimationPub.h>
 #include <GenericBase.h>
 #include <JoystickAdapter.h>
 #include <Laser.h>
@@ -61,6 +63,7 @@ public:
 	RoboCompLaser::LaserPrxPtr laser_proxy;
 	RoboCompOmniRobot::OmniRobotPrxPtr omnirobot_proxy;
 
+	virtual void FullPoseEstimationPub_newFullPose (RoboCompFullPoseEstimation::FullPose pose) = 0;
 
 protected:
 

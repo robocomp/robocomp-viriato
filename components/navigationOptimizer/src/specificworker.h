@@ -1,5 +1,5 @@
 /*
- *    Copyright (C) 2020 by YOUR NAME HERE
+ *    Copyright (C) 2021 by YOUR NAME HERE
  *
  *    This file is part of RoboComp
  *
@@ -60,11 +60,12 @@ class SpecificWorker : public GenericWorker
         //    using InnerViewerPtr = std::shared_ptr<InnerViewer>;
         //#endif
 
+        void FullPoseEstimationPub_newFullPose(RoboCompFullPoseEstimation::FullPose pose);
     public slots:
         void compute();
         int startup_check();
         void initialize(int period);
-
+    
     private:
         std::shared_ptr<InnerModel>innerModel;
         Grid<>::Dimensions dim;
@@ -82,7 +83,8 @@ class SpecificWorker : public GenericWorker
         const float MAX_RDP_DEVIATION_mm  =  70;
         void ramer_douglas_peucker(const vector<Point> &pointList, double epsilon, vector<Point> &out);
         void stop_robot();
-
+        RoboCompGenericBase::TBaseState pub_bState;
+        
         //2d scene
         const float ROBOT_LENGTH = 400;
         MyScene scene;

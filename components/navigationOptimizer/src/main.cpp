@@ -1,5 +1,5 @@
 /*
- *    Copyright (C) 2020 by YOUR NAME HERE
+ *    Copyright (C) 2021 by YOUR NAME HERE
  *
  *    This file is part of RoboComp
  *
@@ -81,7 +81,9 @@
 #include "specificmonitor.h"
 #include "commonbehaviorI.h"
 
+#include <fullposeestimationpubI.h>
 
+#include <FullPoseEstimation.h>
 #include <GenericBase.h>
 
 
@@ -185,6 +187,17 @@ int ::navigationOptimizer::run(int argc, char* argv[])
 	rInfo("OmniRobotProxy initialized Ok!");
 
 
+	IceStorm::TopicManagerPrxPtr topicManager;
+	try
+	{
+		topicManager = topicManager = Ice::checkedCast<IceStorm::TopicManagerPrx>(communicator()->propertyToProxy("TopicManager.Proxy"));
+	}
+	catch (const Ice::Exception &ex)
+	{
+		cout << "[" << PROGRAM_NAME << "]: Exception: 'rcnode' not running: " << ex << endl;
+		return EXIT_FAILURE;
+	}
+
 	tprx = std::make_tuple(joystickadapter_proxy,laser_proxy,omnirobot_proxy);
 	SpecificWorker *worker = new SpecificWorker(tprx, startup_check_flag);
 	//Monitor thread
@@ -225,6 +238,53 @@ int ::navigationOptimizer::run(int argc, char* argv[])
 
 
 		// Server adapter creation and publication
+		std::shared_ptr<IceStorm::TopicPrx> fullposeestimationpub_topic;
+		Ice::ObjectPrxPtr fullposeestimationpub;
+		try
+		{
+			if (not GenericMonitor::configGetString(communicator(), prefix, "FullPoseEstimationPubTopic.Endpoints", tmp, ""))
+			{
+				cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy FullPoseEstimationPubProxy";
+			}
+			Ice::ObjectAdapterPtr FullPoseEstimationPub_adapter = communicator()->createObjectAdapterWithEndpoints("fullposeestimationpub", tmp);
+			RoboCompFullPoseEstimationPub::FullPoseEstimationPubPtr fullposeestimationpubI_ =  std::make_shared <FullPoseEstimationPubI>(worker);
+			auto fullposeestimationpub = FullPoseEstimationPub_adapter->addWithUUID(fullposeestimationpubI_)->ice_oneway();
+			if(!fullposeestimationpub_topic)
+			{
+				try {
+					fullposeestimationpub_topic = topicManager->create("FullPoseEstimationPub");
+				}
+				catch (const IceStorm::TopicExists&) {
+					//Another client created the topic
+					try{
+						cout << "[" << PROGRAM_NAME << "]: Probably other client already opened the topic. Trying to connect.\n";
+						fullposeestimationpub_topic = topicManager->retrieve("FullPoseEstimationPub");
+					}
+					catch(const IceStorm::NoSuchTopic&)
+					{
+						cout << "[" << PROGRAM_NAME << "]: Topic doesn't exists and couldn't be created.\n";
+						//Error. Topic does not exist
+					}
+				}
+				catch(const IceUtil::NullHandleException&)
+				{
+					cout << "[" << PROGRAM_NAME << "]: ERROR TopicManager is Null. Check that your configuration file contains an entry like:\n"<<
+					"\t\tTopicManager.Proxy=IceStorm/TopicManager:default -p <port>\n";
+					return EXIT_FAILURE;
+				}
+				IceStorm::QoS qos;
+				fullposeestimationpub_topic->subscribeAndGetPublisher(qos, fullposeestimationpub);
+			}
+			FullPoseEstimationPub_adapter->activate();
+		}
+		catch(const IceStorm::NoSuchTopic&)
+		{
+			cout << "[" << PROGRAM_NAME << "]: Error creating FullPoseEstimationPub topic.\n";
+			//Error. Topic does not exist
+		}
+
+
+		// Server adapter creation and publication
 		cout << SERVER_FULL_NAME " started" << endl;
 
 		// User defined QtGui elements ( main window, dialogs, etc )
@@ -235,6 +295,16 @@ int ::navigationOptimizer::run(int argc, char* argv[])
 		#endif
 		// Run QT Application Event Loop
 		a.exec();
+
+		try
+		{
+			std::cout << "Unsubscribing topic: fullposeestimationpub " <<std::endl;
+			fullposeestimationpub_topic->unsubscribe( fullposeestimationpub );
+		}
+		catch(const Ice::Exception& ex)
+		{
+			std::cout << "ERROR Unsubscribing topic: fullposeestimationpub " << ex.what()<<std::endl;
+		}
 
 
 		status = EXIT_SUCCESS;
