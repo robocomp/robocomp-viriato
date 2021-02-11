@@ -3,7 +3,7 @@ CommonBehavior.Endpoints=tcp -p 14000
 # Proxies for required interfaces
 JoystickAdapterProxy = joystickadapter:tcp -h localhost -p 13100
 LaserProxy = laser:tcp -h robonuc1.local -p 10003
-OmniRobotProxy = omnirobot:tcp -h robonuc1.local -p 10004
+OmniRobotProxy = omnirobot:tcp -h robonuc1.local -p 12238
 
 # This property is used by the clients to connect to IceStorm.
 TopicManager.Proxy=IceStorm/TopicManager:default -h robonuc1.local -p 9999
@@ -12,8 +12,10 @@ TopicManager.Proxy=IceStorm/TopicManager:default -h robonuc1.local -p 9999
 FullPoseEstimationPubTopic.Endpoints=tcp -p 13444
 
 #NavigationAgent.World = viriato_dwa_3objects.json
+#NavigationAgent.InnerModel = simpleworldomni.xml
+
 NavigationAgent.World = autonomy.json
-NavigationAgent.InnerModel = simpleworldomni.xml
+NavigationAgent.InnerModel = autonomyLab.xml
 
 NavigationAgent.MaxZSpeed = 300
 NavigationAgent.MaxXSpeed = 300
@@ -35,9 +37,9 @@ NavigationAgent.MinimunDetectableTranslation = 7
 NavigationAgent.MinimumSafetyDistance = 100
 
 NavigationAgent.OuterRegionLeft = -2500
-NavigationAgent.OuterRegionRight = 2500
-NavigationAgent.OuterRegionBottom = -2500
-NavigationAgent.OuterRegionTop = 2500
+NavigationAgent.OuterRegionRight = 10000
+NavigationAgent.OuterRegionBottom = -5000
+NavigationAgent.OuterRegionTop = 5000
 
 Ice.Warn.Connections=0
 Ice.Trace.Network=0

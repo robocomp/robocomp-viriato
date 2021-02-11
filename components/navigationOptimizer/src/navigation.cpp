@@ -64,8 +64,11 @@ void Navigation<TMap,TController>::update(const RoboCompLaser::TLaserData &laser
     auto[active, advVel, sideVel, rotVel] = controller.update(pathPoints,
                                                               laser_data, target.pos,
                                                               QPointF(current_robot_pose.x(),current_robot_pose.z()),
-                                                              current_robot_nose);
-    omnirobot_proxy->setSpeedBase(sideVel, advVel, rotVel);
+                                                            current_robot_nose);
+    try{
+ //   omnirobot_proxy->setSpeedBase(sideVel, advVel, rotVel);
+    }
+    catch(const Ice::Exception &e){};
 };
 
 template<typename TMap, typename TController>

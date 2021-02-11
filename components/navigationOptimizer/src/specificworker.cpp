@@ -116,9 +116,9 @@ RoboCompGenericBase::TBaseState SpecificWorker::read_base()
 //        RoboCompGenericBase::TBaseState bState;
 //        omnirobot_proxy->getBaseState(bState);//changed to use publication bState source 
         RoboCompGenericBase::TBaseState bState = pub_bState;
-        robot_polygon->setRotation(qRadiansToDegrees(bState.alpha));
+        robot_polygon->setRotation(qRadiansToDegrees(-bState.alpha));
         robot_polygon->setPos(bState.x, bState.z);
-        innerModel->updateTransformValues("robot", bState.x, 0, bState.z, 0, -bState.alpha, 0);  // WATCH - sign
+        innerModel->updateTransformValues("robot", bState.x, 0, bState.z, 0, bState.alpha, 0);  // WATCH - sign
         return bState;
     }
     catch(const Ice::Exception &e){};
@@ -379,7 +379,7 @@ void SpecificWorker::FullPoseEstimationPub_newFullPose(RoboCompFullPoseEstimatio
     pub_bState.x = pose.x;
     pub_bState.z = pose.z;
     pub_bState.alpha = pose.ry;
-    std::cout << "\r" << "Publication pose: " << pub_bState.x<<" "<<pub_bState.z<<" "<<pub_bState.alpha<<std::endl;
+//    std::cout << "\r" << "Publication pose: " << pub_bState.x<<" "<<pub_bState.z<<" "<<pub_bState.alpha<<std::endl;
 }
 
 /**************************************/
