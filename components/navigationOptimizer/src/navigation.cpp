@@ -43,6 +43,9 @@ void Navigation<TMap,TController>::update(const RoboCompLaser::TLaserData &laser
     const auto &[laser_poly, laser_cart] = read_laser_data(laser_data);
     QPolygonF current_robot_polygon = get_robot_polygon();
     QPointF current_robot_nose = QPointF(nose_3d.x(), nose_3d.z());
+    //qInfo() << current_robot_nose;
+    //current_robot_pose.print("robot");
+    //qInfo() << "-----------------";
 
     if (needsReplaning)
     {
@@ -61,13 +64,11 @@ void Navigation<TMap,TController>::update(const RoboCompLaser::TLaserData &laser
     clean_points(pathPoints, laser_poly, current_robot_polygon);
     add_points(pathPoints, laser_poly, current_robot_polygon);
     draw_path(pathPoints, scene);
-    auto[active, advVel, sideVel, rotVel] = controller.update(pathPoints,
-                                                              laser_data, target.pos,
-                                                              QPointF(current_robot_pose.x(),current_robot_pose.z()),
-                                                            current_robot_nose);
-    try{
- //   omnirobot_proxy->setSpeedBase(sideVel, advVel, rotVel);
-    }
+    auto[active, advVel, sideVel, rotVel] = controller.update( pathPoints,
+                                                               laser_data, target.pos,
+                                                               QPointF(current_robot_pose.x(),current_robot_pose.z()),
+                                                               current_robot_nose);
+    try{ omnirobot_proxy->setSpeedBase(0, 0, rotVel*0.3);  }
     catch(const Ice::Exception &e){};
 };
 

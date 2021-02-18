@@ -51,7 +51,7 @@ class Navigation
         };
 
         // consts
-        float KE = 60;
+        float KE = 5; //60;
         float KI = 300;
         float MAX_LASER_DIST = 4000;
         float MAX_DIST_TO_FORCE = 2000; //mm

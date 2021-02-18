@@ -55,17 +55,22 @@ class SpecificWorker : public GenericWorker
         SpecificWorker(TuplePrx tprx, bool startup_check);
         ~SpecificWorker();
         bool setParams(RoboCompCommonBehavior::ParameterList params);
-
         //#ifdef USE_QTGUI
         //    using InnerViewerPtr = std::shared_ptr<InnerViewer>;
         //#endif
-
         void FullPoseEstimationPub_newFullPose(RoboCompFullPoseEstimation::FullPose pose);
+
     public slots:
         void compute();
         int startup_check();
         void initialize(int period);
-    
+
+    protected:
+        void resizeEvent(QResizeEvent * event)
+        {
+            graphicsView->fitInView(scene.sceneRect(), Qt::KeepAspectRatio);
+        }
+
     private:
         std::shared_ptr<InnerModel>innerModel;
         Grid<>::Dimensions dim;
@@ -89,6 +94,7 @@ class SpecificWorker : public GenericWorker
         const float ROBOT_LENGTH = 400;
         MyScene scene;
         QGraphicsItem *robot_polygon = nullptr;
+        QGraphicsItem *robot_nose_ellipse = nullptr;
 
         // Target
         using Target = Navigation<Grid<>,Controller>::Target;

@@ -65,6 +65,10 @@ void SpecificWorker::initialize(int period)
     init_drawing(dim);
     initializeWorld();
     navigation.initialize(dim, innerModel, confParams, omnirobot_proxy, &scene);
+
+    connect(stop_button, &QPushButton::clicked, [this]()
+                { omnirobot_proxy->stopBase(); atTarget = true;});
+
 	this->Period = period;
 	if(this->startup_check_flag)
 		this->startup_check();
@@ -84,6 +88,7 @@ void SpecificWorker::compute()
     {
         //set target
         target.pos = t.value().pos;
+        qInfo() << "TArget " << target.pos;
         draw_target(bState, t.value().pos);
         needsReplaning = true;
         atTarget = false;
@@ -103,6 +108,12 @@ void SpecificWorker::compute()
         else
         {
             navigation.update(ldata, target, needsReplaning);
+            /*QVec nose_3d = innerModel->transform("world", QVec::vec3(0, 0, 250), "robot");
+            qInfo() << "-------NOSE--";
+            qInfo() << robot_nose_ellipse->mapToScene(0,0);
+            nose_3d.print("nose");
+            qInfo() << "---------";
+             */
         }
     }
 }
@@ -118,7 +129,7 @@ RoboCompGenericBase::TBaseState SpecificWorker::read_base()
         RoboCompGenericBase::TBaseState bState = pub_bState;
         robot_polygon->setRotation(qRadiansToDegrees(-bState.alpha));
         robot_polygon->setPos(bState.x, bState.z);
-        innerModel->updateTransformValues("robot", bState.x, 0, bState.z, 0, bState.alpha, 0);  // WATCH - sign
+        innerModel->updateTransformValues("robot", bState.x, 0, bState.z, 0, -bState.alpha, 0);  // WATCH - sign
         return bState;
     }
     catch(const Ice::Exception &e){};
@@ -200,6 +211,10 @@ void SpecificWorker::init_drawing( Grid<>::Dimensions dim)
     QColor rc("DarkRed"); rc.setAlpha(80);
     robot_polygon = scene.addPolygon(poly2, QPen(QColor("DarkRed")), QBrush(rc));
     robot_polygon->setZValue(5);
+
+    robot_nose_ellipse = scene.addEllipse(0,0,40,40, QPen(QColor("DarkBLue")), QBrush("DarkBlue"));
+    robot_nose_ellipse->setParentItem(robot_polygon);
+    robot_nose_ellipse->setPos(0, 250);
     try
     {
         RoboCompGenericBase::TBaseState bState;

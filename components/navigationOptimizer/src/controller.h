@@ -90,12 +90,14 @@ public:
         }
 
         /// Compute rotational speed
-        QLineF robot_to_nose(robot, robot_nose);
-        float angle = -rewrapAngleRestricted(qDegreesToRadians(robot_to_nose.angleTo(QLineF(robot_nose, points[1])))); // WATCH SIGN
-        if(angle >= 0)
-            rotVel = std::clamp(angle, 0.f, MAX_ROT_SPEED);
-        else
-            rotVel = std::clamp(angle, -MAX_ROT_SPEED, 0.f);
+        auto r_target =  innerModel->transform("robot", QVec::vec3(target.x(), 0., target.y()), "world");
+        float angle = -atan2(r_target[0], r_target[2]);
+        rotVel = std::clamp(angle, -MAX_ROT_SPEED, MAX_ROT_SPEED);
+
+        //QLineF robot_to_nose(robot, robot_nose);
+        //float angle = -rewrapAngleRestricted(qDegreesToRadians(robot_to_nose.angleTo(QLineF(robot_nose, points[1])))); // WATCH SIGN
+        //rotVel = std::clamp(angle, -MAX_ROT_SPEED, MAX_ROT_SPEED);
+
 //        if(euc_dist_to_target < 5*FINAL_DISTANCE_TO_TARGET)
 //            rotVel = 0.f;
 //        if( fabs(rotVel) < 0.01) rotVel = 0.f;

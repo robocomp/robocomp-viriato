@@ -266,7 +266,7 @@ void Grid<T>::modifyCostInGrid(const QPolygonF &poly, float cost)
 template <typename T>
 std::tuple<bool, QVector2D> Grid<T>::vectorToClosestObstacle(QPointF center)
 {
-    QTime reloj = QTime::currentTime();
+    //QTime reloj = QTime::currentTime();
     auto k = pointToGrid(center.x(),center.y());
     QVector2D closestVector;
     bool obstacleFound = false;
