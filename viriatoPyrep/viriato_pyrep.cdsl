@@ -1,0 +1,21 @@
+import "CameraRGBDSimple.idsl";
+import "Laser.idsl";
+import "DifferentialRobot.idsl";
+import "OmniRobot.idsl";
+import "CoppeliaUtils.idsl";
+import "FullPoseEstimation.idsl";
+import "JointMotorSimple.idsl";
+import "CameraSimple.idsl";
+import "JoystickAdapter.idsl";
+import "GenericBase.idsl";
+
+Component viriato_pyrep
+{
+    Communications
+    {
+        implements GenericBase, CameraRGBDSimple, Laser, OmniRobot, CoppeliaUtils, FullPoseEstimation, JointMotorSimple, CameraSimple, DifferentialRobot;
+        subscribesTo JoystickAdapter;
+    };
+    language python;
+};
+
