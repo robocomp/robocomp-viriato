@@ -127,14 +127,14 @@ void SpecificWorker::initialize(int period)
 //            G->add_or_modify_attrib_local<robot_ref_side_speed_att>(robot.value(), (float) 0);
 //            G->update_node(robot.value());
 //        }
-        hide();
+//        hide();
         inner_eigen = G->get_inner_eigen_api();
         rt = G->get_rt_api();
 
 		this->Period = period;
 		timer.start(Period);
 	}
-
+	hide();
 }
 
 void SpecificWorker::compute()
@@ -143,7 +143,7 @@ void SpecificWorker::compute()
     update_robot_localization();
     try
     {
-        auto rgbd = camerargbdsimple_proxy->getImage("camera_top");
+        auto rgbd = camerargbdsimple_proxy->getImage("");
         cv::Mat rgbd_frame (cv::Size(rgbd.width, rgbd.height), CV_8UC3, &rgbd.image[0]);
         cv::cvtColor(rgbd_frame, rgbd_frame, cv::COLOR_BGR2RGB);
         update_camera_rgbd(giraff_camera_realsense_name, rgbd_frame, rgbd.focalx, rgbd.focaly);
@@ -349,41 +349,43 @@ void SpecificWorker::modify_node_slot(const std::uint64_t id, const std::string 
         }
     }
 
-    if (type == "servo")
-    {
+//     if (type == "servo")
+//     {
 //        qInfo() << __FUNCTION__ << "SERVO";
-        //            // servo
-        if (auto servo = G->get_node("servo"); servo.has_value())
-        {
-//            std::cout << "ENTERING IN SERVO" << std::endl;
-            if(auto servo_send_pos = G->get_attrib_by_name<servo_ref_pos_att>(servo.value()); servo_send_pos.has_value())
-            {
-                float servo_pos = servo_send_pos.value();
-                if(auto servo_send_speed = G->get_attrib_by_name<servo_ref_speed_att>(servo.value()); servo_send_speed.has_value())
-                {
-                    float servo_speed = servo_send_speed.value();
-                    servo_pos_anterior = servo_pos;
-                    servo_speed_anterior =  servo_speed;
+//         //            // servo
+//         if (auto servo = G->get_node("servo"); servo.has_value())
+//         {
+// //            std::cout << "ENTERING IN SERVO" << std::endl;
+//             if(auto servo_send_pos = G->get_attrib_by_name<servo_ref_pos_att>(servo.value()); servo_send_pos.has_value())
+//             {
+//                 qInfo() << "1";
+//                 float servo_pos = servo_send_pos.value();
+//                 if(auto servo_send_speed = G->get_attrib_by_name<servo_ref_speed_att>(servo.value()); servo_send_speed.has_value())
+//                 {
+//                     qInfo() << "1";
+//                     float servo_speed = servo_send_speed.value();
+//                     servo_pos_anterior = servo_pos;
+//                     servo_speed_anterior =  servo_speed;
 
-                    try {
-//                        std::cout << "SENDING POSITION" << std::endl;
-                        RoboCompJointMotorSimple::MotorGoalPosition goal;
-                        goal.maxSpeed = (float)servo_speed;
-                        goal.position = (float)servo_pos;
-                        this->jointmotorsimple_proxy->setPosition("eye_motor", goal);
-                    }
-                    catch (const RoboCompGenericBase::HardwareFailedException &re) {
-//                        std::cout << __FUNCTION__ << "Exception setting base speed " << re << '\n';
-//                        std::cout << __FUNCTION__ << "Exception setting base speed " << re << '\n';
-                    }
-                    catch (const Ice::Exception &e) {
-                        //std::cout << e.what() << '\n';
-                    }
-                }
-            }
+//                     try {
+//                         std::cout << "SENDING POSITION" << std::endl;
+//                         RoboCompJointMotorSimple::MotorGoalPosition goal;
+//                         goal.maxSpeed = (float)servo_speed;
+//                         goal.position = (float)servo_pos;
+//                         this->jointmotorsimple_proxy->setPosition("", goal);
+//                     }
+//                     catch (const RoboCompGenericBase::HardwareFailedException &re) {
+// //                        std::cout << __FUNCTION__ << "Exception setting base speed " << re << '\n';
+// //                        std::cout << __FUNCTION__ << "Exception setting base speed " << re << '\n';
+//                     }
+//                     catch (const Ice::Exception &e) {
+//                         //std::cout << e.what() << '\n';
+//                     }
+//                 }
+//             }
 
-        }
-    }
+//         }
+//     }
 
     if (type == omnirobot_type_name)   // pasar al SLOT the change attrib
     {
