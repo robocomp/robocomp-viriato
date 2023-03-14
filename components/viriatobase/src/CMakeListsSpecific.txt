@@ -15,4 +15,4 @@ SET ( HEADERS
 )
 
 ADD_DEFINITIONS( -std=c++11 )
-
+SET ( SPECIFIC_LIBS qmat innermodel )

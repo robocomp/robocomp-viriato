@@ -8,6 +8,6 @@ Component viriatobase
 	{
 		implements OmniRobot, DifferentialRobot, GenericBase;
 	};
-	language Cpp;
+	language Cpp11;
 };
 

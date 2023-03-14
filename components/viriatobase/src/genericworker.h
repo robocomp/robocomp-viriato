@@ -1,5 +1,5 @@
 /*
- *    Copyright (C)2019 by YOUR NAME HERE
+ *    Copyright (C) 2022 by YOUR NAME HERE
  *
  *    This file is part of RoboComp
  *
@@ -22,30 +22,25 @@
 #include "config.h"
 #include <stdint.h>
 #include <qlog/qlog.h>
-
 #include <CommonBehavior.h>
 
-#include <GenericBase.h>
 #include <DifferentialRobot.h>
+#include <GenericBase.h>
 #include <OmniRobot.h>
+
 
 #define CHECK_PERIOD 5000
 #define BASIC_PERIOD 100
 
-using namespace std;
-using namespace RoboCompGenericBase;
-using namespace RoboCompDifferentialRobot;
-using namespace RoboCompOmniRobot;
 
-typedef map <string,::IceProxy::Ice::Object*> MapPrx;
+using TuplePrx = std::tuple<>;
 
 
-class GenericWorker :
-public QObject
+class GenericWorker : public QObject
 {
 Q_OBJECT
 public:
-	GenericWorker(MapPrx& mprx);
+	GenericWorker(TuplePrx tprx);
 	virtual ~GenericWorker();
 	virtual void killYourSelf();
 	virtual void setPeriod(int p);
@@ -55,24 +50,24 @@ public:
 
 
 
-	virtual void DifferentialRobot_correctOdometer(const int x, const int z, const float alpha) = 0;
+	virtual void DifferentialRobot_correctOdometer(int x, int z, float alpha) = 0;
 	virtual void DifferentialRobot_getBasePose(int &x, int &z, float &alpha) = 0;
-	virtual void DifferentialRobot_resetOdometer() = 0;
-	virtual void DifferentialRobot_setOdometer(const RoboCompGenericBase::TBaseState &state) = 0;
 	virtual void DifferentialRobot_getBaseState(RoboCompGenericBase::TBaseState &state) = 0;
-	virtual void DifferentialRobot_setOdometerPose(const int x, const int z, const float alpha) = 0;
+	virtual void DifferentialRobot_resetOdometer() = 0;
+	virtual void DifferentialRobot_setOdometer(RoboCompGenericBase::TBaseState state) = 0;
+	virtual void DifferentialRobot_setOdometerPose(int x, int z, float alpha) = 0;
+	virtual void DifferentialRobot_setSpeedBase(float adv, float rot) = 0;
 	virtual void DifferentialRobot_stopBase() = 0;
-	virtual void DifferentialRobot_setSpeedBase(const float adv, const float rot) = 0;
-	virtual void GenericBase_getBaseState(RoboCompGenericBase::TBaseState &state) = 0;
 	virtual void GenericBase_getBasePose(int &x, int &z, float &alpha) = 0;
-	virtual void OmniRobot_correctOdometer(const int x, const int z, const float alpha) = 0;
+	virtual void GenericBase_getBaseState(RoboCompGenericBase::TBaseState &state) = 0;
+	virtual void OmniRobot_correctOdometer(int x, int z, float alpha) = 0;
 	virtual void OmniRobot_getBasePose(int &x, int &z, float &alpha) = 0;
-	virtual void OmniRobot_resetOdometer() = 0;
-	virtual void OmniRobot_setOdometer(const RoboCompGenericBase::TBaseState &state) = 0;
 	virtual void OmniRobot_getBaseState(RoboCompGenericBase::TBaseState &state) = 0;
-	virtual void OmniRobot_setOdometerPose(const int x, const int z, const float alpha) = 0;
+	virtual void OmniRobot_resetOdometer() = 0;
+	virtual void OmniRobot_setOdometer(RoboCompGenericBase::TBaseState state) = 0;
+	virtual void OmniRobot_setOdometerPose(int x, int z, float alpha) = 0;
+	virtual void OmniRobot_setSpeedBase(float advx, float advz, float rot) = 0;
 	virtual void OmniRobot_stopBase() = 0;
-	virtual void OmniRobot_setSpeedBase(const float advx, const float advz, const float rot) = 0;
 
 protected:
 
@@ -84,7 +79,7 @@ private:
 
 public slots:
 	virtual void compute() = 0;
-    virtual void initialize(int period) = 0;
+	virtual void initialize(int period) = 0;
 	
 signals:
 	void kill();

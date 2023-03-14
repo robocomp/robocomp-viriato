@@ -17,12 +17,24 @@
  *    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "specificworker.h"
-
+#include <chrono>
+#include <iomanip>
+#include <iostream>
 /**
 * \brief Default constructor
 */
-SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
+SpecificWorker::SpecificWorker(TuplePrx tprx, bool startup_check) : GenericWorker(tprx)
 {
+    bState_a = new RoboCompGenericBase::TBaseState();
+    bState_b = new RoboCompGenericBase::TBaseState();
+    bstate_swap = new QMutex();
+	wheelVels_a = new QVec(4);
+	wheelVels_b = new QVec(4);
+	inner_mutex = new QMutex();
+	wheels_swap = new QMutex();
+	
+	
+	myfile.open ("speed.txt");
 }
 
 /**
@@ -31,6 +43,7 @@ SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
 SpecificWorker::~SpecificWorker()
 {
 	std::cout << "Destroying SpecificWorker" << std::endl;
+	myfile.close();
 	delete viriato;
 }
 
@@ -42,6 +55,7 @@ void SpecificWorker::initialize(int period)
 
 }
 
+
 bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 {
 	QMutexLocker locker(mutex);
@@ -52,8 +66,6 @@ bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 	printf(". done!\n");
 	
 	wheelVels = QVec::vec4(0,0,0,0);
-	x     = z     = angle     = 0;
-	corrX = corrZ = corrAngle = 0;
 
 	/// InnerModel
 	innermodel = new InnerModel();
@@ -70,7 +82,6 @@ bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 	corrBackPose->addChild(corrNewPose);
 	
 	printf("viriato: successfully initialized\n");
-
 
 	// YEP: OMNI-DIRECTIONAL ROBOTS: https://link.springer.com/chapter/10.1007/978-3-540-70534-5_9
 	R  = QString::fromStdString(params["ViriatoBase.WheelRadius"].value).toFloat(); 
@@ -115,24 +126,38 @@ bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 	M_vels_2_wheels(3,2) = -ll;
 	M_vels_2_wheels = M_vels_2_wheels.operator*(1./(R)); // 1/R instead of 1/(2*pi*R) because we use rads/s instead of rev/s
 	M_vels_2_wheels.print("M_vels_2_wheels");
-	
 
 	return true;
 }
 
+std::string getTimestamp()
+{
+  // get a precise timestamp as a string
+  const auto now = std::chrono::system_clock::now();
+  const auto nowAsTimeT = std::chrono::system_clock::to_time_t(now);
+  const auto nowMs = std::chrono::duration_cast<std::chrono::milliseconds>(
+      now.time_since_epoch()) % 1000;
+  std::stringstream nowSs;
+  nowSs
+      << std::put_time(std::localtime(&nowAsTimeT), "%a %b %d %Y %T")
+      << '.' << std::setfill('0') << std::setw(3) << nowMs.count();
+  return nowSs.str();
+}
+
 void SpecificWorker::compute()
 {
- //	printf("compute\n");
-	setWheels(wheelVels);
-	computeOdometry(false);
+    //	printf("compute\n");
+	setWheels();
+	computeOdometry();
+	const auto now = std::chrono::system_clock::now();
+	const auto nowMs = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()) % 1000;
+	myfile <<getTimestamp()<<" " << bState_a->x<<" "<<bState_a->z<<" "<<bState_a->alpha<<"\n";
 	usleep(10000);
 }
 
 
-void SpecificWorker::computeOdometry(bool forced)
+void SpecificWorker::computeOdometry()
 {
-	QMutexLocker locker(mutex);
-
 	static QVec previousWheelsPos = wheelsPos;
 	QVec deltaWheels = (wheelsPos-previousWheelsPos).operator*(0.912*0.912/M_PIl);
 	QVec deltaPos = M_wheels_2_vels * deltaWheels;
@@ -142,104 +167,98 @@ void SpecificWorker::computeOdometry(bool forced)
 
 	QVec newP;
 	// Raw odometry
-	innermodel->updateTransformValues("newPose",     deltaPos(1), 0, deltaPos(0),       0,       deltaPos(2), 0);
-	newP = innermodel->transform("root", "newPose");
-	innermodel->updateTransformValues("backPose",        newP(0), 0,     newP(2),       0, angle+deltaPos(2), 0);
-	innermodel->updateTransformValues("newPose",               0, 0,           0,       0,                 0, 0);
-	x = newP(0);
-	z = newP(2);
-	angle += deltaPos(2);
-
-	// Corrected odometry
-	innermodel->updateTransformValues("corrNewPose",    deltaPos(1), 0, deltaPos(0),    0,       deltaPos(2), 0);
-	newP = innermodel->transform("root", "corrNewPose");
-	innermodel->updateTransformValues("corrBackPose",       newP(0), 0,     newP(2),    0, corrAngle+deltaPos(2), 0);
-
-	innermodel->updateTransformValues("corrNewPose",              0, 0,           0,    0,                 0, 0);
-	corrX = newP(0);
-	corrZ = newP(2);
-	corrAngle += deltaPos(2);
+	inner_mutex->lock();
+		innermodel->updateTransformValues("newPose",     deltaPos(1), 0, deltaPos(0),       0,       deltaPos(2), 0);
+		newP = innermodel->transform("root", "newPose");
+		innermodel->updateTransformValues("backPose",        newP(0), 0,     newP(2),       0, bState_b->alpha+deltaPos(2), 0);
+		innermodel->updateTransformValues("newPose",               0, 0,           0,       0,                 0, 0);
 	
-}
+		// Corrected odometry
+		QVec coorP;
+		innermodel->updateTransformValues("corrNewPose",    deltaPos(1), 0, deltaPos(0),    0,       deltaPos(2), 0);
+		coorP = innermodel->transform("root", "corrNewPose");
+		innermodel->updateTransformValues("corrBackPose",       newP(0), 0,     newP(2),    0, bState_b->correctedAlpha+deltaPos(2), 0);
 
+		innermodel->updateTransformValues("corrNewPose",              0, 0,           0,    0,                 0, 0);
+	inner_mutex->unlock();
+	//update bState
+	bState_b->x = newP(0);
+	bState_b->z = newP(2);
+	bState_b->alpha += deltaPos(2);
+	bState_b->correctedX = newP(0);
+	bState_b->correctedZ = newP(2);
+	bState_b->correctedAlpha += deltaPos(2);
+	bstate_swap->lock();
+        RoboCompGenericBase::TBaseState *temp = bState_a;
+        bState_a = bState_b;
+        bState_b = temp;
+	bstate_swap->unlock();
+}
 
 void SpecificWorker::correctOdometer(const int x, const int z, const float alpha)
 {
-	QMutexLocker locker(mutex);
-	this->corrX = x;
-	this->corrZ = z;
-	this->corrAngle = alpha;
+	QMutexLocker locker(inner_mutex);
 	innermodel->updateTransformValues("corrBackPose",x, 0,z,0,alpha,0);
 }
 
 void SpecificWorker::getBasePose(int &x, int &z, float &alpha)
 {
-	x     = this->x;
-	z     = this->z;
-	alpha = this->angle;
-
+	x     = bState_a->x;
+	z     = bState_a->z;
+	alpha = bState_a->alpha;
 }
 
 void SpecificWorker::resetOdometer()
 {
-	QMutexLocker locker(mutex);
 	setOdometerPose(0,0,0);
 	correctOdometer(0,0,0);
-	innermodel->updateTransformValues("backPose",0, 0,0,0,0,0);
 }
 
-void SpecificWorker::setOdometer(const TBaseState &state)
+void SpecificWorker::setOdometer(const RoboCompGenericBase::TBaseState &state)
 {
-	QMutexLocker locker(mutex);
 	setOdometerPose(state.x,          state.z,          state.alpha);
 	correctOdometer(state.correctedX, state.correctedZ, state.correctedAlpha);
 }
 
-void SpecificWorker::getBaseState(TBaseState &state)
+void SpecificWorker::getBaseState(RoboCompGenericBase::TBaseState &state)
 {
-//	printf("getBaseState\n");
-	QMutexLocker locker(mutex);
-	state.x = x;
-	state.z = z;
-	state.alpha = angle;
-	state.correctedX = corrX;
-	state.correctedZ = corrZ;
-	state.correctedAlpha = corrAngle;
+//	printf("geRoboCompGenericBase::TBaseState\n");
+	state = *bState_a;
 }
 
 void SpecificWorker::setOdometerPose(const int x, const int z, const float alpha)
 {
-	QMutexLocker locker(mutex);
-	this->x = x;
-	this->z = z;
-	this->angle = alpha;
+	QMutexLocker locker(inner_mutex);
 	innermodel->updateTransformValues("backPose",x, 0,z,0,alpha,0);
 }
 
 void SpecificWorker::stopBase()
 {
-	setWheels(QVec::vec4(0,0,0,0));
+	setSpeedBase(0,0,0);
 }
 
 void SpecificWorker::setSpeedBase(const float advx, const float advz, const float rotv)
 {
-
-	computeOdometry(true);
-	QMutexLocker locker(mutex);
+	std::cout<<"set speed "<<advx<<" "<<advz<<" "<<rotv<<std::endl;
 	const QVec v = QVec::vec3(advz, advx, rotv);
- 	v.print("v");
 	const QVec wheels = M_vels_2_wheels * v;
- 	wheels.print("wheels");
-	setWheels(wheels);
+//	wheels.print("wheels");
+	for (int i=0;i<4;i++)
+		wheelVels_a->operator[](i) = wheels[i];
+	
+	wheels_swap->lock();
+		QVec *temp = wheelVels_a;
+		wheelVels_a = wheelVels_b;
+		wheelVels_b = temp;
+	wheels_swap->unlock();
+
 }
 
-void SpecificWorker::setWheels(QVec wheelVels_)
+void SpecificWorker::setWheels()
 {
-	QMutexLocker locker(mutex);
-	wheelVels = wheelVels_;
 	double rps2rpm = 60./(2.*M_PI);
 	double encoderFactor = 71.0/8.0;
-	QVec f = wheelVels_.operator*(rps2rpm * encoderFactor);
+	QVec f = wheelVels_b->operator*(rps2rpm * encoderFactor);
 	f = f.operator*(1./0.912);
 	
 	float r1,r2,r3,r4;
@@ -271,7 +290,7 @@ void SpecificWorker::DifferentialRobot_resetOdometer()
 	resetOdometer();
 }
 
-void SpecificWorker::DifferentialRobot_setOdometer(const RoboCompGenericBase::TBaseState &state)
+void SpecificWorker::DifferentialRobot_setOdometer(RoboCompGenericBase::TBaseState &state)
 {
 	setOdometer(state);
 }
@@ -321,7 +340,7 @@ void SpecificWorker::OmniRobot_resetOdometer()
 	resetOdometer();
 }
 
-void SpecificWorker::OmniRobot_setOdometer(const RoboCompGenericBase::TBaseState &state)
+void SpecificWorker::OmniRobot_setOdometer(RoboCompGenericBase::TBaseState &state)
 {
 	setOdometer(state);
 }

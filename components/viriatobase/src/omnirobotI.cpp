@@ -1,5 +1,5 @@
 /*
- *    Copyright (C) 2019 by YOUR NAME HERE
+ *    Copyright (C) 2022 by YOUR NAME HERE
  *
  *    This file is part of RoboComp
  *
@@ -28,14 +28,20 @@ OmniRobotI::~OmniRobotI()
 {
 }
 
-void OmniRobotI::correctOdometer(const int  x, const int  z, const float  alpha, const Ice::Current&)
+
+void OmniRobotI::correctOdometer(int x, int z, float alpha, const Ice::Current&)
 {
 	worker->OmniRobot_correctOdometer(x, z, alpha);
 }
 
-void OmniRobotI::getBasePose( int  &x,  int  &z,  float  &alpha, const Ice::Current&)
+void OmniRobotI::getBasePose(int &x, int &z, float &alpha, const Ice::Current&)
 {
 	worker->OmniRobot_getBasePose(x, z, alpha);
+}
+
+void OmniRobotI::getBaseState(RoboCompGenericBase::TBaseState &state, const Ice::Current&)
+{
+	worker->OmniRobot_getBaseState(state);
 }
 
 void OmniRobotI::resetOdometer(const Ice::Current&)
@@ -43,28 +49,23 @@ void OmniRobotI::resetOdometer(const Ice::Current&)
 	worker->OmniRobot_resetOdometer();
 }
 
-void OmniRobotI::setOdometer(const RoboCompGenericBase::TBaseState  &state, const Ice::Current&)
+void OmniRobotI::setOdometer(RoboCompGenericBase::TBaseState state, const Ice::Current&)
 {
 	worker->OmniRobot_setOdometer(state);
 }
 
-void OmniRobotI::getBaseState( RoboCompGenericBase::TBaseState  &state, const Ice::Current&)
-{
-	worker->OmniRobot_getBaseState(state);
-}
-
-void OmniRobotI::setOdometerPose(const int  x, const int  z, const float  alpha, const Ice::Current&)
+void OmniRobotI::setOdometerPose(int x, int z, float alpha, const Ice::Current&)
 {
 	worker->OmniRobot_setOdometerPose(x, z, alpha);
+}
+
+void OmniRobotI::setSpeedBase(float advx, float advz, float rot, const Ice::Current&)
+{
+	worker->OmniRobot_setSpeedBase(advx, advz, rot);
 }
 
 void OmniRobotI::stopBase(const Ice::Current&)
 {
 	worker->OmniRobot_stopBase();
-}
-
-void OmniRobotI::setSpeedBase(const float  advx, const float  advz, const float  rot, const Ice::Current&)
-{
-	worker->OmniRobot_setSpeedBase(advx, advz, rot);
 }
 

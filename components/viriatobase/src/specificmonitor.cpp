@@ -29,7 +29,7 @@ SpecificMonitor::SpecificMonitor(GenericWorker *_worker,Ice::CommunicatorPtr _co
 */
 SpecificMonitor::~SpecificMonitor()
 {
-
+	std::cout << "Destroying SpecificMonitor" << std::endl;
 }
 
 void SpecificMonitor::run()
@@ -61,7 +61,7 @@ void SpecificMonitor::initialize()
 		rError("Error reading config parameters. Exiting");
 		killYourSelf();
 	}
-	state = RoboCompCommonBehavior::Running;
+	state = RoboCompCommonBehavior::State::Running;
 	emit initializeWorker(period);
 }
 
@@ -78,7 +78,6 @@ bool SpecificMonitor::sendParamsToWorker(RoboCompCommonBehavior::ParameterList p
 		rError("Incorrect parameters");
 	}
 	return false;
-
 }
 
 ///Local Component parameters read at start
@@ -86,26 +85,26 @@ bool SpecificMonitor::sendParamsToWorker(RoboCompCommonBehavior::ParameterList p
 ///We need to supply a list of accepted values to each call
 void SpecificMonitor::readConfig(RoboCompCommonBehavior::ParameterList &params )
 {
-	RoboCompCommonBehavior::Parameter aux;
+    RoboCompCommonBehavior::Parameter aux;
 
-	aux.editable = true;
-	configGetString("", "ViriatoBase.WheelRadius", aux.value, "76.2");
-	params["ViriatoBase.WheelRadius"] = aux;
+    aux.editable = true;
+    configGetString("", "ViriatoBase.WheelRadius", aux.value, "76.2");
+    params["ViriatoBase.WheelRadius"] = aux;
 
-	aux.editable = true;
-	configGetString("", "ViriatoBase.DistAxes", aux.value, "380.");
-	params["ViriatoBase.DistAxes"] = aux;
+    aux.editable = true;
+    configGetString("", "ViriatoBase.DistAxes", aux.value, "380.");
+    params["ViriatoBase.DistAxes"] = aux;
 
-	aux.editable = true;
-	configGetString("", "ViriatoBase.AxesLength", aux.value, "422.");
-	params["ViriatoBase.AxesLength"] = aux;
+    aux.editable = true;
+    configGetString("", "ViriatoBase.AxesLength", aux.value, "422.");
+    params["ViriatoBase.AxesLength"] = aux;
 
-	aux.editable = true;
-	configGetString("", "ViriatoBase.Port", aux.value, "/dev/ttyUSB0");
-	params["ViriatoBase.Port"] = aux;
+    aux.editable = true;
+    configGetString("", "ViriatoBase.Port", aux.value, "/dev/ttyUSB0");
+    params["ViriatoBase.Port"] = aux;
 }
 
-//comprueba que los parametros sean correctos y los transforma a la estructura del worker
+//Check parameters and transform them to worker structure
 bool SpecificMonitor::checkParams(RoboCompCommonBehavior::ParameterList l)
 {
 	bool correct = true;

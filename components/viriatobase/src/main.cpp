@@ -1,5 +1,5 @@
 /*
- *    Copyright (C) 2019 by YOUR NAME HERE
+ *    Copyright (C) 2022 by YOUR NAME HERE
  *
  *    This file is part of RoboComp
  *
@@ -63,7 +63,7 @@
 
 // QT includes
 #include <QtCore>
-#include <QtGui>
+#include <QtWidgets>
 
 // ICE includes
 #include <Ice/Ice.h>
@@ -85,23 +85,18 @@
 #include <genericbaseI.h>
 #include <omnirobotI.h>
 
-#include <GenericBase.h>
 
 
-// User includes here
-
-// Namespaces
-using namespace std;
-using namespace RoboCompCommonBehavior;
 
 class viriatobase : public RoboComp::Application
 {
 public:
-	viriatobase (QString prfx) { prefix = prfx.toStdString(); }
+	viriatobase (QString prfx, bool startup_check) { prefix = prfx.toStdString(); this->startup_check_flag=startup_check; }
 private:
 	void initialize();
 	std::string prefix;
-	MapPrx mprx;
+	TuplePrx tprx;
+	bool startup_check_flag = false;
 
 public:
 	virtual int run(int, char*[]);
@@ -116,7 +111,11 @@ void ::viriatobase::initialize()
 
 int ::viriatobase::run(int argc, char* argv[])
 {
+#ifdef USE_QTGUI
+	QApplication a(argc, argv);  // GUI application
+#else
 	QCoreApplication a(argc, argv);  // NON-GUI application
+#endif
 
 
 	sigset_t sigs;
@@ -137,8 +136,8 @@ int ::viriatobase::run(int argc, char* argv[])
 	string proxy, tmp;
 	initialize();
 
-
-	SpecificWorker *worker = new SpecificWorker(mprx);
+	tprx = std::tuple<>();
+	SpecificWorker *worker = new SpecificWorker(tprx, startup_check_flag);
 	//Monitor thread
 	SpecificMonitor *monitor = new SpecificMonitor(worker,communicator());
 	QObject::connect(monitor, SIGNAL(kill()), &a, SLOT(quit()));
@@ -161,7 +160,7 @@ int ::viriatobase::run(int argc, char* argv[])
 				cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy CommonBehavior\n";
 			}
 			Ice::ObjectAdapterPtr adapterCommonBehavior = communicator()->createObjectAdapterWithEndpoints("commonbehavior", tmp);
-			CommonBehaviorI *commonbehaviorI = new CommonBehaviorI(monitor);
+			auto commonbehaviorI = std::make_shared<CommonBehaviorI>(monitor);
 			adapterCommonBehavior->add(commonbehaviorI, Ice::stringToIdentity("commonbehavior"));
 			adapterCommonBehavior->activate();
 		}
@@ -184,14 +183,14 @@ int ::viriatobase::run(int argc, char* argv[])
 				cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy DifferentialRobot";
 			}
 			Ice::ObjectAdapterPtr adapterDifferentialRobot = communicator()->createObjectAdapterWithEndpoints("DifferentialRobot", tmp);
-			DifferentialRobotI *differentialrobot = new DifferentialRobotI(worker);
+			auto differentialrobot = std::make_shared<DifferentialRobotI>(worker);
 			adapterDifferentialRobot->add(differentialrobot, Ice::stringToIdentity("differentialrobot"));
 			adapterDifferentialRobot->activate();
 			cout << "[" << PROGRAM_NAME << "]: DifferentialRobot adapter created in port " << tmp << endl;
-			}
-			catch (const IceStorm::TopicExists&){
-				cout << "[" << PROGRAM_NAME << "]: ERROR creating or activating adapter for DifferentialRobot\n";
-			}
+		}
+		catch (const IceStorm::TopicExists&){
+			cout << "[" << PROGRAM_NAME << "]: ERROR creating or activating adapter for DifferentialRobot\n";
+		}
 
 
 		try
@@ -202,14 +201,14 @@ int ::viriatobase::run(int argc, char* argv[])
 				cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy GenericBase";
 			}
 			Ice::ObjectAdapterPtr adapterGenericBase = communicator()->createObjectAdapterWithEndpoints("GenericBase", tmp);
-			GenericBaseI *genericbase = new GenericBaseI(worker);
+			auto genericbase = std::make_shared<GenericBaseI>(worker);
 			adapterGenericBase->add(genericbase, Ice::stringToIdentity("genericbase"));
 			adapterGenericBase->activate();
 			cout << "[" << PROGRAM_NAME << "]: GenericBase adapter created in port " << tmp << endl;
-			}
-			catch (const IceStorm::TopicExists&){
-				cout << "[" << PROGRAM_NAME << "]: ERROR creating or activating adapter for GenericBase\n";
-			}
+		}
+		catch (const IceStorm::TopicExists&){
+			cout << "[" << PROGRAM_NAME << "]: ERROR creating or activating adapter for GenericBase\n";
+		}
 
 
 		try
@@ -220,15 +219,14 @@ int ::viriatobase::run(int argc, char* argv[])
 				cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy OmniRobot";
 			}
 			Ice::ObjectAdapterPtr adapterOmniRobot = communicator()->createObjectAdapterWithEndpoints("OmniRobot", tmp);
-			OmniRobotI *omnirobot = new OmniRobotI(worker);
+			auto omnirobot = std::make_shared<OmniRobotI>(worker);
 			adapterOmniRobot->add(omnirobot, Ice::stringToIdentity("omnirobot"));
 			adapterOmniRobot->activate();
 			cout << "[" << PROGRAM_NAME << "]: OmniRobot adapter created in port " << tmp << endl;
-			}
-			catch (const IceStorm::TopicExists&){
-				cout << "[" << PROGRAM_NAME << "]: ERROR creating or activating adapter for OmniRobot\n";
-			}
-
+		}
+		catch (const IceStorm::TopicExists&){
+			cout << "[" << PROGRAM_NAME << "]: ERROR creating or activating adapter for OmniRobot\n";
+		}
 
 
 		// Server adapter creation and publication
@@ -271,36 +269,45 @@ int main(int argc, char* argv[])
 	string arg;
 
 	// Set config file
-	std::string configFile = "config";
+	QString configFile("etc/config");
+	bool startup_check_flag = false;
+	QString prefix("");
 	if (argc > 1)
 	{
-		std::string initIC("--Ice.Config=");
-		size_t pos = std::string(argv[1]).find(initIC);
-		if (pos == 0)
-		{
-			configFile = std::string(argv[1]+initIC.size());
-		}
-		else
-		{
-			configFile = std::string(argv[1]);
-		}
-	}
 
-	// Search in argument list for --prefix= argument (if exist)
-	QString prefix("");
-	QString prfx = QString("--prefix=");
-	for (int i = 2; i < argc; ++i)
-	{
-		arg = argv[i];
-		if (arg.find(prfx.toStdString(), 0) == 0)
+		// Search in argument list for arguments
+		QString startup = QString("--startup-check");
+		QString initIC = QString("--Ice.Config=");
+		QString prfx = QString("--prefix=");
+		for (int i = 0; i < argc; ++i)
 		{
-			prefix = QString::fromStdString(arg).remove(0, prfx.size());
-			if (prefix.size()>0)
-				prefix += QString(".");
-			printf("Configuration prefix: <%s>\n", prefix.toStdString().c_str());
+			arg = argv[i];
+			if (arg.find(startup.toStdString(), 0) != std::string::npos)
+			{
+				startup_check_flag = true;
+				cout << "Startup check = True"<< endl;
+			}
+			else if (arg.find(prfx.toStdString(), 0) != std::string::npos)
+			{
+				prefix = QString::fromStdString(arg).remove(0, prfx.size());
+				if (prefix.size()>0)
+					prefix += QString(".");
+				printf("Configuration prefix: <%s>\n", prefix.toStdString().c_str());
+			}
+			else if (arg.find(initIC.toStdString(), 0) != std::string::npos)
+			{
+				configFile = QString::fromStdString(arg).remove(0, initIC.size());
+				qDebug()<<__LINE__<<"Starting with config file:"<<configFile;
+			}
+			else if (i==1 and argc==2 and arg.find("--", 0) == std::string::npos)
+			{
+				configFile = QString::fromStdString(arg);
+				qDebug()<<__LINE__<<QString::fromStdString(arg)<<argc<<arg.find("--", 0)<<"Starting with config file:"<<configFile;
+			}
 		}
-	}
-	::viriatobase app(prefix);
 
-	return app.main(argc, argv, configFile.c_str());
+	}
+	::viriatobase app(prefix, startup_check_flag);
+
+	return app.main(argc, argv, configFile.toLocal8Bit().data());
 }
